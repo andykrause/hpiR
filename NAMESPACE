@@ -2,6 +2,7 @@
 
 export(dateToPeriod)
 export(hpiModel)
+export(modelToIndex)
 export(rsCreateSales)
 export(rsModel)
 export(rsTimeMatrix)
