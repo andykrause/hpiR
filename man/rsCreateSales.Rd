@@ -17,10 +17,10 @@ sales.df class from dateToPeriod() function}
 
 \item{price}{field containing the sale price}
 
-\item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
+\item{date}{default=NULL, field containing the date of the sale.
 Only necessary if not passing a sales.df object}
 
-\item{time}{default=NULL, field containing the time of the sale.
+\item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
 Only necessary if not passing a sales.df object}
 }
 \value{
@@ -44,13 +44,13 @@ rep_sales <- rsCreateSales(sales_df = seattle_sales,
                            prop_id = 'pinx',
                            sale_id = 'uniq_id',
                            price = 'sale_price',
-                           time = 'sale_date',
+                           date = 'sale_date',
                            periodicity = 'month')
 
 ## When pre-calculating the time periods
 sea_sales <- dateToPeriod(sales_df = seattle_sales,
-                          date_field = 'sale_date',
-                          period = 'month')
+                          date = 'sale_date',
+                          periodicity = 'month')
 rep_sales <- rsCreateSales(sales_df = sea_sales,
                            prop_id = 'pinx',
                            sale_id = 'uniq_id',
