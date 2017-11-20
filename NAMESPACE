@@ -3,4 +3,5 @@
 export(dateToPeriod)
 export(hpiModel)
 export(rsCreateSales)
+export(rsModel)
 export(rsTimeMatrix)
