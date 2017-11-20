@@ -27,3 +27,9 @@ Estimate repeat sales model (method based on estimator class). Generic method.
 
 }
 
+\examples{
+rs_model <- rsModel(estimator = 'base',
+                    rs_df = rs_sales,
+                    time_matrix = time_matrix,
+                    price_diff = price_diff)
+}
