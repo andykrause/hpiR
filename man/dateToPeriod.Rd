@@ -15,16 +15,16 @@ dateToPeriod(sales_df, date, periodicity = "year")
 }
 \value{
 data frame with three new fields:
-time_period: integer value counting from the minimum sale date in the periodicity selected. Base value is 1. Primarily for modeling
-time_value: float value of year and periodicty in numeric form (primarily for plotting)
-time_name: text value of the period in the format, "Year-Period". (primarily for labeling)
+date_period: integer value counting from the minimum sale date in the periodicity selected. Base value is 1. Primarily for modeling
+date_value: float value of year and periodicty in numeric form (primarily for plotting)
+date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
 }
 \description{
 Convert dates into time periods for use in sale-resale models
 }
 \section{Further Details}{
 
-time_period conat from the minimum sale date provided.  As such the period counts
+date_period conat from the minimum sale date provided.  As such the period counts
 are relative, not absolute
 Additionally, this function modifies the data.frame that it is given and return that same
 data.frame that it is given and returns that data.frame with the new fields attached.

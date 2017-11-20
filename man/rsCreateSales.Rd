@@ -34,7 +34,7 @@ Create repeat sale pairs from a data frame of sale transactions
 Properties with greater than two sales during the period will make pairwise matches
 among all sales.  Any property selling twice in the same period will remove the lower
 priced of the two sales.
-If passing a raw data.frame (not a 'sales.df' object) the "time" field should refer to
+If passing a raw data.frame (not a 'sales.df' object) the "date" field should refer to
 a field containing a vector of class POSIXt or Date.
 }
 
