@@ -8,6 +8,10 @@
 #' @return rs model object
 #' @section Further Details:
 #' @examples
+#' rs_model <- rsModel(estimator = 'base',
+#'                     rs_df = rs_sales,
+#'                     time_matrix = time_matrix,
+#'                     price_diff = price_diff)
 #' @export
 
 ## Generic Method

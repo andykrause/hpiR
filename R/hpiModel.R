@@ -47,7 +47,7 @@ hpiModel.rs <- function(hpi_data,
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_data$price_1[hpi_data$time_1 == min(hpi_data$time_1)])
+  base_price <- mean(hpi_data$price_1[hpi_data$date_1 == min(hpi_data$date_1)])
 
   ## Estimate Model
 
@@ -74,7 +74,7 @@ hpiModel.rs <- function(hpi_data,
   }
 
   # If successful create list of results
-  base_period <- min(hpi_data$time_1)
+  base_period <- min(hpi_data$date_1)
   periods <- c(base_period,
                as.numeric(gsub('time_matrixtime_', '', names(rs_mod$coefficients))))
   coefs <- c(0, as.numeric(rs_mod$coefficients))
