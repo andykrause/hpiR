@@ -24,7 +24,8 @@ Only necessary if not passing a sales.df object}
 Only necessary if not passing a sales.df object}
 }
 \value{
-data.frame of repeat sales
+data.frame of repeat sales. Note that a full data.frame of the possible
+periods, their values and names can be found in the attributes to the returned `rs` object
 }
 \description{
 Create repeat sale pairs from a data frame of sale transactions

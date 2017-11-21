@@ -9,7 +9,8 @@
 #' Only necessary if not passing a sales.df object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
 #' Only necessary if not passing a sales.df object
-#' @return data.frame of repeat sales
+#' @return data.frame of repeat sales. Note that a full data.frame of the possible
+#' periods, their values and names can be found in the attributes to the returned `rs` object
 #' @section Further Details:
 #' Properties with greater than two sales during the period will make pairwise matches
 #' among all sales.  Any property selling twice in the same period will remove the lower
@@ -147,6 +148,8 @@ rsCreateSales <- function(sales_df,
   } else {
     class(rs_df) <- append('rs', class(rs_df))
   }
+
+  attr(rs_df, 'full_periods') <- attr(sales_df, 'full_periods')
 
   # Return _df
   rs_df

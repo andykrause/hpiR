@@ -28,6 +28,9 @@ dateToPeriod <- function(sales_df,
   # Extract Date
   sale_date <- sales_df[, date]
 
+  # Create full span of dates
+  date_span <- seq(min(sale_date), max(sale_date), 1)
+
   # Create inital annual indicator
   year_period <- (lubridate::year(sale_date) - min(lubridate::year(sale_date)))
 
@@ -36,6 +39,9 @@ dateToPeriod <- function(sales_df,
     sales_df$date_period <- year_period + 1
     sales_df$date_value <- lubridate::year(sale_date)
     sales_df$date_name <- as.character(lubridate::year(sale_date))
+    full_periods <- data.frame(names = unique(lubridate::year(date_span)),
+                               values = unique(lubridate::year(date_span)),
+                               periods = unique(lubridate::year(date_span)))
   }
 
   # Create Month or Quarter
@@ -44,12 +50,22 @@ dateToPeriod <- function(sales_df,
     month_period <- (12 * year_period +
                      (lubridate::month(sale_date, label=FALSE) -
                         lubridate::month(min(sale_date))))
+
     if(periodicity == 'month'){
       sales_df$date_period <- month_period + 1
       sales_df$date_value <- (lubridate::year(sale_date) +
                                (lubridate::month(sale_date) - 1) / 12)
       sales_df$date_name <- paste0(lubridate::year(sale_date), '-',
                                    lubridate::month(sale_date, label = TRUE))
+      full_periods <- data.frame(
+        names = unique(paste0(lubridate::year(date_span), '-',
+                              lubridate::month(date_span, label = TRUE))),
+        values = unique((lubridate::year(date_span) +
+                        (lubridate::month(date_span) - 1) / 12)),
+        periods = unique((12 * (lubridate::year(date_span) -
+                         min(lubridate::year(date_span))) +
+                          (lubridate::month(date_span, label=FALSE) -
+                            lubridate::month(min(date_span)))) + 1))
     }
 
     if(periodicity == 'qtr'){
@@ -58,6 +74,16 @@ dateToPeriod <- function(sales_df,
                                (lubridate::quarter(sale_date) - 1) / 4)
       sales_df$date_name <- paste0(lubridate::year(sale_date), '-Q',
                                    lubridate::quarter(sale_date))
+
+      full_periods <- data.frame(
+        names = unique(paste0(lubridate::year(date_span), '-Q',
+                              lubridate::quarter(date_span))),
+        values = unique((lubridate::year(date_span) +
+                        (lubridate::quarter(date_span) - 1) / 4)),
+        periods = unique((4 * (lubridate::year(date_span) -
+                          min(lubridate::year(date_span))) +
+                           ((lubridate::month(date_span, label=FALSE) -
+                            lubridate::month(min(date_span))) %/% 3) + 1)))
     }
   }
 
@@ -69,12 +95,23 @@ dateToPeriod <- function(sales_df,
 
     sales_df$date_period <- week_period + 1
     sales_df$date_value <- (lubridate::year(sale_date) +
-                             (lubridate::week(sale_date) - 1) / 52)
+                             (lubridate::week(sale_date) - 1) / 53)
     sales_df$date_name <- paste0(lubridate::year(sale_date), '-W',
                                    lubridate::week(sale_date))
+
+    full_periods <- data.frame(
+      names = unique(paste0(lubridate::year(date_span), '-W',
+                            lubridate::week(date_span))),
+      values = unique((lubridate::year(date_span) +
+                       (lubridate::week(date_span) - 1) / 53)),
+      periods = unique((53 * (lubridate::year(date_span) -
+                         min(lubridate::year(date_span))) +
+                          ((lubridate::week(date_span) -
+                            lubridate::week(min(date_span)))) + 1)))
   }
 
   attr(sales_df, 'class') <- append('sales.df', attr(sales_df, 'class'))
+  attr(sales_df, 'full_periods') <- full_periods
 
   # Return values
   sales_df
