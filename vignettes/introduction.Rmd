@@ -1,0 +1,168 @@
+---
+title: "Introduction to the hpiR package"
+author: "Andy Krause"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### Introduction
+
+This vignette provides an introduction to using the `hpiR` package for estimating house price indexes.  At the current time, this package (version 0.0.1) offers only two methods to estimate house price indexes -- repeat sales and hedonic price models.  Future versions will additional methodological options.  Additional information on this package's development can be found at [www.github.com/andykrause](https://www.github.com/andykrause)
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  suppressMessages(suppressWarnings(library(hpiR)))
+  suppressMessages(suppressWarnings(library(knitr)))
+
+```
+
+Begin by loading the`hpiR` packages (assuming that you've already downloaded it from CRAN or from: [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR).
+
+```{r eval=FALSE, messages=FALSE, echo=TRUE}
+  
+  library(hpiR)
+
+```
+
+### Data
+
+This package provides a sample dataset to work with.  This dataset, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author. ]  The data is open and free to share.
+
+The data can be loaded into an object with wrapping the `data(seattle_sales)` command with `get`.   
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales <- get(data(seattle_sales))
+
+```
+
+A simple plot shows the location of these sales across the city.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  ggplot(sales, aes(x=longitude, y=latitude)) + 
+  geom_point() +
+  xlab('Long') +
+  ylab('Lat') +
+  ggtitle('Seattle Sales, 2010-6')
+
+```
+
+All of the potential models that we can create with this package require the date of sales to be converted to a numeric and relative time period.  Relative, relating to the base period which is assumed to be the first period in the transaction data.  
+
+The `dateToPeriod` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are **year**, **qtr**, **month** or **week**, with **year** as the default.  In addition to the sales data.frame and the periodicity type, the `dateToPeriod` function also requires an input telling it which field in the data contains the transaction (sale) date (`date`).
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales <- dateToPeriod(sales_df = sales,
+                        date = 'sale_date',
+                        periodicity = 'month')
+
+```
+
+We now have a dataset that includes three new fields: 
+
+1. **date_period** - the relative time period of the sale based on the periodicity argument
+2. **date_value** - the time period in absolute numeric terms
+3. **date_name** - the time period name in string format
+
+### Sale-Resale Model
+
+We start by creating an index using a sale-resale model, one of the most popular methods to create a house price index. 
+
+First, we use the `rsCreateSales` function to convert the raw transaction data (the **sales** object) into a data.frame of repeat sale (properties that have sold multiple times in the 2010 to 2016 period.)
+The `rsCreateSales` function requires a unique property id field as well as a unique sale id field and a field denoting the sale price.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rs_sales <- rsCreateSales(sales_df = sales,
+                            prop_id = 'pinx',
+                            sale_id = 'sale_id',
+                            price = 'sale_price')
+                          
+```
+
+This function creates a data.frame with seven fields: the property id, the time period for the first sale and the second sale, the price for the two sales and the unique sale ids for both sales. 
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  knitr::kable(head(rs_sales, 10))
+
+```
+
+Next, we use this data to estimate a repeat sales model.  In this simple example we will use the **base** estimator (a simple OLS) with a logged dependent variable.  More information on other options here are covered in the **Estimators** section below. 
+
+The `hpiModel` function is an S3 method that will dispatch on the class of the `hpi_data` object that is passed to it, in this case that class is 'rs' signifying that the data is in **repeat-sales** format.  Again, we'll use a 'base' estimator here with a logged dependent variable.  The `hpiModel` function returns an object of class `hpiModel' that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+                          
+  rs_model <- hpiModel(hpi_data = rs_sales,
+                       estimator = 'base',
+                       log_dep = TRUE)
+
+```
+
+We can then convert those model results into an index with the `modelToIndex` function.  The output of this function is a time-series object (class 'ts') that provides an index value (base = 100) for each of the time periods estimated.  No smoothing is done at this time. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+                     
+  rs_index <- modelToIndex(rs_model)
+
+```
+
+A simple plot shows the results of this estimation
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  plot(rs_index)
+
+```
+
+A wrapper function, `rsIndex`, will do all of the above taking it from a raw data.frame of sales date through to the index creation and storing in an object of class 'hpi'.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+sea_rs_index <- rsIndex(sales_df = sales, 
+                        date = 'sale_date', 
+                        price = 'sale_price', 
+                        sale_id = 'sale_id', 
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE,
+                        periodicity = 'month') 
+```
+
+A plot method exists to cleanly plot 'hpi' objects so that the axes are labeled clearly.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+                        
+ plot(sea_rs_index)
+
+```
+
+### Hedonic Price Model
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+hed_sales <- hedCreateSales(sales_df = sales,
+                            prop_id = 'pinx',
+                           sale_id = 'sale_id',
+                           price = 'sale_price',
+                           date= 'sale_date',
+                           periodicity = 'month')
+
+  hed_model <- hpiModel(hpi_data = hed_sales,
+                        estimator = 'base',
+                        log_dep = TRUE)
+
+```
+
+### Estimators
+
+* **base**
+* **robust**
+* **weighted**
