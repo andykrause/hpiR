@@ -144,7 +144,7 @@ hpiModel.hed <- function(hpi_data,
 
 
   # Create time matrix
-  if (!null(hed_spec)){
+  if (!is.null(hed_spec)){
     if (class(hed_spec) != 'formula'){
       message('"hed_spec" argument must be of class "formula"')
       return(NULL)
@@ -166,7 +166,7 @@ hpiModel.hed <- function(hpi_data,
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_data$price[hpi_data$date_period == min(hpi$date_period), ])
+  base_price <- mean(hpi_data$price[hpi_data$date_period == min(hpi_data$date_period)])
 
   ## Estimate Model
 
@@ -182,7 +182,6 @@ hpiModel.hed <- function(hpi_data,
    hed_mod <- hedModel(estimator=estimator,
                        hed_df=hpi_data,
                        hed_spec = hed_spec,
-                       price_diff=price_diff,
                        ...)
 
   # Check for successful model estimation
@@ -193,26 +192,33 @@ hpiModel.hed <- function(hpi_data,
   }
 
   # If successful create list of results
-  # base_period <- min(hpi_data$date_1)
-  # periods <- c(base_period,
-  #              as.numeric(gsub('time_matrixtime_', '', names(rs_mod$coefficients))))
-  # coefs <- c(0, as.numeric(rs_mod$coefficients))
-  # model_df <- data.frame(time=periods,
-  #                        coefficient=coefs)
-  #
-  # # Combine into list
-  # rs_model <- list(estimator=estimator,
-  #                  coefficients=model_df,
-  #                  model_obj=rs_mod,
-  #                  log_dep=log_dep,
-  #                  base_price=base_price,
-  #                  approach='rs')
-  #
-  # # Assign a class
-  # class(rs_model) <- 'hpimodel'
-  #
-  # # Return Values
-  # rs_model
+  base_period <- min(hpi_data$date_period)
+
+  # Period names
+  p_names <- grep('date_period', names(hed_mod$coefficients))
+  periods <- c(base_period,
+               as.numeric(gsub('[as.factor(date_period)]', '',
+                               names(hed_mod$coefficients)[p_names])))
+
+  # Coefficients
+  coefs <- c(0, as.numeric(hed_mod$coefficients)[p_names])
+
+  model_df <- data.frame(time=periods,
+                         coefficient=coefs)
+
+  # Combine into list
+  hed_model <- list(estimator=estimator,
+                    coefficients=model_df,
+                    model_obj=hed_mod,
+                    log_dep=log_dep,
+                    base_price=base_price,
+                    approach='hed')
+
+  # Assign a class
+  class(hed_model) <- 'hpimodel'
+
+  # Return Values
+  hed_model
 
 }
 

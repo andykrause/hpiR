@@ -157,7 +157,13 @@ hed_sales <- hedCreateSales(sales_df = sales,
 
   hed_model <- hpiModel(hpi_data = hed_sales,
                         estimator = 'base',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
                         log_dep = TRUE)
+
+  hed_index <- modelToIndex(hed_model)
+
+
 
 ```
 
