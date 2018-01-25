@@ -148,6 +148,10 @@ hpiModel.hed <- function(hpi_data,
     if (class(hed_spec) != 'formula'){
       message('"hed_spec" argument must be of class "formula"')
       return(NULL)
+    } else {
+
+      hed_spec <- update(hed_spec, ~ . +as.factor(date_period))
+
     }
   } else {
 
@@ -160,7 +164,7 @@ hpiModel.hed <- function(hpi_data,
       dep_var <- paste0('log(', dep_var, ')')
     }
 
-    hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, sep="+"),
+    hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
                            '+ as.factor(date_period)'))
 
   }

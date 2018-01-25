@@ -146,14 +146,24 @@ A plot method exists to cleanly plot 'hpi' objects so that the axes are labeled 
 
 ### Hedonic Price Model
 
+Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat sales model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex`).  We'll start with individual steps.
+
+First, we create a set of hedonic model ready data with the `hedCreateSales` function.  Here we provide the raw sales, along with field names for the property id, the sale id, the price and date.  A periodicity (year, qtr, month or week) is also required.  
+
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-hed_sales <- hedCreateSales(sales_df = sales,
-                            prop_id = 'pinx',
-                           sale_id = 'sale_id',
-                           price = 'sale_price',
-                           date= 'sale_date',
-                           periodicity = 'month')
+  hed_sales <- hedCreateSales(sales_df = sales,
+                              prop_id = 'pinx',
+                              sale_id = 'sale_id',
+                              price = 'sale_price',
+                              date= 'sale_date',
+                              periodicity = 'month')
+                              
+```
+
+Next,we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   hed_model <- hpiModel(hpi_data = hed_sales,
                         estimator = 'base',
@@ -161,9 +171,49 @@ hed_sales <- hedCreateSales(sales_df = sales,
                         ind_var = c('tot_sf', 'beds', 'baths'),
                         log_dep = TRUE)
 
+```
+
+If you'd like more control over the model specification -- such as using interactions or categorical variables -- you can, instead, provide a fully formed model specification in the `hed_spec` argument. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  hed_model <- hpiModel(hpi_data = hed_sales,
+                        estimator = 'base',
+                        hed_spec = as.formula('log(price) ~ as.factor(baths) + tot_sf'),
+                        log_dep = TRUE)
+
+```
+
+The output from `hpiModel` can be converted to an index with the `modelToIndex` function. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
   hed_index <- modelToIndex(hed_model)
 
+```
 
+And, again, this can be plotted to shown the index.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  plot(hed_index, col=2, lwd=2)
+
+```
+
+The `hedIndex` wrapper function will perform all of the above hedonic modeling tasks, and then condense the results into an object of class **hpi**.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sea_hed_index <- hedIndex(sales_df = sales, 
+                            date = 'sale_date', 
+                            price = 'sale_price', 
+                            sale_id = 'sale_id', 
+                            prop_id = 'pinx',
+                            estimator = 'base',
+                            log_dep = TRUE,
+                            periodicity = 'month',
+                            dep_var = 'price',
+                            ind_var = c('tot_sf', 'beds', 'baths'))
 
 ```
 
