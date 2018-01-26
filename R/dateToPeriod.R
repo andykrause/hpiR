@@ -26,7 +26,7 @@ dateToPeriod <- function(sales_df,
                          ){
 
   # Extract Date
-  sale_date <- sales_df[, date]
+  sale_date <- sales_df[[date]]
 
   # Create full span of dates
   date_span <- seq(min(sale_date), max(sale_date), 1)

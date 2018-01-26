@@ -110,6 +110,11 @@ rsCreateSales <- function(sales_df,
                      sale_id1=x_df$sale_id[id_1],
                      sale_id2=x_df$sale_id[id_2])
 
+    # Check for sf object, if so add geometry back on
+    if ('sf' %in% class(x_df)){
+      d2 <- st_as_sf(d2, geometry=x_df$geometry[which(id_1)])
+    }
+
   } else {
     d2 <- NULL
   }
@@ -132,6 +137,12 @@ rsCreateSales <- function(sales_df,
       dplyr::mutate(date_2 = x_df$date_period[match(sale_id2, x_df$sale_id)]) %>%
       dplyr::mutate(price_1 = x_df$price[match(sale_id1, x_df$sale_id)]) %>%
       dplyr::mutate(price_2 = x_df$price[match(sale_id2, x_df$sale_id)])
+
+    # Check for sf object, if so add geometry back on
+    if ('sf' %in% class(x_df)){
+      d3 <- st_as_sf(d3, geometry=x_df$geometry[match(d3$prop_id,
+                                                      x_df$prop_id)])
+    }
 
   } else {
     d3 <- NULL

@@ -44,11 +44,7 @@ A simple plot shows the location of these sales across the city.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  ggplot(sales, aes(x=longitude, y=latitude)) + 
-  geom_point() +
-  xlab('Long') +
-  ylab('Lat') +
-  ggtitle('Seattle Sales, 2010-6')
+  ggplot(sales) + geom_sf()
 
 ```
 

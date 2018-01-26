@@ -17,7 +17,8 @@ Depends:
     ggplot2,
     stringi,
     stats,
-    utils
+    utils,
+    sf
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
