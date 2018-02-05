@@ -39,7 +39,7 @@ modelToIndex <- function(hpimodel,
 
     # Fix cases where beginning is missing
     if(1 %in% which(na.index)){
-      message('Warning: You are imputing beginning periods')
+      message('Warning: You are extrapolating beginning periods')
       not.na <- which(!na.index)
       beg_imp <- which(na.index[1:(not.na[1] - 1)])
       beg_index <- na.locf(index, "nocb", 'keep')
@@ -48,7 +48,7 @@ modelToIndex <- function(hpimodel,
 
     # Fix cases where end is missing
     if(length(index) %in% which(na.index)){
-      message('Warning: You are imputing ending periods')
+      message('Warning: You are extrapolating ending periods')
       not.na <- which(!na.index)
       end_imp <- which(na.index[(max(not.na) + 1):length(index)])
       end_index <- na.locf(index, "locf", 'keep')
