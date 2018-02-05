@@ -7,9 +7,9 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{...}{Additional Arguments}
-
 \item{index_obj}{Object of class hpiindex}
+
+\item{...}{Additional Arguments}
 }
 \value{
 ggplot object

@@ -225,4 +225,3 @@ hpiModel.hed <- function(hpi_data,
   hed_model
 
 }
-

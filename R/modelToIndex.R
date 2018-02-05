@@ -26,12 +26,45 @@ modelToIndex <- function(hpimodel,
     index_value <- ((estimate) * 100)[1:max_period]
   }
 
+  index <- ts(data=index_value,
+             start=min(hpimodel$coefficients$time),
+             end=max(hpimodel$coefficients$time))
+
+  imputed <- rep(0, 84)
+
+  na.index <- is.na(index)
+  if (length(which(na.index)) > 0){
+
+    imputed[na.index] <- 1
+
+    # Fix cases where beginning is missing
+    if(1 %in% which(na.index)){
+      message('Warning: You are imputing beginning periods')
+      not.na <- which(!na.index)
+      beg_imp <- which(na.index[1:(not.na[1] - 1)])
+      beg_index <- na.locf(index, "nocb", 'keep')
+      index[beg_imp] <- beg_index[beg_imp]
+    }
+
+    # Fix cases where end is missing
+    if(length(index) %in% which(na.index)){
+      message('Warning: You are imputing ending periods')
+      not.na <- which(!na.index)
+      end_imp <- which(na.index[(max(not.na) + 1):length(index)])
+      end_index <- na.locf(index, "locf", 'keep')
+      index[end_imp] <- end_index[end_imp]
+    }
+
+    index <- imputeTS::na.interpolation(index, option='stine')
+    message('Total of ', length(which(na.index)), ' period(s) imputed')
+  }
+
   hpi <- list(name = rs_model$periods$name,
               numeric = rs_model$periods$numeric,
               period = rs_model$periods$period,
-              index = ts(data=index_value,
-                         start=min(hpimodel$coefficients$time),
-                         end=max(hpimodel$coefficients$time)))
+              index = index,
+              imputed = imputed)
+
   class(hpi) <- 'hpiindex'
   hpi
 }

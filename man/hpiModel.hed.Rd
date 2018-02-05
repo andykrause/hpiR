@@ -2,7 +2,7 @@
 % Please edit documentation in R/hpiModel.R
 \name{hpiModel.hed}
 \alias{hpiModel.hed}
-\title{hpiModel.rs}
+\title{hpiModel.hed}
 \usage{
 Lorem Ipsum...
 }
@@ -11,7 +11,13 @@ Lorem Ipsum...
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}
 
-\item{log_dep}{default TRUE, should the dependent variable (change in price) be logged?}
+\item{log_dep}{default=TRUE; should the dependent variable (change in price) be logged?}
+
+\item{hed_spec}{default=NULL; hedonic model specification}
+
+\item{dep_var}{default=NULL; dependent variable of the model}
+
+\item{ind_var}{default=NULL; independent variable(s) of the model}
 
 \item{...}{Additional Arguments}
 }
