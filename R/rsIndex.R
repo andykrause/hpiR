@@ -59,7 +59,7 @@ rsIndex <- function(sales_df,
   # Convert to an index
   rs_index <- modelToIndex(rs_model)
 
-  if(class(rs_index) != 'ts'){
+  if(class(rs_index) != 'hpiindex'){
     message('Converting model results to index failed')
     stop()
   }

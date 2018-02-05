@@ -85,7 +85,7 @@ hedIndex <- function(sales_df,
   # Convert to an index
   hed_index <- modelToIndex(hed_model)
 
-  if(class(hed_index) != 'ts'){
+  if(class(hed_index) != 'hpiindex'){
     message('Converting model results to index failed')
     stop()
   }

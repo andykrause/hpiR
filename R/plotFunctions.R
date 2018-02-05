@@ -10,12 +10,12 @@
 #' a <- 1
 #' @export
 
-plot.hpi <- function(hpi_obj,
-                     ...){
+plot.hpiindex <- function(hpi_obj,
+                          ...){
 
   ## Extract Data
-  hpi_data <- data.frame(x=attr(hpi_obj$data, 'full_periods')$values,
-                         y=as.numeric(hpi_obj$index))
+  hpi_data <- data.frame(x=rs_index$numeric,
+                         y=as.numeric(rs_index$index))
 
   ## Make the base plot object
   gg_obj <- ggplot(hpi_data, aes(x=x, y=y)) +

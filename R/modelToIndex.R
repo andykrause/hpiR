@@ -26,8 +26,12 @@ modelToIndex <- function(hpimodel,
     index_value <- ((estimate) * 100)[1:max_period]
   }
 
-  return(ts(data=index_value,
-            start=min(hpimodel$coefficients$time),
-            end=max(hpimodel$coefficients$time)))
-
+  hpi <- list(name = rs_model$periods$name,
+              numeric = rs_model$periods$numeric,
+              period = rs_model$periods$period,
+              index = ts(data=index_value,
+                         start=min(hpimodel$coefficients$time),
+                         end=max(hpimodel$coefficients$time)))
+  class(hpi) <- 'hpiindex'
+  hpi
 }

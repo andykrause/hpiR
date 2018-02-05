@@ -101,6 +101,7 @@ hpiModel.rs <- function(hpi_data,
                    model_obj=rs_mod,
                    log_dep=log_dep,
                    base_price=base_price,
+                   periods=attr(hpi_data, 'full_periods'),
                    approach='rs')
 
   # Assign a class
@@ -216,6 +217,7 @@ hpiModel.hed <- function(hpi_data,
                     model_obj=hed_mod,
                     log_dep=log_dep,
                     base_price=base_price,
+                    periods=attr(hpi_data, 'full_periods'),
                     approach='hed')
 
   # Assign a class
