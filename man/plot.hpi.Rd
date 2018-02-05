@@ -9,6 +9,8 @@ Lorem Ipsum...
 \arguments{
 \item{hpi_obj}{Object of class HPI}
 
+\item{show_imputed}{Highlight the imputed points}
+
 \item{...}{Additional Arguments}
 }
 \value{

@@ -105,7 +105,7 @@ We now have a dataset that includes a new field (**date_period**) indicate the p
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  attr(sales, 'period_table')
+  head(attr(sales, 'period_table'))
 
 ```
 
@@ -255,6 +255,18 @@ The `hedIndex` wrapper function will perform all of the above hedonic modeling t
                             ind_var = c('tot_sf', 'beds', 'baths'))
 
 ```
+
+### Analyzing an index
+
+One thing we can check for an index is its volatility.  We can get the a rolling windown volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) are returned by the function.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+ index_vol <- calcIndexVolatility(index = rs_index$index, 
+                                  window = 3)
+
+```
+
 
 ### Estimators
 
