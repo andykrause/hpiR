@@ -25,8 +25,8 @@ rsTimeMatrix <- function(rs_df
   }
 
   # Extract start/end/diff
-  time_start <- min(rs_df$date_1)
-  time_end <- max(rs_df$date_2)
+  time_start <- min(rs_df$period_1)
+  time_end <- max(rs_df$period_2)
   time_diff <- time_end - time_start
 
   # Set up emply matrix
@@ -34,8 +34,8 @@ rsTimeMatrix <- function(rs_df
 
   # Fill in time matrix
   for (tm in seq(time_start + 1, time_end)) {
-    time_matrix[rs_df$date_1 == tm, tm - time_start] <- -1
-    time_matrix[rs_df$date_2 == tm, tm - time_start] <- 1
+    time_matrix[rs_df$period_1 == tm, tm - time_start] <- -1
+    time_matrix[rs_df$period_2 == tm, tm - time_start] <- 1
   }
 
   # Name Time matrix

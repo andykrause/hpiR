@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ### Introduction
@@ -96,13 +98,15 @@ Alternatively, you can use the `min_date` and `max_date` parameters to clip your
 
 ```
 
-For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we)
+For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales` object going forward).
 
-We now have a dataset that includes three new fields: 
+We now have a dataset that includes a new field (**date_period**) indicate the period of each transaction.  Additional information on the full extend of the periods as well as their numeric and date values can be found in the `period_table` attribute of the new `rs` object data.frame; or accessed by:
 
-1. **date_period** - the relative time period of the sale based on the periodicity argument
-2. **date_value** - the time period in absolute numeric terms
-3. **date_name** - the time period name in string format
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  attr(sales, 'period_table')
+
+```
 
 ### Sale-Resale Model
 

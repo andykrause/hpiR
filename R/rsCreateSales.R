@@ -57,7 +57,8 @@ rsCreateSales <- function(sales_df,
     }
     sales_df <- dateToPeriod(sales_df=sales_df,
                              date=date,
-                             periodicity=periodicity)
+                             periodicity=periodicity,
+                             ...)
   }
 
   # Prepare input data
@@ -103,8 +104,8 @@ rsCreateSales <- function(sales_df,
 
     # Create data.frame of repeat sales
     d2 <- data.frame(prop_id=x_df$prop_id[id_1],
-                     date_1=x_df$date_period[id_1],
-                     date_2=x_df$date_period[id_2],
+                     period_1=x_df$date_period[id_1],
+                     period_2=x_df$date_period[id_2],
                      price_1=x_df$price[id_1],
                      price_2=x_df$price[id_2],
                      sale_id1=x_df$sale_id[id_1],
@@ -133,8 +134,8 @@ rsCreateSales <- function(sales_df,
       # Rename fields
       dplyr::select(prop_id, sale_id1='1', sale_id2='2') %>%
       # Add time and price
-      dplyr::mutate(date_1 = x_df$date_period[match(sale_id1, x_df$sale_id)]) %>%
-      dplyr::mutate(date_2 = x_df$date_period[match(sale_id2, x_df$sale_id)]) %>%
+      dplyr::mutate(period_1 = x_df$date_period[match(sale_id1, x_df$sale_id)]) %>%
+      dplyr::mutate(period_2 = x_df$date_period[match(sale_id2, x_df$sale_id)]) %>%
       dplyr::mutate(price_1 = x_df$price[match(sale_id1, x_df$sale_id)]) %>%
       dplyr::mutate(price_2 = x_df$price[match(sale_id2, x_df$sale_id)])
 
@@ -160,7 +161,8 @@ rsCreateSales <- function(sales_df,
     class(rs_df) <- append('rs', class(rs_df))
   }
 
-  attr(rs_df, 'full_periods') <- attr(sales_df, 'full_periods')
+  # Add period table attribute
+  attr(rs_df, 'period_table') <- attr(sales_df, 'period_table')
 
   # Return _df
   rs_df

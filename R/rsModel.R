@@ -81,7 +81,7 @@ rsModel.robust <- function(estimator,
                            ...){
 
   # Determine 'sparseness' of the data
-  time_size <- median(table(c(rs_df$date_1, rs_df$date_2)))
+  time_size <- median(table(c(rs_df$period_1, rs_df$period_2)))
 
   # Use different robust packages based on sparseness
   if(time_size > 5){
@@ -123,7 +123,7 @@ rsModel.weighted <- function(estimator,
   lm_model <- lm(price_diff ~ time_matrix + 0)
 
   # Estimate impact of time dif on errors
-  rs_df$time_diff <- rs_df$date_2 - rs_df$date_1
+  rs_df$time_diff <- rs_df$period_2 - rs_df$period_1
   err_fit <- lm((residuals(lm_model) ^ 2) ~ rs_df$time_diff)
 
   # Implement weights
