@@ -112,12 +112,15 @@ hpiModel.rs <- function(hpi_data,
 
 }
 
-#' @title hpiModel.rs
+#' @title hpiModel.hed
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
 #' @param hpi_data Dataset created by one of the *CreateSales() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
-#' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
+#' @param hed_spec default=NULL; hedonic model specification
+#' @param dep_var default=NULL; dependent variable of the model
+#' @param ind_var default=NULL; independent variable(s) of the model
+#' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
 #' @param ... Additional Arguments
 #' @return hpimodel object
 #' @section Further Details:
@@ -143,16 +146,13 @@ hpiModel.hed <- function(hpi_data,
                          ind_var=NULL,
                          ...){
 
-
-  # Create time matrix
+  # Create specification
   if (!is.null(hed_spec)){
     if (class(hed_spec) != 'formula'){
       message('"hed_spec" argument must be of class "formula"')
       return(NULL)
     } else {
-
       hed_spec <- update(hed_spec, ~ . +as.factor(date_period))
-
     }
   } else {
 
@@ -164,10 +164,8 @@ hpiModel.hed <- function(hpi_data,
     if(log_dep){
       dep_var <- paste0('log(', dep_var, ')')
     }
-
     hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
                            '+ as.factor(date_period)'))
-
   }
 
   # Extract base period mean price
@@ -217,7 +215,7 @@ hpiModel.hed <- function(hpi_data,
                     model_obj=hed_mod,
                     log_dep=log_dep,
                     base_price=base_price,
-                    periods=attr(hpi_data, 'full_periods'),
+                    periods=attr(hpi_data, 'period_table'),
                     approach='hed')
 
   # Assign a class

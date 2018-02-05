@@ -85,6 +85,7 @@ If the dates that are provided as alternative minimums and maximums are within t
                         max_date = as.Date('2016-01-01'))
 
 ```
+
 Alternatively, you can use the `min_date` and `max_date` parameters to clip your dataset to a particular time frame by setting the `adj_type` argument to *clip*, (the default is *move* which simply moves it to the min or max in the data as shown above.)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}

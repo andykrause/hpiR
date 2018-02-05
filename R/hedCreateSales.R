@@ -53,7 +53,8 @@ hedCreateSales <- function(sales_df,
     }
     sales_df <- dateToPeriod(sales_df=sales_df,
                              date=date,
-                             periodicity=periodicity)
+                             periodicity=periodicity,
+                             ...)
   }
 
   # Prepare input data
@@ -69,7 +70,7 @@ hedCreateSales <- function(sales_df,
     dplyr::filter(!duplicated(paste0(prop_id, '_', date_period)))
 
 
-  attr(hed_df, 'full_periods') <- attr(sales_df, 'full_periods')
+  attr(hed_df, 'period_table') <- attr(sales_df, 'period_table')
 
   # Return _df
   class(hed_df) <- c('hed', class(hed_df))
