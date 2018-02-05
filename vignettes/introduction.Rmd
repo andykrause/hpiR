@@ -44,7 +44,7 @@ A simple plot shows the location of these sales across the city.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  ggplot(sales) + geom_sf()
+#  ggplot(sales) + geom_sf()
 
 ```
 
@@ -59,6 +59,44 @@ The `dateToPeriod` function will convert R date fields into relative time period
                         periodicity = 'month')
 
 ```
+
+The default specification of `dateToPeriod` will use the minimum and maximum dates in the `sales_df` object at the lower and upper date boundaries for the modeling and index creation that follow.  You can, however, custom set these dates using the `min_date` and `max_date` argument.  For examples, let's assume that we want to actually estimate an index that covers the entire sales period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales <- dateToPeriod(sales_df = sales,
+                        date = 'sale_date',
+                        periodicity = 'month',
+                        min_date = as.Date('2009-12-01'),
+                        max_date = as.Date('2017-01-01'))
+
+```
+
+If the dates that are provided as alternative minimums and maximums are within the range of sales dates in the `sales_df` object, there are two options to what can happen.  The first, and default, is that the minimums and maximums will be adjusted to be the actual minimum and maximum dates in the transactions.  A warning will let you know that this has happened. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales <- dateToPeriod(sales_df = sales,
+                        date = 'sale_date',
+                        periodicity = 'month',
+                        min_date = as.Date('2010-12-01'),
+                        max_date = as.Date('2016-01-01'))
+
+```
+Alternatively, you can use the `min_date` and `max_date` parameters to clip your dataset to a particular time frame by setting the `adj_type` argument to *clip*, (the default is *move* which simply moves it to the min or max in the data as shown above.)
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales_clipped <- dateToPeriod(sales_df = sales,
+                                date = 'sale_date',
+                                periodicity = 'month',
+                                min_date = as.Date('2010-12-01'),
+                                max_date = as.Date('2016-01-01'),
+                                adj_type = 'clip')
+
+```
+
+For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we)
 
 We now have a dataset that includes three new fields: 
 

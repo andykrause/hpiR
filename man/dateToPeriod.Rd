@@ -4,7 +4,8 @@
 \alias{dateToPeriod}
 \title{dateToPeriod}
 \usage{
-dateToPeriod(sales_df, date, periodicity = "year")
+dateToPeriod(sales_df, date, periodicity = "year", min_date = NULL,
+  max_date = NULL, adj_type = "move", ...)
 }
 \arguments{
 \item{sales_df}{data.frame of raw sales transactions}

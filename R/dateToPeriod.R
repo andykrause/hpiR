@@ -22,17 +22,56 @@
 
 dateToPeriod <- function(sales_df,
                          date,
-                         periodicity = 'year'
-                         ){
+                         periodicity = 'year',
+                         min_date=NULL,
+                         max_date=NULL,
+                         adj_type='move',
+                         ...){
 
   # Extract Date
   sale_date <- sales_df[[date]]
 
-  # Create full span of dates
-  date_span <- seq(min(sale_date), max(sale_date), 1)
+  ## Create full span of dates
+
+  # Set minimum date
+  if(is.null(min_date)){
+    min_date <- min(sale_date)
+  } else {
+    if (min_date > min(sale_date)){
+      if (adj_type == 'move'){
+        message('Supplied minimum date is greater than minimum of sales. Adjusting.\n')
+        min_date <- min(sale_date)
+      }
+      if (adj_type == 'clip'){
+        message('Supplied minimum date is greater than minimum of sales. Clipping sales.\n')
+        sales_df <- sales_df[sale_date >= min_date, ]
+        sale_date <- sales_df[[date]]
+      }
+    }
+  }
+
+  # Set maximum date
+  if(is.null(max_date)){
+    max_date <- max(sale_date)
+  } else {
+    if (max_date < max(sale_date)){
+      if (adj_type == 'move'){
+        message('Supplied maximum date is less than maximum of sales. Adjusting.\n')
+        max_date <- max(sale_date)
+      }
+      if (adj_type == 'clip'){
+        message('Supplied maximum date is less than maximum of sales. Clipping Sales.\n')
+        sales_df <- sales_df[sale_date <= max_date, ]
+        sale_date <- sales_df[[date]]
+      }
+    }
+  }
+
+  # Make date span
+  date_span <- seq(min_date, max_date, 1)
 
   # Create inital annual indicator
-  year_period <- (lubridate::year(sale_date) - min(lubridate::year(sale_date)))
+  year_period <- (lubridate::year(sale_date) - lubridate::year(min_date))
 
   # if Annual Periodicity
   if(periodicity == 'year'){
@@ -49,7 +88,7 @@ dateToPeriod <- function(sales_df,
 
     month_period <- (12 * year_period +
                      (lubridate::month(sale_date, label=FALSE) -
-                        lubridate::month(min(sale_date))))
+                        lubridate::month(min_date)))
 
     if(periodicity == 'month'){
       sales_df$date_period <- month_period + 1
@@ -65,7 +104,7 @@ dateToPeriod <- function(sales_df,
         periods = unique((12 * (lubridate::year(date_span) -
                          min(lubridate::year(date_span))) +
                           (lubridate::month(date_span, label=FALSE) -
-                            lubridate::month(min(date_span)))) + 1))
+                            lubridate::month(min_date)) + 1)))
     }
 
     if(periodicity == 'qtr'){
@@ -83,7 +122,7 @@ dateToPeriod <- function(sales_df,
         periods = unique((4 * (lubridate::year(date_span) -
                           min(lubridate::year(date_span))) +
                            ((lubridate::month(date_span, label=FALSE) -
-                            lubridate::month(min(date_span))) %/% 3) + 1)))
+                            lubridate::month(min_date)) %/% 3) + 1)))
     }
   }
 
@@ -91,7 +130,7 @@ dateToPeriod <- function(sales_df,
   if(periodicity == 'week'){
     week_period <- (52 * (year_period) +
                     (lubridate::week(sale_date) -
-                      lubridate::week(min(sale_date))))
+                      lubridate::week(min_date)))
 
     sales_df$date_period <- week_period + 1
     sales_df$date_value <- (lubridate::year(sale_date) +
@@ -107,7 +146,7 @@ dateToPeriod <- function(sales_df,
       periods = unique((53 * (lubridate::year(date_span) -
                          min(lubridate::year(date_span))) +
                           ((lubridate::week(date_span) -
-                            lubridate::week(min(date_span)))) + 1)))
+                            lubridate::week(min_date))) + 1)))
   }
 
   attr(sales_df, 'class') <- append('sales.df', attr(sales_df, 'class'))
