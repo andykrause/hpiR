@@ -154,6 +154,18 @@ dateToPeriod <- function(sales_df,
                             lubridate::week(min_date))) + 1)))
   }
 
+  # Check for missing periods %
+  nbr_periods <- length(unique(sales_df$date_period))
+  if (nbr_periods < nrow(period_table)){
+    message("Your choice of periodicity resulted in ",
+            nrow(period_table) - nbr_periods, " empty periods out of ",
+            nrow(period_table), " total periods.")
+    if((nrow(period_table) - nbr_periods)/nrow(period_table) > .3){
+      message('You may wish to set a coarser periodicity or ',
+              'set different start and end dates\n')
+    }
+  }
+
   # Add attribute information
   attr(sales_df, 'class') <- unique(append('sales.df', attr(sales_df, 'class')))
   attr(sales_df, 'period_table') <- period_table
