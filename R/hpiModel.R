@@ -87,6 +87,9 @@ hpiModel.rs <- function(hpi_data,
     stop()
   }
 
+  # Remove qr to keep model obj small
+  rs_mod$qr <- NULL
+
   # If successful create list of results
   base_period <- min(hpi_data$period_1)
   periods <- c(base_period,
@@ -194,6 +197,9 @@ hpiModel.hed <- function(hpi_data,
     message('Model estimator was unsuccessful')
     stop()
   }
+
+  # Remove qr to keep model obj small
+  hed_mod$qr <- NULL
 
   # If successful create list of results
   base_period <- min(hpi_data$date_period)

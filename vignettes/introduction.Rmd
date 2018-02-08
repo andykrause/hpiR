@@ -430,7 +430,6 @@ Smoothing of indexes may also be warranted as indexes resulting from raw model r
   rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
   hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)
 
-  
 ```
 
 

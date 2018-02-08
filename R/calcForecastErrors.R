@@ -40,7 +40,11 @@ calcForecastErrors <- function(is_obj,
   # Iterate through score and calc errors
   fc_error <- purrr::map2(.x=fc_preddata,
                           .y=fc_forecasts,
-                          .f=calcHPIError)
+                          pred_data=pred_data,
+                          .f=function(x, y, pred_data){
+                            calcHPIError(pred_data=pred_data[x, ],
+                                         index=y)
+                            })
 
   # Bind results together and return
   if(return_indexes){
@@ -79,11 +83,11 @@ makeFCData.hed <- function(time_cut,
                            train=TRUE){
 
   if(train){
-    time_data <- hpi_data[hpi_data$date_period < time_cut, ]
+    time_ids <- which(hpi_data$date_period < time_cut)
   } else {
-    time_data <- hpi_data[hpi_data$date_period == time_cut, ]
+    time_ids <- which(hpi_data$date_period == time_cut)
   }
-  time_data
+  time_ids
 
 }
 
@@ -93,10 +97,10 @@ makeFCData.rs <- function(time_cut,
                           train=TRUE){
 
   if(train){
-    time_data <- hpi_data[hpi_data$period_2 < time_cut, ]
+    time_ids <- which(hpi_data$period_2 < time_cut)
   } else {
-    time_data <- hpi_data[hpi_data$period_2 == time_cut, ]
+    time_ids <- which(hpi_data$period_2 == time_cut)
   }
-  time_data
+  time_ids
 }
 

@@ -36,9 +36,14 @@ calcIndexSeries <- function(hpi_obj,
 
   # Run models
   is_models <- purrr::map(.x=is_data,
-                          .f=hpiModel,
+                          y=hpi_obj$data,
                           hed_spec=hpi_obj$model$mod_spec,
-                          log_dep = hpi_obj$model$log_dep)
+                          log_dep = hpi_obj$model$log_dep,
+                          .f=function(x, y, hed_spec, log_dep, ...){
+                            hpiModel(hpi_data=y[x, ],
+                                     hed_spec=hed_spec,
+                                    log_dep=log_dep)
+                             })
 
   # Convert models to indexes
   is_series <- purrr::map(.x=is_models,
