@@ -258,6 +258,8 @@ The `hedIndex` wrapper function will perform all of the above hedonic modeling t
 
 ### Analyzing an index
 
+#### Volatility
+
 One thing we can check for an index is its volatility.  We can get the a rolling windown volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) are returned by the function.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
@@ -266,6 +268,8 @@ One thing we can check for an index is its volatility.  We can get the a rolling
                                   window = 3)
 
 ```
+
+#### Predictive Ability
 
 Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).  To start, we'll do this in-sample, ignoring any issues of overfitting.
 
@@ -307,6 +311,8 @@ We can then compare the summary statistics of the errors, which seem to suggest 
 
 ```
 
+The previous set of errors were, essentially, in-sample errors.  If we want to calculate out of sample errors with a k-fold holdout process we can use the `calcKFoldErrors()` function.  It takes as arguments any 'hpi' object, a set of data to do the predictions on (only repeat sales data - 'rs' object type - for now) and the number of folds to be used.  
+
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
   
   hed_oos_errors <- calcKFoldErrors(hpi_obj = sea_hed_index,
@@ -321,25 +327,49 @@ We can then compare the summary statistics of the errors, which seem to suggest 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
   
-  hed_fc_errors <- calcForecastErrors(hpi_obj = sea_hed_index,
-                                      pred_data = rs_data,
-                                      train_range = 24)
-
-  rs_fc_errors <- calcForecastErrors(hpi_obj = sea_rs_index,
-                                     pred_data = rs_data,
-                                     train_range = 24)
+  error_df <- data.frame(rs = round(as.numeric(summary(abs(rs_error$pred_error))), 3),
+                         rs_oos = round(as.numeric(summary(abs(rs_oos_errors$pred_error))), 3),
+                         hed = round(as.numeric(summary(abs(hed_error$pred_error))), 3),
+                        hed_oos = round(as.numeric(summary(abs(hed_oos_errors$pred_error))), 3))
+  rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')
+  knitr::kable(error_df)
 
 ```
+
+Another way to examine predictive error is to approach the question through forecast (prediction out in time).  To do this, we built an index at each period (using only date up to that point in time) and then predict for the period t+1.  In this way, we create a series of indexes, each one time period longer than the next.  
+
+Because this period of indexes is also useful for some other calculations, we have a separate function to create this series, 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-   
-  a <- calcForecastErrors(hpi_obj = sea_rs_index,
-                          pred_data = rs_data,
-                          train_range = 24,
-                          return_indexes=TRUE)
+  hed_series <- calcIndexSeries(hpi_obj = sea_hed_index,
+                                train_range = 24)
+
+  rs_series <- calcIndexSeries(hpi_obj = sea_rs_index,
+                               train_range = 24)
+```
+
+From these series, we can then estimate the forecast (prediction) errors of each
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  hed_fc_errors <- calcForecastErrors(is_obj = hed_series,
+                                      pred_data = rs_data)
+
+  rs_fc_errors <- calcForecastErrors(is_obj = rs_series,
+                                     pred_data = rs_data)
 
 ```
+
+<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+
+
+<!--   a <- calcForecastErrors(hpi_obj = sea_rs_index, -->
+<!--                           pred_data = rs_data, -->
+<!--                           train_range = 24, -->
+<!--                           return_indexes=TRUE) -->
+
+<!-- ``` -->
 
 
 

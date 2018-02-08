@@ -13,58 +13,39 @@
 #' a <- 1
 #' @export
 
-calcForecastErrors <- function(hpi_obj,
+calcForecastErrors <- function(is_obj,
                                pred_data,
-                               train_range,
-                               max_period=NULL,
-                               return_indexes=FALSE){
+                               return_indexes=FALSE,
+                               ...){
 
 
-  if (is.null(max_period)){
-    max_period <- max(hpi_obj$model$periods$period)
-  }
-
-  # Trim by time
-  time_range <- (1 + train_range):(max_period)
-
-  # Set up data
-  fc_data <- purrr::map(.x=time_range,
-                        hpi_data=hpi_obj$data,
-                        train=TRUE,
-                        .f=makeFCData)
+  start <- end(is_obj[[1]])[1] + 1
+  end <- end(is_obj[[length(is_obj)]])[1]
+  time_range <- start:end
 
   fc_preddata <- purrr::map(.x = time_range,
                             hpi_data = pred_data,
                             train=FALSE,
                             .f=makeFCData)
 
-  # Rerun model
-  fc_model <- purrr::map(.x=fc_data,
-                         .f=hpiModel,
-                         hed_spec=hpi_obj$model$mod_spec,
-                         log_dep = hpi_obj$model$log_dep)
-
-  # Forecast Future +1)
-  fc_index <- purrr::map(.x=fc_model,
-                         .f=function(x) modelToIndex(x)$index)
-
   # Predict value
-  fc_indexx <- purrr::map(.x=fc_index,
-                         .f=function(x){
-                              new_x <- forecast(ets(x, model='ANN'), h=1)
-                              ts(c(x, new_x$mean), start=start(x), frequency=frequency(x))
-                            }
-                         )
+  fc_forecasts <- purrr::map(.x=is_obj[-length(is_obj)],
+                             .f=function(x){
+                                 new_x <- forecast(ets(x, model='ANN'), h=1)
+                                 ts(c(x, new_x$mean), start=start(x),
+                                    frequency=frequency(x))
+                              }
+                           )
 
   # Iterate through score and calc errors
   fc_error <- purrr::map2(.x=fc_preddata,
-                          .y=fc_indexx,
+                          .y=fc_forecasts,
                           .f=calcHPIError)
 
   # Bind results together and return
   if(return_indexes){
     list(errors=bind_rows(fc_error),
-         indexes=fc_indexx)
+         indexes=fc_forecasts)
   } else{
     bind_rows(fc_error)
   }
@@ -117,31 +98,5 @@ makeFCData.rs <- function(time_cut,
     time_data <- hpi_data[hpi_data$period_2 == time_cut, ]
   }
   time_data
-}
-
-
-revisionWrap <- function(indexid.data,
-                         index.data){
-
-  ind.list <- names(table(indexid.data$usid))
-  ind.cap <- list()
-
-  for(qq in 1:length(ind.list)){
-
-    ind.i <- index.data[grep(ind.list[[qq]], index.data$usid), ]
-
-    rev.list <- list()
-    for(i in 2:120){
-      rev.list[[i-1]] <- sd(ind.i[ind.i$time==i,]$value)
-    }
-    ind.cap[[qq]] <- mean(unlist(rev.list), na.rm=TRUE)
-  }
-  names(ind.cap) <- ind.list
-
-  ind.df <- data.frame(usid=names(ind.cap),
-                       rev=unlist(ind.cap))
-
-  return(ind.df)
-
 }
 
