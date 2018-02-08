@@ -20,7 +20,9 @@ Depends:
     utils,
     sf,
     zoo,
-    imputeTS
+    imputeTS,
+    purrr,
+    forecast
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
