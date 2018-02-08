@@ -411,7 +411,7 @@ The hedonic revision has a total average value of 0.0003 index points per period
 * **weighted**
 
 
-### Blending Indexes
+### Blending and Smoothing Indexes
 
 It may be advantageous to blend indexes.  We offer the `blendIndexes` function to do that.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list. 
 
@@ -422,3 +422,15 @@ It may be advantageous to blend indexes.  We offer the `blendIndexes` function t
                               weights=c(.6, .4))
   
 ```
+
+Smoothing of indexes may also be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smooth_index` function will smooth via a moving average function, with small corrections to keep index length after smoothing.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
+  hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)
+
+  
+```
+
+
