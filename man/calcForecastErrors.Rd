@@ -7,15 +7,15 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{hpi_obj}{Object of class 'hpi'}
-
 \item{pred_data}{Set of sales to be used for predicitive quality of index}
+
+\item{...}{Additional Arguments}
+
+\item{hpi_obj}{Object of class 'hpi'}
 
 \item{train_range}{Number of periods to use as purely training before forecast starts}
 
 \item{max_period}{Default=NULL; Maximum number of periods to forecast up to}
-
-\item{...}{Additional Arguments}
 }
 \value{
 hpimodel object
