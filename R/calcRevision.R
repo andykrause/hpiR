@@ -32,8 +32,8 @@ calcRevision <- function(index_obj){
                                     .f=mean))
 
   # Return
-  list(period = data.frame(period=1:length(period_means),
+  structure(list(period = data.frame(period=1:length(period_means),
                            revision=period_means),
-       total = mean(unlist(period_means)))
+             total = mean(unlist(period_means))), class='indexrevision')
 
 }

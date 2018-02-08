@@ -46,13 +46,13 @@ calcForecastErrors <- function(is_obj,
                                          index=y)
                             })
 
-  # Bind results together and return
-  if(return_indexes){
-    list(errors=bind_rows(fc_error),
-         indexes=fc_forecasts)
-  } else{
-    bind_rows(fc_error)
-  }
+  error_df <- bind_rows(fc_error)
+  class(error_df) <- append('indexerrors', class(error_df))
+  attr(error_df, 'error_type') <- 'forecast'
+
+  # Return Values
+  error_df
+
 }
 
 #' @title makeFCData
