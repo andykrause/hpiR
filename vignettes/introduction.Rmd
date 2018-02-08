@@ -349,7 +349,7 @@ Because this period of indexes is also useful for some other calculations, we ha
                                train_range = 24)
 ```
 
-From these series, we can then estimate the forecast (prediction) errors of each
+From these series, we can then estimate the forecast (prediction) errors of for each of the two methods. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -361,20 +361,64 @@ From these series, we can then estimate the forecast (prediction) errors of each
 
 ```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+Comparing these errors to the previous we see, as expected, that the forecasting process creates higher errors than the k-fold process, through the differences are much larger in the repeat sales method. 
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+  
+  error_df <- data.frame(rs = round(as.numeric(summary(abs(rs_error$pred_error))), 3),
+                         rs_oos = round(as.numeric(summary(abs(
+                           rs_oos_errors$pred_error))), 3),
+                         rs_fc = round(as.numeric(summary(abs(
+                           rs_fc_errors$pred_error))), 3),
+                         hed = round(as.numeric(summary(abs(hed_error$pred_error))), 3),
+                         hed_oos = round(as.numeric(summary(abs(
+                           hed_oos_errors$pred_error))), 3),
+                         hed_fc = round(as.numeric(summary(abs(
+                           hed_fc_errors$pred_error))), 3))
 
-<!--   a <- calcForecastErrors(hpi_obj = sea_rs_index, -->
-<!--                           pred_data = rs_data, -->
-<!--                           train_range = 24, -->
-<!--                           return_indexes=TRUE) -->
+  rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')
+  knitr::kable(error_df)
 
-<!-- ``` -->
+```
 
+#### Revision
 
+A third metric to consider when looking at house price indexes is revision, or how much previous estimates are revised each time a new period occurs and new data is added to the analysis.  
+
+Within the literature there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size that the latter periods are, as such, are likely to be less volatile.
+The second calculation simply averages all revisions across all periods to provide a single value of the average revision for the index series.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  hed_rev <- calcRevision(hed_series)  
+  rs_rev <- calcRevision(rs_series)
+
+```
+
+The hedonic revision has a total average value of 0.0003 index points per period, while the repeat sale revision averages -0.655 points per month, a considerable differnence. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  plot(rs_rev$period$revision, type='l')
+  lines(hed_rev$period$revision, col=2)
+  
+```
 
 ### Estimators
 
 * **base**
 * **robust**
 * **weighted**
+
+
+### Blending Indexes
+
+It may be advantageous to blend indexes.  We offer the `blendIndexes` function to do that.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  blend_index <- blendIndexes(index_list = list(rs_series[[61]],
+                                                hed_series[[61]]),
+                              weights=c(.6, .4))
+  
+```
