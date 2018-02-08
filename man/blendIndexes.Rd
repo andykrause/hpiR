@@ -9,6 +9,8 @@ Lorem Ipsum...
 \arguments{
 \item{index_list}{A list of identical length indexes}
 
+\item{weights}{default=NULL; A vector of weights}
+
 \item{...}{Additional Arguments}
 }
 \value{
@@ -19,6 +21,7 @@ Blend together two or more indexes
 }
 \section{Further Details}{
 
+Leaving weights to be NULL results in a 1/n weighting.
 }
 
 \examples{
