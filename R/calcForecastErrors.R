@@ -16,7 +16,8 @@
 calcForecastErrors <- function(hpi_obj,
                                pred_data,
                                train_range,
-                               max_period=NULL){
+                               max_period=NULL,
+                               return_indexes=FALSE){
 
 
   if (is.null(max_period)){
@@ -61,10 +62,12 @@ calcForecastErrors <- function(hpi_obj,
                           .f=calcHPIError)
 
   # Bind results together and return
-  bind_rows(fc_error)
-
-  ## TODO:::add in revisions here
-
+  if(return_indexes){
+    list(errors=bind_rows(fc_error),
+         indexes=fc_indexx)
+  } else{
+    bind_rows(fc_error)
+  }
 }
 
 #' @title makeFCData
@@ -115,3 +118,30 @@ makeFCData.rs <- function(time_cut,
   }
   time_data
 }
+
+
+revisionWrap <- function(indexid.data,
+                         index.data){
+
+  ind.list <- names(table(indexid.data$usid))
+  ind.cap <- list()
+
+  for(qq in 1:length(ind.list)){
+
+    ind.i <- index.data[grep(ind.list[[qq]], index.data$usid), ]
+
+    rev.list <- list()
+    for(i in 2:120){
+      rev.list[[i-1]] <- sd(ind.i[ind.i$time==i,]$value)
+    }
+    ind.cap[[qq]] <- mean(unlist(rev.list), na.rm=TRUE)
+  }
+  names(ind.cap) <- ind.list
+
+  ind.df <- data.frame(usid=names(ind.cap),
+                       rev=unlist(ind.cap))
+
+  return(ind.df)
+
+}
+

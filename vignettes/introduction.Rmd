@@ -331,6 +331,16 @@ We can then compare the summary statistics of the errors, which seem to suggest 
 
 ```
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+   
+  a <- calcForecastErrors(hpi_obj = sea_rs_index,
+                          pred_data = rs_data,
+                          train_range = 24,
+                          return_indexes=TRUE)
+
+```
+
 
 
 ### Estimators
