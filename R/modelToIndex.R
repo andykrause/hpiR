@@ -30,7 +30,7 @@ modelToIndex <- function(hpimodel,
              start=min(hpimodel$coefficients$time),
              end=max(hpimodel$coefficients$time))
 
-  imputed <- rep(0, 84)
+  imputed <- rep(0, length(index))
 
   na.index <- is.na(index)
   if (length(which(na.index)) > 0){
