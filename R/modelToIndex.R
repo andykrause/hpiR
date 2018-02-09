@@ -59,9 +59,9 @@ modelToIndex <- function(hpimodel,
     message('Total of ', length(which(na.index)), ' period(s) imputed')
   }
 
-  hpi <- list(name = rs_model$periods$name,
-              numeric = rs_model$periods$numeric,
-              period = rs_model$periods$period,
+  hpi <- list(name = hpimodel$periods$name,
+              numeric = hpimodel$periods$numeric,
+              period = hpimodel$periods$period,
               index = index,
               imputed = imputed)
 
