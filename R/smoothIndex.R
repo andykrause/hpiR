@@ -2,7 +2,7 @@
 #' @description Smooths an index
 #' @usage Lorem Ipsum...
 #' @param index Index to be smoothed
-#' @param order Number of nearby period to smooth with
+#' @param order Number of nearby period to smooth with, multiple means multiple iterations of smoothing
 #' @param ... Additional Arguments
 #' @return a ts and 'smooth_index` object with smoothed index
 #' @section Further Details:
@@ -12,18 +12,22 @@
 #' @export
 
 smoothIndex <- function(index,
-                          order=3,
-                          ...){
+                        order=3,
+                        ...){
 
- smooth_index <- forecast::ma(x=index,
-                              order=order)
+ s_index <- index
 
- smooth_index[is.na(smooth_index)] <- index[is.na(smooth_index)]
+ for(o.i in order){
+   s_index <- forecast::ma(x=s_index,
+                           order=o.i)
+  }
 
- class(smooth_index) <- append('smoothindex', class(index))
- attr(smooth_index, 'raw') <- index
+ s_index[is.na(s_index)] <- index[is.na(s_index)]
 
- smooth_index
+ class(s_index) <- append('smoothindex', class(index))
+ attr(s_index, 'raw') <- index
+
+ s_index
 
 }
 
@@ -45,7 +49,7 @@ smoothSeries <- function(series,
                          ...){
 
   s_series <- purrr::map(.x=series,
-                         order=3,
+                         order=order,
                          .f=smoothIndex)
   class(s_series) <- 'hpiseries'
 
