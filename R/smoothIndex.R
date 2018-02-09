@@ -26,3 +26,30 @@ smoothIndex <- function(index,
  smooth_index
 
 }
+
+#' @title smoothSeries
+#' @description Smooths a series of indexex
+#' @usage Lorem Ipsum...
+#' @param series Series to be smoothed
+#' @param order Number of nearby period to smooth with
+#' @param ... Additional Arguments
+#' @return a list of objects ts and 'smooth_index` object with smoothed index
+#' @section Further Details:
+#' Leaving order blank default to a moving average with order 3.
+#' @examples
+#' a <- 1
+#' @export
+
+smoothSeries <- function(series,
+                         order=3,
+                         ...){
+
+  s_series <- purrr::map(.x=series,
+                         order=3,
+                         .f=smoothIndex)
+  class(s_series) <- 'hpiseries'
+
+  s_series
+
+}
+
