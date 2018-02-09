@@ -20,7 +20,7 @@ smoothIndex <- function(index,
 
  smooth_index[is.na(smooth_index)] <- index[is.na(smooth_index)]
 
- class(smooth_index) <- append('smooth_index', class(index))
+ class(smooth_index) <- append('smoothindex', class(index))
  attr(smooth_index, 'raw') <- index
 
  smooth_index

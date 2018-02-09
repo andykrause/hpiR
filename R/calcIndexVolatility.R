@@ -31,7 +31,11 @@ calcIndexVolatility <- function(index,
 
   ## Historic volatility
 
-  return(list(roll=iv,
-              mean=mean(iv)))
+  vol_obj <- structure(list(roll=iv,
+                            mean=mean(iv)), class='indexvol')
+  attr(vol_obj, 'orig') <- index
+  attr(vol_obj, 'window') <- window
+
+  vol_obj
 
 }

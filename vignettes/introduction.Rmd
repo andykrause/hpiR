@@ -254,6 +254,8 @@ The `hedIndex` wrapper function will perform all of the above hedonic modeling t
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'))
 
+  plot(sea_hed_index)
+
 ```
 
 ### Analyzing an index
@@ -266,6 +268,8 @@ One thing we can check for an index is its volatility.  We can get the a rolling
 
  index_vol <- calcIndexVolatility(index = rs_index$index, 
                                   window = 3)
+
+  plot(index_vol)
 
 ```
 
@@ -297,6 +301,9 @@ Then we test for the in-sample predictive ability of each with the `calcHPIError
  # Hedonic index
  hed_error <- calcHPIError(pred_data = rs_data,
                            index = index_hed)
+ 
+  plot(hed_error)
+  plot(rs_error)
 
 ```
 
@@ -323,6 +330,10 @@ The previous set of errors were, essentially, in-sample errors.  If we want to c
                                    pred_data = rs_data,
                                    k = 10)
 
+  plot(hed_oos_errors)
+  plot(rs_oos_errors)
+  
+  
 ```
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
@@ -347,6 +358,10 @@ Because this period of indexes is also useful for some other calculations, we ha
 
   rs_series <- calcIndexSeries(hpi_obj = sea_rs_index,
                                train_range = 24)
+  
+  plot(hed_series)
+  plot(rs_series)
+  
 ```
 
 From these series, we can then estimate the forecast (prediction) errors of for each of the two methods. 
@@ -358,6 +373,9 @@ From these series, we can then estimate the forecast (prediction) errors of for 
 
   rs_fc_errors <- calcForecastErrors(is_obj = rs_series,
                                      pred_data = rs_data)
+  
+  plot(rs_fc_errors)
+  plot(hed_fc_errors)
 
 ```
 
@@ -392,7 +410,10 @@ The second calculation simply averages all revisions across all periods to provi
 
   hed_rev <- calcRevision(hed_series)  
   rs_rev <- calcRevision(rs_series)
-
+  
+  plot(hed_rev)
+  plot(rs_rev)
+  
 ```
 
 The hedonic revision has a total average value of 0.0003 index points per period, while the repeat sale revision averages -0.655 points per month, a considerable differnence. 
@@ -420,6 +441,8 @@ It may be advantageous to blend indexes.  We offer the `blendIndexes` function t
   blend_index <- blendIndexes(index_list = list(rs_series[[61]],
                                                 hed_series[[61]]),
                               weights=c(.6, .4))
+
+  plot(blend_index)
   
 ```
 
@@ -429,6 +452,10 @@ Smoothing of indexes may also be warranted as indexes resulting from raw model r
 
   rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
   hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)
+  
+  plot(rs_smooth_index)
+  plot(hed_smooth_index)
+  
 
 ```
 

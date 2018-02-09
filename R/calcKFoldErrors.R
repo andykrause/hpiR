@@ -55,7 +55,7 @@ calcKFoldErrors <- function(hpi_obj,
 
   # Bind results together and return
   error_df <- bind_rows(k_error)
-  class(error_df) <- append('indexerrors', class(error_df))
+  class(error_df) <- unique(c('indexerrors', class(error_df)))
   attr(error_df, 'error_type') <- 'holdout'
 
   # Return Values

@@ -49,10 +49,12 @@ calcHPIError.rs <- function(pred_data,
   error <- (pred_price - pred_data$price_2) / pred_data$price_2
 
   # Return Values
-  cbind(data.frame(prop_id = pred_data$prop_id,
+  error_df <- data.frame(prop_id = pred_data$prop_id,
                    pred_price=pred_price,
-                   pred_error=error))
-
+                   pred_error=error,
+                   pred_period=pred_data$period_2)
+  class(error_df) <- c('indexerrors', 'data.frame')
+  error_df
 }
 
 #' @title calcHPIError.hed
