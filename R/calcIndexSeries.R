@@ -2,9 +2,9 @@
 #' @description Calculates a series of indexes, each one period longer than the previous
 #' @usage Lorem Ipsum...
 #' @param hpi_obj Object of class 'hpi'
-#' @param pred_data Set of sales to be used for predicitive quality of index
 #' @param train_range Number of periods to use as purely training before forecast starts
 #' @param max_period Default=NULL; Maximum number of periods to forecast up to
+#' @param name_prefix Default=NULL; Prefix to add before last time period if naming indexes
 #' @param ... Additional Arguments
 #' @return hpimodel object
 #' @section Further Details:
@@ -16,6 +16,7 @@
 calcIndexSeries <- function(hpi_obj,
                             train_range,
                             max_period=NULL,
+                            name_prefix=NULL,
                             ...){
 
   # Check for alternate max period
@@ -48,6 +49,9 @@ calcIndexSeries <- function(hpi_obj,
   # Convert models to indexes
   is_series <- purrr::map(.x=is_models,
                           .f=function(x) modelToIndex(x)$index)
+
+  # Name
+  if (!is.null(name_prefix)) names(is_series) <- paste0(name_prefix, time_range)
 
   # Return Values
   structure(is_series, class='hpiseries')

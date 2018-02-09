@@ -13,9 +13,9 @@ Lorem Ipsum...
 
 \item{max_period}{Default=NULL; Maximum number of periods to forecast up to}
 
-\item{...}{Additional Arguments}
+\item{name_prefix}{Default=NULL; Prefix to add before last time period if naming indexes}
 
-\item{pred_data}{Set of sales to be used for predicitive quality of index}
+\item{...}{Additional Arguments}
 }
 \value{
 hpimodel object
