@@ -9,7 +9,7 @@ Lorem Ipsum...
 \arguments{
 \item{index}{Index to be smoothed}
 
-\item{order}{Number of nearby period to smooth with}
+\item{order}{Number of nearby period to smooth with, multiple means multiple iterations of smoothing}
 
 \item{...}{Additional Arguments}
 }

@@ -22,7 +22,14 @@ smoothIndex <- function(index,
                            order=o.i)
   }
 
- s_index[is.na(s_index)] <- index[is.na(s_index)]
+ na_smooth <- which(is.na(s_index))
+ na_low <- na_smooth[na_smooth < length(s_index)/2]
+ s_index[na_low] <- index[na_low]
+ na_high <- na_smooth[na_smooth > length(s_index)/2]
+
+ high_fc <- forecast(ets(s_index[1:(na_high[1] - 1)], model='ANN'), h=length(na_high))
+ new_high <- (high_fc$mean + index[na_high]) / 2
+ s_index[na_high] <- new_high
 
  class(s_index) <- append('smoothindex', class(index))
  attr(s_index, 'raw') <- index
