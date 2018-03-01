@@ -22,33 +22,61 @@
 
 dateToPeriod <- function(sales_df,
                          date,
-                         periodicity = 'year',
+                         periodicity=NULL,
                          min_date=NULL,
                          max_date=NULL,
                          adj_type='move',
                          ...){
 
-  # Extract any ... objects
-  if ('min_date' %in% names(list(...))) min_date <- list(...)$min_date
-  if ('max_date' %in% names(list(...))) max_date <- list(...)$max_date
-  if ('adj_type' %in% names(list(...))) adj_type <- list(...)$adj_type
+  # Check for data.frame in sales_df
+  if (!'data.frame' %in% class(sales_df)){
+    message('"sales_df" must be a data.frame (or inherit from one)')
+    stop()
+  }
 
   # Extract Date
   sale_date <- sales_df[[date]]
+  if (!'Date' %in% class(sale_date)){
+    if ("POSIXct" %in% class(sale_date) | "POSIXt" %in% class(sale_date)){
+      sale_date <- lubridate::as_date(sale_date)
+    } else {
+      message('"date" field must be in "Date" or "POSIXTct/POSIXt" format.')
+      stop()
+    }
+  }
 
-  ## Create full span of dates
+  # Check for periodicity
+  if (is.null(periodicity)){
+    message('No "periodicity" supplied, defaulting to "annual"')
+    periodicity <- 'annual'
+  }
+  periodicity <- tolower(periodicity)
+  if (!periodicity %in% c('weekly', 'monthly', 'quarterly', 'annual', 'yearly',
+                          'w', 'm', 'q', 'a', 'y')){
+    message('"Periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
+    stop()
+  } else {
+    if (periodicity == 'yearly') periodicity <- 'annual'
+    if (periodicity == 'y') periodicity <- 'annual'
+    if (periodicity == 'a') periodicity <- 'annual'
+    if (periodicity == 'q') periodicity <- 'quarterly'
+    if (periodicity == 'm') periodicity <- 'monthly'
+    if (periodicity == 'w') periodicity <- 'weekly'
+  }
+
+  ## Create full span of dates to use in the analysis
 
   # Set minimum date
-  if(is.null(min_date)){
+  if (is.null(min_date)){
     min_date <- min(sale_date)
   } else {
     if (min_date > min(sale_date)){
       if (adj_type == 'move'){
-        message('Supplied minimum date is greater than minimum of sales. Adjusting.\n')
+        message('Supplied min_date" is greater than minimum of sales. Adjusting.\n')
         min_date <- min(sale_date)
       }
       if (adj_type == 'clip'){
-        message('Supplied minimum date is greater than minimum of sales. Clipping sales.\n')
+        message('Supplied "min_date" date is greater than minimum of sales. Clipping sales.\n')
         sales_df <- sales_df[sale_date >= min_date, ]
         sale_date <- sales_df[[date]]
       }
@@ -56,16 +84,16 @@ dateToPeriod <- function(sales_df,
   }
 
   # Set maximum date
-  if(is.null(max_date)){
+  if (is.null(max_date)){
     max_date <- max(sale_date)
   } else {
     if (max_date < max(sale_date)){
       if (adj_type == 'move'){
-        message('Supplied maximum date is less than maximum of sales. Adjusting.\n')
+        message('Supplied "max_date" is less than maximum of sales. Adjusting.\n')
         max_date <- max(sale_date)
       }
       if (adj_type == 'clip'){
-        message('Supplied maximum date is less than maximum of sales. Clipping Sales.\n')
+        message('Supplied "max_date" is less than maximum of sales. Clipping Sales.\n')
         sales_df <- sales_df[sale_date <= max_date, ]
         sale_date <- sales_df[[date]]
       }
@@ -79,28 +107,22 @@ dateToPeriod <- function(sales_df,
   year_period <- (lubridate::year(sale_date) - lubridate::year(min_date))
 
   # if Annual Periodicity
-  if(periodicity == 'year'){
+  if (periodicity == 'annual'){
     sales_df$date_period <- year_period + 1
-    # sales_df$date_value <- lubridate::year(sale_date)
-    # sales_df$date_name <- as.character(lubridate::year(sale_date))
     period_table <- data.frame(names = unique(lubridate::year(date_span)),
                                values = unique(lubridate::year(date_span)),
                                periods = unique(lubridate::year(date_span)))
   }
 
   # Create Month or Quarter
-  if(periodicity %in% c('month', 'qtr')){
+  if (periodicity %in% c('monthly', 'quarterly')){
 
     month_period <- (12 * year_period +
                      (lubridate::month(sale_date, label=FALSE) -
                         lubridate::month(min_date)))
 
-    if(periodicity == 'month'){
+    if (periodicity == 'monthly'){
       sales_df$date_period <- month_period + 1
-      # sales_df$date_value <- (lubridate::year(sale_date) +
-      #                          (lubridate::month(sale_date) - 1) / 12)
-      # sales_df$date_name <- paste0(lubridate::year(sale_date), '-',
-      #                              lubridate::month(sale_date, label = TRUE))
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-',
                               lubridate::month(date_span, label = TRUE))),
@@ -112,13 +134,11 @@ dateToPeriod <- function(sales_df,
                             lubridate::month(min_date)) + 1)))
     }
 
-    if(periodicity == 'qtr'){
-      sales_df$date_period <- (month_period %/% 3) + 1
-      # sales_df$date_value <- (lubridate::year(sale_date) +
-      #                          (lubridate::quarter(sale_date) - 1) / 4)
-      # sales_df$date_name <- paste0(lubridate::year(sale_date), '-Q',
-      #                              lubridate::quarter(sale_date))
-
+    if (periodicity == 'quarterly'){
+      min_qtr <- lubridate::quarter(min_date, with_year=TRUE)
+      sale_qtr <- lubridate::quarter(sale_date, with_year=TRUE)
+      all_qtr <- as.numeric(as.factor(c(min_qtr, sale_qtr)))
+      sales_df$date_period <- all_qtr[-1]
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-Q',
                               lubridate::quarter(date_span))),
@@ -132,23 +152,36 @@ dateToPeriod <- function(sales_df,
   }
 
   # Create Week
-  if(periodicity == 'week'){
+  if (periodicity == 'weekly'){
+
+    # Fix 53 week issue
+    if (any(grepl('12-31', c(min_date, max_date, sale_date))) |
+        any(grepl('12-30', c(min_date, max_date, sale_date)))){
+      sale_date <- gsub('12-31', '12-29', sale_date)
+      min_date <- gsub('12-31', '12-29', min_date)
+      max_date <- gsub('12-31', '12-29', max_date)
+      sale_date <- gsub('12-30', '12-29', sale_date)
+      min_date <- gsub('12-30', '12-29', min_date)
+      max_date <- gsub('12-30', '12-29', max_date)
+      message('Treating all Dec 31st and Dec 30th dates (leap years) as Dec 29th ',
+              'to avoid 53 week issues')
+    }
+
+    # Create Week period
     week_period <- (52 * (year_period) +
                     (lubridate::week(sale_date) -
                       lubridate::week(min_date)))
-
     sales_df$date_period <- week_period + 1
-    # sales_df$date_value <- (lubridate::year(sale_date) +
-    #                          (lubridate::week(sale_date) - 1) / 53)
-    # sales_df$date_name <- paste0(lubridate::year(sale_date), '-W',
-    #                                lubridate::week(sale_date))
 
+    # Create period table
+    name <- unique(paste0(lubridate::year(date_span), '-W',
+                         lubridate::week(date_span)))
+    name <- name[!grepl('W53', name)]
     period_table <- data.frame(
-      name = unique(paste0(lubridate::year(date_span), '-W',
-                            lubridate::week(date_span))),
+      name = name,
       numeric = unique((lubridate::year(date_span) +
-                       (lubridate::week(date_span) - 1) / 53)),
-      period = unique((53 * (lubridate::year(date_span) -
+                       (lubridate::week(date_span) - 1) / 52)),
+      period = unique((52 * (lubridate::year(date_span) -
                          min(lubridate::year(date_span))) +
                           ((lubridate::week(date_span) -
                             lubridate::week(min_date))) + 1)))
@@ -160,14 +193,17 @@ dateToPeriod <- function(sales_df,
     message("Your choice of periodicity resulted in ",
             nrow(period_table) - nbr_periods, " empty periods out of ",
             nrow(period_table), " total periods.")
-    if((nrow(period_table) - nbr_periods)/nrow(period_table) > .3){
+    if ((nrow(period_table) - nbr_periods)/nrow(period_table) > .3){
       message('You may wish to set a coarser periodicity or ',
               'set different start and end dates\n')
     }
   }
 
   # Add attribute information
-  attr(sales_df, 'class') <- unique(append('sales.df', attr(sales_df, 'class')))
+  attr(sales_df, 'class') <- unique(append('salesdf', attr(sales_df, 'class')))
+  attr(sales_df, 'periodicity') <- periodicity
+  attr(sales_df, 'min_date') <- min_date
+  attr(sales_df, 'max_date') <- max_date
   attr(sales_df, 'period_table') <- period_table
 
   # Return values
