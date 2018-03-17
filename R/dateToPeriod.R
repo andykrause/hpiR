@@ -124,10 +124,8 @@ dateToPeriod <- function(sales_df,
                               lubridate::quarter(date_span))),
         numeric = unique((lubridate::year(date_span) +
                         (lubridate::quarter(date_span) - 1) / 4)),
-        period = unique((4 * (lubridate::year(date_span) -
-                          min(lubridate::year(date_span))) +
-                           ((lubridate::month(date_span, label=FALSE) -
-                            lubridate::month(min_date)) %/% 3) + 1)))
+        period = seq(1:length(unique(paste0(lubridate::year(date_span), '-Q',
+                                     lubridate::quarter(date_span))))))
     }
   }
 
