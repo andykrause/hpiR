@@ -13,7 +13,7 @@ editor_options:
 
 ### Introduction
 
-This vignette provides an introduction to using the `hpiR` package for estimating house price indexes.  At the current time, this package (version 0.0.1) offers only two methods to estimate house price indexes -- repeat sales and hedonic price models.  Future versions will additional methodological options.  Additional information on this package's development can be found at [www.github.com/andykrause](https://www.github.com/andykrause)
+This vignette provides an introduction to using the `hpiR` package for estimating house price indexes.  At the current time, this package (version 0.1.0) offers only two methods to estimate house price indexes -- repeat sales and hedonic price models.  Future versions will additional methodological options.  Additional information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR)
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -42,13 +42,13 @@ The data can be loaded into an object with wrapping the `data(seattle_sales)` co
 
 ```
 
-A simple plot shows the location of these sales across the city.
+<!-- A simple plot shows the location of these sales across the city. -->
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
 
-#  ggplot(sales) + geom_sf()
+<!-- #  ggplot(sales) + geom_sf() -->
 
-```
+<!-- ``` -->
 
 All of the potential models that we can create with this package require the date of sales to be converted to a numeric and relative time period.  Relative, relating to the base period which is assumed to be the first period in the transaction data.  
 
