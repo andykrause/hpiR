@@ -52,13 +52,13 @@ The data can be loaded into an object with wrapping the `data(seattle_sales)` co
 
 All of the potential models that we can create with this package require the date of sales to be converted to a numeric and relative time period.  Relative, relating to the base period which is assumed to be the first period in the transaction data.  
 
-The `dateToPeriod` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are **year**, **qtr**, **month** or **week**, with **year** as the default.  In addition to the sales data.frame and the periodicity type, the `dateToPeriod` function also requires an input telling it which field in the data contains the transaction (sale) date (`date`).
+The `dateToPeriod` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are **yearly**, **quarterly**, **monthly** or **weekly**, with **yearly** as the default.  In addition to the sales data.frame and the periodicity type, the `dateToPeriod` function also requires an input telling it which field in the data contains the transaction (sale) date (`date`).
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   sales <- dateToPeriod(sales_df = sales,
                         date = 'sale_date',
-                        periodicity = 'month')
+                        periodicity = 'monthly')
 
 ```
 
@@ -68,7 +68,7 @@ The default specification of `dateToPeriod` will use the minimum and maximum dat
 
   sales <- dateToPeriod(sales_df = sales,
                         date = 'sale_date',
-                        periodicity = 'month',
+                        periodicity = 'monthly',
                         min_date = as.Date('2009-12-01'),
                         max_date = as.Date('2017-01-01'))
 
@@ -80,7 +80,7 @@ If the dates that are provided as alternative minimums and maximums are within t
 
   sales <- dateToPeriod(sales_df = sales,
                         date = 'sale_date',
-                        periodicity = 'month',
+                        periodicity = 'monthly',
                         min_date = as.Date('2010-12-01'),
                         max_date = as.Date('2016-01-01'))
 
@@ -92,7 +92,7 @@ Alternatively, you can use the `min_date` and `max_date` parameters to clip your
 
   sales_clipped <- dateToPeriod(sales_df = sales,
                                 date = 'sale_date',
-                                periodicity = 'month',
+                                periodicity = 'monthly',
                                 min_date = as.Date('2010-12-01'),
                                 max_date = as.Date('2016-01-01'),
                                 adj_type = 'clip')
@@ -172,7 +172,7 @@ sea_rs_index <- rsIndex(sales_df = sales,
                         prop_id = 'pinx',
                         estimator = 'base',
                         log_dep = TRUE,
-                        periodicity = 'month') 
+                        periodicity = 'monthly') 
 ```
 
 A plot method exists to cleanly plot 'hpi' objects so that the axes are labeled clearly.
@@ -196,7 +196,7 @@ First, we create a set of hedonic model ready data with the `hedCreateSales` fun
                               sale_id = 'sale_id',
                               price = 'sale_price',
                               date= 'sale_date',
-                              periodicity = 'month')
+                              periodicity = 'monthly')
                               
 ```
 
@@ -250,7 +250,7 @@ The `hedIndex` wrapper function will perform all of the above hedonic modeling t
                             prop_id = 'pinx',
                             estimator = 'base',
                             log_dep = TRUE,
-                            periodicity = 'month',
+                            periodicity = 'monthly',
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'))
 
