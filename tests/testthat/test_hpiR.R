@@ -653,7 +653,5 @@
     # Approach
     expect_true(rs_model_base$approach == 'rs')
     expect_true(rs_model_robust$approach == 'rs')
-    expect_true(rs_model_weighted$approach == 'rs')
-
-
+    expect_true(rs_model_wgt$approach == 'rs')
   })
