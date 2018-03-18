@@ -405,3 +405,255 @@
                                      sale_id='sale_id',
                                      price='sale_price'), "NULL")
   })
+
+
+## Test rsTimeMatrix ---------------------------------------------------------------------
+
+ context('rsTimeMatrix')
+ rs_df <- rsCreateSales(sales_df=sales_df,
+                        prop_id='pinx',
+                        sale_id='sale_id',
+                        price='sale_price')
+
+ test_that('Time matrix works with clean data', {
+  expect_is(time_matrix <- rsTimeMatrix(rs_df), 'timematrix')
+ })
+
+ test_that('Time matrix fails without rs data', {
+   expect_is(time_matrix <- rsTimeMatrix(sales_df), 'NULL')
+ })
+
+ test_that('Time matrix size is correct', {
+   expect_true(nrow(rsTimeMatrix(rs_df[1:2000,])) == 2000)
+   expect_true(ncol(rsTimeMatrix(rs_df[1:2000,])) == nrow(attr(rs_df,
+                                                               'period_table')) - 1)
+ })
+
+## Test hpiModel.rs up to rsModel --------------------------------------------------------
+
+ test_that('hpiModel.rs works',{
+   expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                  estimator = 'base',
+                                  log_dep = TRUE), 'hpimodel')
+ })
+
+ test_that('"log_dep" works both ways',{
+  expect_true(hpiModel(hpi_data = rs_df,
+                       estimator = 'base',
+                       log_dep = TRUE)$model_obj$fitted.values[1] < 1)
+  expect_true(hpiModel(hpi_data = rs_df,
+                       estimator = 'base',
+                       log_dep = FALSE)$model_obj$fitted.values[1] > 10000)
+  })
+
+  test_that('Check for zero or negative prices works',{
+    rs_dfx <- rs_df
+    rs_dfx$price_1 <- 0
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = TRUE), 'NULL')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = FALSE), 'hpimodel')
+    rs_dfx$price_1 <- NA_integer_
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = TRUE), 'NULL')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = FALSE), 'NULL')
+    rs_dfx$price_1 <- Inf
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = TRUE), 'NULL')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+                                   estimator = 'base',
+                                   log_dep = FALSE), 'NULL')
+
+  })
+
+  test_that('Check for estimator type works',{
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df), 'hpimodel')
+    expect_true(hpiModel(hpi_data = rs_df)$estimator == 'base')
+    expect_true(hpiModel(hpi_data = rs_df,
+                         estimator='xxxx')$estimator == 'base')
+    expect_true(hpiModel(hpi_data = rs_df,
+                         estimator='robust')$estimator == 'robust')
+    expect_true(hpiModel(hpi_data = rs_df,
+                         estimator='weighted')$estimator == 'weighted')
+  })
+
+
+## Test rsModel --------------------------------------------------------------------------
+
+ context('rsModel')
+  time_matrix <- rsTimeMatrix(rs_df)
+  price_diff_l <- log(rs_df$price_2) - log(rs_df$price_1)
+  price_diff <- rs_df$price_2 - rs_df$price_1
+
+  test_that('Check for errors with bad arguments',{
+
+    # Base works with wrong  hpi_data because it isn't used
+    expect_is(rs_model <- rsModel(rs_df = sales,
+                                  time_matrix = time_matrix,
+                                  price_diff = price_diff_l,
+                                  estimator=structure('base', class='base')),
+              'rsmod')
+    # Robust doesn't
+    expect_error(rs_model <- rsModel(rs_df = sales,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff_l,
+                                     estimator=structure('robust', class='robust')))
+    # Weighted doesn't
+    expect_error(rs_model <- rsModel(rs_df = sales,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff_l,
+                                     estimator=structure('weighted', class='weighted')))
+
+    # Test bad time_matrix
+    expect_error(rs_model <- rsModel(rs_df = rs_df,
+                                     time_matrix = sales,
+                                     price_diff = price_diff_l,
+                                     estimator=structure('base', class='base')))
+
+    # Bad price_diff
+    expect_error(rs_model <- rsModel(rs_df = rs_df,
+                                     time_matrix = time_matrix,
+                                     price_diff = sales,
+                                     estimator=structure('base', class='base')))
+
+    # Bad estimator class
+    expect_error(rs_model <- rsModel(rs_df = rs_df,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff,
+                                     estimator=structure('base', class='xxx')))
+
+  })
+
+  test_that('Performance with sparse data',{
+
+    rs_dfx <- rs_df[1:20, ]
+    time_matrixx <- rsTimeMatrix(rs_dfx)
+    price_diff_lx <- log(rs_dfx$price_2) - log(rs_dfx$price_1)
+    price_diffx <- rs_dfx$price_2 - rs_dfx$price_1
+
+    # Works with base, though many NAs
+    expect_is(rs_model <- rsModel(rs_df = rs_dfx,
+                                  time_matrix = time_matrixx,
+                                  price_diff = price_diff_lx,
+                                  estimator=structure('base', class='base')),
+              'rsmod')
+
+    # Robust works but gives warning
+    expect_warning(rs_model <- rsModel(rs_df = rs_dfx,
+                                       time_matrix = time_matrixx,
+                                       price_diff = price_diff_lx,
+                                      estimator=structure('robust', class='robust')))
+
+    # Weighted works
+    expect_is(rs_model <- rsModel(rs_df = rs_dfx,
+                                  time_matrix = time_matrixx,
+                                  price_diff = price_diffx,
+                                  estimator=structure('weighted', class='weighted')),
+              'rsmod')
+
+    # Fails with non-matching tm and pd
+    expect_error(rs_model <- rsModel(rs_df = rs_dfx,
+                                     time_matrix = time_matrixx,
+                                     price_diff = price_diff,
+                                     estimator=structure('weighted', class='weighted')))
+  })
+
+## Test hpiModel.rs after rsModel --------------------------------------------------------
+
+ context('hpiModel.rs')
+
+  test_that('hpiModel.rs works in both trim_model cases',{
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'base',
+                                   log_dep = TRUE,
+                                   trim_model=TRUE), 'hpimodel')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'base',
+                                   log_dep = TRUE,
+                                   trim_model=FALSE), 'hpimodel')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'base',
+                                   log_dep = FALSE,
+                                   trim_model=TRUE), 'hpimodel')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'base',
+                                   log_dep = FALSE,
+                                   trim_model=FALSE), 'hpimodel')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'weighted',
+                                   log_dep = TRUE,
+                                   trim_model=FALSE), 'hpimodel')
+    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+                                   estimator = 'robust',
+                                   log_dep = FALSE,
+                                   trim_model=TRUE), 'hpimodel')
+    expect_true(is.null(hpiModel(hpi_data = rs_df,
+                                 estimator = 'weighted',
+                                 log_dep = TRUE,
+                                 trim_model=TRUE)$model_obj$qr))
+    expect_true(!is.null(hpiModel(hpi_data = rs_df,
+                                  estimator = 'weighted',
+                                  log_dep = TRUE,
+                                  trim_model=FALSE)$model_obj$qr))
+  })
+
+  test_that('hpiModel.rs outputs are correct',{
+    rs_model_base <- hpiModel(hpi_data = rs_df,
+                              estimator = 'base',
+                              log_dep = TRUE,
+                              trim_model=TRUE)
+    rs_model_robust <- hpiModel(hpi_data = rs_df,
+                                estimator = 'robust',
+                                log_dep = TRUE,
+                                trim_model=FALSE)
+    rs_model_wgt <- hpiModel(hpi_data = rs_df,
+                             estimator = 'weighted',
+                             log_dep = FALSE,
+                             trim_model=TRUE)
+
+    # Estimators
+    expect_is(rs_model_base$estimator, 'base')
+    expect_is(rs_model_robust$estimator, 'robust')
+    expect_is(rs_model_wgt$estimator, 'weighted')
+
+    # Coefficients
+    expect_is(rs_model_base$coefficients, 'data.frame')
+    expect_is(rs_model_robust$coefficients, 'data.frame')
+    expect_is(rs_model_wgt$coefficients, 'data.frame')
+    expect_true(nrow(rs_model_base$coefficients) == 84)
+    expect_true(max(rs_model_robust$coefficients$time) == 84)
+    expect_true(rs_model_wgt$coefficients$coefficient[1] == 0)
+
+    # Modelobj
+    expect_is(rs_model_base$model_obj, 'rsmod')
+    expect_is(rs_model_robust$model_obj, 'rsmod')
+    expect_is(rs_model_wgt$model_obj, 'rsmod')
+
+    # Model spec
+    expect_true(is.null(rs_model_base$model_spec))
+    expect_true(is.null(rs_model_robust$model_spec))
+    expect_true(is.null(rs_model_wgt$model_spec))
+
+    # base price
+    expect_true(round(rs_model_base$base_price, 0) == 427785)
+    expect_true(round(rs_model_robust$base_price, 0) == 427785)
+    expect_true(round(rs_model_wgt$base_price, 0) == 427785)
+
+    # Periods
+    expect_is(rs_model_base$periods, 'data.frame')
+    expect_is(rs_model_robust$periods, 'data.frame')
+    expect_is(rs_model_wgt$periods, 'data.frame')
+
+    # Approach
+    expect_true(rs_model_base$approach == 'rs')
+    expect_true(rs_model_robust$approach == 'rs')
+    expect_true(rs_model_weighted$approach == 'rs')
+
+
+  })

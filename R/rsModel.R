@@ -1,51 +1,38 @@
 #' @title rsModel
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
 #' @param rs_df Repeat sales dataset from rsCreateSales()
 #' @param time_matrix Time matrix object from rsTimeMatrix()
 #' @param price_diff Difference in price betwen the two sales
+#' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
 #' @param ... Additional arguments
 #' @return rs model object
 #' @section Further Details:
 #' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
+#' rs_model <- rsModel(rs_df = rs_sales,
 #'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
+#'                     price_diff = price_diff,
+#'                     estimator = structure('base', class='base'))
 #' @export
 
 ## Generic Method
 
-rsModel <- function(estimator,
-                    rs_df,
+rsModel <- function(rs_df,
                     time_matrix,
                     price_diff,
+                    estimator,
                     ...){
-  UseMethod("rsModel")
+  UseMethod("rsModel", estimator)
 
 }
 
 #' @title rsModel.base
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param rs_df Repeat sales dataset from rsCreateSales()
-#' @param time_matrix Time matrix object from rsTimeMatrix()
-#' @param price_diff Difference in price betwen the two sales
-#' @param ... Additional arguments
-#' @return rs model object
-#' @section Further Details:
-#' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
 #' @export
-## For Base Estimator
 
-rsModel.base <- function(estimator,
-                         rs_df,
+rsModel.base <- function(rs_df,
                          time_matrix,
                          price_diff,
+                         estimator,
                          ...){
 
   rs_model <- lm(price_diff ~ time_matrix + 0)
@@ -58,26 +45,12 @@ rsModel.base <- function(estimator,
 
 #' @title rsModel.robust
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param rs_df Repeat sales dataset from rsCreateSales()
-#' @param time_matrix Time matrix object from rsTimeMatrix()
-#' @param price_diff Difference in price betwen the two sales
-#' @param ... Additional arguments
-#' @return rs model object
-#' @section Further Details:
-#' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
 #' @export
-#'
-## For Robust Estimator
 
-rsModel.robust <- function(estimator,
-                           rs_df,
+rsModel.robust <- function(rs_df,
                            time_matrix,
                            price_diff,
+                           estimator,
                            ...){
 
   # Determine 'sparseness' of the data
@@ -98,25 +71,12 @@ rsModel.robust <- function(estimator,
 
 #' @title rsModel.weighted
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param rs_df Repeat sales dataset from rsCreateSales()
-#' @param time_matrix Time matrix object from rsTimeMatrix()
-#' @param price_diff Difference in price betwen the two sales
-#' @param ... Additional arguments
-#' @return rs model object
-#' @section Further Details:
-#' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
 #' @export
-## For Weigthed Estimator
 
-rsModel.weighted <- function(estimator,
-                             rs_df,
+rsModel.weighted <- function(rs_df,
                              time_matrix,
                              price_diff,
+                             estimator,
                              ...){
 
   # Run base model
