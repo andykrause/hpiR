@@ -280,4 +280,128 @@
                                 periodicity='M'))
   })
 
+## Setup rsCreateSales -------------------------------------------------------------------
 
+  context('rsCreateSales')
+
+  # Test Setup
+  test_that("Can take a functional 'salesdf' object", {
+
+    sales_df <- dateToPeriod(sales_df = sales,
+                             date = 'sale_date',
+                             periodicity = 'monthly')
+    expect_is(rs_df <- rsCreateSales(sales_df=sales_df,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price'), 'rs')
+    expect_true(nrow(rs_df) == 5102)
+  })
+
+  # Test Setup
+  test_that("Can create own salesdf object", {
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly'), 'rs')
+    expect_true(nrow(rs_df) == 5102)
+  })
+
+  test_that("Can use min/max dates own salesdf object", {
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     min_date = as.Date('2012-03-21')), 'rs')
+    expect_true(nrow(rs_df) == 5102)
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     min_date = as.Date('2012-03-21'),
+                                     adj_type='clip'), 'rs')
+    expect_true(nrow(rs_df) == 2827)
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     max_date = as.Date('2015-03-21')), 'rs')
+    expect_true(nrow(rs_df) == 5102)
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     max_date = as.Date('2014-03-21'),
+                                     adj_type='clip'), 'rs')
+    expect_true(nrow(rs_df) == 1148)
+
+  })
+
+  test_that("Fails if sales creation fails", {
+
+    # Bad Date field
+    expect_error(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_price',
+                                     periodicity='monthly'))
+
+    # Bad Periodicity field
+    expect_error(rs_df <- rsCreateSales(sales_df=sales,
+                                        prop_id='pinx',
+                                        sale_id='sale_id',
+                                        price='sale_price',
+                                        date='sale_date',
+                                        periodicity='mocnthly'))
+
+  })
+
+  test_that("Fails if bad arguments fails", {
+
+    # Bad prop_id field
+    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+                                        prop_id='pinxx',
+                                        sale_id='sale_id',
+                                        price='sale_price'))
+
+    # Bad sale_id field
+    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+                                        prop_id='pinx',
+                                        sale_id='salex_id',
+                                        price='sale_price'))
+
+    # Bad price field
+    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+                                        prop_id='pinx',
+                                        sale_id='sale_id',
+                                        price='salex_price'))
+
+  })
+
+  test_that("Returns NULL if no repeat sales", {
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales_df[!duplicated(sales_df$prop_id),],
+                                        prop_id='pinx',
+                                        sale_id='sale_id',
+                                        price='sale_price'), "NULL")
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales_df[1:3, ],
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price'), "NULL")
+  })

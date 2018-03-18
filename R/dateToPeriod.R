@@ -2,7 +2,7 @@
 #' @description Convert dates into time periods for use in sale-resale models
 #' @param sales_df data.frame of raw sales transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
-#' @param periodicity type of periodicity to use ('year', 'qtr', 'month' or 'week)
+#' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
 #' @return data frame with three new fields:
 #' date_period: integer value counting from the minimum sale date in the periodicity selected. Base value is 1. Primarily for modeling
 #' date_value: float value of year and periodicty in numeric form (primarily for plotting)

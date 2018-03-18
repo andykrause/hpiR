@@ -45,20 +45,36 @@ rsCreateSales <- function(sales_df,
                           periodicity=NULL,
                           ...){
 
-  # Calculate the necessary date field
-  if(class(sales_df)[1] != 'sales.df'){
-    if(is.null(date)){
+  # Crate the sales_df if not provided
+  if (!'salesdf' %in% class(sales_df)){
+    if (is.null(date)){
       message('You must provide the name of a field with date of sale (date=)')
       stop()
     }
-    if(is.null(periodicity)){
-      message('No periodicity (periodicity=) provided, defaulting to annual')
-      periodicity <- 'year'
+    if (is.null(periodicity)){
+      message('No periodicity (periodicity=) provided, defaulting to yearly')
+      periodicity <- 'yearly'
     }
+
+    # Create sales_df
     sales_df <- dateToPeriod(sales_df=sales_df,
                              date=date,
                              periodicity=periodicity,
                              ...)
+  }
+
+  # Check fields
+  if (!prop_id %in% names(sales_df)){
+    message('"prop_id" field not found')
+    stop()
+  }
+  if (!sale_id %in% names(sales_df)){
+    message('"sale_id" field not found')
+    stop()
+  }
+  if (!price %in% names(sales_df)){
+    message('"price" field not found')
+    stop()
   }
 
   # Prepare input data
@@ -84,6 +100,11 @@ rsCreateSales <- function(sales_df,
     # Remove solo sales
     dplyr::filter(count > 1)
 
+  if (nrow(rs_df) == 0){
+    message('No repeat sales found')
+    return(NULL)
+  }
+
   ## Split into 2 sales and greater than two sales per property
 
   rs2 <- rs_df %>% dplyr::filter(count == 2)
@@ -91,7 +112,7 @@ rsCreateSales <- function(sales_df,
 
   ## Create Repeat Sales for properties with exactly 2 sales
 
-  if(nrow(rs2) > 0){
+  if (nrow(rs2) > 0){
 
     # Extract original sales and arrange by id, then time
     x_df <- sales_df %>%
@@ -122,7 +143,7 @@ rsCreateSales <- function(sales_df,
 
   ## Create Repeat sales for properties with 3 or more sales
 
-  if(nrow(rs3) > 0){
+  if (nrow(rs3) > 0){
 
     # Extract props with 3+ sales
     x_df <- sales_df %>% dplyr::filter(prop_id %in% rs3$prop_id)
@@ -155,8 +176,9 @@ rsCreateSales <- function(sales_df,
   rs_df <- rbind(d2, d3)
 
   # Message if none
-  if (is.null(rs_df)){
+  if (is.null(rs_df) | nrow(rs_df) == 0){
     message('No Repeat Sales Created\n')
+    return(NULL)
   } else {
     class(rs_df) <- append('rs', class(rs_df))
   }
