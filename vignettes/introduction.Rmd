@@ -56,9 +56,9 @@ The `dateToPeriod` function will convert R date fields into relative time period
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales <- dateToPeriod(sales_df = sales,
-                        date = 'sale_date',
-                        periodicity = 'monthly')
+  sales_df <- dateToPeriod(sales_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly')
 
 ```
 
@@ -66,11 +66,11 @@ The default specification of `dateToPeriod` will use the minimum and maximum dat
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales <- dateToPeriod(sales_df = sales,
-                        date = 'sale_date',
-                        periodicity = 'monthly',
-                        min_date = as.Date('2009-12-01'),
-                        max_date = as.Date('2017-01-01'))
+  sales_df <- dateToPeriod(sales_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly',
+                           min_date = as.Date('2009-12-01'),
+                           max_date = as.Date('2017-01-01'))
 
 ```
 
@@ -78,11 +78,11 @@ If the dates that are provided as alternative minimums and maximums are within t
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales <- dateToPeriod(sales_df = sales,
-                        date = 'sale_date',
-                        periodicity = 'monthly',
-                        min_date = as.Date('2010-12-01'),
-                        max_date = as.Date('2016-01-01'))
+  sales_df <- dateToPeriod(sales_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly',
+                           min_date = as.Date('2010-12-01'),
+                           max_date = as.Date('2016-01-01'))
 
 ```
 
@@ -105,7 +105,7 @@ We now have a dataset that includes a new field (**date_period**) indicate the p
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  head(attr(sales, 'period_table'))
+  head(attr(sales_df, 'period_table'))
 
 ```
 
@@ -113,12 +113,13 @@ We now have a dataset that includes a new field (**date_period**) indicate the p
 
 We start by creating an index using a sale-resale model, one of the most popular methods to create a house price index. 
 
-First, we use the `rsCreateSales` function to convert the raw transaction data (the **sales** object) into a data.frame of repeat sale (properties that have sold multiple times in the 2010 to 2016 period.)
+First, we use the `rsCreateSales` function to convert the raw transaction data (the **sales_df** object) into a data.frame of repeat sale (properties that have sold multiple times in the 2010 to 2016 period.)
+
 The `rsCreateSales` function requires a unique property id field as well as a unique sale id field and a field denoting the sale price.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rs_sales <- rsCreateSales(sales_df = sales,
+  rs_sales <- rsCreateSales(sales_df = sales_df,
                             prop_id = 'pinx',
                             sale_id = 'sale_id',
                             price = 'sale_price')

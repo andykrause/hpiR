@@ -1,14 +1,14 @@
 #' @title rsIndex
 #' @description Creates a house price index from a set of sales transactions using the
 #' repeat sales method
-#' @param sales_df data.frame of sale transactions
+#' @param sales_df data.frame of sale transactions.  Can be a 'salesdf' or an 'rs' object.
 #' @param date Field contain the sales date
 #' @param price Field contain the sale price
 #' @param sale_id Field containing the unique sale identifier
 #' @param prop_id Field containing the property identifier
 #' @param estimator default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'
 #' @param log_dep default = TRUE, Should the dependent variable (price) be logged?
-#' @param periodicity default = 'month', Periodicity of time to estimate index at
+#' @param periodicity default = 'monthly', Periodicity of time to estimate index at
 #' @param ... Additional Arguments
 #' @return hpi object
 #' @section Further Details:
@@ -21,26 +21,63 @@
 #' @export
 
 rsIndex <- function(sales_df,
-                    date,
-                    price,
-                    sale_id,
-                    prop_id,
+                    date=NULL,
+                    price=NULL,
+                    sale_id=NULL,
+                    prop_id=NULL,
                     estimator='base',
                     log_dep=TRUE,
-                    periodicity='month',
+                    periodicity='monthly',
                     ...
                     ){
 
-  # Create Sales object
-  rs_sales <- rsCreateSales(sales_df = sales_df,
-                            sale_id = sale_id,
-                            prop_id = prop_id,
-                            date = date,
-                            price = price,
-                            periodicity = periodicity,
-                            ...)
+  # Check if sales_df is an rs_df object
+  if ('rs' %in% class(sales_df)){
+    rs_sales <- sales_df
+  } else {
 
-  if(class(rs_sales)[1] != 'rs'){
+    if (!'salesdf' %in% class(sales_df)){
+
+      if (is.null(date) || (!any(class(sales_df[[date]]) %in% c('Date', 'POSIXt')))){
+        message('When supplying a raw data.frame to the "sales_df"',
+                'object, a valid "date" argument must be supplied')
+        stop()
+      }
+
+      # Create 'salesdf' object
+      sales_df <- dateToPeriod(sales_df = sales,
+                               date = 'sale_date',
+                               periodicity = periodicity,
+                               ...)
+    } else {
+
+      if (is.null(sale_id)){
+        message('When supplying a "sales_df" object to the "sales_df" object a ',
+                '"sale_id" argument must be supplied')
+        stop()
+      }
+      if (is.null(prop_id)){
+        message('When supplying a "sales_df" object to the "sales_df" object a ',
+                '"prop_id" argument must be supplied')
+        stop()
+      }
+      if (is.null(price)){
+        message('When supplying a "sales_df" object to the "sales_df" object a ',
+                '"price" argument must be supplied')
+        stop()
+      }
+
+      # Create Sales object
+      rs_sales <- rsCreateSales(sales_df = sales_df,
+                                sale_id = sale_id,
+                                prop_id = prop_id,
+                                price = price,
+                                ...)
+    }
+  }
+
+
+  if (!'rs' %in% class(rs_sales)){
     message('Converting sales data to repeat sales object failed')
     stop()
   }
@@ -51,7 +88,7 @@ rsIndex <- function(sales_df,
                        log_dep=log_dep,
                        ...)
 
-  if(class(rs_model) != 'hpimodel'){
+  if (class(rs_model) != 'hpimodel'){
     message('Estimating repeat sale model failed')
     stop()
   }
@@ -59,7 +96,7 @@ rsIndex <- function(sales_df,
   # Convert to an index
   rs_index <- modelToIndex(rs_model)
 
-  if(class(rs_index) != 'hpiindex'){
+  if (class(rs_index) != 'hpiindex'){
     message('Converting model results to index failed')
     stop()
   }
@@ -69,5 +106,5 @@ rsIndex <- function(sales_df,
                  estimator=estimator,
                  model=rs_model,
                  index=rs_index),
-           class='hpi')
+            class='hpi')
 }

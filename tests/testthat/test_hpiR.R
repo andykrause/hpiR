@@ -811,3 +811,101 @@
 
   })
 
+### Test rsIndex() wrapper ---------------------------------------------------------------
+
+context('rsindex() wrapper')
+
+ test_that('Function works with proper inputs',{
+
+   # Full case
+   expect_is(rsIndex(sales_df = sales,
+                     date = 'sale_date',
+                     price = 'sale_price',
+                     sale_id = 'sale_id',
+                     prop_id = 'pinx',
+                     estimator = 'base',
+                     log_dep = TRUE,
+                     periodicity = 'monthly'), 'hpi')
+
+   # Giving a 'sales_df' object
+   expect_is(rsIndex(sales_df = sales_df,
+                     price = 'sale_price',
+                     sale_id = 'sale_id',
+                     prop_id = 'pinx',
+                     estimator = 'robust',
+                     log_dep = TRUE), 'hpi')
+
+   # Giving an 'rs_df' object
+   expect_is(rsIndex(sales_df = rs_df,
+                     estimator = 'weighted',
+                     log_dep = TRUE), 'hpi')
+
+ })
+
+ test_that('trim_model argument works',{
+   expect_true(is.null(rsIndex(sales_df = rs_df,
+                               estimator = 'base',
+                               log_dep = TRUE,
+                               trim_model=TRUE)$model$model_obj$qr))
+ })
+
+ test_that("Bad arguments generate errors: Full Case",{
+
+   expect_error(rsIndex(sales_df = sales,
+                        date = 'sale_price',
+                        price = 'sale_price',
+                        sale_id = 'sale_id',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE,
+                        periodicity = 'monthly'))
+   expect_error(rsIndex(sales_df = sales,
+                        date = 'sale_date',
+                        price = 'sale_price',
+                        sale_id = 'sale_id',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE,
+                        periodicity = 'xxx'))
+ })
+
+ test_that("Bad arguments generate errors: Sales_df Case",{
+
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'xx',
+                        sale_id = 'sale_id',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'sale_price',
+                        sale_id = 'xx',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'sale_price',
+                        sale_id = 'sale_id',
+                        prop_id = 'xx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+ })
+
+
+### Test all plot functions --------------------------------------------------------------
+
+
+context('Plot functions')
+
+  test_that('plot.hpiindex works', {
+    expect_is(plot(modelToIndex(hpiModel(hpi_data = rs_df))), 'gg')
+    expect_error(plot(hpiModel(hpi_data = rs_df)))
+  })
+
+  test_that('plot.hpiindex works', {
+    expect_is(plot(rsIndex(sales_df = rs_df,
+                           estimator = 'weighted',
+                           log_dep = TRUE)), 'gg')
+  })
+
+context('Plot Functions')
