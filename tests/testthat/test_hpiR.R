@@ -371,6 +371,10 @@
 
   })
 
+  sales_df <- dateToPeriod(sales_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly')
+
   test_that("Fails if bad arguments fails", {
 
     # Bad prop_id field
@@ -655,3 +659,155 @@
     expect_true(rs_model_robust$approach == 'rs')
     expect_true(rs_model_wgt$approach == 'rs')
   })
+
+### Test modelToIndex --------------------------------------------------------------------
+
+  context('modelToIndex')
+
+  rs_model <- hpiModel(hpi_data = rs_df,
+                       estimator = 'base',
+                       log_dep = TRUE,
+                       trim_model=TRUE)
+
+  test_that('modelToIndex works', {
+
+    expect_is(modelToIndex(rs_model), 'hpiindex')
+
+  })
+
+  test_that('modelToIndex works with other estimators and options', {
+
+    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+                                    estimator = 'robust',
+                                    log_dep = TRUE,
+                                    trim_model=TRUE)), 'hpiindex')
+    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+                                    estimator = 'weighted',
+                                    log_dep = TRUE,
+                                    trim_model=TRUE)), 'hpiindex')
+    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+                                    estimator = 'robust',
+                                    log_dep = FALSE,
+                                    trim_model=TRUE)), 'hpiindex')
+    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+                                    estimator = 'weighted',
+                                    log_dep = TRUE,
+                                    trim_model=FALSE)), 'hpiindex')
+  })
+
+  test_that('modelToIndex fails with a NULL',{
+    expect_true(is.null(modelToIndex('abc')))
+  })
+
+  test_that('modelToIndex imputes properly, BASE model, LogDEP',{
+
+    model_base <- hpiModel(hpi_data = rs_df,
+                           estimator = 'base',
+                           log_dep = TRUE,
+                           trim_model=TRUE)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[2] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
+    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(modelToIndex(model_ex)$imputed[2] == 1)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[3:5] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[81:84] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
+    expect_true(modelToIndex(model_ex)$index[80] ==
+                  modelToIndex(model_ex)$index[84])
+
+  })
+
+  test_that('modelToIndex imputes properly, BASE model, LogDep=FALSE',{
+
+    model_base <- hpiModel(hpi_data = rs_df,
+                           estimator = 'base',
+                           log_dep = FALSE,
+                           trim_model=TRUE)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[2] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
+    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(modelToIndex(model_ex)$imputed[2] == 1)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[3:5] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[81:84] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
+    expect_true(modelToIndex(model_ex)$index[80] ==
+                  modelToIndex(model_ex)$index[84])
+
+  })
+
+  test_that('modelToIndex imputes properly, Robust model, LogDEP',{
+
+    model_base <- hpiModel(hpi_data = rs_df,
+                           estimator = 'robust',
+                           log_dep = TRUE,
+                           trim_model=TRUE)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[2] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
+    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(modelToIndex(model_ex)$imputed[2] == 1)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[3:5] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[81:84] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
+    expect_true(modelToIndex(model_ex)$index[80] ==
+                  modelToIndex(model_ex)$index[84])
+
+  })
+
+  test_that('modelToIndex imputes properly, Weighted model, LogDep=FALSE',{
+
+    model_base <- hpiModel(hpi_data = rs_df,
+                           estimator = 'weighted',
+                           log_dep = FALSE,
+                           trim_model=TRUE)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[2] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
+    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(modelToIndex(model_ex)$imputed[2] == 1)
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[3:5] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+
+    model_ex <- model_base
+    model_ex$coefficients$coefficient[81:84] <- NA_real_
+    expect_is(modelToIndex(model_ex), 'hpiindex')
+    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
+    expect_true(modelToIndex(model_ex)$index[80] ==
+                  modelToIndex(model_ex)$index[84])
+
+  })
+

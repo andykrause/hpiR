@@ -15,56 +15,74 @@
 modelToIndex <- function(hpimodel,
                          max_period=max(hpimodel$coefficients$time)){
 
-  # Convert estimate to an index value
-  if(hpimodel$log_dep){
-    estimate <- c(0, exp(hpimodel$coefficients$coefficient) - 1)
-    index_value <- ((estimate + 1) * 100)[1:max_period]
-  } else {
-    estimate <- ((hpimodel$coefficients$coefficient + hpimodel$base_price) /
-                    hpimodel$base_price)
+  ## Check for proper class
 
-    index_value <- ((estimate) * 100)[1:max_period]
+  if (!'hpimodel' %in% class(hpimodel)){
+    message('"hpimodel" object must be of class "hpimodel"')
+    return(NULL)
   }
 
-  index <- ts(data=index_value,
-             start=min(hpimodel$coefficients$time),
-             end=max(hpimodel$coefficients$time))
+  ## Deal with imputations
 
-  imputed <- rep(0, length(index))
+  # Extract coefficients
+  coef_df <- hpimodel$coefficients
 
-  na.index <- is.na(index)
-  if (length(which(na.index)) > 0){
+  # Set up imputation identification vector
+  is_imputed <- rep(0, length(coef_df$coef))
 
-    imputed[na.index] <- 1
+  # Determine which index values needs to be imputed
+  na_coef <- is.na(coef_df$coef)
+
+  # If any, then work through imputation process
+  if (length(which(na_coef)) > 0){
+
+    # Set all missing to imputed
+    is_imputed[na_coef] <- 1
 
     # Fix cases where beginning is missing
-    if(1 %in% which(na.index)){
+    if (min(which(na_coef)) < min(which(!na_coef & coef_df$coefficient != 0))){
       message('Warning: You are extrapolating beginning periods')
-      not.na <- which(!na.index)
-      beg_imp <- which(na.index[1:(not.na[1] - 1)])
-      beg_index <- na.locf(index, "nocb", 'keep')
-      index[beg_imp] <- beg_index[beg_imp]
+      not_na <- which(!na_coef & coef_df$coefficient != 0)
+      imp_to_0 <- na_coef[which(na_coef < min(not_na))]
+      coef_df$coefficient[imp_to_0] <- 0
+      #na_coef <- is.na(coef_df$coef)
     }
 
     # Fix cases where end is missing
-    if(length(index) %in% which(na.index)){
+    if (length(coef_df$coefficient) %in% which(na_coef)){
       message('Warning: You are extrapolating ending periods')
-      not.na <- which(!na.index)
-      end_imp <- which(na.index[(max(not.na) + 1):length(index)])
-      end_index <- na.locf(index, "locf", 'keep')
-      index[end_imp] <- end_index[end_imp]
+      not_na <- which(!na_coef)
+      end_imp <- which(na_coef[(max(not_na) + 1):length(coef_df$coefficient)])
+      end_coef <- imputeTS::na.locf(coef_df$coefficient, "locf", 'keep')
+      coef_df$coefficient[end_imp] <- end_coef[end_imp]
+      #na_coef <- is.na(coef_df$coef)
     }
 
-    index <- imputeTS::na.interpolation(index, option='stine')
-    message('Total of ', length(which(na.index)), ' period(s) imputed')
+    coef_df$coefficient <- imputeTS::na.interpolation(coef_df$coefficient,
+                                                        option='stine')
+    message('Total of ', length(which(na_coef)), ' period(s) imputed')
   }
 
-  hpi <- list(name = hpimodel$periods$name,
-              numeric = hpimodel$periods$numeric,
-              period = hpimodel$periods$period,
-              index = index,
-              imputed = imputed)
+  # Convert estimate to an index value
+  if (hpimodel$log_dep){
+    estimate <- c(exp(coef_df$coefficient) - 1)
+    index_value <- ((estimate + 1) * 100)[1:max_period]
+  } else {
+    estimate <- ((coef_df$coefficient + hpimodel$base_price) /
+                    hpimodel$base_price)
+    index_value <- ((estimate) * 100)[1:max_period]
+  }
 
-  class(hpi) <- 'hpiindex'
-  hpi
+  # Convert to a time series (ts) object
+  index <- ts(data=index_value,
+              start=min(coef_df$time),
+              end=max_period)
+
+  # Set as classed list and return
+  structure(list(name = hpimodel$periods$name,
+                 numeric = hpimodel$periods$numeric,
+                 period = hpimodel$periods$period,
+                 index = index,
+                 imputed = is_imputed),
+            class = 'hpiindex')
 }
