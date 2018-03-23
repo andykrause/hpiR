@@ -280,7 +280,7 @@
                                 periodicity='M'))
   })
 
-## Setup rsCreateSales -------------------------------------------------------------------
+## Test rsCreateSales() ------------------------------------------------------------------
 
   context('rsCreateSales')
 
@@ -891,6 +891,136 @@ context('rsindex() wrapper')
                         log_dep = TRUE))
  })
 
+### Test hedCreateSales() ----------------------------------------------------------------
+
+ context('hedCreateSales')
+
+ # Test Setup
+ test_that("Can take a functional 'salesdf' object", {
+
+    sales_df <- dateToPeriod(sales_df = sales,
+                             date = 'sale_date',
+                             periodicity = 'monthly')
+    expect_is(hed_df <- hedCreateSales(sales_df=sales_df,
+                                       prop_id='pinx',
+                                       sale_id='sale_id',
+                                       price='sale_price'), 'hed')
+    expect_true(nrow(hed_df) == 43074)
+ })
+
+ # Test Setup
+  test_that("Can create own salesdf object", {
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales,
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price',
+                                      date='sale_date',
+                                      periodicity='monthly'), 'hed')
+   expect_true(nrow(hed_df) == 43074)
+  })
+
+ test_that("Can use min/max dates own salesdf object", {
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales,
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price',
+                                      date='sale_date',
+                                      periodicity='monthly',
+                                      min_date = as.Date('2012-03-21')), 'hed')
+   expect_true(nrow(hed_df) == 43074)
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales,
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price',
+                                      date='sale_date',
+                                      periodicity='monthly',
+                                      min_date = as.Date('2012-03-21'),
+                                      adj_type='clip'), 'hed')
+   expect_true(nrow(hed_df) == 33922)
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales,
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price',
+                                      date='sale_date',
+                                      periodicity='monthly',
+                                      max_date = as.Date('2015-03-21')), 'hed')
+   expect_true(nrow(hed_df) == 43074)
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales,
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price',
+                                      date='sale_date',
+                                      periodicity='monthly',
+                                      max_date = as.Date('2014-03-21'),
+                                      adj_type='clip'), 'hed')
+   expect_true(nrow(hed_df) == 21536)
+
+ })
+
+ test_that("Fails if sales creation fails", {
+
+   # Bad Date field
+   expect_error(hed_df <- hedCreateSales(sales_df=sales,
+                                         prop_id='pinx',
+                                         sale_id='sale_id',
+                                         price='sale_price',
+                                         date='sale_price',
+                                         periodicity='monthly'))
+
+   # Bad Periodicity field
+   expect_error(hed_df <- hedCreateSales(sales_df=sales,
+                                         prop_id='pinx',
+                                         sale_id='sale_id',
+                                         price='sale_price',
+                                         date='sale_date',
+                                         periodicity='mocnthly'))
+
+ })
+
+ sales_df <- dateToPeriod(sales_df = sales,
+                          date = 'sale_date',
+                          periodicity = 'monthly')
+
+ # test_that("Fails if bad arguments fails", {
+ #
+ #   # Bad prop_id field
+ #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+ #                                       prop_id='pinxx',
+ #                                       sale_id='sale_id',
+ #                                       price='sale_price'))
+ #
+ #   # Bad sale_id field
+ #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+ #                                       prop_id='pinx',
+ #                                       sale_id='salex_id',
+ #                                       price='sale_price'))
+ #
+ #   # Bad price field
+ #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+ #                                       prop_id='pinx',
+ #                                       sale_id='sale_id',
+ #                                       price='salex_price'))
+ #
+ # })
+ #
+ # test_that("Returns NULL if no repeat sales", {
+ #
+ #   expect_is(rs_df <- rsCreateSales(sales_df=sales_df[!duplicated(sales_df$prop_id),],
+ #                                    prop_id='pinx',
+ #                                    sale_id='sale_id',
+ #                                    price='sale_price'), "NULL")
+ #
+ #   expect_is(rs_df <- rsCreateSales(sales_df=sales_df[1:3, ],
+ #                                    prop_id='pinx',
+ #                                    sale_id='sale_id',
+ #                                    price='sale_price'), "NULL")
+ # })
+ #
 
 ### Test all plot functions --------------------------------------------------------------
 

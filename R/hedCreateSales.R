@@ -15,22 +15,12 @@
 #' aaa
 #' @examples
 #' ## With a raw data.frame
-#' rep_sales <- rsCreateSales(sales_df = seattle_sales,
+#' hed_sales <- hedCreateSales(sales_df = seattle_sales,
 #'                            prop_id = 'pinx',
 #'                            sale_id = 'uniq_id',
 #'                            price = 'sale_price',
 #'                            date = 'sale_date',
-#'                            periodicity = 'month')
-#'
-#' ## When pre-calculating the time periods
-#' sea_sales <- dateToPeriod(sales_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
-#' rep_sales <- rsCreateSales(sales_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            sale_id = 'uniq_id',
-#'                            price = 'sale_price')
-#'
+#'                            periodicity = 'monthly')
 #' @export
 
 hedCreateSales <- function(sales_df,
@@ -42,19 +32,34 @@ hedCreateSales <- function(sales_df,
                            ...){
 
   # Calculate the necessary date field
-  if(class(sales_df)[1] != 'sales.df'){
-    if(is.null(date)){
+  if (!'salesdf' %in% class(sales_df)){
+    if (is.null(date)){
       message('You must provide the name of a field with date of sale (date=)')
       stop()
     }
-    if(is.null(periodicity)){
+    if (is.null(periodicity)){
       message('No periodicity (periodicity=) provided, defaulting to annual')
-      periodicity <- 'year'
+      periodicity <- 'yearly'
     }
+
     sales_df <- dateToPeriod(sales_df=sales_df,
                              date=date,
                              periodicity=periodicity,
                              ...)
+  }
+
+  # Check fields
+  if (!prop_id %in% names(sales_df)){
+    message('"prop_id" field not found')
+    stop()
+  }
+  if (!sale_id %in% names(sales_df)){
+    message('"sale_id" field not found')
+    stop()
+  }
+  if (!price %in% names(sales_df)){
+    message('"price" field not found')
+    stop()
   }
 
   # Prepare input data
@@ -69,12 +74,17 @@ hedCreateSales <- function(sales_df,
     # Remove any properties sold twice in same time period
     dplyr::filter(!duplicated(paste0(prop_id, '_', date_period)))
 
-
+  # Add period table
   attr(hed_df, 'period_table') <- attr(sales_df, 'period_table')
 
+  # Message if none
+  if (is.null(hed_df) | nrow(hed_df) == 0){
+    message('No Hedonic Sales Created\n')
+    return(NULL)
+  } else {
+    class(hed_df) <- append('hed', class(hed_df))
+  }
+
   # Return _df
-  class(hed_df) <- c('hed', class(hed_df))
-
   hed_df
-
 }
