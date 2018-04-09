@@ -9,7 +9,8 @@
 
   ## Load Data
 
-  sales <- get(data(seattle_sales))
+  data(seattle_sales)
+  sales <- seattle_sales
 
 ## Setup ---------------------------------------------------------------------------------
 
@@ -434,6 +435,8 @@
  })
 
 ## Test hpiModel.rs up to rsModel --------------------------------------------------------
+
+ context('hpiModel.rs')
 
  test_that('hpiModel.rs works',{
    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
@@ -918,6 +921,7 @@ context('rsindex() wrapper')
                                       date='sale_date',
                                       periodicity='monthly'), 'hed')
    expect_true(nrow(hed_df) == 43074)
+   assign('hed_df', hed_df, .GlobalEnv)
   })
 
  test_that("Can use min/max dates own salesdf object", {
@@ -986,41 +990,107 @@ context('rsindex() wrapper')
                           date = 'sale_date',
                           periodicity = 'monthly')
 
- # test_that("Fails if bad arguments fails", {
+ test_that("Fails if bad arguments fails", {
+
+   # Bad prop_id field
+   expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+                                         prop_id='pinxx',
+                                         sale_id='sale_id',
+                                         price='sale_price'))
+
+   # Bad sale_id field
+   expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+                                         prop_id='pinx',
+                                         sale_id='salex_id',
+                                         price='sale_price'))
+
+   # Bad price field
+   expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+                                         prop_id='pinx',
+                                         sale_id='sale_id',
+                                         price='salex_price'))
+
+ })
+
+ test_that("Returns NULL if no sales", {
+
+   expect_is(hed_df <- hedCreateSales(sales_df=sales_df[0,],
+                                      prop_id='pinx',
+                                      sale_id='sale_id',
+                                      price='sale_price'), "NULL")
+
+ })
+
+## Test hpiModel.hed up to hedModel ------------------------------------------------------
+
+context('hpiModel.hed')
+
+ ## Test regarding hpi model
+ # TODO
+ test_that('hpi Model with Hed works'){
+
+   # Dep/Ind variety
+   hed_model <- hpiModel(hpi_data = hed_df,
+                         estimator = 'base',
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths'),
+                         log_dep = TRUE)
+
+   # Full formula
+   hed_model <- hpiModel(hpi_data = hed_df,
+                         estimator = 'base',
+                         hed_spec = as.formula('log(price) ~ as.factor(baths) + tot_sf'),
+                         log_dep = TRUE)
+
+
+ }
+
+ test_that('"log_dep" works both ways',{
+
+   expect_true(hpiModel(hpi_data = hed_df,
+                        estimator = 'base',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = TRUE)$model_obj$fitted.values[1] < 20)
+
+   expect_true(hpiModel(hpi_data = hed_df,
+                        estimator = 'base',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = FALSE)$model_obj$fitted.values[1] > 10000)
+
+   })
+
+ # test_that('Check for zero or negative prices works',{
  #
- #   # Bad prop_id field
- #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
- #                                       prop_id='pinxx',
- #                                       sale_id='sale_id',
- #                                       price='sale_price'))
+ #   hed_dfx <- hed_df
+ #   hed_dfx$price_1 <- 0
+ #   expect_is(hed_model <- hpiModel(hpi_data = hed_dfx,
+ #                                   estimator = 'base',
+ #                                   dep_var = 'price',
+ #                                   ind_var = c('tot_sf', 'beds', 'baths'),
+ #                                   log_dep = TRUE), 'NULL')
  #
- #   # Bad sale_id field
- #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
- #                                       prop_id='pinx',
- #                                       sale_id='salex_id',
- #                                       price='sale_price'))
- #
- #   # Bad price field
- #   expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
- #                                       prop_id='pinx',
- #                                       sale_id='sale_id',
- #                                       price='salex_price'))
+ #   expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+ #                                  estimator = 'base',
+ #                                  log_dep = FALSE), 'hpimodel')
+ #   rs_dfx$price_1 <- NA_integer_
+ #   expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+ #                                  estimator = 'base',
+ #                                  log_dep = TRUE), 'NULL')
+ #   expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+ #                                  estimator = 'base',
+ #                                  log_dep = FALSE), 'NULL')
+ #   rs_dfx$price_1 <- Inf
+ #   expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+ #                                  estimator = 'base',
+ #                                  log_dep = TRUE), 'NULL')
+ #   expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+ #                                  estimator = 'base',
+ #                                  log_dep = FALSE), 'NULL')
  #
  # })
- #
- # test_that("Returns NULL if no repeat sales", {
- #
- #   expect_is(rs_df <- rsCreateSales(sales_df=sales_df[!duplicated(sales_df$prop_id),],
- #                                    prop_id='pinx',
- #                                    sale_id='sale_id',
- #                                    price='sale_price'), "NULL")
- #
- #   expect_is(rs_df <- rsCreateSales(sales_df=sales_df[1:3, ],
- #                                    prop_id='pinx',
- #                                    sale_id='sale_id',
- #                                    price='sale_price'), "NULL")
- # })
- #
+
 
 ### Test all plot functions --------------------------------------------------------------
 
