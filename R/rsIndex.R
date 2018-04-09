@@ -33,7 +33,9 @@ rsIndex <- function(sales_df,
 
   # Check if sales_df is an rs_df object
   if ('rs' %in% class(sales_df)){
+
     rs_sales <- sales_df
+
   } else {
 
     if (!'salesdf' %in% class(sales_df)){
@@ -45,37 +47,35 @@ rsIndex <- function(sales_df,
       }
 
       # Create 'salesdf' object
-      sales_df <- dateToPeriod(sales_df = sales,
+      sales_df <- dateToPeriod(sales_df = sales_df,
                                date = 'sale_date',
                                periodicity = periodicity,
                                ...)
-    } else {
+    } # Ends if(!salesdf...)
 
-      if (is.null(sale_id)){
-        message('When supplying a "sales_df" object to the "sales_df" object a ',
+    if (is.null(sale_id)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
                 '"sale_id" argument must be supplied')
         stop()
-      }
-      if (is.null(prop_id)){
-        message('When supplying a "sales_df" object to the "sales_df" object a ',
-                '"prop_id" argument must be supplied')
-        stop()
-      }
-      if (is.null(price)){
-        message('When supplying a "sales_df" object to the "sales_df" object a ',
-                '"price" argument must be supplied')
-        stop()
-      }
-
-      # Create Sales object
-      rs_sales <- rsCreateSales(sales_df = sales_df,
-                                sale_id = sale_id,
-                                prop_id = prop_id,
-                                price = price,
-                                ...)
     }
-  }
+    if (is.null(prop_id)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
+              '"prop_id" argument must be supplied')
+      stop()
+    }
+    if (is.null(price)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
+              '"price" argument must be supplied')
+      stop()
+    }
 
+    # Create Sales object
+    rs_sales <- rsCreateSales(sales_df = sales_df,
+                              sale_id = sale_id,
+                              prop_id = prop_id,
+                              price = price,
+                              ...)
+  } # Ends if/else ('rs' %in% ...)
 
   if (!'rs' %in% class(rs_sales)){
     message('Converting sales data to repeat sales object failed')
