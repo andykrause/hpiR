@@ -13,6 +13,8 @@ Lorem Ipsum...
 
 \item{log_dep}{default TRUE, should the dependent variable (change in price) be logged?}
 
+\item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
+
 \item{...}{Additional Arguments}
 }
 \value{

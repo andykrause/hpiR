@@ -20,6 +20,8 @@ Lorem Ipsum...
 \item{ind_var}{default=NULL; independent variable(s) of the model}
 
 \item{...}{Additional Arguments}
+
+\item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
 }
 \value{
 hpimodel object

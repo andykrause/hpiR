@@ -4,7 +4,7 @@
 \alias{dateToPeriod}
 \title{dateToPeriod}
 \usage{
-dateToPeriod(sales_df, date, periodicity = "year", min_date = NULL,
+dateToPeriod(sales_df, date, periodicity = NULL, min_date = NULL,
   max_date = NULL, adj_type = "move", ...)
 }
 \arguments{
@@ -12,7 +12,7 @@ dateToPeriod(sales_df, date, periodicity = "year", min_date = NULL,
 
 \item{date}{name of field containing the date of the sale in Date or POSIXt format}
 
-\item{periodicity}{type of periodicity to use ('year', 'qtr', 'month' or 'week)}
+\item{periodicity}{type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)}
 }
 \value{
 data frame with three new fields:

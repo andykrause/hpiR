@@ -37,20 +37,10 @@ aaa
 
 \examples{
 ## With a raw data.frame
-rep_sales <- rsCreateSales(sales_df = seattle_sales,
+hed_sales <- hedCreateSales(sales_df = seattle_sales,
                            prop_id = 'pinx',
                            sale_id = 'uniq_id',
                            price = 'sale_price',
                            date = 'sale_date',
-                           periodicity = 'month')
-
-## When pre-calculating the time periods
-sea_sales <- dateToPeriod(sales_df = seattle_sales,
-                          date = 'sale_date',
-                          periodicity = 'month')
-rep_sales <- rsCreateSales(sales_df = sea_sales,
-                           prop_id = 'pinx',
-                           sale_id = 'uniq_id',
-                           price = 'sale_price')
-
+                           periodicity = 'monthly')
 }

@@ -4,16 +4,16 @@
 \alias{rsModel}
 \title{rsModel}
 \usage{
-rsModel(estimator, rs_df, time_matrix, price_diff, ...)
+rsModel(rs_df, time_matrix, price_diff, estimator, ...)
 }
 \arguments{
-\item{estimator}{Type of model to estimates (base, robust, weighted)}
-
 \item{rs_df}{Repeat sales dataset from rsCreateSales()}
 
 \item{time_matrix}{Time matrix object from rsTimeMatrix()}
 
 \item{price_diff}{Difference in price betwen the two sales}
+
+\item{estimator}{Type of model to estimates (base, robust, weighted).  Must be in that class.}
 
 \item{...}{Additional arguments}
 }
@@ -28,8 +28,8 @@ Estimate repeat sales model (method based on estimator class). Generic method.
 }
 
 \examples{
-rs_model <- rsModel(estimator = 'base',
-                    rs_df = rs_sales,
+rs_model <- rsModel(rs_df = rs_sales,
                     time_matrix = time_matrix,
-                    price_diff = price_diff)
+                    price_diff = price_diff,
+                    estimator = structure('base', class='base'))
 }
