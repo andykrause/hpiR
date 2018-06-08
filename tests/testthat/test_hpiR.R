@@ -352,6 +352,21 @@
 
   })
 
+  test_that("Sequence only (seq_only) option works", {
+
+    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+                                     prop_id='pinx',
+                                     sale_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     seq_only = TRUE),
+              'rs')
+
+    expect_true(nrow(rs_df) == 4823)
+
+  })
+
   test_that("Fails if sales creation fails", {
 
     # Bad Date field
@@ -1027,7 +1042,7 @@ context('hpiModel.hed')
 
  ## Test regarding hpi model
  # TODO
- test_that('hpi Model with Hed works'){
+ test_that('hpi Model with Hed works', {
 
    # Dep/Ind variety
    hed_model <- hpiModel(hpi_data = hed_df,
@@ -1043,7 +1058,7 @@ context('hpiModel.hed')
                          log_dep = TRUE)
 
 
- }
+ })
 
  test_that('"log_dep" works both ways',{
 

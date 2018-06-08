@@ -32,7 +32,7 @@ Begin by loading the`hpiR` packages (assuming that you've already downloaded it 
 
 ### Data
 
-This package provides a sample dataset to work with.  This dataset, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author. ]  The data is open and free to share.
+This package provides a sample dataset to work with.  This dataset, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author.]  The data is open and free to share.
 
 The data can be loaded into an object with wrapping the `data(seattle_sales)` command with `get`.   
 
@@ -50,9 +50,9 @@ The data can be loaded into an object with wrapping the `data(seattle_sales)` co
 
 <!-- ``` -->
 
-All of the potential models that we can create with this package require the date of sales to be converted to a numeric and relative time period.  Relative, relating to the base period which is assumed to be the first period in the transaction data.  
+All of the potential models that we can create with this package require the date of sales to be converted to a numeric and relative time period.  'Relative', here, relates to the base period which is assumed to be the first period in the transaction data.  
 
-The `dateToPeriod` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are **yearly**, **quarterly**, **monthly** or **weekly**, with **yearly** as the default.  In addition to the sales data.frame and the periodicity type, the `dateToPeriod` function also requires an input telling it which field in the data contains the transaction (sale) date (`date`).
+The `dateToPeriod()` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are **yearly**, **quarterly**, **monthly** or **weekly**, with **yearly** as the default.  In addition to the sales data.frame and the periodicity type, the `dateToPeriod()` function also requires an input telling it which field in the data contains the transaction (sale) date (`date`).
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -62,7 +62,7 @@ The `dateToPeriod` function will convert R date fields into relative time period
 
 ```
 
-The default specification of `dateToPeriod` will use the minimum and maximum dates in the `sales_df` object at the lower and upper date boundaries for the modeling and index creation that follow.  You can, however, custom set these dates using the `min_date` and `max_date` argument.  For examples, let's assume that we want to actually estimate an index that covers the entire sales period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. 
+The default specification of `dateToPeriod` will use the minimum and maximum dates in the `sales_df` object at the lower and upper date boundaries for the modeling and index creation that follow.  You can, however, custom set these dates using the `min_date` and `max_date` argument.  For examples, let's assume that we want to estimate an index that covers the entire sales period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. You see a warning telling you that there are empty periods -- periods in which there are no transactions.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -86,7 +86,7 @@ If the dates that are provided as alternative minimums and maximums are within t
 
 ```
 
-Alternatively, you can use the `min_date` and `max_date` parameters to clip your dataset to a particular time frame by setting the `adj_type` argument to *clip*, (the default is *move* which simply moves it to the min or max in the data as shown above.)
+Alternatively, you can use the `min_date` and `max_date` parameters to clip your dataset to a particular time frame by setting the `adj_type` argument to *clip*, (the default is *move* which simply moves it to the min or max in the data as shown above.).  This functionality allows you to create an index for a subset of the time period covered by your data.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -99,9 +99,9 @@ Alternatively, you can use the `min_date` and `max_date` parameters to clip your
 
 ```
 
-For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales` object going forward).
+For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales_df` object going forward).
 
-We now have a dataset that includes a new field (**date_period**) indicate the period of each transaction.  Additional information on the full extend of the periods as well as their numeric and date values can be found in the `period_table` attribute of the new `rs` object data.frame; or accessed by:
+We now have a dataset that includes a new field (**date_period**) indicating the period of each transaction.  Additional information on the full extend of the periods as well as their numeric and date values can be found in the `period_table` attribute of the new `rs` object (also a data.frame); or accessed by:
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -113,9 +113,9 @@ We now have a dataset that includes a new field (**date_period**) indicate the p
 
 We start by creating an index using a sale-resale model, one of the most popular methods to create a house price index. 
 
-First, we use the `rsCreateSales` function to convert the raw transaction data (the **sales_df** object) into a data.frame of repeat sale (properties that have sold multiple times in the 2010 to 2016 period.)
+First, we use the `rsCreateSales()` function to convert the raw transaction data (the **sales_df** object) into a data.frame of repeat sales (properties that have sold multiple times in the 2010 to 2016 period.)
 
-The `rsCreateSales` function requires a unique property id field as well as a unique sale id field and a field denoting the sale price.  
+The `rsCreateSales()` function requires a unique property id field as well as a unique sale id field and a field denoting the sale price.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -130,9 +130,31 @@ This function creates a data.frame with seven fields: the property id, the time 
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  knitr::kable(head(rs_sales, 10))
+  knitr::kable(rs_sales[4278:4287, ])
 
 ```
+
+In the event of more than two transactions, all pairs of transactions are created by default -- sales 1 to 2, 1 to 3 and 2 to 3. If you'd like to only use sequential transactions as pairs -- sales 1 to 2 and 2 to 2, for example -- you can set the `seq_only` option to TRUE (default is FALSE).
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rs_sales_so <- rsCreateSales(sales_df = sales_df,
+                               prop_id = 'pinx',
+                               sale_id = 'sale_id',
+                               price = 'sale_price',
+                               seq_only = TRUE)
+                          
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  knitr::kable(rs_sales_so[4278:4287, ])
+
+```
+
+
+
+
 
 Next, we use this data to estimate a repeat sales model.  In this simple example we will use the **base** estimator (a simple OLS) with a logged dependent variable.  More information on other options here are covered in the **Estimators** section below. 
 

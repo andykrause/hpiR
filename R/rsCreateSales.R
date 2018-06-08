@@ -9,6 +9,8 @@
 #' Only necessary if not passing a sales.df object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
 #' Only necessary if not passing a sales.df object
+#' @param seq_only default=FALSE, indicating whether to only include sequential repeat observations
+#' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
 #' @return data.frame of repeat sales. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `rs` object
 #' @section Further Details:
@@ -41,8 +43,9 @@ rsCreateSales <- function(sales_df,
                           prop_id,
                           sale_id,
                           price,
-                          date=NULL,
-                          periodicity=NULL,
+                          date = NULL,
+                          periodicity = NULL,
+                          seq_only = FALSE,
                           ...){
 
   # Crate the sales_df if not provided
@@ -170,10 +173,23 @@ rsCreateSales <- function(sales_df,
     d3 <- NULL
   }
 
-  ## Combine and Return
+  ## Combine, check seq and add id
 
-  # Combine
-  rs_df <- rbind(d2, d3)
+  # Combine and order
+  rs_df <- rbind(d2, d3) %>%
+    dplyr::arrange(prop_id, period_1, period_2)
+
+  # Check for sequential only
+  if (seq_only){
+    rs_df <- rs_df %>%
+      dplyr::filter(!duplicated(sale_id1))
+  }
+
+  # Add Unique Id
+  rs_df <- rs_df %>%
+    dplyr::mutate(pair_id = 1:nrow(rs_df))
+
+  ## Return
 
   # Message if none
   if (is.null(rs_df) | nrow(rs_df) == 0){
