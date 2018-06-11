@@ -130,7 +130,7 @@ This function creates a data.frame with seven fields: the property id, the time 
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  knitr::kable(rs_sales[4278:4287, ])
+  knitr::kable(rs_sales[4280:4289, ])
 
 ```
 
@@ -148,13 +148,9 @@ In the event of more than two transactions, all pairs of transactions are create
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  knitr::kable(rs_sales_so[4278:4287, ])
+  knitr::kable(rs_sales_so[4280:4289, ])
 
 ```
-
-
-
-
 
 Next, we use this data to estimate a repeat sales model.  In this simple example we will use the **base** estimator (a simple OLS) with a logged dependent variable.  More information on other options here are covered in the **Estimators** section below. 
 
@@ -185,6 +181,44 @@ A simple plot shows the results of this estimation
 ```
 
 A wrapper function, `rsIndex`, will do all of the above taking it from a raw data.frame of sales date through to the index creation and storing in an object of class 'hpi'.  
+
+With the wrapper you can send it:
+
+1. A raw sales object (sales_df = 'data.frame' object)
+   * periodicity (optional: default = 'annual')
+   * min_date (optional: default = min of data)
+   * max_date (optional: default = max of data)
+   * adj_type (opt: default = 'move')
+   * date (required)
+   * price (required)
+   * sale_id (required)
+   * prop_id (required)
+   * seq_only (opt: default = FALSE)
+   * estimator (opt: default = 'base')
+   * log_dep (opt: TRUE)
+   * trim_model (opt: FALSE)
+   * max_period (opt: max of data)
+2. A salesdf object (sales_df = 'salesdf' object)
+   * date (required)
+   * price (required)
+   * sale_id (required)
+   * prop_id (required)
+   * seq_only (opt: default = FALSE)
+   * estimator (opt: default = 'base')
+   * log_dep (opt: TRUE)
+   * trim_model (opt: FALSE)
+   * max_period (opt: max of data)
+3. An 'rs' object (sales_df = 'rs' object)
+   * estimator (opt: default = 'base')
+   * log_dep (opt: TRUE)
+   * trim_model (opt: FALSE)
+   * max_period (opt: max of data)
+
+
+
+
+
+
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
