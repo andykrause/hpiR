@@ -13,7 +13,8 @@
 ### Convert model estimates into zpiindex object -----------------------------------------
 
 modelToIndex <- function(hpimodel,
-                         max_period=max(hpimodel$coefficients$time)){
+                         max_period=max(hpimodel$coefficients$time),
+                         ...){
 
   ## Check for proper class
 
@@ -22,10 +23,17 @@ modelToIndex <- function(hpimodel,
     return(NULL)
   }
 
+  ## Check max period
+  if (max_period > max(hpimodel$coefficients$time)){
+    message('"max_period" cannot be greater than maximum period in the estimated model.',
+            ' Setting to maximum of estimated model')
+    max_period <- max(hpimodel$coefficients$time)
+  }
+
   ## Deal with imputations
 
   # Extract coefficients
-  coef_df <- hpimodel$coefficients
+  coef_df <- hpimodel$coefficients[1:max_period, ]
 
   # Set up imputation identification vector
   is_imputed <- rep(0, length(coef_df$coef))
@@ -45,7 +53,6 @@ modelToIndex <- function(hpimodel,
       not_na <- which(!na_coef & coef_df$coefficient != 0)
       imp_to_0 <- na_coef[which(na_coef < min(not_na))]
       coef_df$coefficient[imp_to_0] <- 0
-      #na_coef <- is.na(coef_df$coef)
     }
 
     # Fix cases where end is missing
@@ -55,7 +62,6 @@ modelToIndex <- function(hpimodel,
       end_imp <- which(na_coef[(max(not_na) + 1):length(coef_df$coefficient)])
       end_coef <- imputeTS::na.locf(coef_df$coefficient, "locf", 'keep')
       coef_df$coefficient[end_imp] <- end_coef[end_imp]
-      #na_coef <- is.na(coef_df$coef)
     }
 
     coef_df$coefficient <- imputeTS::na.interpolation(coef_df$coefficient,
@@ -79,10 +85,10 @@ modelToIndex <- function(hpimodel,
               end=max_period)
 
   # Set as classed list and return
-  structure(list(name = hpimodel$periods$name,
-                 numeric = hpimodel$periods$numeric,
-                 period = hpimodel$periods$period,
+  structure(list(name = hpimodel$periods$name[1:max_period],
+                 numeric = hpimodel$periods$numeric[1:max_period],
+                 period = hpimodel$periods$period[1:max_period],
                  index = index,
-                 imputed = is_imputed),
+                 imputed = is_imputed[1:max_period]),
             class = 'hpiindex')
 }
