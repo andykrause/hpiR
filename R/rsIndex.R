@@ -21,15 +21,7 @@
 #' @export
 
 rsIndex <- function(sales_df,
-                    date=NULL,
-                    price=NULL,
-                    sale_id=NULL,
-                    prop_id=NULL,
-                    estimator='base',
-                    log_dep=TRUE,
-                    periodicity='monthly',
-                    ...
-                    ){
+                    ...){
 
   # Check if sales_df is an rs_df object
   if ('rs' %in% class(sales_df)){
@@ -40,52 +32,51 @@ rsIndex <- function(sales_df,
 
     if (!'salesdf' %in% class(sales_df)){
 
-      if (is.null(date) || (!any(class(sales_df[[date]]) %in% c('Date', 'POSIXt')))){
+      if (is.null(list(...)$date) ||
+           (!any(class(sales_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
         message('When supplying a raw data.frame to the "sales_df"',
                 'object, a valid "date" argument must be supplied')
-        stop()
+        return(NULL)
       }
 
       # Create 'salesdf' object
       sales_df <- dateToPeriod(sales_df = sales_df,
-                               date = 'sale_date',
-                               periodicity = periodicity,
+                               # date = date,
+                               # periodicity = periodicity,
                                ...)
     } # Ends if(!salesdf...)
 
-    if (is.null(sale_id)){
+    if (is.null(list(...)$sale_id)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
                 '"sale_id" argument must be supplied')
-        stop()
+      return(NULL)
     }
-    if (is.null(prop_id)){
+    if (is.null(list(...)$prop_id)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
               '"prop_id" argument must be supplied')
-      stop()
+      return(NULL)
     }
-    if (is.null(price)){
+    if (is.null(list(...)$price)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
               '"price" argument must be supplied')
-      stop()
+      return(NULL)
     }
 
     # Create Sales object
     rs_sales <- rsCreateSales(sales_df = sales_df,
-                              sale_id = sale_id,
-                              prop_id = prop_id,
-                              price = price,
+                              # sale_id = sale_id,
+                              # prop_id = prop_id,
+                              # price = price,
                               ...)
   } # Ends if/else ('rs' %in% ...)
 
   if (!'rs' %in% class(rs_sales)){
     message('Converting sales data to repeat sales object failed')
-    stop()
+    return(NULL)
   }
 
   # Etimate the model
   rs_model <- hpiModel(hpi_data = rs_sales,
-                       estimator=estimator,
-                       log_dep=log_dep,
                        ...)
 
   if (class(rs_model) != 'hpimodel'){
@@ -94,7 +85,8 @@ rsIndex <- function(sales_df,
   }
 
   # Convert to an index
-  rs_index <- modelToIndex(rs_model)
+  rs_index <- modelToIndex(rs_model,
+                           ...)
 
   if (class(rs_index) != 'hpiindex'){
     message('Converting model results to index failed')
@@ -103,7 +95,6 @@ rsIndex <- function(sales_df,
 
   # Return Values
   structure(list(data=rs_sales,
-                 estimator=estimator,
                  model=rs_model,
                  index=rs_index),
             class='hpi')
