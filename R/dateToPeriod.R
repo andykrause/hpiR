@@ -161,7 +161,7 @@ dateToPeriod <- function(sales_df,
       sale_date <- gsub('12-30', '12-29', sale_date)
       min_date <- gsub('12-30', '12-29', min_date)
       max_date <- gsub('12-30', '12-29', max_date)
-      message('Treating all Dec 31st and Dec 30th dates (leap years) as Dec 29th ',
+      message('Treating all Dec 31st and Dec 30th (in leap years) dates as Dec 29th ',
               'to avoid 53 week issues')
     }
 
