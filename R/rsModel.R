@@ -21,6 +21,40 @@ rsModel <- function(rs_df,
                     price_diff,
                     estimator,
                     ...){
+
+  ## Check for proper classes
+
+  # rs_df object
+  if (!'rs' %in% class(rs_df)){
+    message('\nIncorrect class for "rs_df" object.  Must be of class "rs"')
+    return(NULL)
+  }
+
+  # timematrix
+  if (!'timematrix' %in% class(time_matrix)){
+    message('\nIncorrect class for "time_matrix" object.  Must be of class "timematrix"')
+    return(NULL)
+  }
+
+  # Agreement between lengths of rs_df, time_matrix and price_diff
+  if (length(unique(c(nrow(rs_df), nrow(time_matrix), length(price_diff)))) > 1){
+    message('\n# of Observations of "rs_df", "time_matrix" and "price_diff" do not match')
+    return(NULL)
+  }
+
+  # Check that class is available
+  if (!paste0('rsModel.', class(estimator)) %in% methods(rsModel)){
+    message('\nInvalid estimator type: "', class(estimator), '" method not available.')
+    return(NULL)
+  }
+
+  # Check for sparseness
+  if (nrow(rs_df) < nrow(attr(rs_df, 'period_table'))){
+    message('\nYou have fewer observations (', nrow(rs_df), ') than number of periods (',
+            nrow(attr(rs_df, 'period_table')), '). Results will likely be unreliable.')
+  }
+
+  # Dispatch to specfic method
   UseMethod("rsModel", estimator)
 
 }
@@ -35,10 +69,13 @@ rsModel.base <- function(rs_df,
                          estimator,
                          ...){
 
+  # Estimate the model
   rs_model <- lm(price_diff ~ time_matrix + 0)
 
+  # Assign Class
   class(rs_model) <- 'rsmod'
 
+  # Return
   rs_model
 
 }
@@ -63,8 +100,10 @@ rsModel.robust <- function(rs_df,
     rs_model <- robustbase::lmrob(price_diff ~ time_matrix + 0)
   }
 
+  # Add class
   class(rs_model) <- 'rsmod'
 
+  # Return
   rs_model
 
 }
@@ -93,8 +132,10 @@ rsModel.weighted <- function(rs_df,
   # Re-run model
   rs_model <- lm(price_diff ~ time_matrix + 0, weights=wgts)
 
+  # Add Class
   class(rs_model) <- 'rsmod'
 
+  # Return
   rs_model
 
 }
