@@ -65,7 +65,7 @@ hpiModel.rs <- function(hpi_data,
 
   # If any NA, NaN, or Inf/-Inf
   if (any(!is.finite(price_diff))){
-    message('Negative or zero values in the price field')
+    message('NA, negative, zero or non-finite values in the price field')
     return(NULL)
   }
 
