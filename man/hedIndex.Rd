@@ -4,12 +4,18 @@
 \alias{hedIndex}
 \title{hedIndex}
 \usage{
-hedIndex(sales_df, date, price, sale_id, prop_id, estimator = "base",
-  log_dep = TRUE, periodicity = "month", dep_var = NULL, ind_var = NULL,
-  hed_spec = NULL, ...)
+hedIndex(sales_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 }
 \arguments{
 \item{sales_df}{data.frame of sale transactions}
+
+\item{dep_var}{default = NULL, dependent variable in hedonic model}
+
+\item{ind_var}{default = NULL, independent variables in the hedonic model}
+
+\item{hed_spec}{default = NULL, Full hedonic model specification}
+
+\item{...}{Additional Arguments}
 
 \item{date}{Field contain the sales date}
 
@@ -24,14 +30,6 @@ hedIndex(sales_df, date, price, sale_id, prop_id, estimator = "base",
 \item{log_dep}{default = TRUE, Should the dependent variable (price) be logged?}
 
 \item{periodicity}{default = 'month', Periodicity of time to estimate index at}
-
-\item{dep_var}{default = NULL, dependent variable in hedonic model}
-
-\item{ind_var}{default = NULL, independent variables in the hedonic model}
-
-\item{hed_spec}{default = NULL, Full hedonic model specification}
-
-\item{...}{Additional Arguments}
 }
 \value{
 hpi object
