@@ -97,7 +97,7 @@ rsModel.robust <- function(rs_df,
   if(time_size > 5){
     rs_model <- MASS::rlm(price_diff ~ time_matrix + 0)
   } else {
-    rs_model <- robustbase::lmrob(price_diff ~ time_matrix + 0)
+    rs_model <- robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")
   }
 
   # Add class
