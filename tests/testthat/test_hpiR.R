@@ -19,12 +19,10 @@
   # Test Setup
   test_that("Basic dateToPeriod() functionality is working", {
 
-    expect_is(sales_df <- dateToPeriod(sales_df = sales,
-                                       date = 'sale_date',
-                                       periodicity = 'monthly'), 'salesdf')
     sales_df <- dateToPeriod(sales_df = sales,
                              date = 'sale_date',
                              periodicity = 'monthly')
+    expect_is(sales_df, 'salesdf')
     expect_true(!is.null(attr(sales_df, 'period_table')))
     expect_true(digest::digest(sales_df$date_period) ==
                   'ad2b649a8470371eff6f18cfdad93c92')
@@ -280,6 +278,37 @@
                                 min_date = as.Date('2005-03-31'),
                                 periodicity='M'))
   })
+
+  # Bad Date arguments
+  test_that('Bad date arguments are converted or give errors', {
+
+    # Conversion works for a single string/date
+    expect_is(dateToPeriod(sales_df=sales,
+                           date = 'sale_date',
+                           min_date = '2011-11-01',
+                           max_date = Sys.time()),
+              'salesdf')
+
+    # Conversion works for a vector
+    sales_x <- sales
+    sales_x$sale_date <- as.character(sales_x$sale_date)
+    expect_is(dateToPeriod(sales_df=sales_x,
+                           date = 'sale_date',
+                           min_date = '2011-11-01',
+                           max_date = Sys.time()),
+              'salesdf')
+
+    # Conversion fails for a bad string
+    expect_error(dateToPeriod(sales_df=sales,
+                              date = 'sale_date',
+                              min_date = 'xxx'))
+
+    # Conversion fails for a bad vector
+    expect_error(dateToPeriod(sales_df=sales,
+                              date = 'sale_price'))
+
+  })
+
 
 ## Test rsCreateSales() ------------------------------------------------------------------
 
@@ -995,47 +1024,71 @@
 
 
 #
-#  test_that("Bad arguments generate errors: Full Case",{
-#
-#    expect_error(rsIndex(sales_df = sales,
-#                         date = 'sale_price',
-#                         price = 'sale_price',
-#                         sale_id = 'sale_id',
-#                         prop_id = 'pinx',
-#                         estimator = 'base',
-#                         log_dep = TRUE,
-#                         periodicity = 'monthly'))
-#    expect_error(rsIndex(sales_df = sales,
-#                         date = 'sale_date',
-#                         price = 'sale_price',
-#                         sale_id = 'sale_id',
-#                         prop_id = 'pinx',
-#                         estimator = 'base',
-#                         log_dep = TRUE,
-#                         periodicity = 'xxx'))
-#  })
-#
-#  test_that("Bad arguments generate errors: Sales_df Case",{
-#
-#    expect_error(rsIndex(sales_df = sales_df,
-#                         price = 'xx',
-#                         sale_id = 'sale_id',
-#                         prop_id = 'pinx',
-#                         estimator = 'base',
-#                         log_dep = TRUE))
-#    expect_error(rsIndex(sales_df = sales_df,
-#                         price = 'sale_price',
-#                         sale_id = 'xx',
-#                         prop_id = 'pinx',
-#                         estimator = 'base',
-#                         log_dep = TRUE))
-#    expect_error(rsIndex(sales_df = sales_df,
-#                         price = 'sale_price',
-#                         sale_id = 'sale_id',
-#                         prop_id = 'xx',
-#                         estimator = 'base',
-#                         log_dep = TRUE))
-#  })
+ test_that("Bad arguments generate NULLs: Full Case",{
+
+   expect_error(rsIndex(sales_df = sales,
+                        date = 'sale_price',
+                        price = 'sale_price',
+                        sale_id = 'sale_id',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE,
+                        periodicity = 'monthly'))
+
+   expect_error(rsIndex(sales_df = sales,
+                       date = 'sale_date',
+                       price = 'sale_price',
+                       sale_id = 'sale_id',
+                       prop_id = 'pinx',
+                       estimator = 'base',
+                       log_dep = TRUE,
+                       periodicity = 'xxx'))
+
+ })
+
+ test_that("Bad arguments generate errors: Sales_df Case",{
+
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'xx',
+                        sale_id = 'sale_id',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'sale_price',
+                        sale_id = 'xx',
+                        prop_id = 'pinx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+   expect_error(rsIndex(sales_df = sales_df,
+                        price = 'sale_price',
+                        sale_id = 'sale_id',
+                        prop_id = 'xx',
+                        estimator = 'base',
+                        log_dep = TRUE))
+ })
+
+ test_that("Bad arguments handling: rs_sales Case",{
+
+   # Bad estimators default to 'base'
+   expect_true(rsIndex(sales_df = rs_df,
+                       estimator = 'basex',
+                       log_dep = TRUE)$model$estimator == 'base')
+
+   expect_error(rsIndex(sales_df = rs_df,
+                        estimator = 'robust',
+                        log_dep = 'a'))
+
+   expect_error(rsIndex(sales_df = rs_df,
+                        estimator = 'robust',
+                        trim_model = 'a'))
+
+   expect_error(rsIndex(sales_df = rs_df,
+                        estimator = 'robust',
+                        max_period = 'a'))
+ })
+
+
 #
 # ### Test hedCreateSales() ----------------------------------------------------------------
 #
