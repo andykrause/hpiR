@@ -67,16 +67,8 @@ dateToPeriod <- function(sales_df,
   ## Create full span of dates to use in the analysis
 
   # Check min and max date
-  min_date <- lubridate::as_date(min_date)
-  if (length(min_date) == 1){
-      message('"min_date" argument must be in "Date" or "POSIXTct/POSIXt" format')
-      stop()
-  }
-  max_date <- lubridate::as_date(max_date)
-  if (length(max_date) == 1){
-    message('"max_date" argument must be in "Date" or "POSIXTct/POSIXt" format')
-    stop()
-  }
+  min_date <- checkDate(min_date, 'min_date')
+  max_date <- checkDate(max_date, 'max_date')
 
   # Set minimum date
   if (is.null(min_date)){
@@ -218,5 +210,31 @@ dateToPeriod <- function(sales_df,
 
   # Return values
   sales_df
+
+}
+
+#' @title checkDate
+#' @description Checks and converts date arguments into proper format
+#' @param x_date Date string
+#' @param name Name of argument to return in error/warning message
+#' @return Adjusted date field
+#' @export
+#'
+#'
+checkDate <- function(x_date, name){
+
+  if (is.null(x_date)) return(NULL)
+
+  if (!class(x_date) %in% c('Date', "POSIXct", "POSIXt")){
+    x_date <- lubridate::as_date(x_date)
+    if (is.na(x_date) || nchar(x_date) == 1){
+      message(name, ' argument must be in "Date" or "POSIXTct/POSIXt" format')
+      stop()
+    }
+  } else {
+    x_date <- lubridate::as_date(x_date)
+  }
+
+  x_date
 
 }
