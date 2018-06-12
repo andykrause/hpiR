@@ -182,9 +182,10 @@ A simple plot shows the results of this estimation
 
 A wrapper function, `rsIndex`, will do all of the above taking it from a raw data.frame of sales date through to the index creation and storing in an object of class 'hpi'.  
 
-With the wrapper you can send it:
+There are three 'levels of entry' with the wrapper function.
 
-1. A raw sales object (sales_df = 'data.frame' object)
+1. You can give it a raw data.frame with your transactions and it will A) Add the periods; B) Calculate the repeat sales; and 3) Create the index.  Under this approach `sales_df` is passed a raw data.frame along with the following arguments, some of which are optional (will revert to default if not given) and some of which are mandatory (mostly field names):
+
    * periodicity (optional: default = 'annual')
    * min_date (optional: default = min of data)
    * max_date (optional: default = max of data)
@@ -198,7 +199,29 @@ With the wrapper you can send it:
    * log_dep (opt: TRUE)
    * trim_model (opt: FALSE)
    * max_period (opt: max of data)
-2. A salesdf object (sales_df = 'salesdf' object)
+
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rs_1 <- rsIndex(sales_df = sales,
+                  periodicity = 'monthly',
+                  min_date = '2010-06-01',
+                  max_date = '2015-11-30',
+                  adj_type = 'clip',
+                  date = 'sale_date',
+                  price = 'sale_price',
+                  sale_id = 'sale_id',
+                  prop_id = 'pinx',
+                  seq_only = TRUE,
+                  estimator = 'robust',
+                  log_dep = TRUE,
+                  trim_model = TRUE,
+                  max_period = 48)
+
+```
+   
+2. You can provide a `salesdf` object (one that has been through the `dateToPeriod` function).  In this case, the following arguments are valid:
+
    * date (required)
    * price (required)
    * sale_id (required)
@@ -208,11 +231,54 @@ With the wrapper you can send it:
    * log_dep (opt: TRUE)
    * trim_model (opt: FALSE)
    * max_period (opt: max of data)
-3. An 'rs' object (sales_df = 'rs' object)
+   
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales_df <- dateToPeriod(sales_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly')
+
+  rs_2 <- rsIndex(sales_df = sales_df,
+                  date = 'sale_date',
+                  price = 'sale_price',
+                  sale_id = 'sale_id',
+                  prop_id = 'pinx',
+                  seq_only = FALSE,
+                  estimator = 'weighted',
+                  log_dep = FALSE,
+                  trim_model = FALSE,
+                  max_period = 56)
+
+```   
+   
+3. Finally, you can provide it an `rs` object (one that has been through the `rsCreateSales` function).  Only the following arguments can be given in this case.  
+
    * estimator (opt: default = 'base')
    * log_dep (opt: TRUE)
    * trim_model (opt: FALSE)
    * max_period (opt: max of data)
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rs_sales <- rsCreateSales(sales_df = sales_df,
+                            prop_id = 'pinx',
+                            sale_id = 'sale_id',
+                            price = 'sale_price')
+
+  rs_3 <- rsIndex(sales_df = rs_sales,
+                  estimator = 'robust',
+                  log_dep = TRUE,
+                  trim_model = FALSE,
+                  max_period = 80)
+
+```  
+
+
+
+
+
+
 
 
 
