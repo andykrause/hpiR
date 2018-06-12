@@ -152,6 +152,7 @@ hpiModel.hed <- function(hpi_data,
                          hed_spec=NULL,
                          dep_var=NULL,
                          ind_var=NULL,
+                         trim_model=TRUE,
                          ...){
 
   # Create specification
@@ -188,8 +189,22 @@ hpiModel.hed <- function(hpi_data,
     estimator <- 'base'
    }
 
+  # Check log dep vs data
+  if ((log_dep && any(hpi_data$price <= 0)) |
+       any(is.na(hpi_data$price)) |
+        any(!is.finite(hpi_data$price))){
+    message('Your "price" field includes invalid values')
+    stop()
+  }
+
   # Set estimator class, call method
    class(estimator) <- estimator
+   if (class(estimator) == 'weighted' & is.null(list(...)$weights)){
+     message('You selected a weighted model but did not supply any weights.',
+             '"weights" argument is NULL. Model run in base OLS format.')
+     estimator <- structure('base', class='base')
+   }
+
    hed_mod <- hedModel(estimator=estimator,
                        hed_df=hpi_data,
                        hed_spec = hed_spec,
@@ -202,8 +217,8 @@ hpiModel.hed <- function(hpi_data,
     stop()
   }
 
-  # Remove qr to keep model obj small
-  hed_mod$qr <- NULL
+   # Remove qr to keep model obj small
+   if (trim_model) hed_mod$qr <- NULL
 
   # If successful create list of results
   base_period <- min(hpi_data$date_period)
