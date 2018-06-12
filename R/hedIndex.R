@@ -24,29 +24,67 @@
 #' @export
 
 hedIndex <- function(sales_df,
-                     date,
-                     price,
-                     sale_id,
-                     prop_id,
-                     estimator='base',
-                     log_dep=TRUE,
-                     periodicity='month',
+                     # date,
+                     # price,
+                     # sale_id,
+                     # prop_id,
+                     # estimator='base',
+                     # log_dep=TRUE,
+                     # periodicity='month',
                      dep_var=NULL,
                      ind_var=NULL,
                      hed_spec=NULL,
                      ...
 ){
 
-  # Create Sales object
-  hed_sales <- hedCreateSales(sales_df = sales_df,
-                              sale_id = sale_id,
-                              prop_id = prop_id,
-                              date = date,
-                              price = price,
-                              periodicity = periodicity,
-                              ...)
+  # Check if sales_df is an hed_df object
+  if ('hed' %in% class(sales_df)){
 
-  if(class(hed_sales)[1] != 'hed'){
+    hed_sales <- sales_df
+
+  } else {
+
+    if (!'salesdf' %in% class(sales_df)){
+
+      if (is.null(list(...)$date) ||
+          (!any(class(sales_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
+        message('When supplying a raw data.frame to the "sales_df"',
+                'object, a valid "date" argument must be supplied')
+        stop()
+      }
+
+      # Create 'salesdf' object
+      sales_df <- dateToPeriod(sales_df = sales_df,
+                               # date = date,
+                               # periodicity = periodicity,
+                               ...)
+    } # Ends if(!salesdf...)
+
+    if (is.null(list(...)$sale_id)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
+              '"sale_id" argument must be supplied')
+      stop()
+    }
+    if (is.null(list(...)$prop_id)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
+              '"prop_id" argument must be supplied')
+      stop()
+    }
+    if (is.null(list(...)$price)){
+      message('When supplying a "sales_df" object to the "sales_df" object a ',
+              '"price" argument must be supplied')
+      stop()
+    }
+
+    # Create Sales object
+    hed_sales <- hedCreateSales(sales_df = sales_df,
+                               # sale_id = sale_id,
+                               # prop_id = prop_id,
+                               # price = price,
+                               ...)
+  } # Ends if/else ('hed' %in% ...)
+
+  if (!'hed' %in% class(hed_sales)){
     message('Converting sales data to hedonic sales object failed')
     stop()
   }
@@ -55,19 +93,17 @@ hedIndex <- function(sales_df,
   if (!is.null(hed_spec)){
 
     hed_model <- hpiModel(hpi_data = hed_sales,
-                          estimator = estimator,
                           hed_spec = hed_spec,
-                          log_dep = log_dep)
+                          ...)
   }
 
-  # Etimate the model if dep/ind given
+  # Estimate the model if dep/ind given
   if (is.null(hed_spec) & (!is.null(dep_var) & !is.null(ind_var))){
 
     hed_model <- hpiModel(hpi_data = hed_sales,
-                          estimator = estimator,
                           dep_var = dep_var,
                           ind_var = ind_var,
-                          log_dep = log_dep)
+                          ...)
   }
 
   if (is.null(hed_spec) & is.null(dep_var) & is.null(ind_var)){
@@ -83,7 +119,8 @@ hedIndex <- function(sales_df,
   }
 
   # Convert to an index
-  hed_index <- modelToIndex(hed_model)
+  hed_index <- modelToIndex(hed_model,
+                            ...)
 
   if(class(hed_index) != 'hpiindex'){
     message('Converting model results to index failed')
@@ -92,7 +129,6 @@ hedIndex <- function(sales_df,
 
   # Return Values
   structure(list(data=hed_sales,
-                 estimator=estimator,
                  model=hed_model,
                  index=hed_index),
             class='hpi')
