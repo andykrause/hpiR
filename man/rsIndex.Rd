@@ -4,12 +4,12 @@
 \alias{rsIndex}
 \title{rsIndex}
 \usage{
-rsIndex(sales_df, date = NULL, price = NULL, sale_id = NULL,
-  prop_id = NULL, estimator = "base", log_dep = TRUE,
-  periodicity = "monthly", ...)
+rsIndex(sales_df, ...)
 }
 \arguments{
 \item{sales_df}{data.frame of sale transactions.  Can be a 'salesdf' or an 'rs' object.}
+
+\item{...}{Additional Arguments}
 
 \item{date}{Field contain the sales date}
 
@@ -24,8 +24,6 @@ rsIndex(sales_df, date = NULL, price = NULL, sale_id = NULL,
 \item{log_dep}{default = TRUE, Should the dependent variable (price) be logged?}
 
 \item{periodicity}{default = 'monthly', Periodicity of time to estimate index at}
-
-\item{...}{Additional Arguments}
 }
 \value{
 hpi object

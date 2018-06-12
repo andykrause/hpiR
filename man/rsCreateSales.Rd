@@ -5,7 +5,7 @@
 \title{rsCreateSales}
 \usage{
 rsCreateSales(sales_df, prop_id, sale_id, price, date = NULL,
-  periodicity = NULL, ...)
+  periodicity = NULL, seq_only = FALSE, ...)
 }
 \arguments{
 \item{sales_df}{sales transaction in either a data.frame or a
@@ -22,6 +22,9 @@ Only necessary if not passing a sales.df object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
 Only necessary if not passing a sales.df object}
+
+\item{seq_only}{default=FALSE, indicating whether to only include sequential repeat observations
+1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.}
 }
 \value{
 data.frame of repeat sales. Note that a full data.frame of the possible

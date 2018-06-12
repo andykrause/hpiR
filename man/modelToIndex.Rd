@@ -4,7 +4,7 @@
 \alias{modelToIndex}
 \title{modelToIndex}
 \usage{
-modelToIndex(hpimodel, max_period = max(hpimodel$coefficients$time))
+modelToIndex(hpimodel, max_period = max(hpimodel$coefficients$time), ...)
 }
 \arguments{
 \item{hpimodel}{Model results object}
