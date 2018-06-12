@@ -17,13 +17,17 @@ modelToIndex <- function(hpimodel,
                          ...){
 
   ## Check for proper class
-
   if (!'hpimodel' %in% class(hpimodel)){
     message('"hpimodel" object must be of class "hpimodel"')
     return(NULL)
   }
 
   ## Check max period
+  if (!any(class(max_period) %in% c('integer', 'numeric'))){
+    message('"max_period" argument must be numeric/integer')
+    return(NULL)
+  }
+
   if (max_period > max(hpimodel$coefficients$time)){
     message('"max_period" cannot be greater than maximum period in the estimated model.',
             ' Setting to maximum of estimated model')

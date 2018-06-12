@@ -35,15 +35,15 @@ dateToPeriod <- function(sales_df,
   }
 
   # Extract Date
-  sale_date <- sales_df[[date]]
-  if (!'Date' %in% class(sale_date)){
-    if ("POSIXct" %in% class(sale_date) | "POSIXt" %in% class(sale_date)){
-      sale_date <- lubridate::as_date(sale_date)
-    } else {
-      message('"date" field must be in "Date" or "POSIXTct/POSIXt" format.')
-      stop()
-    }
-  }
+  sale_date <- checkDate(sales_df[[date]], 'sale_date')
+  # if (!'Date' %in% class(sale_date)){
+  #   if ("POSIXct" %in% class(sale_date) | "POSIXt" %in% class(sale_date)){
+  #     sale_date <- lubridate::as_date(sale_date)
+  #   } else {
+  #     message('"date" field must be in "Date" or "POSIXTct/POSIXt" format.')
+  #     stop()
+  #   }
+  # }
 
   # Check for periodicity
   if (is.null(periodicity)){
@@ -219,22 +219,34 @@ dateToPeriod <- function(sales_df,
 #' @param name Name of argument to return in error/warning message
 #' @return Adjusted date field
 #' @export
-#'
-#'
+
 checkDate <- function(x_date, name){
 
+  # If null, give null (for dealing with ... arguments)
   if (is.null(x_date)) return(NULL)
 
-  if (!class(x_date) %in% c('Date', "POSIXct", "POSIXt")){
+  # If a number, give an error (stops from converting numbers to dates)
+  if (any(class(x_date) %in% c('numeric', 'integer'))){
+      message(name, ' argument must be in "Date" or "POSIXTct/POSIXt" format')
+      stop()
+  }
+
+  # If any form of date/time, convert down to simple Date
+  if (any(class(x_date) %in% c('Date', "POSIXct", "POSIXt"))){
+
     x_date <- lubridate::as_date(x_date)
-    if (is.na(x_date) || nchar(x_date) == 1){
+
+  } else {
+
+    # Try to convert dates given as characters, such as '2000-01-01'
+    x_date <- suppressWarnings(lubridate::as_date(x_date))
+    if (any(is.na(x_date))){
       message(name, ' argument must be in "Date" or "POSIXTct/POSIXt" format')
       stop()
     }
-  } else {
-    x_date <- lubridate::as_date(x_date)
   }
 
+  # Return
   x_date
 
 }
