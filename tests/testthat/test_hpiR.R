@@ -2000,9 +2000,54 @@ context('hedModel')
                          ind_var = c('tot_sf', 'beds', 'baths')))
  })
 
+### Test Volatility Function -------------------------------------------------------------
 
+ # Sample 'hed' hpi object for further testing
+ hed_index <- hedIndex(sales_df = hed_df,
+                       estimator = 'weighted',
+                       log_dep=FALSE,
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       weights=runif(nrow(hed_df), 0, 1))
 
+ test_that('Volatility Function works with a variety of inputs',{
 
+   # Standard Input (ts object)
+   expect_is(index_vol <- calcIndexVolatility(index = hed_index$index$index,
+                                              window = 3),
+             'indexvol')
+
+   # Hpi Index object
+   expect_is(index_vol <- calcIndexVolatility(index = hed_index$index,
+                                    window = 3),
+             'indexvol')
+
+   # Full HPI Object
+   expect_is(index_vol <- calcIndexVolatility(index = hed_index,
+                                    window = 3),
+             'indexvol')
+
+ })
+
+ test_that('Errors are given when index is bad',{
+
+   # Non-sensical index
+   expect_error(index_vol <- calcIndexVolatility(index = 'abc',
+                                                 window = 3))
+
+   # Negative Window
+   expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+                                                 window = -1))
+
+   # Char Window
+   expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+                                                 window = 'x'))
+
+   # NA Window
+   expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+                                                 window = NA_integer_))
+
+ })
 
 
 

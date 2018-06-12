@@ -473,20 +473,39 @@ There are three 'levels of entry' with the wrapper function.
 
 ```  
 
-<!-- ### Analyzing an index -->
+### Analyzing an index
 
-<!-- #### Volatility -->
+#### Volatility
 
-<!-- One thing we can check for an index is its volatility.  We can get the a rolling windown volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) are returned by the function.   -->
+One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) are returned by the function.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--  index_vol <- calcIndexVolatility(index = rs_index$index,  -->
-<!--                                   window = 3) -->
+ index_vol <- calcIndexVolatility(index = hed_index$index$index,
+                                  window = 3)
 
-<!--   plot(index_vol) -->
+  plot(index_vol)
 
-<!-- ``` -->
+```
+
+A number of different objects can be passed to the `calcIndexVolatility()` function.  These include the extracted `ts` object from an `hpiindex` object, the raw `hpiindex` object itself (from `modelToIndex()`), or a `hpi` object from one of the wrappers (`rsIndex` or `hedIndex`)
+
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+ # ts object
+ index_vol <- calcIndexVolatility(index = hed_index$index$index,
+                                  window = 3)
+
+ # hpiindex object
+ index_vol <- calcIndexVolatility(index = hed_index$index,
+                                  window = 3)
+
+ # hpi object
+ index_vol <- calcIndexVolatility(index = hed_index,
+                                  window = 3)
+
+```
 
 <!-- #### Predictive Ability -->
 

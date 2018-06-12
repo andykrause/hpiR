@@ -14,28 +14,45 @@ calcIndexVolatility <- function(index,
                                 window,
                                 ...){
 
-  # series: series of index values
-  # window:  length of time over which to measure the volatility
+  ## Strip from hpi or hpiindex objects
 
-  ## Calc series length
+  if ('hpi' %in% class(index)){
+    index <- index$index$index
+  }
 
-  il <- length(index)
+  if ('hpiindex' %in% class(index)){
+    index <- index$index
+  }
+
+  ## Check for classes
+  if (! 'ts' %in% class(index)){
+    message('The "index" object must be of class "ts"')
+    stop()
+  }
+
+  # Check window
+  if (class(window) %in% c('numeric', 'integer') && !is.na(window) &&
+       window > 0 && window <= length(index) / 2){
+    window <- as.integer(round(window, 0))
+  } else {
+    message('"window" argument must be a positive integer less than half the length of ',
+            'the index')
+    stop()
+  }
 
   ## Calculate changes
-
-  deltas <- (index[-1] - index[-il]) / index[-il]
+  deltas <- (index[-1] - index[-length(index)]) / index[-length(index)]
 
   ## Calculate mean rolling sd
-
   iv <- zoo::rollapply(deltas, window, sd)
 
-  ## Historic volatility
-
+  ## Create objec
   vol_obj <- structure(list(roll=iv,
                             mean=mean(iv)), class='indexvol')
   attr(vol_obj, 'orig') <- index
   attr(vol_obj, 'window') <- window
 
+  # Return
   vol_obj
 
 }
