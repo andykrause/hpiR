@@ -36,7 +36,7 @@ rsIndex <- function(sales_df,
            (!any(class(sales_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
         message('When supplying a raw data.frame to the "sales_df"',
                 'object, a valid "date" argument must be supplied')
-        return(NULL)
+        stop()
       }
 
       # Create 'salesdf' object
@@ -49,17 +49,17 @@ rsIndex <- function(sales_df,
     if (is.null(list(...)$sale_id)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
                 '"sale_id" argument must be supplied')
-      return(NULL)
+      stop()
     }
     if (is.null(list(...)$prop_id)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
               '"prop_id" argument must be supplied')
-      return(NULL)
+      stop()
     }
     if (is.null(list(...)$price)){
       message('When supplying a "sales_df" object to the "sales_df" object a ',
               '"price" argument must be supplied')
-      return(NULL)
+      stop()
     }
 
     # Create Sales object
@@ -72,7 +72,7 @@ rsIndex <- function(sales_df,
 
   if (!'rs' %in% class(rs_sales)){
     message('Converting sales data to repeat sales object failed')
-    return(NULL)
+    stop()
   }
 
   # Etimate the model
