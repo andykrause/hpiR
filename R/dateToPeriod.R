@@ -66,6 +66,18 @@ dateToPeriod <- function(sales_df,
 
   ## Create full span of dates to use in the analysis
 
+  # Check min and max date
+  min_date <- lubridate::as_date(min_date)
+  if (length(min_date) == 1){
+      message('"min_date" argument must be in "Date" or "POSIXTct/POSIXt" format')
+      stop()
+  }
+  max_date <- lubridate::as_date(max_date)
+  if (length(max_date) == 1){
+    message('"max_date" argument must be in "Date" or "POSIXTct/POSIXt" format')
+    stop()
+  }
+
   # Set minimum date
   if (is.null(min_date)){
     min_date <- min(sale_date)
