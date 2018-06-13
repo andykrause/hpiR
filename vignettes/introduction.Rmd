@@ -481,7 +481,7 @@ One thing we can check for an index is its volatility.  We can get the a rolling
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
- index_vol <- calcIndexVolatility(index = hed_index$index$index,
+ index_vol <- calcIndexVolatility(index = hed_1$index$index,
                                   window = 3)
 
   plot(index_vol)
@@ -494,7 +494,7 @@ A number of different objects can be passed to the `calcIndexVolatility()` funct
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
  # ts object
- index_vol <- calcIndexVolatility(index = hed_index$index$index,
+ index_vol <- calcIndexVolatility(index = hed_1$index$index,
                                   window = 3)
 
  # hpiindex object
@@ -506,6 +506,29 @@ A number of different objects can be passed to the `calcIndexVolatility()` funct
                                   window = 3)
 
 ```
+
+#### Smoothing
+
+As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex` function will smooth via a moving average function, with small corrections to keep index length after smoothing.
+
+Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three levels of results
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Smoothed Hedonic Indexes
+  hed_1 <- 
+
+  rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
+  hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)
+
+  plot(rs_smooth_index)
+  plot(hed_smooth_index)
+
+
+```
+
+
+
 
 <!-- #### Predictive Ability -->
 
@@ -680,17 +703,6 @@ A number of different objects can be passed to the `calcIndexVolatility()` funct
 
 <!-- ``` -->
 
-<!-- Smoothing of indexes may also be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smooth_index` function will smooth via a moving average function, with small corrections to keep index length after smoothing.   -->
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5) -->
-<!--   hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5) -->
-
-<!--   plot(rs_smooth_index) -->
-<!--   plot(hed_smooth_index) -->
-
-
-<!-- ``` -->
 
 

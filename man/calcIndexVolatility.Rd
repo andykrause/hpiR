@@ -4,7 +4,7 @@
 \alias{calcIndexVolatility}
 \title{calcIndexVolatility}
 \usage{
-calcIndexVolatility(index, window, ...)
+calcIndexVolatility(index, window, in_place = FALSE, ...)
 }
 \arguments{
 \item{index}{time-series index object}

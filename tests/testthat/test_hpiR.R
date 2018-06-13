@@ -2019,7 +2019,7 @@ context('hedModel')
 
    # Hpi Index object
    expect_is(index_vol <- calcIndexVolatility(index = hed_index$index,
-                                    window = 3),
+                                              window = 3),
              'indexvol')
 
    # Full HPI Object
@@ -2049,6 +2049,40 @@ context('hedModel')
 
  })
 
+ test_that('Returning in place works',{
+
+   # Standard Input (ts object)
+   expect_is(index_vol <- calcIndexVolatility(index = hed_index$index$index,
+                                              window = 3,
+                                              in_place = TRUE),
+             'indexvol')
+
+   # Add it to the Hpi Index object
+   expect_is(hed_index$index <- calcIndexVolatility(index = hed_index$index,
+                                                    window = 3,
+                                                    in_place = TRUE),
+             'hpiindex')
+
+   # Add it to the Full HPI Object (to the hpiindex object)
+   expect_is(hed_index <- calcIndexVolatility(index = hed_index,
+                                              window = 3,
+                                              in_place = TRUE),
+             'hpi')
+
+ })
+
+### Test Smoothing Functions -------------------------------------------------------------
+
+### Test Revision Functions --------------------------------------------------------------
+
+### Test Series Functions ----------------------------------------------------------------
+
+### Test Accuracy Functions --------------------------------------------------------------
+
+ # Kfold
+ # Forecast
+
+### Test Blending Functions --------------------------------------------------------------
 
 
 
