@@ -490,7 +490,6 @@ One thing we can check for an index is its volatility.  We can get the a rolling
 
 A number of different objects can be passed to the `calcIndexVolatility()` function.  These include the extracted `ts` object from an `hpiindex` object, the raw `hpiindex` object itself (from `modelToIndex()`), or a `hpi` object from one of the wrappers (`rsIndex` or `hedIndex`)
 
-
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
  # ts object
@@ -504,6 +503,25 @@ A number of different objects can be passed to the `calcIndexVolatility()` funct
  # hpi object
  index_vol <- calcIndexVolatility(index = hed_index,
                                   window = 3)
+
+```
+
+The `calcIndexVolatility` function can also return the volatility metrics 'in place', or directly into the `hpiindex` object.  The code below shows how to return these into an `hpiindex` object and a larger `hpi` object under the name `vol`. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+   # Add it to the 'hpiindex' object
+   hed_1$index <- calcIndexVolatility(index = hed_1$index,
+                                      window = 3,
+                                      in_place = TRUE)
+
+   class(hed_1$index$vol)
+
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_2 <- calcIndexVolatility(index = hed_2,
+                                window = 3,
+                                in_place = TRUE)
+   class(hed_2$index$vol)
 
 ```
 
