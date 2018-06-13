@@ -2,7 +2,9 @@
 #' @description Smooths an index
 #' @usage Lorem Ipsum...
 #' @param index Index to be smoothed
-#' @param order Number of nearby period to smooth with, multiple means multiple iterations of smoothing
+#' @param order Number of nearby period to smooth with, multiple means multiple iterations
+#' @param in_place default = FALSE; adds volatility metric to the `hpiindex` object
+#' @param in_place_name default = 'vol'; name of volatility object in `hpiindex` object
 #' @param ... Additional Arguments
 #' @return a ts and 'smooth_index` object with smoothed index
 #' @section Further Details:
@@ -78,18 +80,17 @@ smoothIndex <- function(index,
   if (in_place){
 
     if ('hpi' %in% class(index_obj)){
-      index_obj$index$smoothed <- s_index
+      index_obj$index[[in_place_name]] <- s_index
       return(index_obj)
     }
 
     if ('hpiindex' %in% class(index_obj)){
-      index_obj$smoothed <- s_index
+      index_obj[[in_place_name]] <- s_index
       return(index_obj)
     }
   }
 
-  # If just returning result of volatility calculation
-
+  # If just returning result of smoothing
   s_index
 
 }
@@ -106,6 +107,9 @@ smoothIndex <- function(index,
 #' @examples
 #' a <- 1
 #' @export
+
+
+## TODO figure out passing ... to map()
 
 smoothSeries <- function(series,
                          order=3,

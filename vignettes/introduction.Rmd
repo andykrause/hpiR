@@ -548,25 +548,59 @@ If you want to add it to the `hpiindex` under a different name -- say if you are
 
 #### Smoothing
 
-As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex` function will smooth via a moving average function, with small corrections to keep index length after smoothing.
+As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the `order` argument -- the number of periods over which to smooth. 
 
-Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three levels of results
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   # Smoothed Hedonic Indexes
   hed_smooth <- smoothIndex(hed_1, order = 5)
-
-  rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
-  hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)
-
-  plot(rs_smooth_index)
-  plot(hed_smooth_index)
-
+ 
+  # Plot comparison
+  plot(hed_1$index$index, lwd=2)
+  lines(hed_smooth, col=2, lwd=2, lty = 2)
 
 ```
 
+Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three levels of results and can be done `in_place` such that the smoothed indexes are added to the larger object.  A distinct name can be given to the smoothed index with the `in_place_name` argument (default is 'smoothed')
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+     # Standard Input (ts object)
+     index_smooth <- smoothIndex(index = hed_3$index$index,
+                                 order = 3)
+
+     # Hpi Index object
+     hed_1$index <- smoothIndex(index = hed_1$index,
+                                order = 4,
+                                in_place = TRUE)
+
+     # Full HPI Object
+     hed_2 <- smoothIndex(index = hed_2,
+                          order = 8,
+                          in_place = TRUE,
+                          in_place_name = 'xxx')
+     
+```
+
+#### Index Series
+
+<!-- Another way to examine predictive error is to approach the question through forecast (prediction out in time).  To do this, we built an index at each period (using only date up to that point in time) and then predict for the period t+1.  In this way, we create a series of indexes, each one time period longer than the next.   --> -->
+
+<!-- Because this period of indexes is also useful for some other calculations, we have a separate function to create this series,  -->
+
+<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+
+<!--   hed_series <- calcIndexSeries(hpi_obj = sea_hed_index, -->
+<!--                                 train_range = 24) -->
+
+<!--   rs_series <- calcIndexSeries(hpi_obj = sea_rs_index, -->
+<!--                                train_range = 24) -->
+
+<!--   plot(hed_series) -->
+<!--   plot(rs_series) -->
+
+<!-- ``` -->
 
 
 <!-- #### Predictive Ability -->
@@ -643,22 +677,7 @@ Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three lev
 
 <!-- ``` -->
 
-<!-- Another way to examine predictive error is to approach the question through forecast (prediction out in time).  To do this, we built an index at each period (using only date up to that point in time) and then predict for the period t+1.  In this way, we create a series of indexes, each one time period longer than the next.   -->
-
-<!-- Because this period of indexes is also useful for some other calculations, we have a separate function to create this series,  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_series <- calcIndexSeries(hpi_obj = sea_hed_index, -->
-<!--                                 train_range = 24) -->
-
-<!--   rs_series <- calcIndexSeries(hpi_obj = sea_rs_index, -->
-<!--                                train_range = 24) -->
-
-<!--   plot(hed_series) -->
-<!--   plot(rs_series) -->
-
-<!-- ``` -->
+<!-- 
 
 <!-- From these series, we can then estimate the forecast (prediction) errors of for each of the two methods.  -->
 
