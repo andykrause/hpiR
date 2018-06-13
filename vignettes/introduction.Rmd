@@ -525,6 +525,27 @@ The `calcIndexVolatility` function can also return the volatility metrics 'in pl
 
 ```
 
+If you want to add it to the `hpiindex` under a different name -- say if you are comparing volatilities, you can use the `in_place_name` argument to give it a different name. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+   # Add it to the 'hpiindex' object
+   hed_1$index <- calcIndexVolatility(index = hed_1$index,
+                                      window = 3,
+                                      in_place = TRUE,
+                                      in_place_name = 'vol_3')
+
+   class(hed_1$index$vol_3)
+
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_1 <- calcIndexVolatility(index = hed_1,
+                                window = 5,
+                                in_place = TRUE,
+                                in_place_name = 'vol_5')
+   class(hed_1$index$vol_5)
+
+```
+
 #### Smoothing
 
 As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex` function will smooth via a moving average function, with small corrections to keep index length after smoothing.
@@ -534,7 +555,7 @@ Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three lev
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   # Smoothed Hedonic Indexes
-  hed_1 <- 
+  hed_smooth <- smoothIndex(hed_1, order = 5)
 
   rs_smooth_index <- smoothIndex(rs_series[[61]], order = 5)
   hed_smooth_index <- smoothIndex(hed_series[[61]], order = 5)

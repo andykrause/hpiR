@@ -4,12 +4,17 @@
 \alias{calcIndexVolatility}
 \title{calcIndexVolatility}
 \usage{
-calcIndexVolatility(index, window, in_place = FALSE, ...)
+calcIndexVolatility(index, window, in_place = FALSE, in_place_name = "vol",
+  ...)
 }
 \arguments{
 \item{index}{time-series index object}
 
 \item{window}{periods over which to calculate the volatility}
+
+\item{in_place}{default = FALSE; adds volatility metric to the `hpiindex` object}
+
+\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
 
 \item{...}{Additional arguments}
 }

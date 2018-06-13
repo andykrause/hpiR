@@ -2069,9 +2069,38 @@ context('hedModel')
                                               in_place = TRUE),
              'hpi')
 
+   # Add it to the Full HPI Object (to the hpiindex object) with new name
+   expect_is(hed_index <- calcIndexVolatility(index = hed_index,
+                                              window = 3,
+                                              in_place = TRUE,
+                                              in_place_name = 'xxx'),
+             'hpi')
+   expect_is(hed_index$index$xxx, 'indexvol')
+
+
  })
 
 ### Test Smoothing Functions -------------------------------------------------------------
+#
+#  test_that('smoothing Function works with a variety of inputs',{
+#
+#    # Standard Input (ts object)
+#    expect_is(index_smooth <- smoothIndex(index = hed_index$index$index,
+#                                          order = 3),
+#              'smoothindex')
+#
+#    # Hpi Index object
+#    expect_is(index_smooth <- smoothIndex(index = hed_index$index,
+#                                          order = 4),
+#              'smoothindex')
+#
+#    # Full HPI Object
+#    expect_is(index_smooth <- smoothIndex(index = hed_index,
+#                                          order = 6),
+#              'smoothindex')
+#
+#  })
+
 
 ### Test Revision Functions --------------------------------------------------------------
 

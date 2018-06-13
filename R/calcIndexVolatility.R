@@ -2,7 +2,8 @@
 #' @description Calculate index volatility
 #' @param index time-series index object
 #' @param window periods over which to calculate the volatility
-#' @param in_place adds volatility metric to the `hpiindex` object
+#' @param in_place default = FALSE; adds volatility metric to the `hpiindex` object
+#' @param in_place_name default = 'vol'; name of volatility object in `hpiindex` object
 #' @param ... Additional arguments
 #' @return A metric of volatility
 #' @section Further Details:
@@ -13,7 +14,8 @@
 
 calcIndexVolatility <- function(index,
                                 window,
-                                in_place=FALSE,
+                                in_place = FALSE,
+                                in_place_name = 'vol',
                                 ...){
 
   ## Save index_obj for future returning
@@ -64,12 +66,12 @@ calcIndexVolatility <- function(index,
   if (in_place){
 
     if ('hpi' %in% class(index_obj)){
-      index_obj$index$vol <- vol_obj
+      index_obj$index[[in_place_name]] <- vol_obj
       return(index_obj)
     }
 
     if ('hpiindex' %in% class(index_obj)){
-      index_obj$vol <- vol_obj
+      index_obj[[in_place_name]] <- vol_obj
       return(index_obj)
     }
   }
