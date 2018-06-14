@@ -26,7 +26,7 @@ calcForecastErrors <- function(is_obj,
   fc_preddata <- purrr::map(.x = time_range,
                             hpi_data = pred_data,
                             train=FALSE,
-                            .f=makeFCData)
+                            .f=buildForecastIDs)
 
   # Predict value
   fc_forecasts <- purrr::map(.x=is_obj[-length(is_obj)],
@@ -55,7 +55,7 @@ calcForecastErrors <- function(is_obj,
 
 }
 
-#' @title makeFCData
+#' @title buildForecastIDs
 #' @description Create training or scoring data for the forecast error calculations
 #' @usage Lorem Ipsum...
 #' @param time_cut Period of forecast
@@ -69,18 +69,29 @@ calcForecastErrors <- function(is_obj,
 #' a <- 1
 #' @export
 
-makeFCData <- function(time_cut,
-                       hpi_data,
-                       train=TRUE){
+buildForecastIDs <- function(time_cut,
+                              hpi_data,
+                              train=TRUE){
 
-  UseMethod("makeFCData", hpi_data)
+  if (!'data.frame' %in% class(hpi_data)){
+    message('"hpi_data" argument must be a data.frame')
+    stop()
+  }
+
+  if (!class(time_cut) %in% c('integer', 'numeric') ||
+       time_cut < 0){
+    message('"time_cut" must be a positive, numeric value')
+    stop()
+  }
+
+  UseMethod("buildForecastIDs", hpi_data)
 
 }
 
 #' @export
-makeFCData.hed <- function(time_cut,
-                           hpi_data,
-                           train=TRUE){
+buildForecastIDs.hed <- function(time_cut,
+                                 hpi_data,
+                                 train=TRUE){
 
   if(train){
     time_ids <- which(hpi_data$date_period < time_cut)
@@ -92,9 +103,14 @@ makeFCData.hed <- function(time_cut,
 }
 
 #' @export
-makeFCData.rs <- function(time_cut,
+buildForecastIDs.rs <- function(time_cut,
                           hpi_data,
                           train=TRUE){
+
+  # Extract data if given a full 'hpi' object
+  if ('hpi' %in% class(hpi_data)){
+    hpi_data <- hpi_data$data
+  }
 
   if(train){
     time_ids <- which(hpi_data$period_2 < time_cut)
