@@ -1,4 +1,4 @@
-#' @title calcHPIError
+#' @title calcInSampleError
 #' @description Estimate the predictive error of an index. Generic method.
 #' @usage Lorem Ipsum...
 #' @param pred_data Set of sales against which to test predictions
@@ -12,15 +12,27 @@
 #'              index=rs_index)
 #' @export
 
-calcHPIError <- function(pred_data,
-                         index,
-                         ...){
+calcInSampleError <- function(pred_data,
+                              index,
+                              ...){
 
-  UseMethod("calcHPIError")
+  if (!'ts' %in% class(index)){
+    message('"index" argument must be of class "ts"')
+    stop()
+  }
+
+  if (!any('data.frame' %in% class(pred_data)) ||
+        !any(class(pred_data) %in% c('rs', 'hed'))){
+    message('"pred_data" argument must be a data.frame with additional class of ',
+            ' "rs" or "hed"')
+    stop()
+  }
+
+  UseMethod("calcInSampleError")
 
 }
 
-#' @title calcHPIError.rs
+#' @title calcInSampleError.rs
 #' @description Estimate the predictive error of an index by predicting second sale price of a repeat sale
 #' @usage Lorem Ipsum...
 #' @param pred_data Set of sales against which to test predictions
@@ -34,10 +46,9 @@ calcHPIError <- function(pred_data,
 #'              index=rs_index)
 #' @export
 
-
-calcHPIError.rs <- function(pred_data,
-                            index,
-                            ...){
+calcInSampleError.rs <- function(pred_data,
+                                 index,
+                                 ...){
 
   # Calculate the index adjustment to apply
   adj <- index[pred_data$period_2] / index[pred_data$period_1]
@@ -50,14 +61,22 @@ calcHPIError.rs <- function(pred_data,
 
   # Return Values
   error_df <- data.frame(prop_id = pred_data$prop_id,
-                   pred_price=pred_price,
-                   pred_error=error,
-                   pred_period=pred_data$period_2)
+                         pred_price=pred_price,
+                         pred_error=error,
+                         pred_period=pred_data$period_2)
+
+  # Add classes
   class(error_df) <- c('indexerrors', 'data.frame')
+
+  # Add attribute
+  attr(error_df, 'test_method') <- 'insample'
+
+  # Return
   error_df
+
 }
 
-#' @title calcHPIError.hed
+#' @title calcInSampleError.hed
 #' @description Estimate the predictive error of an index by relative improvment in a hedonic price model
 #' @usage Lorem Ipsum...
 #' @param pred_data Set of sales against which to test predictions
@@ -66,14 +85,11 @@ calcHPIError.rs <- function(pred_data,
 #' @return data.frame of property id, predicted price and error
 #' @section Further Details:
 #' Note that ensure prediction types (holdout vs forecast) are done outside of this function
-#' @examples
-#' calcHPIError(pred_data=hed_data,
-#'              index=hed_index)
 #' @export
 
-calcHPIError.hed <- function(pred_data,
-                             index,
-                             ...){
+calcInSampleError.hed <- function(pred_data,
+                                  index,
+                                  ...){
 
   # Future method
 
