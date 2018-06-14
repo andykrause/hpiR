@@ -308,14 +308,184 @@ context('buildForecastIDs()')
 
   })
 
-### Test Revision Functions --------------------------------------------------------------
+### Revision Functions --------------------------------------------------------------
 
+context('calcRevision()')
 
+  # Add Series to the hpi object for further testing
+  hed_index <- calcIndexSeries(hpi_obj = hed_index,
+                               train_period = 24,
+                               max_period = 84,
+                               in_place = TRUE)
+
+  # Add Series to the hpi object for further testing
+  rs_index <- calcIndexSeries(hpi_obj = rs_index,
+                              train_period = 24,
+                              max_period = 84,
+                              in_place = TRUE,
+                              in_place_name = 's84')
+
+  test_that('calcRevision() works',{
+
+    # Standard series object
+    expect_is(calcRevision(series_obj = hed_index$series), 'indexrevision')
+
+    # Extract from an hpi object
+    expect_is(calcRevision(series_obj = hed_index), 'indexrevision')
+
+    # Extract from an hpi object with a different name
+    expect_is(calcRevision(series_obj = rs_index,
+                           series_name = 's84'), 'indexrevision')
+
+  })
+
+  test_that('calcRevision() with in_place additions works',{
+
+    # Standard in_place
+    expect_is(calcRevision(series_obj = hed_index,
+                           in_place = TRUE),
+              'hpi')
+
+    # In place with new name
+    expect_is(rs_index <- calcRevision(series_obj = rs_index,
+                                       series_name = 's84',
+                                       in_place = TRUE,
+                                       in_place_name ='r84'),
+              'hpi')
+    expect_is(rs_index$r84, 'indexrevision')
+
+  })
+
+  test_that('Bad arguments create errors',{
+
+    # Bad series_obj
+    expect_error(hed_rev <- calcRevision(series_obj = hed_index$data))
+
+    # Bad series_name
+    expect_error(hed_rev <- calcRevision(series_obj = hed_index,
+                                         series_name = 'xxx'))
+
+  })
 
 ### Test Accuracy Functions --------------------------------------------------------------
 
+context('calcErrors() before error functions', {
+
+  test_that('bad arguments fail',{
+
+    # Bad HPI objs
+    expect_error(calcAccuracy(hpi_obj = 'xxx'))
+    expect_error(calcAccuracy(hpi_obj = hed_index$data))
+
+    # Disagreement between hpi_obj and index_data
+    expect_error(calcAccuracy(hpi_obj = hed_index,
+                              test_type = 'rs'))
+    expect_error(calcAccuracy(hpi_obj = rs_index,
+                              test_type = 'hed'))
+    expect_error(calcAccuracy(hpi_obj = hed_index,
+                              test_type = 'rs',
+                              index_data = hed_index$data))
+    expect_error(calcAccuracy(hpi_obj = rs_index,
+                              test_type = 'hed',
+                              index_data = rs_index$data))
+
+    # Bad test_method
+    expect_error(calcAccuracy(hpi_obj = rs_index,
+                              test_type = 'rs',
+                              test_method = 'x'))
+
+    # Bad test_type
+    expect_error(calcAccuracy(hpi_obj = rs_index,
+                              test_type = 'x',
+                              test_method = 'insample'))
+
+  ## More to come
+
+})
+
+  test_that('calcAccuracy can estimate a series object', {
+
+    # Simple format
+    expect_is(rss <- calcAccuracy(hpi_obj = rs_index,
+                                  test_type = 'rs',
+                                  index_data = rs_index$data),
+              'hpi')
+    expect_is(rss$series, 'hpiseries')
+
+    # with limited start and end and new name
+    expect_is(hes <- calcAccuracy(hpi_obj = hed_index,
+                                  test_type = 'rs',
+                                  index_data = rs_index$data,
+                                  train_period = 24,
+                                  max_period = 36,
+                                  series_name = 's36'),
+              'hpi')
+    expect_is(hes$s36, 'hpiseries')
+
+  })
+
+context('calcInSampleError()')
+
+  test_that('in sample error fails with bad arguments',{
+
+    # Bad Data
+    expect_error(rs_error <- calcInSampleError(pred_data = hed_index,
+                                               index = hed_index$index$index))
+
+    # Bad Index
+    expect_error(rs_error <- calcInSampleError(pred_data = rs_index$data,
+                                               index = hed_index$index))
+
+  })
+
+  test_that('in sample error works',{
+
+    # All data
+    expect_is(rs_error <- calcInSampleError(pred_data = rs_index$data,
+                                            index = hed_index$index$index),
+              'indexerrors')
+
+    # Sparse data
+    expect_is(rs_error <- calcInSampleError(pred_data = rs_index$data[1:4, ],
+                                            index = hed_index$index$index),
+              'indexerrors')
+
+    # No data
+    expect_is(rs_error <- calcInSampleError(pred_data = rs_index$data[0, ],
+                                            index = hed_index$index$index),
+              'indexerrors')
+
+  })
+
   # Kfold
   # Forecast
+
+context('calcAccuracy() after error functions')
+
+  test_that('calcAccuracy works with insample errors',{
+
+    # Returns an error object
+    expect_is(rs_error <- calcAccuracy(hpi_obj = rs_index,
+                                       test_type = 'rs',
+                                       test_method = 'insample',
+                                       index_data = rs_index$data),
+              'indexerrors')
+
+    # Returns an error object in place
+    expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
+                                        test_type = 'rs',
+                                        test_method = 'insample',
+                                        index_data = rs_index$data,
+                                        in_place = TRUE,
+                                        in_place_name = 'errors'),
+              'hpi')
+    expect_is(hed_index$errors, 'indexerrors')
+    expect_true(attr(hed_index$errors, 'test_method') == 'insample')
+
+  })
+
+
+
 
 ### Test Blending Functions --------------------------------------------------------------
 
