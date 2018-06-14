@@ -1,4 +1,4 @@
-#' @title calcKFoldErrors
+#' @title calcKFoldError
 #' @description Estimate out-of-sample index errors using a KFold process
 #' @usage Lorem Ipsum...
 #' @param hpi_obj Object of class 'hpi'
@@ -13,10 +13,10 @@
 #' a <- 1
 #' @export
 
-calcKFoldErrors <- function(hpi_obj,
-                            pred_data,
-                            k=10,
-                            seed=1){
+calcKFoldError <- function(hpi_obj,
+                           pred_data,
+                           k=10,
+                           seed=1){
 
   # Set seed
   set.seed(seed)
@@ -54,9 +54,9 @@ calcKFoldErrors <- function(hpi_obj,
                          .f=calcHPIError)
 
   # Bind results together and return
-  error_df <- bind_rows(k_error)
+  error_df <- dplyr::bind_rows(k_error)
   class(error_df) <- unique(c('indexerrors', class(error_df)))
-  attr(error_df, 'error_type') <- 'holdout'
+  attr(error_df, 'test_method') <- 'kfold'
 
   # Return Values
   error_df
