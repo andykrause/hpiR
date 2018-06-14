@@ -9,13 +9,17 @@ Lorem Ipsum...
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{train_range}{Number of periods to use as purely training before forecast starts}
-
 \item{max_period}{Default=NULL; Maximum number of periods to forecast up to}
 
 \item{name_prefix}{Default=NULL; Prefix to add before last time period if naming indexes}
 
+\item{in_place}{Add to existing hpi object}
+
+\item{in_place_name}{default = 'series'; Give it a different name than the default}
+
 \item{...}{Additional Arguments}
+
+\item{train_range}{Number of periods to use as purely training before forecast starts}
 }
 \value{
 hpimodel object

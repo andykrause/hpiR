@@ -585,22 +585,69 @@ Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three lev
 
 #### Index Series
 
-<!-- Another way to examine predictive error is to approach the question through forecast (prediction out in time).  To do this, we built an index at each period (using only date up to that point in time) and then predict for the period t+1.  In this way, we create a series of indexes, each one time period longer than the next.   --> -->
+Two other aspects or metrics of house price indexes are revision and accuracy.  Revision refers to how much original estimate change over time as new data is accumulated (new transactions occur).  Accuracy refers to how class to the actual market the index values are.  Both concepts are described more fully below.  What both metric require is a series of indexes.  
 
-<!-- Because this period of indexes is also useful for some other calculations, we have a separate function to create this series,  -->
+A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 13, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13, up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc. 
+
+The `calcIndexSeries()` will create these series.  The `hpi_obj` argument must be a full `hpi` object (created with one of the index wrappers). `train_period` sets how many periods to use for initial training (length of the shortest period). The `max_period` argument will control the end period to estimate a series up to (defaults to the original length of the index in the `hpi` object.). The `name_prefix` argument will give a name to each of the indexes of the series (followed by the index #).  
+
+By default, the `calcIndexSeries` function will return just an index series (a series of `ts` objects); however, if you'd like to add the series to a full `hpi` object us `in_place = TRUE`.  The name in the full `hpi` object defaults to `series` but can be changed with the `in_place_name` argument.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE} 
+
+   # Just create a series from 24 to 30
+   hed_series <- calcIndexSeries(hpi_obj = hed_1,
+                                 train_period = 24,
+                                 max_period = 30)
+
+   # Create a series of full length, add to 'hpi' object, give it a name
+   rs_1 <- calcIndexSeries(hpi_obj = rs_1,
+                           train_period = 24,
+                           max_period = 48,
+                           name_prefix = 'rs_series_',
+                           in_place = TRUE,
+                           in_place_name = 'series_24_to_48')
+   
+   # Check name
+   names(rs_1$series_24_to_84[1])
+
+```
+
+A series can be plotted with the `plot.hpiseries()` method.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE} 
+
+  plot(rs_1$series_24_to_84)
+
+```
+
+#### Revision
+
+The red line in the plot shows the final index (period 48) after all of the transactions have been considered. The various grey lines show the index value at that period for each of non-final estimated series (24 through 47).  In this instance, as if often the case with repeat sales models, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index. 
+
+Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile. 
+
+The second calculation simply averages all revisions across all periods to provide a single value of the average revision for the index series.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  hed_rev <- calcRevision(hed_series)
+  rs_rev <- calcRevision(rs_1$series_24_to_48)
+
+  plot(hed_rev)
+  plot(rs_rev)
+
+```
+
+<!-- The hedonic revision has a total average value of 0.0003 index points per period, while the repeat sale revision averages -0.655 points per month, a considerable differnence.  -->
 
 <!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
 
-<!--   hed_series <- calcIndexSeries(hpi_obj = sea_hed_index, -->
-<!--                                 train_range = 24) -->
-
-<!--   rs_series <- calcIndexSeries(hpi_obj = sea_rs_index, -->
-<!--                                train_range = 24) -->
-
-<!--   plot(hed_series) -->
-<!--   plot(rs_series) -->
+<!--   plot(rs_rev$period$revision, type='l') -->
+<!--   lines(hed_rev$period$revision, col=2) -->
 
 <!-- ``` -->
+
 
 
 <!-- #### Predictive Ability -->
@@ -718,28 +765,7 @@ Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three lev
 
 <!-- A third metric to consider when looking at house price indexes is revision, or how much previous estimates are revised each time a new period occurs and new data is added to the analysis.   -->
 
-<!-- Within the literature there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size that the latter periods are, as such, are likely to be less volatile. -->
-<!-- The second calculation simply averages all revisions across all periods to provide a single value of the average revision for the index series.   -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_rev <- calcRevision(hed_series)   -->
-<!--   rs_rev <- calcRevision(rs_series) -->
-
-<!--   plot(hed_rev) -->
-<!--   plot(rs_rev) -->
-
-<!-- ``` -->
-
-<!-- The hedonic revision has a total average value of 0.0003 index points per period, while the repeat sale revision averages -0.655 points per month, a considerable differnence.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   plot(rs_rev$period$revision, type='l') -->
-<!--   lines(hed_rev$period$revision, col=2) -->
-
-<!-- ``` -->
-
+<!-- 
 <!-- ### Estimators -->
 
 <!-- * **base** -->

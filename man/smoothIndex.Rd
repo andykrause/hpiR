@@ -9,7 +9,11 @@ Lorem Ipsum...
 \arguments{
 \item{index}{Index to be smoothed}
 
-\item{order}{Number of nearby period to smooth with, multiple means multiple iterations of smoothing}
+\item{order}{Number of nearby period to smooth with, multiple means multiple iterations}
+
+\item{in_place}{default = FALSE; adds volatility metric to the `hpiindex` object}
+
+\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
 
 \item{...}{Additional Arguments}
 }
