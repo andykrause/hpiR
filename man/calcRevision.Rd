@@ -7,9 +7,15 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{index_obj}{A list of progressively longer indexes (from calcForecstErrors())}
+\item{series_name}{default = 'series'; name of the series if extracting}
+
+\item{in_place}{default = FALSE; calculating in place (adding to hpi)}
+
+\item{in_place_name}{default = 'rev'; name of revision object in_place}
 
 \item{...}{Additional Arguments}
+
+\item{index_obj}{A list of progressively longer indexes (from calcForecstErrors())}
 }
 \value{
 list containing:
