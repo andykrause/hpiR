@@ -538,7 +538,7 @@ context('hpiModel.hed()')
 
   context('modelToIndex(): hed')
 
-  hed_model <- hpiModel(hpi_data = rs_df,
+  hed_model <- hpiModel(hpi_data = hed_df,
                         estimator = 'base',
                         log_dep = TRUE,
                         trim_model=TRUE,

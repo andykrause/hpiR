@@ -48,6 +48,8 @@
 
 ### Volatility Function -------------------------------------------------------------
 
+context('calcIndexVolatility()')
+
   # Sample 'hed' hpi object for further testing
 
   test_that('Volatility Function works with a variety of inputs',{
@@ -122,6 +124,8 @@
 
 ### Test Smoothing Functions -------------------------------------------------------------
 
+context('smoothIndex()')
+
    test_that('smoothing Function works with a variety of inputs',{
 
      # Standard Input (ts object)
@@ -194,30 +198,126 @@
 
 ### Test Series Functions ----------------------------------------------------------------
 
+context('calcIndexSeries()')
 
+  test_that('Index Series works', {
 
-# context(calcIndexSeries())
-#
-#   test_that('Index Series works', {
-#
-#    hed_series <- calcIndexSeries(hpi_obj = hed_index,
-#                                  train_range = 24)
-#
-#    rs_series <- calcIndexSeries(hpi_obj = rs_index,
-#                                 train_range = 24)
-#
-#   })
+   expect_is(hed_series <- calcIndexSeries(hpi_obj = hed_index,
+                                           train_period = 24),
+             'hpiseries')
+
+   expect_is(rs_series <- calcIndexSeries(hpi_obj = rs_index,
+                                          train_period = 24),
+             'hpiseries')
+
+  })
+
+  test_that('Parameter arguments work',{
+
+    # Train Range and max period
+    expect_true(length(hed_series <- calcIndexSeries(hpi_obj = hed_index,
+                                                     train_period = 12,
+                                                     max_period = 50)) == 39)
+
+    # Max period is limited to lenght of 'hpi' object index
+    expect_true(length(hed_series <- calcIndexSeries(hpi_obj = hed_index,
+                                                     train_period = 12,
+                                                     max_period = 150)) == 73)
+
+    # Name Prefix
+    expect_true(names(rs_series <- calcIndexSeries(hpi_obj = rs_index,
+                                                   train_period = 24,
+                                                   max_period = 70,
+                                                   name_prefix = 'xxx'))[1] == 'xxx24')
+
+  })
+
+  test_that('Creating in place (adding to hpi object) works', {
+
+    # Basic in_place
+    expect_is(hed_index <- calcIndexSeries(hpi_obj = hed_index,
+                                           train_period = 24,
+                                           max_period = 50,
+                                           in_place = TRUE),
+              'hpi')
+    expect_is(hed_index$series, 'hpiseries')
+
+    # With name
+    expect_is(hed_index <- calcIndexSeries(hpi_obj = hed_index,
+                                           train_period = 24,
+                                           max_period = 50,
+                                           in_place = TRUE,
+                                           in_place_name = 'xxx'),
+              'hpi')
+    expect_is(hed_index$xxx, 'hpiseries')
+
+  })
+
+  test_that('Bad argument create errors',{
+
+    # Bad hpi_obj
+    expect_error(hed_series <- calcIndexSeries(hpi_obj = hed_index$index,
+                                               train_period = 24,
+                                               max_period = 50))
+
+    # Bad train_period
+    expect_error(hed_series <- calcIndexSeries(hpi_obj = hed_index,
+                                               train_period = 'x',
+                                               max_period = 50))
+
+    # Bad train_period
+    expect_error(hed_series <- calcIndexSeries(hpi_obj = hed_index,
+                                               train_period = 99,
+                                               max_period = 50))
+
+  })
+
+context('buildForecastIDs()')
+
+  test_that('buildForecastIDs works', {
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_data = hed_index$data,
+                                             train = TRUE)) == 11863)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_data = rs_index$data,
+                                             train = TRUE)) == 287)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_data = hed_index$data,
+                                             train = FALSE)) == 437)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_data = rs_index$data,
+                                             train = FALSE)) == 21)
+
+  })
+
+  test_that('buildForecastIDs() does not work with bad arguments',{
+
+    # Bad Data
+    expect_error(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_data = hed_index,
+                                             train = TRUE))
+
+    # Bad time cut
+    expect_error(is_data <- buildForecastIDs(time_cut = -1,
+                                             hpi_data = hed_index$data,
+                                             train = TRUE))
+
+  })
 
 ### Test Revision Functions --------------------------------------------------------------
 
 
 
-  ### Test Accuracy Functions --------------------------------------------------------------
+### Test Accuracy Functions --------------------------------------------------------------
 
   # Kfold
   # Forecast
 
-  ### Test Blending Functions --------------------------------------------------------------
+### Test Blending Functions --------------------------------------------------------------
 
 
 
