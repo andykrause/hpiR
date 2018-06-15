@@ -94,12 +94,13 @@ calcAccuracy <- function(hpi_obj,
     error_obj <- calcKFoldError(hpi_obj = hpi_obj,
                                 pred_data = index_data,
                                 ...)
-
-
   }
 
+  # Forecast
   if (test_method == 'forecast'){
-
+    error_obj <- calcForecastError(is_obj = hpi_obj[[series_name]],
+                                   pred_data = index_data,
+                                   ...)
   }
 
   # Return results

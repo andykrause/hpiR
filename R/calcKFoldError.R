@@ -158,9 +158,10 @@ matchKFold.rs <- function(train_df,
 matchKFold.hed <- function(train_df,
                            pred_data){
 
+  # Choose every other one
   x1 <- which(!pred_data$sale_id1 %in% train_df$sale_id)[c(T,F)]
   x2 <- which(!pred_data$sale_id2 %in% train_df$sale_id)[c(T,F)]
 
-  pred_data[c(x1, x2), ]
+  pred_data[unique(c(x1, x2)), ]
 
 }

@@ -498,9 +498,38 @@ context('calcKFoldError()')
 
   })
 
-  ## TODO:  test helper functions for calcKFoldEror
-  # Kfold
-  # Forecast
+context('calcForecastError()')
+
+  test_that('forecast fails with bad arguments',{
+
+    # Bad is_obj
+    expect_error(rs_error <- calcForecastError(is_obj = hed_index$index,
+                                               pred_data = rs_index$data))
+
+    # Bad pred_data
+    expect_error(rs_error <- calcForecastError(is_obj = hed_index$series,
+                                               pred_data = rs_index))
+
+  })
+
+  test_that('forecast works',{
+
+    # All data
+    expect_is(rs_error <- calcForecastError(is_obj = hed_index$series,
+                                            pred_data = rs_index$data),
+              'indexerrors')
+
+    # Sparse data
+    expect_is(rs_error <- calcForecastError(is_obj = hed_index$series,
+                                            pred_data = rs_index$data[1:40, ]),
+              'indexerrors')
+
+    # No data
+    expect_is(rs_error <- calcForecastError(is_obj = hed_index$series,
+                                            pred_data = rs_index$data[0, ]),
+              'indexerrors')
+
+  })
 
 context('calcAccuracy() after error functions')
 
@@ -526,7 +555,49 @@ context('calcAccuracy() after error functions')
 
   })
 
+  test_that('calcAccuracy works with kfold errors',{
 
+    # Returns an error object
+    expect_is(rs_error <- calcAccuracy(hpi_obj = rs_index,
+                                       test_type = 'rs',
+                                       test_method = 'kfold',
+                                       index_data = rs_index$data),
+              'indexerrors')
+
+    # Returns an error object in place
+    expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
+                                        test_type = 'rs',
+                                        test_method = 'kfold',
+                                        index_data = rs_index$data,
+                                        in_place = TRUE,
+                                        in_place_name = 'errors'),
+              'hpi')
+    expect_is(hed_index$errors, 'indexerrors')
+    expect_true(attr(hed_index$errors, 'test_method') == 'kfold')
+
+  })
+
+  test_that('calcAccuracy works with forecast errors',{
+
+    # Returns an error object
+    expect_is(rs_error <- calcAccuracy(hpi_obj = rs_index,
+                                       test_type = 'rs',
+                                       test_method = 'forecast',
+                                       index_data = rs_index$data),
+              'indexerrors')
+
+    # Returns an error object in place
+    expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
+                                        test_type = 'rs',
+                                        test_method = 'forecast',
+                                        index_data = rs_index$data,
+                                        in_place = TRUE,
+                                        in_place_name = 'errors'),
+              'hpi')
+    expect_is(hed_index$errors, 'indexerrors')
+    expect_true(attr(hed_index$errors, 'test_method') == 'forecast')
+
+  })
 
 
 ### Test Blending Functions --------------------------------------------------------------

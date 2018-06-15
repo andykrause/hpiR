@@ -1,28 +1,42 @@
-#' @title calcForecastErrors
+#' @title calcForecastError
 #' @description Estimate out-of-sample index errors using a forecast method
 #' @usage Lorem Ipsum...
-#' @param hpi_obj Object of class 'hpi'
+#' @param is_obj Object of class 'hpiseries'
 #' @param pred_data Set of sales to be used for predicitive quality of index
-#' @param train_range Number of periods to use as purely training before forecast starts
-#' @param max_period Default=NULL; Maximum number of periods to forecast up to
+#' @param return_indexes Defaul = FALSE; return the forecasted indexes
 #' @param ... Additional Arguments
-#' @return hpimodel object
+#' @return x
 #' @section Further Details:
 #' If 'max_period' is left NULL, then it will forecast up to the end of the data
 #' @examples
 #' a <- 1
 #' @export
 
-calcForecastErrors <- function(is_obj,
-                               pred_data,
-                               return_indexes=FALSE,
-                               ...){
+calcForecastError <- function(is_obj,
+                              pred_data,
+                              return_indexes=FALSE,
+                              ...){
 
+  # Check Classes
 
+  if (!'hpiseries' %in% class(is_obj)){
+    message('"is_obj" argument must be of class "hpiseries"')
+    stop()
+  }
+
+  if (!any('data.frame' %in% class(pred_data)) ||
+      !any(class(pred_data) %in% c('rs', 'hed'))){
+    message('"pred_data" argument must be a data.frame with additional class of ',
+            ' "rs" or "hed"')
+    stop()
+  }
+
+  # Set start and end
   start <- end(is_obj[[1]])[1] + 1
   end <- end(is_obj[[length(is_obj)]])[1]
   time_range <- start:end
 
+  # Get data
   fc_preddata <- purrr::map(.x = time_range,
                             hpi_data = pred_data,
                             train=FALSE,
@@ -42,8 +56,8 @@ calcForecastErrors <- function(is_obj,
                           .y=fc_forecasts,
                           pred_data=pred_data,
                           .f=function(x, y, pred_data){
-                            calcHPIError(pred_data=pred_data[x, ],
-                                         index=y)
+                            calcInSampleError(pred_data=pred_data[x, ],
+                                              index=y)
                             })
 
   error_df <- bind_rows(fc_error)
@@ -70,8 +84,8 @@ calcForecastErrors <- function(is_obj,
 #' @export
 
 buildForecastIDs <- function(time_cut,
-                              hpi_data,
-                              train=TRUE){
+                             hpi_data,
+                             train=TRUE){
 
   if (!'data.frame' %in% class(hpi_data)){
     message('"hpi_data" argument must be a data.frame')
