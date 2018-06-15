@@ -81,12 +81,20 @@ calcAccuracy <- function(hpi_obj,
   }
 
   # Dispatch to the tests based on test_method
+
+  # In sample
   if (test_method == 'insample'){
     error_obj <- calcInSampleError(pred_data = index_data,
-                                  index = hpi_obj$index$index)
+                                   index = hpi_obj$index$index,
+                                   ...)
   }
 
+  # kfold
   if (test_method == 'kfold'){
+    error_obj <- calcKFoldError(hpi_obj = hpi_obj,
+                                pred_data = index_data,
+                                ...)
+
 
   }
 

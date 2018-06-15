@@ -16,7 +16,32 @@
 calcKFoldError <- function(hpi_obj,
                            pred_data,
                            k=10,
-                           seed=1){
+                           seed=1,
+                           ...){
+
+  if (!'hpi' %in% class(hpi_obj)){
+    message('"hpi_obj" argument must be of class "hpi"')
+    stop()
+  }
+
+  if (!any('data.frame' %in% class(pred_data)) ||
+      !any(class(pred_data) %in% c('rs', 'hed'))){
+    message('"pred_data" argument must be a data.frame with additional class of ',
+            ' "rs" or "hed"')
+    stop()
+  }
+
+  if (!class(k) %in% c('integer', 'numeric') ||
+        k < 2){
+    message('Number of folds ("k" argument) must be a positive integer greater than 1')
+    stop()
+  }
+
+  if (!class(seed) %in% c('integer', 'numeric') ||
+       seed < 1){
+    message('"seed" must be a positive integer greater than 0')
+    stop()
+  }
 
   # Set seed
   set.seed(seed)
@@ -51,10 +76,12 @@ calcKFoldError <- function(hpi_obj,
   # Iterate through score and calc errors
   k_error <- purrr::map2(.x=k_score,
                          .y=k_index,
-                         .f=calcHPIError)
+                         .f=calcInSampleError)
 
   # Bind results together and return
-  error_df <- dplyr::bind_rows(k_error)
+  error_df <- dplyr::bind_rows(k_error) %>%
+    dplyr::filter(!is.na(prop_id))
+
   class(error_df) <- unique(c('indexerrors', class(error_df)))
   attr(error_df, 'test_method') <- 'kfold'
 

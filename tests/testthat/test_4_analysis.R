@@ -369,7 +369,7 @@ context('calcRevision()')
 
 ### Test Accuracy Functions --------------------------------------------------------------
 
-context('calcErrors() before error functions', {
+context('calcErrors() before error functions')
 
   test_that('bad arguments fail',{
 
@@ -409,8 +409,7 @@ context('calcErrors() before error functions', {
     expect_is(rss <- calcAccuracy(hpi_obj = rs_index,
                                   test_type = 'rs',
                                   index_data = rs_index$data),
-              'hpi')
-    expect_is(rss$series, 'hpiseries')
+              'indexerrors')
 
     # with limited start and end and new name
     expect_is(hes <- calcAccuracy(hpi_obj = hed_index,
@@ -419,8 +418,7 @@ context('calcErrors() before error functions', {
                                   train_period = 24,
                                   max_period = 36,
                                   series_name = 's36'),
-              'hpi')
-    expect_is(hes$s36, 'hpiseries')
+              'indexerrors')
 
   })
 
@@ -457,6 +455,50 @@ context('calcInSampleError()')
 
   })
 
+context('calcKFoldError()')
+
+  test_that('in sample error fails with bad arguments',{
+
+    # Bad hpi_obj
+    expect_error(rs_error <- calcKFoldError(hpi_obj = hed_index$index,
+                                            pred_data = rs_index$data))
+
+    # Bad pred_data
+    expect_error(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                            pred_data = rs_index))
+
+    # Bad k
+    expect_error(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                            pred_data = rs_index$data,
+                                            k = 'a'))
+
+    # Bad seed
+    expect_error(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                            pred_data = rs_index$data,
+                                            seed = 'x'))
+  })
+
+  test_that('kfold works',{
+
+    # All data
+    expect_is(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                         pred_data = rs_index$data),
+              'indexerrors')
+
+
+    # Sparse data
+    expect_is(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                         pred_data = rs_index$data[1:40, ]),
+              'indexerrors')
+
+    # No data
+    expect_is(rs_error <- calcKFoldError(hpi_obj = hed_index,
+                                            pred_data = rs_index$data[0, ]),
+              'indexerrors')
+
+  })
+
+  ## TODO:  test helper functions for calcKFoldEror
   # Kfold
   # Forecast
 
@@ -488,6 +530,3 @@ context('calcAccuracy() after error functions')
 
 
 ### Test Blending Functions --------------------------------------------------------------
-
-
-
