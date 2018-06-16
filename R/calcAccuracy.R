@@ -15,10 +15,10 @@
 #' @export
 
 calcAccuracy <- function(hpi_obj,
-                         series_name = 'series',
                          test_method = 'insample',
                          test_type = 'rs',
                          index_data = NULL,
+                         series_name = 'series',
                          in_place = FALSE,
                          in_place_name = 'acc',
                          ...){
@@ -54,30 +54,45 @@ calcAccuracy <- function(hpi_obj,
     index_data <- hpi_obj$data
   }
 
-  if (is.null(hpi_obj[[series_name]]) ||
-      any(!class(hpi_obj[[series_name]]) == 'hpiseries')){
+  # Check for series
+  if (test_method == 'forecast'){
 
-    # Set default training period
-    if (is.null(list(...)$train_period)){
-      train_period <- as.integer(floor(length(hpi_obj$index$index) / 4))
-    } else {
-      train_period <- list(...)$train_period
+    if (is.null(hpi_obj[[series_name]]) ||
+        any(!class(hpi_obj[[series_name]]) == 'hpiseries')){
+
+      # Set default training period
+      if (is.null(list(...)$train_period)){
+        train_period <- as.integer(floor(length(hpi_obj$index$index) / 4))
+      } else {
+        train_period <- list(...)$train_period
+      }
+
+      # Set default max period
+      if (is.null(list(...)$max_period)){
+        max_period <- length(hpi_obj$index$index)
+      } else {
+        max_period <- list(...)$max_period
+      }
+
+      # Estimate Series
+      hpi_obj <- calcIndexSeries(hpi_obj = hpi_obj,
+                                 train_period = train_period,
+                                 max_period = max_period,
+                                 in_place = TRUE,
+                                 in_place_name = series_name)
+
+    } # Ends if(is.null(hpi....))
+  } # Ends if(test_method == 'series')
+
+  # Clip pred_data to size of index
+  if (test_type == 'rs') {
+    if (max(index_data$period_2) > max(hpi_obj$index$period)){
+      message("Trimming prediction date down to period ", max(hpi_obj$index$period),
+              " and before.")
+      index_data <- index_data %>%
+        dplyr::filter(period_2 <= max(hpi_obj$index$period))
+      class(index_data) <- c('rs', 'data.frame')
     }
-
-    # Set default max period
-    if (is.null(list(...)$max_period)){
-      max_period <- length(hpi_obj$index$index)
-    } else {
-      max_period <- list(...)$max_period
-    }
-
-    # Estimate Series
-    hpi_obj <- calcIndexSeries(hpi_obj = hpi_obj,
-                               train_period = train_period,
-                               max_period = max_period,
-                               in_place = TRUE,
-                               in_place_name = series_name)
-
   }
 
   # Dispatch to the tests based on test_method
