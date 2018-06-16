@@ -15,11 +15,19 @@ blendIndexes <- function(index_list,
                          weights=NULL,
                          ...){
 
+  # Check classes
+  cs <- unlist(lapply(index_list, function(x) 'hpiindex' %in% class(x)))
+  if (any(!cs)){
+    message('All objects in "index_list" must be objects of the class "hpiindex')
+    stop()
+  }
+
+
   # Check if all same length,
-  lens <- lapply(index_list, length)
+  lens <- lapply(index_list, function(x) length(x$index))
   if (length(unique(lens)) > 1){
     message('All indexes must be the same length')
-    return(NULL)
+    stop()
   }
 
   # Compute weights
@@ -28,25 +36,25 @@ blendIndexes <- function(index_list,
   } else {
     if (length(weights) != length(index_list)){
       message('Weights must be the same length as the index_list')
-      return(NULL)
+      stop()
     }
     if (round(sum(weights), 4) != 1){
-      mesage('Weights must sum to 1')
-      return(NULL)
+      message('Weights must sum to 1')
+      stop()
     }
-
   }
+
   # Compute contribution
   index_w <- purrr::map2(.x=index_list,
                          .y=weights,
-                         .f=function(x,y) x*y)
+                         .f=function(x, y) x$index * y)
 
   # Sum and convert to TS
   index_blend <- Reduce('+', index_w)
 
-  attr(index_blend, 'class') <- c('indexblend', class(index_blend))
+  attr(index_blend, 'class') <- c('indexblend', 'hpiindex', class(index_blend))
   attr(index_blend, 'ancestry') <- list(weights=weights,
-                                      parents=index_list)
+                                        parents=index_list)
   # Return Values
   index_blend
 

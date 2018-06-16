@@ -601,3 +601,49 @@ context('calcAccuracy() after error functions')
 
 
 ### Test Blending Functions --------------------------------------------------------------
+
+context('blendIndexes()')
+
+  test_that('blendIndexes() works',{
+
+    # Basic Blend of two
+    expect_is(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                            hed_index$index)),
+              'indexblend')
+
+    # With weights
+    expect_is(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                             hed_index$index),
+                                          weights=c(.25, .75)),
+              'indexblend')
+
+    # More than two
+    expect_is(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                            hed_index$index,
+                                                            hed_index$index)),
+              'indexblend')
+  })
+
+  test_that('blendIndexes() fails with bad arguments', {
+
+    # Bad index
+    expect_error(blend_index <- blendIndexes(index_list = list(rs_index,
+                                                               hed_index$index)))
+
+    # Bad length
+    bad_index <- hed_index$index
+    bad_index$index <- bad_index$index[1:80]
+    expect_error(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                               bad_index)))
+
+    # Bad Weights
+    expect_error(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                               hed_index$index),
+                                             weights = c(.5, .4)))
+
+    # Bad Weights
+    expect_error(blend_index <- blendIndexes(index_list = list(rs_index$index,
+                                                               hed_index$index),
+                                             weights = c(.5, .4, .1)))
+
+  })

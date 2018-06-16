@@ -661,9 +661,9 @@ The revision can be pulled from an existing `hpi` object, so long as the `series
 
 #### Predictive Ability
 
-<!-- Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).  To start, we'll do this in-sample, ignoring any issues of overfitting. -->
+Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
 
-<!-- We begin by extracting the repeat sale data (which we'll use to test the indexes), as well as the two indexes from their larger `hpi` object developed above. -->
+We begin by extracting the repeat sale data (which we'll use to test the indexes), as well as the two indexes from their larger `hpi` object developed above.
 
 <!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
 
@@ -770,31 +770,20 @@ The revision can be pulled from an existing `hpi` object, so long as the `series
 
 <!-- ``` -->
 
-<!-- #### Revision -->
 
-<!-- A third metric to consider when looking at house price indexes is revision, or how much previous estimates are revised each time a new period occurs and new data is added to the analysis.   -->
+### Blending and Smoothing Indexes
 
-<!-- 
-<!-- ### Estimators -->
+It may be advantageous to blend indexes. The `blendIndexes` function will blend any number of identical length indexes.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list.
 
-<!-- * **base** -->
-<!-- * **robust** -->
-<!-- * **weighted** -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  blend_index <- blendIndexes(index_list = list(rs_series[[61]],
+                                                hed_series[[61]]),
+                              weights=c(.6, .4))
+
+```
 
 
-<!-- ### Blending and Smoothing Indexes -->
-
-<!-- It may be advantageous to blend indexes.  We offer the `blendIndexes` function to do that.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   blend_index <- blendIndexes(index_list = list(rs_series[[61]], -->
-<!--                                                 hed_series[[61]]), -->
-<!--                               weights=c(.6, .4)) -->
-
-<!--   plot(blend_index) -->
-
-<!-- ``` -->
 
 
 
