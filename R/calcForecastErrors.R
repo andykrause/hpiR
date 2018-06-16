@@ -62,7 +62,7 @@ calcForecastError <- function(is_obj,
 
   error_df <- bind_rows(fc_error)
   class(error_df) <- unique(c('indexerrors', class(error_df)))
-  attr(error_df, 'error_type') <- 'forecast'
+  attr(error_df, 'test_method') <- 'forecast'
 
   # Return Values
   error_df
