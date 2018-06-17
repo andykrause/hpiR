@@ -57,11 +57,16 @@ calcRevision <- function(series_obj,
   # Calculate the means
   period_means <- unlist(purrr::map(.x=period_diffs,
                                     .f=mean))
+  period_medians <- unlist(purrr::map(.x=period_diffs,
+                                      .f=median))
+
 
   # Package and Return
   rev_obj <- structure(list(period = data.frame(period=1:length(period_means),
-                                                revision=period_means),
-                            total = mean(unlist(period_means))),
+                                                mean=period_means,
+                                                median=period_medians),
+                            median = median(unlist(period_means)),
+                            mean = mean(unlist(period_means))),
                        class='indexrevision')
 
   if (in_place && 'hpi' %in% class(series_obj)){
