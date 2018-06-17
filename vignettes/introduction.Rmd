@@ -788,8 +788,18 @@ We can then compare the summary statistics of the errors, which seem to suggest 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  error_df <- data.frame(rs = round(as.numeric(summary(abs(rs_fc_error$pred_error))), 3),
-                         hed = round(as.numeric(summary(abs(hed_hpi$fc_error$pred_error))), 3))
+  error_df <- data.frame(rsi = round(as.numeric(summary(abs(rs_is_error$pred_error))), 3),
+                         rsk = round(as.numeric(summary(abs(rs_kf_error$pred_error))), 3),
+                         rsf = round(as.numeric(summary(abs(rs_fc_error$pred_error))), 3),
+                         hi= round(as.numeric(summary(abs(
+                           hed_hpi$is_errors$pred_error))), 3),
+                         hk = round(as.numeric(summary(abs(
+                           hed_hpi$kf_errors$pred_error))), 3),
+                         hf = round(as.numeric(summary(abs(
+                           hed_hpi$fc_errors$pred_error))), 3))
+
+  names(error_df) <- c('RS - In Sample', 'RS - KFold', 'RS - Forecast', 
+                       'Hed - In Sample', 'Hed - KFold', 'Hed - Forecast')
   rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')
   knitr::kable(error_df)
 
@@ -797,44 +807,18 @@ We can then compare the summary statistics of the errors, which seem to suggest 
 
 
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
 
-<!--   error_df <- data.frame(rs = round(as.numeric(summary(abs(rs_fc_error$pred_error))), 3), -->
-<!--                          rs_oos = round(as.numeric(summary(abs( -->
-<!--                            rs_oos_errors$pred_error))), 3), -->
-<!--                          rs_fc = round(as.numeric(summary(abs( -->
-<!--                            rs_fc_errors$pred_error))), 3), -->
-<!--                          hed = round(as.numeric(summary(abs(hed_error$pred_error))), 3), -->
-<!--                          hed_oos = round(as.numeric(summary(abs( -->
-<!--                            hed_oos_errors$pred_error))), 3), -->
-<!--                          hed_fc = round(as.numeric(summary(abs( -->
-<!--                            hed_fc_errors$pred_error))), 3)) -->
+### Blending and Smoothing Indexes
 
-<!--   names(error_df) <- c('Repeat Sales', 'Hedonic Model') -->
-<!--   rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')  -->
-<!--   knitr::kable(error_df) -->
+It may be advantageous to blend indexes. The `blendIndexes` function will blend any number of identical length indexes.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list.
 
-<!-- ```  -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
+  blend_index <- blendIndexes(index_list = list(rs_hpi$index,
+                                                hed_hpi$index),
+                              weights=c(.6, .4))
 
-<!-- ### Blending and Smoothing Indexes -->
-
-<!-- It may be advantageous to blend indexes. The `blendIndexes` function will blend any number of identical length indexes.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   rs_series <- calcIndexSeries(hpi_obj = rs_hpi, -->
-<!--                                train_period = 24, -->
-<!--                                max_period = 84) -->
-<!--   hed_series <- calcIndexSeries(hpi_obj = hed_hpi, -->
-<!--                                 train_period = 24, -->
-<!--                                 max_period = 84) -->
-
-<!--   blend_index <- blendIndexes(index_list = list(rs_series, -->
-<!--                                                 hed_series), -->
-<!--                               weights=c(.6, .4)) -->
-
-<!-- ``` -->
+```
 
 
 
