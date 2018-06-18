@@ -529,7 +529,7 @@ There are three 'levels of entry' with the wrapper function.
 
 Again, we can plot with a simple `plot()` call. 
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
  
   plot(hed_3)
 
@@ -537,101 +537,112 @@ Again, we can plot with a simple `plot()` call.
   
 ```
 
+### Analyzing an index
 
-<!-- ### Analyzing an index -->
+Before we start analyzing our indexes, we'll create two example `hpi` objects, one using a repeat sales model and one with a hedonic price model.
 
-<!-- Before we start analyzing our indexes, we'll create two example `hpi` objects, one using a repeat sales model and one with a hedonic price model. -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+  rt_hpi <- rtIndex(trans_df = rt_sales,
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = FALSE,
+                    max_period = 84)
 
-<!--   rs_hpi <- rsIndex(sales_df = rs_sales, -->
-<!--                     estimator = 'robust', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 84) -->
+  hed_hpi <- hedIndex(trans_df = hed_sales,
+                      estimator = 'weighted',
+                      log_dep = TRUE,
+                      trim_model = FALSE,
+                      max_period = 84,
+                      dep_var = 'price',
+                      ind_var = c('tot_sf', 'beds', 'baths'),
+                      weights = runif(nrow(hed_sales), 0, 1))
 
-<!--   hed_hpi <- hedIndex(sales_df = hed_sales, -->
-<!--                       estimator = 'weighted', -->
-<!--                       log_dep = TRUE, -->
-<!--                       trim_model = FALSE, -->
-<!--                       max_period = 84, -->
-<!--                       dep_var = 'price', -->
-<!--                       ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                       weights = runif(nrow(hed_sales), 0, 1)) -->
+```
 
-<!-- ``` -->
+#### Volatility
 
+One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) and median (**median**) are returned by the function.  V
 
-<!-- #### Volatility -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) are returned by the function. -->
+  index_vol <- calcVolatility(index = hed_hpi$index$index,
+                              window = 3)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+  class(index_vol)
 
-<!--  index_vol <- calcIndexVolatility(index = hed_hpi$index$index, -->
-<!--                                   window = 3) -->
+  names(index_vol)
+  
+```
 
-<!--   plot(index_vol) -->
+Plotting an **indexVolatility** object show the original index (bottom panel) and the rolling volatility, the mean (dashed line) and the median (dotted) volatility on the top panel. 
 
-<!-- ``` -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-<!-- A number of different objects can be passed to the `calcIndexVolatility()` function.  These include the extracted `ts` object from an `hpiindex` object, the raw `hpiindex` object itself (from `modelToIndex()`), or a `hpi` object from one of the wrappers (`rsIndex` or `hedIndex`) -->
+  plot(index_vol)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```
 
-<!--  # ts object -->
-<!--  index_vol <- calcIndexVolatility(index = hed_hpi$index$index, -->
-<!--                                   window = 3) -->
+A number of differently classed objects can be passed to the **"index"** argument in the `calcVolatility()` function.  These include the extracted **ts** object from an **hpiindex** object, the raw **hpiindex** object itself (from `modelToIndex()`), or an **hpi** object from one of the wrappers (`rtIndex()` or `hedIndex()`)
 
-<!--  # hpiindex object -->
-<!--  index_vol <- calcIndexVolatility(index = hed_hpi$index, -->
-<!--                                   window = 3) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--  # hpi object -->
-<!--  index_vol <- calcIndexVolatility(index = hed_hpi, -->
-<!--                                   window = 3) -->
+ # ts object
+ index_vol <- calcVolatility(index = hed_hpi$index$index,
+                             window = 3)
+ class(index_vol)
 
-<!-- ``` -->
+ # hpiindex object
+ index_vol <- calcVolatility(index = hed_hpi$index,
+                             window = 3)
+ class(index_vol)
+ 
+ # hpi object
+ index_vol <- calcVolatility(index = hed_hpi,
+                             window = 3)
+ class(index_vol)
+ 
+```
 
-<!-- The `calcIndexVolatility` function can also return the volatility metrics 'in place', or directly into the `hpiindex` object.  The code below shows how to return these into an `hpiindex` object and a larger `hpi` object under the name `vol`.  -->
+The `calcVolatility()` function can also return the volatility metrics 'in place', or directly into the **hpiindex** object.  The code below shows how to return these into an **hpiindex** object and a larger **hpi** object under the name **volatility**.  If passed an **hpiindex** object, the results will be stored in the **hpiindex** object which is returned.  If passed an **hpi** object, the results will be stored in the **hpiindex** object with the **hpi** object which is returned. 
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--    # Add it to the 'hpiindex' object -->
-<!--    hed_hpi$index <- calcIndexVolatility(index = hed_hpi$index, -->
-<!--                                       window = 3, -->
-<!--                                       in_place = TRUE) -->
+   # Add it to the 'hpiindex' object
+   hed_hpi$index <- calcVolatility(index = hed_hpi$index,
+                                   window = 3,
+                                   in_place = TRUE)
 
-<!--    class(hed_hpi$index$vol) -->
+   class(hed_hpi$index$volatility)
 
-<!--    # Add it to the full 'hpi' object (to the hpiindex object) -->
-<!--    hed_hpi <- calcIndexVolatility(index = hed_hpi, -->
-<!--                                 window = 3, -->
-<!--                                 in_place = TRUE) -->
-<!--    class(hed_hpi$index$vol) -->
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_hpi <- calcVolatility(index = hed_hpi,
+                             window = 3,
+                             in_place = TRUE)
+   class(hed_hpi$index$volatility)
 
-<!-- ``` -->
+```
 
-<!-- If you want to add it to the `hpiindex` under a different name -- say if you are comparing volatilities, you can use the `in_place_name` argument to give it a different name.  -->
+If you want to add it to the **hpiindex** object under a different name -- say if you are comparing volatilities, you can use the **in_place_name** argument to give it a different name.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--    # Add it to the 'hpiindex' object -->
-<!--    hed_hpi$index <- calcIndexVolatility(index = hed_hpi$index, -->
-<!--                                       window = 3, -->
-<!--                                       in_place = TRUE, -->
-<!--                                       in_place_name = 'vol_3') -->
+   # Add it to the 'hpiindex' object
+   hed_hpi$index <- calcVolatility(index = hed_hpi$index,
+                                   window = 3,
+                                   in_place = TRUE,
+                                   in_place_name = 'vol_3')
 
-<!--    class(hed_hpi$index$vol_3) -->
+   names(hed_hpi$index)
 
-<!--    # Add it to the full 'hpi' object (to the hpiindex object) -->
-<!--    hed_hpi <- calcIndexVolatility(index = hed_hpi, -->
-<!--                                 window = 5, -->
-<!--                                 in_place = TRUE, -->
-<!--                                 in_place_name = 'vol_5') -->
-<!--    class(hed_hpi$index$vol_5) -->
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_hpi <- calcVolatility(index = hed_hpi,
+                             window = 5,
+                             in_place = TRUE,
+                             in_place_name = 'vol_5')
+   names(hed_hpi$index)
 
-<!-- ``` -->
+```
 
 <!-- #### Smoothing -->
 

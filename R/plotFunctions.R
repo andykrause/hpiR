@@ -264,7 +264,7 @@ plot.hpiseries <- function(series_obj){
 
 #' @title plot.indexvol
 #' @export
-plot.indexvol <- function(vol_obj){
+plot.indexvolatility <- function(vol_obj){
 
   # Set up dimensions
   data_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
@@ -273,9 +273,11 @@ plot.indexvol <- function(vol_obj){
 
   # Plot base volatility
   vol_plot <- ggplot(data_df, aes(x=time_period, y=volatility)) +
-    geom_line(color='navy') +
+    geom_line(color='navy', size=2) +
     ylab('Volatility\n') +
-    xlab('\nTime Period')
+    xlab('\nTime Period') +
+    geom_hline(yintercept = vol_obj$mean, size=1, linetype = 2, color='gray50') +
+    geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
 
   # Plot Original Index
   orig_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),

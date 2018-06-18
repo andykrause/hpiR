@@ -48,45 +48,45 @@
 
 ### Volatility Function -------------------------------------------------------------
 
-context('calcIndexVolatility()')
+context('calcVolatility()')
 
   # Sample 'hed' hpi object for further testing
 
   test_that('Volatility Function works with a variety of inputs',{
 
     # Standard Input (ts object)
-    expect_is(index_vol <- calcIndexVolatility(index = hed_index$index$index,
-                                               window = 3),
-              'indexvol')
+    expect_is(index_vol <- calcVolatility(index = hed_index$index$index,
+                                          window = 3),
+              'indexvolatility')
 
     # Hpi Index object
-    expect_is(index_vol <- calcIndexVolatility(index = hed_index$index,
-                                               window = 3),
-              'indexvol')
+    expect_is(index_vol <- calcVolatility(index = hed_index$index,
+                                          window = 3),
+              'indexvolatility')
 
     # Full HPI Object
-    expect_is(index_vol <- calcIndexVolatility(index = hed_index,
+    expect_is(index_vol <- calcVolatility(index = hed_index,
                                                window = 3),
-              'indexvol')
+              'indexvolatility')
 
   })
 
   test_that('Errors are given when index is bad',{
 
     # Non-sensical index
-    expect_error(index_vol <- calcIndexVolatility(index = 'abc',
+    expect_error(index_vol <- calcVolatility(index = 'abc',
                                                   window = 3))
 
     # Negative Window
-    expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+    expect_error(index_vol <- calcVolatility(index = hed_index$index,
                                                   window = -1))
 
     # Char Window
-    expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+    expect_error(index_vol <- calcVolatility(index = hed_index$index,
                                                   window = 'x'))
 
     # NA Window
-    expect_error(index_vol <- calcIndexVolatility(index = hed_index$index,
+    expect_error(index_vol <- calcVolatility(index = hed_index$index,
                                                   window = NA_integer_))
 
   })
@@ -94,30 +94,30 @@ context('calcIndexVolatility()')
   test_that('Returning in place works',{
 
     # Standard Input (ts object)
-    expect_is(index_vol <- calcIndexVolatility(index = hed_index$index$index,
+    expect_is(index_vol <- calcVolatility(index = hed_index$index$index,
                                                window = 3,
                                                in_place = TRUE),
-              'indexvol')
+              'indexvolatility')
 
     # Add it to the Hpi Index object
-    expect_is(hed_index$index <- calcIndexVolatility(index = hed_index$index,
+    expect_is(hed_index$index <- calcVolatility(index = hed_index$index,
                                                      window = 3,
                                                      in_place = TRUE),
               'hpiindex')
 
     # Add it to the Full HPI Object (to the hpiindex object)
-    expect_is(hed_index <- calcIndexVolatility(index = hed_index,
+    expect_is(hed_index <- calcVolatility(index = hed_index,
                                                window = 3,
                                                in_place = TRUE),
               'hpi')
 
     # Add it to the Full HPI Object (to the hpiindex object) with new name
-    expect_is(hed_index <- calcIndexVolatility(index = hed_index,
+    expect_is(hed_index <- calcVolatility(index = hed_index,
                                                window = 3,
                                                in_place = TRUE,
                                                in_place_name = 'xxx'),
               'hpi')
-    expect_is(hed_index$index$xxx, 'indexvol')
+    expect_is(hed_index$index$xxx, 'indexvolatility')
 
 
   })
