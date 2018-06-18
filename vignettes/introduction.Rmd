@@ -644,42 +644,45 @@ If you want to add it to the **hpiindex** object under a different name -- say i
 
 ```
 
-<!-- #### Smoothing -->
+#### Smoothing
 
-<!-- As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the `order` argument -- the number of periods over which to smooth.  -->
+As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex()` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the **order** argument -- the number of periods over which to smooth.
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+  hed_smooth <- smoothIndex(hed_hpi, order = 5)
 
-<!--   # Smoothed Hedonic Indexes -->
-<!--   hed_smooth <- smoothIndex(hed_hpi, order = 5) -->
+  class(hed_smooth)
+  
+  plot(hed_smooth)
 
-<!--   # Plot comparison -->
-<!--   plot(hed_hpi$index$index, lwd=2) -->
-<!--   lines(hed_smooth, col=2, lwd=2, lty = 2) -->
+```
 
-<!-- ``` -->
+Like the `calcVolatility()`, `smoothIndex()` can take object from three levels of results and can be done **in_place** such that the smoothed indexes are added to the larger object.  A distinct name can be given to the smoothed index with the **in_place_name** argument (default is **"smoothed"**")
 
-<!-- Like the `calcIndexVolatility()`, `smoothIndex()` can take object from three levels of results and can be done `in_place` such that the smoothed indexes are added to the larger object.  A distinct name can be given to the smoothed index with the `in_place_name` argument (default is 'smoothed') -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+     # Standard Input (ts object)
+     index_smooth <- smoothIndex(index = hed_hpi$index$index,
+                                 order = 3)
+     class(index_smooth)
 
-<!--      # Standard Input (ts object) -->
-<!--      index_smooth <- smoothIndex(index = hed_hpi$index$index, -->
-<!--                                  order = 3) -->
-
-<!--      # Hpi Index object -->
-<!--      hed_hpi$index <- smoothIndex(index = hed_hpi$index, -->
-<!--                                 order = 4, -->
-<!--                                 in_place = TRUE) -->
-
-<!--      # Full HPI Object -->
-<!--      hed_hpi <- smoothIndex(index = hed_hpi, -->
-<!--                           order = 8, -->
-<!--                           in_place = TRUE, -->
-<!--                           in_place_name = 'xxx') -->
-
-<!-- ``` -->
+     # Hpi Index object
+     hed_hpi$index <- smoothIndex(index = hed_hpi$index,
+                                order = 4,
+                                in_place = TRUE)
+     class(hed_hpi$index)
+     names(hed_hpi$index)
+      
+     # Full HPI Object
+     hed_hpi <- smoothIndex(index = hed_hpi,
+                            order = 8,
+                            in_place = TRUE,
+                            in_place_name = 'sm8')
+     class(hed_hpi)
+     names(hed_hpi$index)
+     
+```
 
 <!-- #### Index Series -->
 

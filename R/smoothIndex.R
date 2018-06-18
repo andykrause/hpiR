@@ -70,7 +70,7 @@ smoothIndex <- function(index,
   s_index[na_high] <- new_high
 
   # Add Class and Attributes
-  class(s_index) <- append('smoothindex', class(index))
+  class(s_index) <- c('indexsmooth', class(index))
   attr(s_index, 'raw') <- index
   attr(s_index, 'order') <- order
 

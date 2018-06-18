@@ -131,17 +131,17 @@ context('smoothIndex()')
      # Standard Input (ts object)
      expect_is(index_smooth <- smoothIndex(index = hed_index$index$index,
                                            order = 3),
-               'smoothindex')
+               'indexsmooth')
 
      # Hpi Index object
      expect_is(index_smooth <- smoothIndex(index = hed_index$index,
                                            order = 4),
-               'smoothindex')
+               'indexsmooth')
 
      # Full HPI Object
      expect_is(index_smooth <- smoothIndex(index = hed_index,
                                            order = 6),
-               'smoothindex')
+               'indexsmooth')
 
    })
 
@@ -171,7 +171,7 @@ context('smoothIndex()')
     expect_is(index_smooth <- smoothIndex(index = hed_index$index$index,
                                           order = 3,
                                           in_place = TRUE),
-              'smoothindex')
+              'indexsmooth')
 
     # Add it to the Hpi Index object
     expect_is(hed_index$index <- smoothIndex(index = hed_index$index,
@@ -191,7 +191,7 @@ context('smoothIndex()')
                                        in_place = TRUE,
                                        in_place_name = 'xxx'),
               'hpi')
-    expect_is(hed_index$index$xxx, 'smoothindex')
+    expect_is(hed_index$index$xxx, 'indexsmooth')
 
   })
 

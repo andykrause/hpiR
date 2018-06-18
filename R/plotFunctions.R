@@ -62,10 +62,10 @@ plot.hpi <- function(hpi_obj,
 
 }
 
-#' @title plot.smoothindex
+#' @title plot.indexsmooth
 #' @export
 
-plot.smoothindex <- function(s_index){
+plot.indexsmooth <- function(s_index){
 
   # Extract Length
   l <- length(s_index)
