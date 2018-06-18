@@ -158,11 +158,11 @@ In the event of more than two transactions, all pairs of transactions are create
 
 Next, we use this data to estimate a repeat transactions model.  In this simple example we will use the **"base"** estimator (a simple OLS) with a logged dependent variable (**"log_dep = TRUE"**).  Models may also be estimated via a robust regression model (**"estimator = 'robust'"**) or a weighted OLS model (**"estimator = 'weighted'"**) as originally suggested by Case and Shiller
 
-The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpi_data` object that is passed to it, in this case that class is 'rt' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
+The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpi_df` object that is passed to it, in this case that class is 'rt' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                           
-  rt_model <- hpiModel(hpi_data = rt_sales,
+  rt_model <- hpiModel(hpi_df = rt_sales,
                        estimator = 'base',
                        log_dep = TRUE)
 
@@ -174,7 +174,7 @@ The objects resulting from regression model can be rather large, so by default t
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                      
-  rt_full <- hpiModel(hpi_data = rt_sales,
+  rt_full <- hpiModel(hpi_df = rt_sales,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model = FALSE)
@@ -316,7 +316,7 @@ There are three 'levels of entry' with the wrapper function.
 
 A plot method exists to cleanly plot **hpi** objects so that the axes are labeled clearly. This function is just a wrapper for `plot.hpindex()` and therefore return an object of class **indexplot**. 
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
 
  plot(rt_1)
 
@@ -324,196 +324,219 @@ A plot method exists to cleanly plot **hpi** objects so that the axes are labele
 
 ```
 
-<!-- ### Hedonic Price Model -->
+### Hedonic Price Model
 
-<!-- Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat sales model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex`).  We'll start with individual steps. -->
+Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat transaction model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex()`).  We'll start with individual steps.
 
-<!-- First, we create a set of hedonic model ready data with the `hedCreateTrans` function.  Here we provide the raw sales, along with field names for the property id, the sale id, the price and date.  A periodicity (year, qtr, month or week) is also required.  Note that this function uses the `dateToPeriod()` discussed above.   -->
+First, we create a set of hedonic model ready data with the `hedCreateTrans()` function.  Here we provide the raw transaction, along with field names for the property id, the transaction ids, the price and date.  A periodicity (**"yearly"**, **"quarterly"**, **"monthly"** or **"weekly"**) is also required.  Note that this function uses the `dateToPeriod()` discussed above and creates an object of clas **hed** inheriting from **data.frame**. 
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--   hed_sales <- hedCreateTrans(sales_df = sales, -->
-<!--                               prop_id = 'pinx', -->
-<!--                               trans_id = 'sale_id', -->
-<!--                               price = 'sale_price', -->
-<!--                               date= 'sale_date', -->
-<!--                               periodicity = 'monthly') -->
+  hed_sales <- hedCreateTrans(trans_df = sales,
+                              prop_id = 'pinx',
+                              trans_id = 'sale_id',
+                              price = 'sale_price',
+                              date= 'sale_date',
+                              periodicity = 'monthly')
 
-<!-- ``` -->
+  class(hed_sales)
 
-<!-- Next,we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The `log_dep` variable will control whether or not the dependent variable (`dep_var`) is converted into log format (as is common in hedonic price studies).  -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+Next, we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The **log_dep** argument will control whether or not the dependent variable (**dep_var**) is converted into log format (as is common in hedonic price studies).
 
-<!--   hed_model <- hpiModel(hpi_data = hed_sales, -->
-<!--                         estimator = 'base', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = TRUE) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ``` -->
+  hed_model <- hpiModel(hpi_df = hed_sales,
+                        estimator = 'base',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = TRUE)
 
-<!-- If you'd like more control over the model specification -- such as using interactions or categorical variables -- you can, instead, provide a fully formed model specification in the `hed_spec` argument. -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+If you'd like more control over the model specification -- such as using interactions or categorical variables -- you can, instead, provide a fully formed model specification in the **hed_spec** argument.
 
-<!--   model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf') -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--   hed_model <- hpiModel(hpi_data = hed_sales, -->
-<!--                         estimator = 'base', -->
-<!--                         hed_spec = model_spec, -->
-<!--                         log_dep = TRUE) -->
+  model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf')
 
-<!-- ``` -->
+  hed_model <- hpiModel(hpi_df = hed_sales,
+                        estimator = 'base',
+                        hed_spec = model_spec,
+                        log_dep = TRUE)
 
-<!-- In addition the base estimator (OLS) there are Robust Regression (`estimator = 'robust'`) and weighted least squares (`estimator = 'weighted'`) options.   -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+In addition the base estimator (OLS) there are Robust Regression (**estimator = "robust"**) and weighted least squares (**estimator = "weighted"**) options.
 
-<!--   hed_model <- hpiModel(hpi_data = hed_sales, -->
-<!--                         estimator = 'robust', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = TRUE) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ``` -->
+  hed_model <- hpiModel(hpi_df = hed_sales,
+                        estimator = 'robust',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = TRUE)
 
-<!-- Do note that the weighted option requires a vectors of weights.   -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+Do note that the weighted option requires a vectors of weights.
 
-<!--   hed_model <- hpiModel(hpi_data = hed_sales, -->
-<!--                         estimator = 'weighted', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = FALSE, -->
-<!--                         weights = runif(nrow(hed_sales), 0, 1)) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ``` -->
+  hed_model <- hpiModel(hpi_df = hed_sales,
+                        estimator = 'weighted',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = FALSE,
+                        weights = runif(nrow(hed_sales), 0, 1))
 
-<!-- The output from `hpiModel` can be converted to an index with the `modelToIndex` function. -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+The output from `hpiModel()` can be converted to an index with the `modelToIndex` function.
 
-<!--   hed_index <- modelToIndex(hed_model) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ``` -->
+  hed_index <- modelToIndex(hed_model)
 
-<!-- And, again, this can be plotted to shown the index. -->
+  class(hed_index)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```
 
-<!--   plot(hed_index, col=2, lwd=2) -->
+And, again, this can be plotted to shown the index.
 
-<!-- ``` -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
 
-<!-- The `hedIndex` wrapper function will perform all of the above hedonic modeling tasks, and then condense the results into an object of class **hpi**. -->
+  plot(hed_index)
 
-<!-- There are three 'levels of entry' with the wrapper function. -->
+```
 
-<!-- 1. You can give it a raw data.frame with your transactions and it will A) Add the periods; B) Create a `hed_sales` object; and 3) Create the index.  Under this approach `sales_df` is passed a raw data.frame along with the following arguments, some of which are optional (will revert to default if not given) and some of which are mandatory (mostly field names and the model specification): -->
+The `hedIndex()` wrapper function will perform all of the above hedonic modeling tasks, and then condense the results into an object of class **hpi**.
 
-<!--    * periodicity (optional: default = 'annual') -->
-<!--    * min_date (optional: default = min of data) -->
-<!--    * max_date (optional: default = max of data) -->
-<!--    * adj_type (opt: default = 'move') -->
-<!--    * date (required) -->
-<!--    * price (required) -->
-<!--    * trans_id (required) -->
-<!--    * prop_id (required) -->
-<!--    * dep_var (required, unless `hed_spec` supplied) -->
-<!--    * ind_var (required, unless `hed_spec` supplied) -->
-<!--    * hed_spec (required, unless `dep_var` and `ind_var` supplied) -->
-<!--    * estimator (opt: default = 'base') -->
-<!--    * log_dep (opt: TRUE) -->
-<!--    * trim_model (opt: FALSE) -->
-<!--    * max_period (opt: max of data) -->
+There are three 'levels of entry' with the wrapper function.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+1. You can give it a raw **data.frame** with your transactions and it will A) Add the periods; B) Create a hedonic sales object; and 3) Create the index.  Under this approach **trans_df** is passed a raw **data.frame** along with the following arguments, some of which are optional (will revert to default if not given) and some of which are required (mostly field names and the model specification):
 
-<!--   hed_1 <- hedIndex(sales_df = sales, -->
-<!--                     periodicity = 'monthly', -->
-<!--                     min_date = '2010-06-01', -->
-<!--                     max_date = '2015-11-30', -->
-<!--                     adj_type = 'clip', -->
-<!--                     date = 'sale_date', -->
-<!--                     price = 'sale_price', -->
-<!--                     trans_id = 'sale_id', -->
-<!--                     prop_id = 'pinx', -->
-<!--                     estimator = 'robust', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = TRUE, -->
-<!--                     max_period = 48, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths')) -->
+   * **periodicity** (optional: default = 'annual')
+   * **min_date** (optional: default = minimum of data)
+   * **max_date** (optional: default = maximum of data)
+   * **adj_type** (opt: default = 'move')
+   * **date** (required)
+   * **price** (required)
+   * **trans_id** (required)
+   * **prop_id** (required)
+   * **dep_var** (required, unless **hed_spec** supplied)
+   * **ind_var** (required, unless **hed_spec** supplied)
+   * **hed_spec** (required, unless **dep_var** and **ind_var** supplied)
+   * **estimator** (optional: default = 'base')
+   * **log_dep** (optional: TRUE)
+   * **trim_model** (optional: FALSE)
+   * **max_period** (optional: maximum of data)
+ 
 
-<!-- ``` -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- 2. You can provide a `salesdf` object (one that has been through the `dateToPeriod` function).  In this case, the following arguments are valid: -->
+  hed_1 <- hedIndex(trans_df = sales,
+                    periodicity = 'monthly',
+                    min_date = '2010-06-01',
+                    max_date = '2015-11-30',
+                    adj_type = 'clip',
+                    date = 'sale_date',
+                    price = 'sale_price',
+                    trans_id = 'sale_id',
+                    prop_id = 'pinx',
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = TRUE,
+                    max_period = 48,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'))
 
-<!--    * date (required) -->
-<!--    * price (required) -->
-<!--    * trans_id (required) -->
-<!--    * prop_id (required) -->
-<!--    * dep_var (required, unless `hed_spec` supplied) -->
-<!--    * ind_var (required, unless `hed_spec` supplied) -->
-<!--    * hed_spec (required, unless `dep_var` and `ind_var` supplied) -->
-<!--    * estimator (opt: default = 'base') -->
-<!--    * log_dep (opt: TRUE) -->
-<!--    * trim_model (opt: FALSE) -->
-<!--    * max_period (opt: max of data) -->
+  class(hed_1)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```
 
-<!--   sales_df <- dateToPeriod(sales_df = sales, -->
-<!--                            date = 'sale_date', -->
-<!--                            periodicity = 'monthly') -->
+2. You can provide an **hpi_df** object (one that has been through the `dateToPeriod` function).  In this case, the following arguments are valid:
 
-<!--   hed_2 <- hedIndex(sales_df = sales, -->
-<!--                     periodicity = 'monthly', -->
-<!--                     min_date = '2010-02-01', -->
-<!--                     max_date = '2015-11-30', -->
-<!--                     adj_type = 'move', -->
-<!--                     date = 'sale_date', -->
-<!--                     price = 'sale_price', -->
-<!--                     trans_id = 'sale_id', -->
-<!--                     prop_id = 'pinx', -->
-<!--                     estimator = 'base', -->
-<!--                     log_dep = FALSE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 56, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths')) -->
 
-<!-- ```    -->
+   * **date** (required)
+   * **price** (required)
+   * **trans_id** (required)
+   * **prop_id** (required)
+   * **dep_var** (required, unless **hed_spec** supplied)
+   * **ind_var** (required, unless **hed_spec** supplied)
+   * **hed_spec** (required, unless **dep_var** and **ind_var** supplied)
+   * **estimator** (optional: default = 'base')
+   * **log_dep** (optional: TRUE)
+   * **trim_model** (optional: FALSE)
+   * **max_period** (optional: maximum of data)
 
-<!-- 3. Finally, you can provide it an `hed` object (one that has been through the `hedCreateTrans` function).  Only the following arguments can be given in this case.   -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--    * dep_var (required, unless `hed_spec` supplied) -->
-<!--    * ind_var (required, unless `hed_spec` supplied) -->
-<!--    * hed_spec (required, unless `dep_var` and `ind_var` supplied) -->
-<!--    * estimator (opt: default = 'base') -->
-<!--    * log_dep (opt: TRUE) -->
-<!--    * trim_model (opt: FALSE) -->
-<!--    * max_period (opt: max of data) -->
+  sales_df <- dateToPeriod(trans_df = sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly')
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+  hed_2 <- hedIndex(trans_df = sales,
+                    periodicity = 'monthly',
+                    min_date = '2010-02-01',
+                    max_date = '2015-11-30',
+                    adj_type = 'move',
+                    date = 'sale_date',
+                    price = 'sale_price',
+                    trans_id = 'sale_id',
+                    prop_id = 'pinx',
+                    estimator = 'base',
+                    log_dep = FALSE,
+                    trim_model = FALSE,
+                    max_period = 56,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'))
+  
+  class(hed_2)
 
-<!--   hed_sales <- hedCreateTrans(sales_df = sales_df, -->
-<!--                               prop_id = 'pinx', -->
-<!--                               trans_id = 'sale_id', -->
-<!--                               price = 'sale_price') -->
+```
 
-<!--   hed_3 <- hedIndex(sales_df = hed_sales, -->
-<!--                     estimator = 'weighted', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 80, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                     weights = runif(nrow(hed_sales), 0, 1)) -->
+3. Finally, you can provide it an **hed** object (one that has been through the `hedCreateTrans()` function).  Only the following arguments can be given in this case.
 
-<!-- ```   -->
+   * **dep_var** (required, unless **hed_spec** supplied)
+   * **ind_var** (required, unless **hed_spec** supplied)
+   * **hed_spec** (required, unless **dep_var** and **ind_var** supplied)
+   * **estimator** (optional: default = 'base')
+   * **log_dep** (optional: TRUE)
+   * **trim_model** (optional: FALSE)
+   * **max_period** (optional: maximum of data)
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
+
+  hed_sales <- hedCreateTrans(trans_df = sales_df,
+                              prop_id = 'pinx',
+                              trans_id = 'sale_id',
+                              price = 'sale_price')
+
+  hed_3 <- hedIndex(trans_df = hed_sales,
+                    estimator = 'weighted',
+                    log_dep = TRUE,
+                    trim_model = FALSE,
+                    max_period = 80,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    weights = runif(nrow(hed_sales), 0, 1))
+
+  class(hed_3)
+  
+```
+
+Again, we can plot with a simple `plot()` call. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+ 
+  plot(hed_3)
+
+  class(plot(hed_3))
+  
+```
+
 
 <!-- ### Analyzing an index -->
 

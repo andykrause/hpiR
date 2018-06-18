@@ -74,7 +74,7 @@ rtIndex <- function(trans_df,
   }
 
   # Etimate the model
-  rt_model <- hpiModel(hpi_data = rt_trans,
+  rt_model <- hpiModel(hpi_df = rt_trans,
                        ...)
 
   if (class(rt_model) != 'hpimodel'){

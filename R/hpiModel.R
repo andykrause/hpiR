@@ -1,7 +1,7 @@
 #' @title hpiModel
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
-#' @param hpi_data Dataset created by one of the *CreateTrans() function in this package.
+#' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
@@ -13,11 +13,16 @@
 #' a <- 1
 #' @export
 
-hpiModel <- function(hpi_data,
+hpiModel <- function(hpi_df,
                      estimator='base',
                      log_dep=TRUE,
                      trim_model=TRUE,
                      ...){
+
+  if (!'hpi_df' %in% class(hpi_df)){
+    message('"hpi_df" object must be of class "hpi_df"')
+    stop()
+  }
 
   UseMethod("hpiModel")
 
@@ -26,7 +31,7 @@ hpiModel <- function(hpi_data,
 #' @title hpiModel.rt
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
-#' @param hpi_data Dataset created by one of the *CreateTrans() function in this package.
+#' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
@@ -42,25 +47,25 @@ hpiModel <- function(hpi_data,
 #'                            prop_id = 'pinx',
 #'                            trans_id = 'uniq_id',
 #'                            price = 'sale_price')
-#' rt_model <- hpiModel(hpi_data = rep_sales,
+#' rt_model <- hpiModel(hpi_df = rep_sales,
 #'                      estimator = 'base',
 #'                      log_dep = TRUE)
 #' @export
 
-hpiModel.rt <- function(hpi_data,
+hpiModel.rt <- function(hpi_df,
                         estimator='base',
                         log_dep=TRUE,
                         trim_model=TRUE,
                         ...){
 
   # Create time matrix
-  time_matrix <- rtTimeMatrix(hpi_data)
+  time_matrix <- rtTimeMatrix(hpi_df)
 
   # Calculate price differential
   if (log_dep){
-    price_diff <- log(hpi_data$price_2) - log(hpi_data$price_1)
+    price_diff <- log(hpi_df$price_2) - log(hpi_df$price_1)
   } else {
-    price_diff <- hpi_data$price_2 - hpi_data$price_1
+    price_diff <- hpi_df$price_2 - hpi_df$price_1
   }
 
   # If any NA, NaN, or Inf/-Inf
@@ -70,7 +75,7 @@ hpiModel.rt <- function(hpi_data,
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_data$price_1[hpi_data$period_1 == min(hpi_data$period_1)])
+  base_price <- mean(hpi_df$price_1[hpi_df$period_1 == min(hpi_df$period_1)])
 
   ## Estimate Model
 
@@ -84,7 +89,7 @@ hpiModel.rt <- function(hpi_data,
   }
 
   # Set estimator class, call method
-  rt_mod <- rtModel(rt_df=hpi_data,
+  rt_mod <- rtModel(rt_df=hpi_df,
                     time_matrix=time_matrix,
                     price_diff=price_diff,
                     estimator=estimator,
@@ -102,7 +107,7 @@ hpiModel.rt <- function(hpi_data,
   # If successful create list of results
 
   # Create coefficient data.frame
-  model_df <- data.frame(time=c(min(hpi_data$period_1),
+  model_df <- data.frame(time=c(min(hpi_df$period_1),
                                 as.numeric(gsub('time_matrixtime_', '',
                                                 names(rt_mod$coefficients)))),
                          coefficient=c(0, as.numeric(rt_mod$coefficients)))
@@ -114,7 +119,7 @@ hpiModel.rt <- function(hpi_data,
                  mod_spec=NULL,
                  log_dep=log_dep,
                  base_price=base_price,
-                 periods=attr(hpi_data, 'period_table'),
+                 periods=attr(hpi_df, 'period_table'),
                  approach='rt'),
             class='hpimodel')
 }
@@ -122,7 +127,7 @@ hpiModel.rt <- function(hpi_data,
 #' @title hpiModel.hed
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
-#' @param hpi_data Dataset created by one of the *CreateSales() function in this package.
+#' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param hed_spec default=NULL; hedonic model specification
 #' @param dep_var default=NULL; dependent variable of the model
@@ -141,12 +146,12 @@ hpiModel.rt <- function(hpi_data,
 #'                            prop_id = 'pinx',
 #'                            sale_id = 'uniq_id',
 #'                            price = 'sale_price')
-#' rs_model <- hpiModel(hpi_data = rep_sales,
+#' rs_model <- hpiModel(hpi_df = rep_sales,
 #'                      estimator = 'base',
 #'                      log_dep = TRUE)
 #' @export
 
-hpiModel.hed <- function(hpi_data,
+hpiModel.hed <- function(hpi_df,
                          estimator='base',
                          log_dep=TRUE,
                          hed_spec=NULL,
@@ -178,7 +183,7 @@ hpiModel.hed <- function(hpi_data,
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_data$price[hpi_data$date_period == min(hpi_data$date_period)])
+  base_price <- mean(hpi_df$price[hpi_df$date_period == min(hpi_df$date_period)])
 
   ## Estimate Model
 
@@ -190,9 +195,9 @@ hpiModel.hed <- function(hpi_data,
    }
 
   # Check log dep vs data
-  if ((log_dep && any(hpi_data$price <= 0)) |
-       any(is.na(hpi_data$price)) |
-        any(!is.finite(hpi_data$price))){
+  if ((log_dep && any(hpi_df$price <= 0)) |
+       any(is.na(hpi_df$price)) |
+        any(!is.finite(hpi_df$price))){
     message('Your "price" field includes invalid values')
     stop()
   }
@@ -206,7 +211,7 @@ hpiModel.hed <- function(hpi_data,
    }
 
    hed_mod <- hedModel(estimator=estimator,
-                       hed_df=hpi_data,
+                       hed_df=hpi_df,
                        hed_spec = hed_spec,
                        ...)
 
@@ -221,7 +226,7 @@ hpiModel.hed <- function(hpi_data,
    if (trim_model) hed_mod$qr <- NULL
 
   # If successful create list of results
-  base_period <- min(hpi_data$date_period)
+  base_period <- min(hpi_df$date_period)
 
   # Period names
   p_names <- grep('date_period', names(hed_mod$coefficients))
@@ -242,7 +247,7 @@ hpiModel.hed <- function(hpi_data,
                     log_dep=log_dep,
                     mod_spec=hed_spec,
                     base_price=base_price,
-                    periods=attr(hpi_data, 'period_table'),
+                    periods=attr(hpi_df, 'period_table'),
                     approach='hed')
 
   # Assign a class

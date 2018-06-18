@@ -40,8 +40,6 @@ plot.hpiindex <- function(index_obj,
   # Return Values
   structure(gg_obj, class = c('indexplot', class(gg_obj)))
 
-  #gg_obj
-
 }
 
 #' @title plot.hpi

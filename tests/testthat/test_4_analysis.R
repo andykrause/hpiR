@@ -277,19 +277,19 @@ context('buildForecastIDs()')
   test_that('buildForecastIDs works', {
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_data = hed_index$data,
+                                             hpi_df = hed_index$data,
                                              train = TRUE)) == 11863)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_data = rt_index$data,
+                                             hpi_df = rt_index$data,
                                              train = TRUE)) == 287)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_data = hed_index$data,
+                                             hpi_df = hed_index$data,
                                              train = FALSE)) == 437)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_data = rt_index$data,
+                                             hpi_df = rt_index$data,
                                              train = FALSE)) == 21)
 
   })
@@ -298,12 +298,12 @@ context('buildForecastIDs()')
 
     # Bad Data
     expect_error(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_data = hed_index,
+                                             hpi_df = hed_index,
                                              train = TRUE))
 
     # Bad time cut
     expect_error(is_data <- buildForecastIDs(time_cut = -1,
-                                             hpi_data = hed_index$data,
+                                             hpi_df = hed_index$data,
                                              train = TRUE))
 
   })

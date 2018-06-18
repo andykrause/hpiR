@@ -9,7 +9,7 @@ Lorem Ipsum...
 \arguments{
 \item{time_cut}{Period of forecast}
 
-\item{hpi_data}{Data to be converted to training or scoring}
+\item{hpi_df}{Data to be converted to training or scoring}
 
 \item{train}{Default=TRUE; Create training data?  FALSE = Scoring data}
 

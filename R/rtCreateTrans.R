@@ -199,7 +199,7 @@ rtCreateTrans <- function(trans_df,
     message('No Repeat Transactions Created\n')
     return(NULL)
   } else {
-    class(rt_df) <- append('rt', class(rt_df))
+    class(rt_df) <- c('rt', 'hpi_df', class(rt_df))
   }
 
   # Add period table attribute

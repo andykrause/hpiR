@@ -7,7 +7,7 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{hpi_data}{Dataset created by one of the *CreateTrans() function in this package.}
+\item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}
 
@@ -36,7 +36,7 @@ rep_sales <- rtCreateTrans(trans_df = sea_sales,
                            prop_id = 'pinx',
                            trans_id = 'uniq_id',
                            price = 'sale_price')
-rt_model <- hpiModel(hpi_data = rep_sales,
+rt_model <- hpiModel(hpi_df = rep_sales,
                      estimator = 'base',
                      log_dep = TRUE)
 }

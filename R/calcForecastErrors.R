@@ -38,7 +38,7 @@ calcForecastError <- function(is_obj,
 
   # Get data
   fc_preddata <- purrr::map(.x = time_range,
-                            hpi_data = pred_data,
+                            hpi_df = pred_data,
                             train=FALSE,
                             .f=buildForecastIDs)
 
@@ -73,7 +73,7 @@ calcForecastError <- function(is_obj,
 #' @description Create training or scoring data for the forecast error calculations
 #' @usage Lorem Ipsum...
 #' @param time_cut Period of forecast
-#' @param hpi_data Data to be converted to training or scoring
+#' @param hpi_df Data to be converted to training or scoring
 #' @param train Default=TRUE; Create training data?  FALSE = Scoring data
 #' @param ... Additional Arguments
 #' @return data.frame of training or scoring observations
@@ -84,11 +84,11 @@ calcForecastError <- function(is_obj,
 #' @export
 
 buildForecastIDs <- function(time_cut,
-                             hpi_data,
+                             hpi_df,
                              train=TRUE){
 
-  if (!'data.frame' %in% class(hpi_data)){
-    message('"hpi_data" argument must be a data.frame')
+  if (!'data.frame' %in% class(hpi_df)){
+    message('"hpi_df" argument must be a data.frame')
     stop()
   }
 
@@ -98,19 +98,19 @@ buildForecastIDs <- function(time_cut,
     stop()
   }
 
-  UseMethod("buildForecastIDs", hpi_data)
+  UseMethod("buildForecastIDs", hpi_df)
 
 }
 
 #' @export
 buildForecastIDs.hed <- function(time_cut,
-                                 hpi_data,
+                                 hpi_df,
                                  train=TRUE){
 
   if(train){
-    time_ids <- which(hpi_data$date_period < time_cut)
+    time_ids <- which(hpi_df$date_period < time_cut)
   } else {
-    time_ids <- which(hpi_data$date_period == time_cut)
+    time_ids <- which(hpi_df$date_period == time_cut)
   }
   time_ids
 
@@ -118,18 +118,18 @@ buildForecastIDs.hed <- function(time_cut,
 
 #' @export
 buildForecastIDs.rt <- function(time_cut,
-                                hpi_data,
+                                hpi_df,
                                 train=TRUE){
 
   # Extract data if given a full 'hpi' object
-  if ('hpi' %in% class(hpi_data)){
-    hpi_data <- hpi_data$data
+  if ('hpi' %in% class(hpi_df)){
+    hpi_df <- hpi_df$data
   }
 
   if(train){
-    time_ids <- which(hpi_data$period_2 < time_cut)
+    time_ids <- which(hpi_df$period_2 < time_cut)
   } else {
-    time_ids <- which(hpi_data$period_2 == time_cut)
+    time_ids <- which(hpi_df$period_2 == time_cut)
   }
   time_ids
 }

@@ -7,7 +7,7 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{hpi_data}{Dataset created by one of the *CreateSales() function in this package.}
+\item{hpi_df}{Dataset created by one of the *CreateSales() function in this package.}
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}
 
@@ -42,7 +42,7 @@ rep_sales <- rsCreateSales(sales_df = sea_sales,
                            prop_id = 'pinx',
                            sale_id = 'uniq_id',
                            price = 'sale_price')
-rs_model <- hpiModel(hpi_data = rep_sales,
+rs_model <- hpiModel(hpi_df = rep_sales,
                      estimator = 'base',
                      log_dep = TRUE)
 }

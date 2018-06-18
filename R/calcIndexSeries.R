@@ -61,7 +61,7 @@ calcIndexSeries <- function(hpi_obj,
 
   # Get row ids for the training data
   is_data <- purrr::map(.x = time_range,
-                        hpi_data = hpi_obj$data,
+                        hpi_df = hpi_obj$data,
                         train = TRUE,
                         .f = buildForecastIDs)
 
@@ -71,7 +71,7 @@ calcIndexSeries <- function(hpi_obj,
                           hed_spec=hpi_obj$model$mod_spec,
                           log_dep = hpi_obj$model$log_dep,
                           .f=function(x, y, hed_spec, log_dep, ...){
-                            hpiModel(hpi_data=y[x, ],
+                            hpiModel(hpi_df=y[x, ],
                                      hed_spec=hed_spec,
                                     log_dep=log_dep)
                              })
