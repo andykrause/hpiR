@@ -133,7 +133,8 @@ rsCreateSales <- function(sales_df,
                      price_1=x_df$price[id_1],
                      price_2=x_df$price[id_2],
                      sale_id1=x_df$sale_id[id_1],
-                     sale_id2=x_df$sale_id[id_2])
+                     sale_id2=x_df$sale_id[id_2],
+                     stringsAsFactors = FALSE)
 
     # Check for sf object, if so add geometry back on
     if ('sf' %in% class(x_df)){
@@ -154,9 +155,10 @@ rsCreateSales <- function(sales_df,
     d3 <- x_df %>%
       # Create a data.frame of combination of repeat sales
       plyr::ddply(.variables=c('prop_id'),
-                  .fun=function(x) t(combn(x$sale_id, m=2))) %>%
+                  .fun=function(x) (t(combn(x$sale_id, m=2)))) %>%
       # Rename fields
       dplyr::select(prop_id, sale_id1='1', sale_id2='2') %>%
+
       # Add time and price
       dplyr::mutate(period_1 = x_df$date_period[match(sale_id1, x_df$sale_id)]) %>%
       dplyr::mutate(period_2 = x_df$date_period[match(sale_id2, x_df$sale_id)]) %>%
