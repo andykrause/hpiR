@@ -25,9 +25,9 @@ calcKFoldError <- function(hpi_obj,
   }
 
   if (!any('data.frame' %in% class(pred_data)) ||
-      !any(class(pred_data) %in% c('rs', 'hed'))){
+      !any(class(pred_data) %in% c('rt', 'hed'))){
     message('"pred_data" argument must be a data.frame with additional class of ',
-            ' "rs" or "hed"')
+            ' "rt" or "hed"')
     stop()
   }
 
@@ -112,7 +112,7 @@ createKFoldData <- function(score_ids,
 }
 
 #' @export
-createKFoldData.rs <- function(score_ids,
+createKFoldData.rt <- function(score_ids,
                                full_data,
                                pred_data){
 
@@ -145,7 +145,7 @@ matchKFold <- function(train_df,
 }
 
 #' @export
-matchKFold.rs <- function(train_df,
+matchKFold.rt <- function(train_df,
                           pred_data){
 
   score_df <- pred_data[!paste0(pred_data$sale_id1, "_", pred_data$sale_id2) %in%

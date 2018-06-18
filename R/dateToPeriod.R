@@ -1,6 +1,6 @@
 #' @title dateToPeriod
 #' @description Convert dates into time periods for use in sale-resale models
-#' @param sales_df data.frame of raw sales transactions
+#' @param trans_df data.frame of raw sales transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
 #' @return data frame with three new fields:
@@ -14,13 +14,9 @@
 #' data.frame that it is given and returns that data.frame with the new fields attached.
 #' It does so because this function is not intended as a stand-alone function but rather
 #' one to be called by the ***CreateSales set of functions with hpiR
-#' @examples
-#' seattle_sales <- dateToPeriod(sales_df = seattle_sales,
-#'                               date = sale_date,
-#'                               periodicity = 'qtr')
 #' @export
 
-dateToPeriod <- function(sales_df,
+dateToPeriod <- function(trans_df,
                          date,
                          periodicity=NULL,
                          min_date=NULL,
@@ -28,22 +24,14 @@ dateToPeriod <- function(sales_df,
                          adj_type='move',
                          ...){
 
-  # Check for data.frame in sales_df
-  if (!'data.frame' %in% class(sales_df)){
-    message('"sales_df" must be a data.frame (or inherit from one)')
+  # Check for data.frame in trans_df
+  if (!'data.frame' %in% class(trans_df)){
+    message('"trans_df" must be a data.frame (or inherit from one)')
     stop()
   }
 
   # Extract Date
-  sale_date <- checkDate(sales_df[[date]], 'sale_date')
-  # if (!'Date' %in% class(sale_date)){
-  #   if ("POSIXct" %in% class(sale_date) | "POSIXt" %in% class(sale_date)){
-  #     sale_date <- lubridate::as_date(sale_date)
-  #   } else {
-  #     message('"date" field must be in "Date" or "POSIXTct/POSIXt" format.')
-  #     stop()
-  #   }
-  # }
+  trans_date <- checkDate(trans_df[[date]], 'date')
 
   # Check for periodicity
   if (is.null(periodicity)){
@@ -72,34 +60,37 @@ dateToPeriod <- function(sales_df,
 
   # Set minimum date
   if (is.null(min_date)){
-    min_date <- min(sale_date)
+    min_date <- min(trans_date)
   } else {
-    if (min_date > min(sale_date)){
+    if (min_date > min(trans_date)){
       if (adj_type == 'move'){
-        message('Supplied min_date" is greater than minimum of sales. Adjusting.\n')
-        min_date <- min(sale_date)
+        message('Supplied min_date" is greater than minimum of transactions. ',
+                'Adjusting.\n')
+        min_date <- min(trans_date)
       }
       if (adj_type == 'clip'){
-        message('Supplied "min_date" date is greater than minimum of sales. Clipping sales.\n')
-        sales_df <- sales_df[sale_date >= min_date, ]
-        sale_date <- sales_df[[date]]
+        message('Supplied "min_date" date is greater than minimum of transactions. ',
+                'Clipping transactions.\n')
+        trans_df <- trans_df[trans_date >= min_date, ]
+        trans_date <- trans_df[[date]]
       }
     }
   }
 
   # Set maximum date
   if (is.null(max_date)){
-    max_date <- max(sale_date)
+    max_date <- max(trans_date)
   } else {
-    if (max_date < max(sale_date)){
+    if (max_date < max(trans_date)){
       if (adj_type == 'move'){
-        message('Supplied "max_date" is less than maximum of sales. Adjusting.\n')
-        max_date <- max(sale_date)
+        message('Supplied "max_date" is less than maximum of transactions. Adjusting.\n')
+        max_date <- max(trans_date)
       }
       if (adj_type == 'clip'){
-        message('Supplied "max_date" is less than maximum of sales. Clipping Sales.\n')
-        sales_df <- sales_df[sale_date <= max_date, ]
-        sale_date <- sales_df[[date]]
+        message('Supplied "max_date" is less than maximum of transactions. ',
+                'Clipping transactions.\n')
+        trans_df <- trans_df[trans_date <= max_date, ]
+        trans_date <- trans_df[[date]]
       }
     }
   }
@@ -108,11 +99,11 @@ dateToPeriod <- function(sales_df,
   date_span <- seq(min_date, max_date, 1)
 
   # Create inital annual indicator
-  year_period <- (lubridate::year(sale_date) - lubridate::year(min_date))
+  year_period <- (lubridate::year(trans_date) - lubridate::year(min_date))
 
   # if Annual Periodicity
   if (periodicity == 'annual'){
-    sales_df$date_period <- year_period + 1
+    trans_df$date_period <- year_period + 1
     period_table <- data.frame(names = unique(lubridate::year(date_span)),
                                values = unique(lubridate::year(date_span)),
                                periods = unique(lubridate::year(date_span)))
@@ -122,11 +113,11 @@ dateToPeriod <- function(sales_df,
   if (periodicity %in% c('monthly', 'quarterly')){
 
     month_period <- (12 * year_period +
-                     (lubridate::month(sale_date, label=FALSE) -
+                     (lubridate::month(trans_date, label=FALSE) -
                         lubridate::month(min_date)))
 
     if (periodicity == 'monthly'){
-      sales_df$date_period <- month_period + 1
+      trans_df$date_period <- month_period + 1
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-',
                               lubridate::month(date_span, label = TRUE))),
@@ -140,9 +131,9 @@ dateToPeriod <- function(sales_df,
 
     if (periodicity == 'quarterly'){
       min_qtr <- lubridate::quarter(min_date, with_year=TRUE)
-      sale_qtr <- lubridate::quarter(sale_date, with_year=TRUE)
-      all_qtr <- as.numeric(as.factor(c(min_qtr, sale_qtr)))
-      sales_df$date_period <- all_qtr[-1]
+      trans_qtr <- lubridate::quarter(trans_date, with_year=TRUE)
+      all_qtr <- as.numeric(as.factor(c(min_qtr, trans_qtr)))
+      trans_df$date_period <- all_qtr[-1]
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-Q',
                               lubridate::quarter(date_span))),
@@ -157,12 +148,12 @@ dateToPeriod <- function(sales_df,
   if (periodicity == 'weekly'){
 
     # Fix 53 week issue
-    if (any(grepl('12-31', c(min_date, max_date, sale_date))) |
-        any(grepl('12-30', c(min_date, max_date, sale_date)))){
-      sale_date <- gsub('12-31', '12-29', sale_date)
+    if (any(grepl('12-31', c(min_date, max_date, trans_date))) |
+        any(grepl('12-30', c(min_date, max_date, trans_date)))){
+      trans_date <- gsub('12-31', '12-29', trans_date)
       min_date <- gsub('12-31', '12-29', min_date)
       max_date <- gsub('12-31', '12-29', max_date)
-      sale_date <- gsub('12-30', '12-29', sale_date)
+      trans_date <- gsub('12-30', '12-29', trans_date)
       min_date <- gsub('12-30', '12-29', min_date)
       max_date <- gsub('12-30', '12-29', max_date)
       message('Treating all Dec 31st and Dec 30th (in leap years) dates as Dec 29th ',
@@ -171,9 +162,9 @@ dateToPeriod <- function(sales_df,
 
     # Create Week period
     week_period <- (52 * (year_period) +
-                    (lubridate::week(sale_date) -
+                    (lubridate::week(trans_date) -
                       lubridate::week(min_date)))
-    sales_df$date_period <- week_period + 1
+    trans_df$date_period <- week_period + 1
 
     # Create period table
     name <- unique(paste0(lubridate::year(date_span), '-W',
@@ -190,7 +181,7 @@ dateToPeriod <- function(sales_df,
   }
 
   # Check for missing periods %
-  nbr_periods <- length(unique(sales_df$date_period))
+  nbr_periods <- length(unique(trans_df$date_period))
   if (nbr_periods < nrow(period_table)){
     message("Your choice of periodicity resulted in ",
             nrow(period_table) - nbr_periods, " empty periods out of ",
@@ -202,14 +193,14 @@ dateToPeriod <- function(sales_df,
   }
 
   # Add attribute information
-  attr(sales_df, 'class') <- unique(append('salesdf', attr(sales_df, 'class')))
-  attr(sales_df, 'periodicity') <- periodicity
-  attr(sales_df, 'min_date') <- min_date
-  attr(sales_df, 'max_date') <- max_date
-  attr(sales_df, 'period_table') <- period_table
+  attr(trans_df, 'class') <- c('hpi_df', attr(trans_df, 'class'))
+  attr(trans_df, 'periodicity') <- periodicity
+  attr(trans_df, 'min_date') <- min_date
+  attr(trans_df, 'max_date') <- max_date
+  attr(trans_df, 'period_table') <- period_table
 
   # Return values
-  sales_df
+  trans_df
 
 }
 
@@ -220,7 +211,8 @@ dateToPeriod <- function(sales_df,
 #' @return Adjusted date field
 #' @export
 
-checkDate <- function(x_date, name){
+checkDate <- function(x_date,
+                      name){
 
   # If null, give null (for dealing with ... arguments)
   if (is.null(x_date)) return(NULL)

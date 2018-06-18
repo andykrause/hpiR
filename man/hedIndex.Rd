@@ -4,10 +4,10 @@
 \alias{hedIndex}
 \title{hedIndex}
 \usage{
-hedIndex(sales_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
+hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 }
 \arguments{
-\item{sales_df}{data.frame of sale transactions}
+\item{trans_df}{data.frame of transactions}
 
 \item{dep_var}{default = NULL, dependent variable in hedonic model}
 
@@ -17,11 +17,11 @@ hedIndex(sales_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 
 \item{...}{Additional Arguments}
 
-\item{date}{Field contain the sales date}
+\item{date}{Field contain the transaction date}
 
-\item{price}{Field contain the sale price}
+\item{price}{Field contain the transaction price}
 
-\item{sale_id}{Field containing the unique sale identifier}
+\item{trans_id}{Field containing the unique transaction identifier}
 
 \item{prop_id}{Field containing the property identifier}
 
@@ -35,17 +35,10 @@ hedIndex(sales_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 hpi object
 }
 \description{
-Creates a house price index from a set of sales transactions using the
-hedonic price index
+Creates a house price (rent) index from a set of transactions using the
+hedonic price method
 }
 \section{Further Details}{
 
 }
 
-\examples{
-sea_hed_index <- rsIndex(sales_df = seattle_sales,
-                        date = 'sale_date',
-                        price = 'sale_price',
-                        sale_id = 'uniq_id',
-                        prop_id = 'pinx')
-}

@@ -11,30 +11,30 @@
 
   sales <- get(data(seattle_sales))
 
-### hedCreateSales() ----------------------------------------------------------------
+### hedCreateTrans() ----------------------------------------------------------------
 
-context('hedCreateSales()')
+context('hedCreateTrans()')
 
   # Test Setup
-  test_that("Can take a functional 'salesdf' object", {
+  test_that("Can take a functional 'trans_df' object", {
 
-    sales_df <- dateToPeriod(sales_df = sales,
+    sales_df <- dateToPeriod(trans_df = sales,
                              date = 'sale_date',
                              periodicity = 'monthly')
 
-    expect_is(hed_df <- hedCreateSales(sales_df=sales_df,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales_df,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price'), 'hed')
     expect_true(nrow(hed_df) == 43074)
   })
 
   # Test Setup
-  test_that("Can create own salesdf object", {
+  test_that("Can create own trans_df object", {
 
-    expect_is(hed_df <- hedCreateSales(sales_df=sales,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
                                        periodicity='monthly'), 'hed')
@@ -42,13 +42,13 @@ context('hedCreateSales()')
     assign('hed_df', hed_df, .GlobalEnv)
   })
 
-  test_that("Can use min/max dates own salesdf object", {
+  test_that("Can use min/max dates own trans_df object", {
 
     # Min date with move
 
-    expect_is(hed_df <- hedCreateSales(sales_df=sales,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
                                        periodicity='monthly',
@@ -57,9 +57,9 @@ context('hedCreateSales()')
     expect_true(nrow(hed_df) == 43074)
 
     # Min date with adj
-    expect_is(hed_df <- hedCreateSales(sales_df=sales,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
                                        periodicity='monthly',
@@ -68,9 +68,9 @@ context('hedCreateSales()')
     expect_true(nrow(hed_df) == 33922)
 
     # Max with move
-    expect_is(hed_df <- hedCreateSales(sales_df=sales,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
                                        periodicity='monthly',
@@ -79,9 +79,9 @@ context('hedCreateSales()')
     expect_true(nrow(hed_df) == 43074)
 
     # Max with clip
-    expect_is(hed_df <- hedCreateSales(sales_df=sales,
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales,
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
                                        periodicity='monthly',
@@ -95,17 +95,17 @@ context('hedCreateSales()')
   test_that("Fails if sales creation fails", {
 
     # Bad Date field
-    expect_error(hed_df <- hedCreateSales(sales_df=sales,
+    expect_error(hed_df <- hedCreateTrans(trans_df=sales,
                                           prop_id='pinx',
-                                          sale_id='sale_id',
+                                          trans_id='sale_id',
                                           price='sale_price',
                                           date='sale_price',
                                           periodicity='monthly'))
 
     # Bad Periodicity field
-    expect_error(hed_df <- hedCreateSales(sales_df=sales,
+    expect_error(hed_df <- hedCreateTrans(trans_df=sales,
                                           prop_id='pinx',
-                                          sale_id='sale_id',
+                                          trans_id='sale_id',
                                           price='sale_price',
                                           date='sale_date',
                                           periodicity='mocnthly'))
@@ -113,37 +113,37 @@ context('hedCreateSales()')
   })
 
   # Create sales data to use in future tests
-  sales_df <- dateToPeriod(sales_df = sales,
+  sales_df <- dateToPeriod(trans_df = sales,
                            date = 'sale_date',
                            periodicity = 'monthly')
 
   test_that("Fails if bad arguments fails", {
 
     # Bad prop_id field
-    expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+    expect_error(hed_df <- hedCreateTrans(trans_df=sales_df,
                                           prop_id='pinxx',
-                                          sale_id='sale_id',
+                                          trans_id='sale_id',
                                           price='sale_price'))
 
     # Bad sale_id field
-    expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+    expect_error(hed_df <- hedCreateTrans(trans_df=sales_df,
                                           prop_id='pinx',
-                                          sale_id='salex_id',
+                                          trans_id='salex_id',
                                           price='sale_price'))
 
     # Bad price field
-    expect_error(hed_df <- hedCreateSales(sales_df=sales_df,
+    expect_error(hed_df <- hedCreateTrans(trans_df=sales_df,
                                           prop_id='pinx',
-                                          sale_id='sale_id',
+                                          trans_id='sale_id',
                                           price='salex_price'))
 
   })
 
   test_that("Returns NULL if no sales", {
 
-    expect_is(hed_df <- hedCreateSales(sales_df=sales_df[0,],
+    expect_is(hed_df <- hedCreateTrans(trans_df=sales_df[0,],
                                        prop_id='pinx',
-                                       sale_id='sale_id',
+                                       trans_id='sale_id',
                                        price='sale_price'), "NULL")
 
   })
@@ -153,9 +153,9 @@ context('hedCreateSales()')
 context('hpiModel.hed(): before hedModel()')
 
   # Create hed data
-  hed_df <- hedCreateSales(sales_df=sales,
+  hed_df <- hedCreateTrans(trans_df=sales,
                            prop_id='pinx',
-                           sale_id='sale_id',
+                           trans_id='sale_id',
                            price='sale_price',
                            date='sale_date',
                            periodicity='monthly')
@@ -727,10 +727,10 @@ context('hedindex() wrapper')
   test_that('Function works with proper inputs',{
 
     # Full case
-    full_1 <- hedIndex(sales_df = sales,
+    full_1 <- hedIndex(trans_df = sales,
                        date = 'sale_date',
                        price = 'sale_price',
-                       sale_id = 'sale_id',
+                       trans_id = 'sale_id',
                        prop_id = 'pinx',
                        estimator = 'base',
                        periodicity = 'monthly',
@@ -740,10 +740,10 @@ context('hedindex() wrapper')
     expect_is(full_1, 'hpi')
     expect_true(full_1$model$estimator == 'base')
 
-    # Giving a 'sales_df' object
-    full_2 <- hedIndex(sales_df = sales_df,
+    # Giving a 'trans_df' object
+    full_2 <- hedIndex(trans_df = sales_df,
                        price = 'sale_price',
-                       sale_id = 'sale_id',
+                       trans_id = 'sale_id',
                        prop_id = 'pinx',
                        estimator = 'robust',
                        dep_var = 'price',
@@ -753,7 +753,7 @@ context('hedindex() wrapper')
     expect_true(full_2$model$estimator == 'robust')
 
     # Giving an 'rs_df' object
-    full_3 <- hedIndex(sales_df = hed_df,
+    full_3 <- hedIndex(trans_df = hed_df,
                        estimator = 'weighted',
                        log_dep=FALSE,
                        dep_var = 'price',
@@ -770,10 +770,10 @@ context('hedindex() wrapper')
     ## HED Create arguments
 
     # Min Date Model with Clip
-    mindate_index <- hedIndex(sales_df = sales,
+    mindate_index <- hedIndex(trans_df = sales,
                               date='sale_date',
                               price = 'sale_price',
-                              sale_id = 'sale_id',
+                              trans_id = 'sale_id',
                               prop_id = 'pinx',
                               estimator = 'robust',
                               dep_var = 'price',
@@ -783,10 +783,10 @@ context('hedindex() wrapper')
     expect_true(min(mindate_index$index$period) == 2011)
 
     # Max Date Model with Adjust
-    maxdate_index <- hedIndex(sales_df = sales,
+    maxdate_index <- hedIndex(trans_df = sales,
                               date='sale_date',
                               price = 'sale_price',
-                              sale_id = 'sale_id',
+                              trans_id = 'sale_id',
                               prop_id = 'pinx',
                               estimator = 'robust',
                               dep_var = 'price',
@@ -795,10 +795,10 @@ context('hedindex() wrapper')
     expect_true(max(maxdate_index$index$period) == 2016)
 
     # Periodicity
-    per_index <- hedIndex(sales_df = sales,
+    per_index <- hedIndex(trans_df = sales,
                           date='sale_date',
                           price = 'sale_price',
-                          sale_id = 'sale_id',
+                          trans_id = 'sale_id',
                           prop_id = 'pinx',
                           estimator = 'robust',
                           dep_var = 'price',
@@ -809,14 +809,14 @@ context('hedindex() wrapper')
     ## HPI Model
 
     # Trim Model
-    trim_index <- hedIndex(sales_df = hed_df,
+    trim_index <- hedIndex(trans_df = hed_df,
                            dep_var = 'price',
                            ind_var = c('tot_sf', 'beds', 'baths'),
                            trim_model=TRUE)
     expect_true(is.null(trim_index$model$model_obj$qr))
 
     # Log Dep & Robust
-    ld_index <- hedIndex(sales_df = hed_df,
+    ld_index <- hedIndex(trans_df = hed_df,
                          estimator = 'robust',
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'),
@@ -825,7 +825,7 @@ context('hedindex() wrapper')
     expect_true(ld_index$model$estimator == 'robust')
 
     ## Model to Index
-    m2i_index <- hedIndex(sales_df = hed_df,
+    m2i_index <- hedIndex(trans_df = hed_df,
                           estimator = 'robust',
                           log_dep = FALSE,
                           dep_var = 'price',
@@ -838,10 +838,10 @@ context('hedindex() wrapper')
   test_that("Bad arguments generate Errors: Full Case",{
 
     # Bad Date
-    expect_error(hedIndex(sales_df = sales,
+    expect_error(hedIndex(trans_df = sales,
                           date = 'sale_price',
                           price = 'sale_price',
-                          sale_id = 'sale_id',
+                          trans_id = 'sale_id',
                           prop_id = 'pinx',
                           estimator = 'base',
                           log_dep = TRUE,
@@ -850,10 +850,10 @@ context('hedindex() wrapper')
                           periodicity = 'monthly'))
 
     # Bad Periodicity
-    expect_error(hedIndex(sales_df = sales,
+    expect_error(hedIndex(trans_df = sales,
                           date = 'sale_date',
                           price = 'sale_price',
-                          sale_id = 'sale_id',
+                          trans_id = 'sale_id',
                           prop_id = 'pinx',
                           estimator = 'base',
                           log_dep = TRUE,
@@ -863,27 +863,27 @@ context('hedindex() wrapper')
 
   })
 
-  test_that("Bad arguments generate errors: Sales_df Case",{
+  test_that("Bad arguments generate errors: trans_df Case",{
 
-    expect_error(hedIndex(sales_df = sales_df,
+    expect_error(hedIndex(trans_df = sales_df,
                           price = 'xx',
-                          sale_id = 'sale_id',
+                          trans_id = 'sale_id',
                           prop_id = 'pinx',
                           estimator = 'base',
                           log_dep = TRUE,
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
-    expect_error(hedIndex(sales_df = sales_df,
+    expect_error(hedIndex(trans_df = sales_df,
                           price = 'sale_price',
-                          sale_id = 'xx',
+                          trans_id = 'xx',
                           prop_id = 'pinx',
                           estimator = 'base',
                           log_dep = TRUE,
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
-    expect_error(hedIndex(sales_df = sales_df,
+    expect_error(hedIndex(trans_df = sales_df,
                           price = 'sale_price',
-                          sale_id = 'sale_id',
+                          trans_id = 'sale_id',
                           prop_id = 'xx',
                           estimator = 'base',
                           log_dep = TRUE,
@@ -894,25 +894,25 @@ context('hedindex() wrapper')
   test_that("Bad arguments handling: hed_sales Case",{
 
     # Bad estimators default to 'base'
-    expect_true(hedIndex(sales_df = hed_df,
+    expect_true(hedIndex(trans_df = hed_df,
                          estimator = 'basex',
                          log_dep = TRUE,
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'))$model$estimator == 'base')
 
-    expect_error(hedIndex(sales_df = hed_df,
+    expect_error(hedIndex(trans_df = hed_df,
                           estimator = 'robust',
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths'),
                           log_dep = 'a'))
 
-    expect_error(hedIndex(sales_df = hed_df,
+    expect_error(hedIndex(trans_df = hed_df,
                           estimator = 'robust',
                           trim_model = 'a',
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
 
-    expect_error(hedIndex(sales_df = hed_df,
+    expect_error(hedIndex(trans_df = hed_df,
                           estimator = 'robust',
                           max_period = 'a',
                           dep_var = 'price',

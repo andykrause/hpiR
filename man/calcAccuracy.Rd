@@ -9,13 +9,13 @@ Lorem Ipsum...
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
-
 \item{test_method}{default = 'insample'; also 'kfold' or 'forecast'}
 
-\item{test_type}{default = 'rs'; Type of data to use for test.  See details.}
+\item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
 \item{index_data}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
+
+\item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
 
 \item{...}{Additional Arguments}
 }
@@ -27,7 +27,7 @@ Estimate index Accuracy using one of a number of measures
 }
 \section{Further Details}{
 
-'srs' test type tests the ability of the index to correctly predict the second value in a sale-resale pair (ABS)
-'relhed' test type tests the ability of the index to improve an OLS model that doesn't account for time.  (REL)
+'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair (ABS)
+'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.  (REL)
 }
 

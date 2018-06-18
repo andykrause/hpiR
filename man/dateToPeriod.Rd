@@ -4,11 +4,11 @@
 \alias{dateToPeriod}
 \title{dateToPeriod}
 \usage{
-dateToPeriod(sales_df, date, periodicity = NULL, min_date = NULL,
+dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
   max_date = NULL, adj_type = "move", ...)
 }
 \arguments{
-\item{sales_df}{data.frame of raw sales transactions}
+\item{trans_df}{data.frame of raw sales transactions}
 
 \item{date}{name of field containing the date of the sale in Date or POSIXt format}
 
@@ -33,8 +33,3 @@ It does so because this function is not intended as a stand-alone function but r
 one to be called by the ***CreateSales set of functions with hpiR
 }
 
-\examples{
-seattle_sales <- dateToPeriod(sales_df = seattle_sales,
-                              date = sale_date,
-                              periodicity = 'qtr')
-}

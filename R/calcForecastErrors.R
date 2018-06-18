@@ -25,9 +25,9 @@ calcForecastError <- function(is_obj,
   }
 
   if (!any('data.frame' %in% class(pred_data)) ||
-      !any(class(pred_data) %in% c('rs', 'hed'))){
+      !any(class(pred_data) %in% c('rt', 'hed'))){
     message('"pred_data" argument must be a data.frame with additional class of ',
-            ' "rs" or "hed"')
+            ' "rt" or "hed"')
     stop()
   }
 
@@ -117,9 +117,9 @@ buildForecastIDs.hed <- function(time_cut,
 }
 
 #' @export
-buildForecastIDs.rs <- function(time_cut,
-                          hpi_data,
-                          train=TRUE){
+buildForecastIDs.rt <- function(time_cut,
+                                hpi_data,
+                                train=TRUE){
 
   # Extract data if given a full 'hpi' object
   if ('hpi' %in% class(hpi_data)){

@@ -7,7 +7,7 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{hpi_data}{Dataset created by one of the *CreateSales() function in this package.}
+\item{hpi_data}{Dataset created by one of the *CreateTrans() function in this package.}
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}
 

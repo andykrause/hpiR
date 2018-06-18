@@ -38,7 +38,9 @@ plot.hpiindex <- function(index_obj,
   }
 
   # Return Values
-  gg_obj
+  structure(gg_obj, class = c('indexplot', class(gg_obj)))
+
+  #gg_obj
 
 }
 
@@ -95,7 +97,7 @@ plot.smoothindex <- function(s_index){
 #' @title plot.blendindex
 #' @export
 
-plot.blendindex <- function(b_index){
+plot.indexblend <- function(b_index){
 
   # Get index length
   l <- length(b_index)

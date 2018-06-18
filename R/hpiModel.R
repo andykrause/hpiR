@@ -1,7 +1,7 @@
 #' @title hpiModel
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
-#' @param hpi_data Dataset created by one of the *CreateSales() function in this package.
+#' @param hpi_data Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
@@ -23,10 +23,10 @@ hpiModel <- function(hpi_data,
 
 }
 
-#' @title hpiModel.rs
+#' @title hpiModel.rt
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
-#' @param hpi_data Dataset created by one of the *CreateSales() function in this package.
+#' @param hpi_data Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
@@ -35,26 +35,26 @@ hpiModel <- function(hpi_data,
 #' @section Further Details:
 #' Lorem Ipsum...
 #' @examples
-#' sea_sales <- dateToPeriod(sales_df = seattle_sales,
+#' sea_sales <- dateToPeriod(trans_df = seattle_sales,
 #'                           date = 'sale_date',
 #'                           periodicity = 'month')
-#' rep_sales <- rsCreateSales(sales_df = sea_sales,
+#' rep_sales <- rtCreateTrans(trans_df = sea_sales,
 #'                            prop_id = 'pinx',
-#'                            sale_id = 'uniq_id',
+#'                            trans_id = 'uniq_id',
 #'                            price = 'sale_price')
-#' rs_model <- hpiModel(hpi_data = rep_sales,
+#' rt_model <- hpiModel(hpi_data = rep_sales,
 #'                      estimator = 'base',
 #'                      log_dep = TRUE)
 #' @export
 
-hpiModel.rs <- function(hpi_data,
+hpiModel.rt <- function(hpi_data,
                         estimator='base',
                         log_dep=TRUE,
                         trim_model=TRUE,
                         ...){
 
   # Create time matrix
-  time_matrix <- rsTimeMatrix(hpi_data)
+  time_matrix <- rtTimeMatrix(hpi_data)
 
   # Calculate price differential
   if (log_dep){
@@ -84,38 +84,38 @@ hpiModel.rs <- function(hpi_data,
   }
 
   # Set estimator class, call method
-  rs_mod <- rsModel(rs_df=hpi_data,
+  rt_mod <- rtModel(rt_df=hpi_data,
                     time_matrix=time_matrix,
                     price_diff=price_diff,
                     estimator=estimator,
                     ...)
 
   # Check for successful model estimation
-  if (class(rs_mod) != 'rsmod'){
+  if (class(rt_mod) != 'rtmod'){
     message('Model estimator was unsuccessful')
     return(NULL)
   }
 
   # Remove qr to keep model obj small
-  if (trim_model) rs_mod$qr <- NULL
+  if (trim_model) rt_mod$qr <- NULL
 
   # If successful create list of results
 
   # Create coefficient data.frame
   model_df <- data.frame(time=c(min(hpi_data$period_1),
                                 as.numeric(gsub('time_matrixtime_', '',
-                                                names(rs_mod$coefficients)))),
-                         coefficient=c(0, as.numeric(rs_mod$coefficients)))
+                                                names(rt_mod$coefficients)))),
+                         coefficient=c(0, as.numeric(rt_mod$coefficients)))
 
   # Combine into list with class 'hpimodel and return
   structure(list(estimator=estimator,
                  coefficients=model_df,
-                 model_obj=rs_mod,
+                 model_obj=rt_mod,
                  mod_spec=NULL,
                  log_dep=log_dep,
                  base_price=base_price,
                  periods=attr(hpi_data, 'period_table'),
-                 approach='rs'),
+                 approach='rt'),
             class='hpimodel')
 }
 

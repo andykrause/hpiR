@@ -22,9 +22,9 @@ calcInSampleError <- function(pred_data,
   }
 
   if (!any('data.frame' %in% class(pred_data)) ||
-        !any(class(pred_data) %in% c('rs', 'hed'))){
+        !any(class(pred_data) %in% c('rt', 'hed'))){
     message('"pred_data" argument must be a data.frame with additional class of ',
-            ' "rs" or "hed"')
+            ' "rt" or "hed"')
     stop()
   }
 
@@ -32,7 +32,7 @@ calcInSampleError <- function(pred_data,
 
 }
 
-#' @title calcInSampleError.rs
+#' @title calcInSampleError.rt
 #' @description Estimate the predictive error of an index by predicting second sale price of a repeat sale
 #' @usage Lorem Ipsum...
 #' @param pred_data Set of sales against which to test predictions
@@ -46,7 +46,7 @@ calcInSampleError <- function(pred_data,
 #'              index=rs_index)
 #' @export
 
-calcInSampleError.rs <- function(pred_data,
+calcInSampleError.rt <- function(pred_data,
                                  index,
                                  ...){
 

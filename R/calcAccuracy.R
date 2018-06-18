@@ -4,19 +4,18 @@
 #' @param hpi_obj Object of class 'hpi'
 #' @param series_name default = 'series'; name of the object in hpi_obj containing the series
 #' @param test_method default = 'insample'; also 'kfold' or 'forecast'
-#' @param test_type default = 'rs'; Type of data to use for test.  See details.
+#' @param test_type default = 'rt'; Type of data to use for test.  See details.
 #' @param index_data = NULL; Extra data if the test_type doesn't match data in hpi_obj
-#' @param
 #' @param ... Additional Arguments
 #' @return hpimodel object
 #' @section Further Details:
-#' 'srs' test type tests the ability of the index to correctly predict the second value in a sale-resale pair (ABS)
-#' 'relhed' test type tests the ability of the index to improve an OLS model that doesn't account for time.  (REL)
+#' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair (ABS)
+#' 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.  (REL)
 #' @export
 
 calcAccuracy <- function(hpi_obj,
                          test_method = 'insample',
-                         test_type = 'rs',
+                         test_type = 'rt',
                          index_data = NULL,
                          series_name = 'series',
                          in_place = FALSE,
@@ -36,8 +35,8 @@ calcAccuracy <- function(hpi_obj,
   }
 
   # check for allowed test_method
-  if (!test_type %in% c('rs', 'hed')){
-    message('"test_type" must be one of "rs", "hed"')
+  if (!test_type %in% c('rt', 'hed')){
+    message('"test_type" must be one of "rt", "hed"')
     stop()
   }
 
@@ -85,13 +84,13 @@ calcAccuracy <- function(hpi_obj,
   } # Ends if(test_method == 'series')
 
   # Clip pred_data to size of index
-  if (test_type == 'rs') {
+  if (test_type == 'rt') {
     if (max(index_data$period_2) > max(hpi_obj$index$period)){
       message("Trimming prediction date down to period ", max(hpi_obj$index$period),
               " and before.")
       index_data <- index_data %>%
         dplyr::filter(period_2 <= max(hpi_obj$index$period))
-      class(index_data) <- c('rs', 'data.frame')
+      class(index_data) <- c('rt', 'data.frame')
     }
   }
 

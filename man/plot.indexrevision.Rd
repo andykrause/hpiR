@@ -4,5 +4,5 @@
 \alias{plot.indexrevision}
 \title{plot.indexrevision}
 \usage{
-plot.indexrevision(rev_obj)
+plot.indexrevision(rev_obj, measure = "median", ...)
 }

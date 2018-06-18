@@ -11,110 +11,110 @@
 
   sales <- get(data(seattle_sales))
 
-### rsCreateSales() ----------------------------------------------------------------------
+### rtCreateTrans() ----------------------------------------------------------------------
 
-context('rsCreateSales()')
+context('rtCreateTrans()')
 
   # Test Setup
-  test_that("Can take a functional 'salesdf' object", {
+  test_that("Can take a functional 'trans_df' object", {
 
-    sales_df <- dateToPeriod(sales_df = sales,
+    sales_df <- dateToPeriod(trans_df = sales,
                              date = 'sale_date',
                              periodicity = 'monthly')
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales_df,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales_df,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
-                                     price='sale_price'), 'rs')
-    expect_true(nrow(rs_df) == 5102)
+                                     trans_id='sale_id',
+                                     price='sale_price'), 'rt')
+    expect_true(nrow(rt_df) == 5102)
   })
 
   # Test Setup
   test_that("Can create own salesdf object", {
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly'),
-              'rs')
-    expect_true(nrow(rs_df) == 5102)
+              'rt')
+    expect_true(nrow(rt_df) == 5102)
   })
 
   test_that("Can use min/max dates own salesdf object", {
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly',
                                      min_date = as.Date('2012-03-21')),
-              'rs')
-    expect_true(nrow(rs_df) == 5102)
+              'rt')
+    expect_true(nrow(rt_df) == 5102)
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly',
                                      min_date = as.Date('2012-03-21'),
                                      adj_type='clip'),
-              'rs')
-    expect_true(nrow(rs_df) == 2827)
+              'rt')
+    expect_true(nrow(rt_df) == 2827)
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly',
                                      max_date = as.Date('2015-03-21')),
-              'rs')
-    expect_true(nrow(rs_df) == 5102)
+              'rt')
+    expect_true(nrow(rt_df) == 5102)
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly',
                                      max_date = as.Date('2014-03-21'),
                                      adj_type='clip'),
-              'rs')
-    expect_true(nrow(rs_df) == 1148)
+              'rt')
+    expect_true(nrow(rt_df) == 1148)
   })
 
   test_that("Sequence only (seq_only) option works", {
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales,
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly',
                                      seq_only = TRUE),
-              'rs')
-    expect_true(nrow(rs_df) == 4823)
+              'rt')
+    expect_true(nrow(rt_df) == 4823)
 
   })
 
   test_that("Fails if sales creation fails", {
 
     # Bad Date field
-    expect_error(rs_df <- rsCreateSales(sales_df=sales,
+    expect_error(rt_df <- rtCreateTrans(trans_df=sales,
                                         prop_id='pinx',
-                                        sale_id='sale_id',
+                                        trans_id='sale_id',
                                         price='sale_price',
                                         date='sale_price',
                                         periodicity='monthly'))
 
     # Bad Periodicity field
-    expect_error(rs_df <- rsCreateSales(sales_df=sales,
+    expect_error(rt_df <- rtCreateTrans(trans_df=sales,
                                         prop_id='pinx',
-                                        sale_id='sale_id',
+                                        trans_id='sale_id',
                                         price='sale_price',
                                         date='sale_date',
                                         periodicity='mocnthly'))
@@ -122,77 +122,77 @@ context('rsCreateSales()')
   })
 
   # Create a sales_df in the global env for future use
-  sales_df <- dateToPeriod(sales_df = sales,
+  sales_df <- dateToPeriod(trans_df = sales,
                            date = 'sale_date',
                            periodicity = 'monthly')
 
   test_that("Fails if bad arguments fails", {
 
     # Bad prop_id field
-    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+    expect_error(rt_df <- rtCreateTrans(trans_df=sales_df,
                                         prop_id='pinxx',
-                                        sale_id='sale_id',
+                                        trans_id='sale_id',
                                         price='sale_price'))
 
     # Bad sale_id field
-    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+    expect_error(rt_df <- rtCreateTrans(trans_df=sales_df,
                                         prop_id='pinx',
-                                        sale_id='salex_id',
+                                        trans_id='salex_id',
                                         price='sale_price'))
 
     # Bad price field
-    expect_error(rs_df <- rsCreateSales(sales_df=sales_df,
+    expect_error(rt_df <- rtCreateTrans(trans_df=sales_df,
                                         prop_id='pinx',
-                                        sale_id='sale_id',
+                                        trans_id='sale_id',
                                         price='salex_price'))
 
   })
 
   test_that("Returns NULL if no repeat sales", {
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales_df[!duplicated(sales_df$prop_id),],
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales_df[!duplicated(sales_df$prop_id),],
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price'), "NULL")
 
-    expect_is(rs_df <- rsCreateSales(sales_df=sales_df[1:3, ],
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales_df[1:3, ],
                                      prop_id='pinx',
-                                     sale_id='sale_id',
+                                     trans_id='sale_id',
                                      price='sale_price'), "NULL")
   })
 
-### rsTimeMatrix -------------------------------------------------------------------------
+### rtTimeMatrix -------------------------------------------------------------------------
 
-context('rsTimeMatrix()')
+context('rtTimeMatrix()')
 
-  # Create a full rs_data object in global environment
-  rs_df <- rsCreateSales(sales_df=sales_df,
+  # Create a full rt_data object in global environment
+  rt_df <- rtCreateTrans(trans_df=sales_df,
                          prop_id='pinx',
-                         sale_id='sale_id',
+                         trans_id='sale_id',
                          price='sale_price')
 
   test_that('Time matrix operates properly', {
 
-    # Work with an 'rs' object
-    expect_is(time_matrix <- rsTimeMatrix(rs_df), 'timematrix')
+    # Work with an 'rt' object
+    expect_is(time_matrix <- rtTimeMatrix(rt_df), 'timematrix')
 
     # Returns a NULL without
-    expect_is(time_matrix <- rsTimeMatrix(sales_df), 'NULL')
+    expect_is(time_matrix <- rtTimeMatrix(sales_df), 'NULL')
 
     # Returns correct number of rows
-    expect_true(nrow(rsTimeMatrix(rs_df[1:2000,])) == 2000)
+    expect_true(nrow(rtTimeMatrix(rt_df[1:2000,])) == 2000)
 
     # Return correct number of columns
-    expect_true(ncol(rsTimeMatrix(rs_df[1:2000,])) ==
-                  nrow(attr(rs_df, 'period_table')) - 1)
+    expect_true(ncol(rtTimeMatrix(rt_df[1:2000,])) ==
+                  nrow(attr(rt_df, 'period_table')) - 1)
   })
 
-## hpiModel.rs(): Prior to rsModel() call -------------------------------------------
+## hpiModel.rt(): Prior to rtModel() call -------------------------------------------
 
-context('hpiModel.rs(): Prior to rsModel() call')
+context('hpiModel.rt(): Prior to rtModel() call')
 
-  test_that('hpiModel.rs works in simplest format',{
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+  test_that('hpiModel.rt works in simplest format',{
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE),
               'hpimodel')
@@ -201,12 +201,12 @@ context('hpiModel.rs(): Prior to rsModel() call')
   test_that('"log_dep" argument works both ways',{
 
     # TRUE
-    expect_true(hpiModel(hpi_data = rs_df,
+    expect_true(hpiModel(hpi_data = rt_df,
                          estimator = 'base',
                          log_dep = TRUE)$model_obj$fitted.values[1] < 1)
 
     # FALSE
-    expect_true(hpiModel(hpi_data = rs_df,
+    expect_true(hpiModel(hpi_data = rt_df,
                          estimator = 'base',
                          log_dep = FALSE)$model_obj$fitted.values[1] > 10000)
 
@@ -214,32 +214,32 @@ context('hpiModel.rs(): Prior to rsModel() call')
 
   test_that('Check for zero or negative prices works',{
 
-    rs_dfx <- rs_df
+    rt_dfx <- rt_df
 
     # Zero Price
-    rs_dfx$price_1[1] <- 0
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    rt_dfx$price_1[1] <- 0
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = TRUE), 'NULL')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = FALSE), 'hpimodel')
 
     # NA
-    rs_dfx$price_1[1] <- NA_integer_
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    rt_dfx$price_1[1] <- NA_integer_
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = TRUE), 'NULL')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = FALSE), 'NULL')
 
     # Infinity
-    rs_dfx$price_1[1] <- Inf
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    rt_dfx$price_1[1] <- Inf
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = TRUE), 'NULL')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_dfx,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_dfx,
                                    estimator = 'base',
                                    log_dep = FALSE), 'NULL')
 
@@ -248,55 +248,55 @@ context('hpiModel.rs(): Prior to rsModel() call')
   test_that('Check for estimator type works',{
 
     # Base
-    expect_true(hpiModel(hpi_data = rs_df)$estimator == 'base')
+    expect_true(hpiModel(hpi_data = rt_df)$estimator == 'base')
 
     # Convert to base with bad estimator
-    expect_true(hpiModel(hpi_data = rs_df,
+    expect_true(hpiModel(hpi_data = rt_df,
                          estimator='xxxx')$estimator == 'base')
 
     # Robust
-    expect_true(hpiModel(hpi_data = rs_df,
+    expect_true(hpiModel(hpi_data = rt_df,
                          estimator='robust')$estimator == 'robust')
 
     # Weighted
-    expect_true(hpiModel(hpi_data = rs_df,
+    expect_true(hpiModel(hpi_data = rt_df,
                          estimator='weighted')$estimator == 'weighted')
   })
 
-## rsModel() ------------------------------------------------------------------------
+## rtModel() ------------------------------------------------------------------------
 
-context('rsModel()')
+context('rtModel()')
 
-  # Create matrix and difference vectors in global environment
-  time_matrix <- rsTimeMatrix(rs_df)
-  price_diff_l <- log(rs_df$price_2) - log(rs_df$price_1)
-  price_diff <- rs_df$price_2 - rs_df$price_1
+  # Create matrix and difference vectort in global environment
+  time_matrix <- rtTimeMatrix(rt_df)
+  price_diff_l <- log(rt_df$price_2) - log(rt_df$price_1)
+  price_diff <- rt_df$price_2 - rt_df$price_1
 
-  test_that('Check for errors with bad arguments',{
+  test_that('Check for errort with bad arguments',{
 
-    # Base: Return warning if wrong rs_df
-    expect_is(rs_model <- rsModel(rs_df = sales,
+    # Base: Return warning if wrong rt_df
+    expect_is(rt_model <- rtModel(rt_df = sales,
                                   time_matrix = time_matrix,
                                   price_diff = price_diff_l,
                                   estimator=structure('base', class='base')),
               'NULL')
 
     # Robust: Return warning if wrong time_matrix
-    expect_is(rs_model <- rsModel(rs_df = rs_df,
+    expect_is(rt_model <- rtModel(rt_df = rt_df,
                                   time_matrix = sales,
                                   price_diff = price_diff_l,
                                   estimator=structure('robust', class='robust')),
               'NULL')
 
     # Weighted: Dimensions of data do not match
-    expect_is(rs_model <- rsModel(rs_df = rs_df,
+    expect_is(rt_model <- rtModel(rt_df = rt_df,
                                   time_matrix = time_matrix,
                                   price_diff = price_diff_l[-1],
                                   estimator=structure('weighted', class='weighted')),
               'NULL')
 
     # Bad estimator class
-    expect_is(rs_model <- rsModel(rs_df = rs_df,
+    expect_is(rt_model <- rtModel(rt_df = rt_df,
                                   time_matrix = time_matrix,
                                   price_diff = price_diff,
                                   estimator=structure('base', class='xxx')),
@@ -304,203 +304,203 @@ context('rsModel()')
 
   })
 
-  test_that('Performance with sparse data',{
+  test_that('Performance with sparte data',{
 
-    ## Moderate Sparseness
+    ## Moderate Sparteness
 
-    # Create a sparse data set
-    rs_df200 <- rs_df[1:200, ]
-    time_matrix200 <- rsTimeMatrix(rs_df200)
-    price_diff_l200 <- log(rs_df200$price_2) - log(rs_df200$price_1)
-    price_diff200 <- rs_df200$price_2 - rs_df200$price_1
+    # Create a sparte data set
+    rt_df200 <- rt_df[1:200, ]
+    time_matrix200 <- rtTimeMatrix(rt_df200)
+    price_diff_l200 <- log(rt_df200$price_2) - log(rt_df200$price_1)
+    price_diff200 <- rt_df200$price_2 - rt_df200$price_1
 
     # Works with base, though many NAs
-    expect_is(rs_model <- rsModel(rs_df = rs_df200,
+    expect_is(rt_model <- rtModel(rt_df = rt_df200,
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff_l200,
                                   estimator=structure('base', class='base')),
-              'rsmod')
+              'rtmod')
 
     # Robust works but gives warning
-    expect_is(rs_model <- rsModel(rs_df = rs_df200,
+    expect_is(rt_model <- rtModel(rt_df = rt_df200,
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff_l200,
                                   estimator=structure('robust', class='robust')),
-              'rsmod')
+              'rtmod')
 
     # Weighted works
-    expect_is(rs_model <- rsModel(rs_df = rs_df200,
+    expect_is(rt_model <- rtModel(rt_df = rt_df200,
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff200,
                                   estimator=structure('weighted', class='weighted')),
-              'rsmod')
+              'rtmod')
 
-    ## Check severe sparseness
+    ## Check severe sparteness
 
     # Create data set
-    rs_df20 <- rs_df[1:20, ]
-    time_matrix20 <- rsTimeMatrix(rs_df20)
-    price_diff_l20 <- log(rs_df20$price_2) - log(rs_df20$price_1)
-    price_diff20 <- rs_df20$price_2 - rs_df20$price_1
+    rt_df20 <- rt_df[1:20, ]
+    time_matrix20 <- rtTimeMatrix(rt_df20)
+    price_diff_l20 <- log(rt_df20$price_2) - log(rt_df20$price_1)
+    price_diff20 <- rt_df20$price_2 - rt_df20$price_1
 
     # Base: Works, but gives message
-    expect_is(rs_model <- rsModel(rs_df = rs_df20,
+    expect_is(rt_model <- rtModel(rt_df = rt_df20,
                                   time_matrix = time_matrix20,
                                   price_diff = price_diff_l20,
                                   estimator=structure('base', class='base')),
-              'rsmod')
+              'rtmod')
 
     # Robust: Works, but gives warning from lmrob()
-    expect_warning(rs_model <- rsModel(rs_df = rs_df20,
+    expect_warning(rt_model <- rtModel(rt_df = rt_df20,
                                        time_matrix = time_matrix20,
                                        price_diff = price_diff_l20,
                                        estimator=structure('robust', class='robust')))
 
     # Weighted: works but gives message
-    expect_is(rs_model <- rsModel(rs_df = rs_df20,
+    expect_is(rt_model <- rtModel(rt_df = rt_df20,
                                   time_matrix = time_matrix20,
                                   price_diff = price_diff20,
                                   estimator=structure('weighted', class='weighted')),
-              'rsmod')
+              'rtmod')
 
   })
 
-## hpiModel.rs() after rsModel --------------------------------------------------------
+## hpiModel.rt() after rtModel --------------------------------------------------------
 
-context('hpiModel.rs(): after rsModel()')
+context('hpiModel.rt(): after rtModel()')
 
-  test_that('hpiModel.rs works in both trim_model cases', {
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+  test_that('hpiModel.rt works in both trim_model cases', {
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'base',
                                    log_dep = FALSE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'base',
                                    log_dep = FALSE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'weighted',
                                    log_dep = TRUE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rs_model <- hpiModel(hpi_data = rs_df,
+    expect_is(rt_model <- hpiModel(hpi_data = rt_df,
                                    estimator = 'robust',
                                    log_dep = FALSE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_true(is.null(hpiModel(hpi_data = rs_df,
+    expect_true(is.null(hpiModel(hpi_data = rt_df,
                                  estimator = 'weighted',
                                  log_dep = TRUE,
                                  trim_model=TRUE)$model_obj$qr))
-    expect_true(!is.null(hpiModel(hpi_data = rs_df,
+    expect_true(!is.null(hpiModel(hpi_data = rt_df,
                                   estimator = 'weighted',
                                   log_dep = TRUE,
                                   trim_model=FALSE)$model_obj$qr))
   })
 
-  test_that('hpiModel.rs outputs are correct', {
+  test_that('hpiModel.rt outputs are correct', {
 
     # Run a model of each estimator type
-    rs_model_base <- hpiModel(hpi_data = rs_df,
+    rt_model_base <- hpiModel(hpi_data = rt_df,
                               estimator = 'base',
                               log_dep = TRUE,
                               trim_model=TRUE)
 
-    rs_model_robust <- hpiModel(hpi_data = rs_df,
+    rt_model_robust <- hpiModel(hpi_data = rt_df,
                                 estimator = 'robust',
                                 log_dep = TRUE,
                                 trim_model=FALSE)
 
-    rs_model_wgt <- hpiModel(hpi_data = rs_df,
+    rt_model_wgt <- hpiModel(hpi_data = rt_df,
                              estimator = 'weighted',
                              log_dep = FALSE,
                              trim_model=TRUE)
 
-    # Estimators
-    expect_is(rs_model_base$estimator, 'base')
-    expect_is(rs_model_robust$estimator, 'robust')
-    expect_is(rs_model_wgt$estimator, 'weighted')
+    # Estimatort
+    expect_is(rt_model_base$estimator, 'base')
+    expect_is(rt_model_robust$estimator, 'robust')
+    expect_is(rt_model_wgt$estimator, 'weighted')
 
     # Coefficients
-    expect_is(rs_model_base$coefficients, 'data.frame')
-    expect_is(rs_model_robust$coefficients, 'data.frame')
-    expect_is(rs_model_wgt$coefficients, 'data.frame')
-    expect_true(nrow(rs_model_base$coefficients) == 84)
-    expect_true(max(rs_model_robust$coefficients$time) == 84)
-    expect_true(rs_model_wgt$coefficients$coefficient[1] == 0)
+    expect_is(rt_model_base$coefficients, 'data.frame')
+    expect_is(rt_model_robust$coefficients, 'data.frame')
+    expect_is(rt_model_wgt$coefficients, 'data.frame')
+    expect_true(nrow(rt_model_base$coefficients) == 84)
+    expect_true(max(rt_model_robust$coefficients$time) == 84)
+    expect_true(rt_model_wgt$coefficients$coefficient[1] == 0)
 
     # Modelobj
-    expect_is(rs_model_base$model_obj, 'rsmod')
-    expect_is(rs_model_robust$model_obj, 'rsmod')
-    expect_is(rs_model_wgt$model_obj, 'rsmod')
+    expect_is(rt_model_base$model_obj, 'rtmod')
+    expect_is(rt_model_robust$model_obj, 'rtmod')
+    expect_is(rt_model_wgt$model_obj, 'rtmod')
 
     # Model spec
-    expect_true(is.null(rs_model_base$model_spec))
-    expect_true(is.null(rs_model_robust$model_spec))
-    expect_true(is.null(rs_model_wgt$model_spec))
+    expect_true(is.null(rt_model_base$model_spec))
+    expect_true(is.null(rt_model_robust$model_spec))
+    expect_true(is.null(rt_model_wgt$model_spec))
 
     # base price
-    expect_true(round(rs_model_base$base_price, 0) == 427785)
-    expect_true(round(rs_model_robust$base_price, 0) == 427785)
-    expect_true(round(rs_model_wgt$base_price, 0) == 427785)
+    expect_true(round(rt_model_base$base_price, 0) == 427785)
+    expect_true(round(rt_model_robust$base_price, 0) == 427785)
+    expect_true(round(rt_model_wgt$base_price, 0) == 427785)
 
     # Periods
-    expect_is(rs_model_base$periods, 'data.frame')
-    expect_true(nrow(rs_model_base$periods) == 84)
-    expect_is(rs_model_robust$periods, 'data.frame')
-    expect_true(nrow(rs_model_robust$periods) == 84)
-    expect_is(rs_model_wgt$periods, 'data.frame')
-    expect_true(nrow(rs_model_wgt$periods) == 84)
+    expect_is(rt_model_base$periods, 'data.frame')
+    expect_true(nrow(rt_model_base$periods) == 84)
+    expect_is(rt_model_robust$periods, 'data.frame')
+    expect_true(nrow(rt_model_robust$periods) == 84)
+    expect_is(rt_model_wgt$periods, 'data.frame')
+    expect_true(nrow(rt_model_wgt$periods) == 84)
 
     # Approach
-    expect_true(rs_model_base$approach == 'rs')
-    expect_true(rs_model_robust$approach == 'rs')
-    expect_true(rs_model_wgt$approach == 'rs')
+    expect_true(rt_model_base$approach == 'rt')
+    expect_true(rt_model_robust$approach == 'rt')
+    expect_true(rt_model_wgt$approach == 'rt')
   })
 
 ### modelToIndex --------------------------------------------------------------------
 
  context('modelToIndex')
 
- rs_model <- hpiModel(hpi_data = rs_df,
+ rt_model <- hpiModel(hpi_data = rt_df,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model=TRUE)
 
  test_that('modelToIndex works', {
 
-   expect_is(modelToIndex(rs_model), 'hpiindex')
+   expect_is(modelToIndex(rt_model), 'hpiindex')
 
  })
 
-  test_that('modelToIndex works with other estimators and options', {
+  test_that('modelToIndex works with other estimatort and options', {
 
     # Robust, LogDep=T, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+    expect_is(modelToIndex(hpiModel(hpi_data = rt_df,
                                     estimator = 'robust',
                                     log_dep = TRUE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Weighted, LogDep=T, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+    expect_is(modelToIndex(hpiModel(hpi_data = rt_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Robust, LogDep=F, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+    expect_is(modelToIndex(hpiModel(hpi_data = rt_df,
                                     estimator = 'robust',
                                     log_dep = FALSE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Weighted, LogDep=T, TrimModel=F
-    expect_is(modelToIndex(hpiModel(hpi_data = rs_df,
+    expect_is(modelToIndex(hpiModel(hpi_data = rt_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     trim_model=FALSE)), 'hpiindex')
@@ -512,7 +512,7 @@ context('hpiModel.rs(): after rsModel()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDEP',{
 
-    model_base <- hpiModel(hpi_data = rs_df,
+    model_base <- hpiModel(hpi_data = rt_df,
                            estimator = 'base',
                            log_dep = TRUE,
                            trim_model=TRUE)
@@ -543,7 +543,7 @@ context('hpiModel.rs(): after rsModel()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDep=FALSE',{
 
-    model_base <- hpiModel(hpi_data = rs_df,
+    model_base <- hpiModel(hpi_data = rt_df,
                            estimator = 'base',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -574,7 +574,7 @@ context('hpiModel.rs(): after rsModel()')
 
   test_that('modelToIndex imputes properly, Robust model, LogDEP = TRUE',{
 
-    model_base <- hpiModel(hpi_data = rs_df,
+    model_base <- hpiModel(hpi_data = rt_df,
                            estimator = 'robust',
                            log_dep = TRUE,
                            trim_model=TRUE)
@@ -602,7 +602,7 @@ context('hpiModel.rs(): after rsModel()')
 
   test_that('modelToIndex imputes properly, Weighted model, LogDep=FALSE',{
 
-    model_base <- hpiModel(hpi_data = rs_df,
+    model_base <- hpiModel(hpi_data = rt_df,
                            estimator = 'weighted',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -630,7 +630,7 @@ context('hpiModel.rs(): after rsModel()')
 
   test_that('modelToIndex "max_period" cutoff works',{
 
-    model_base <- hpiModel(hpi_data = rs_df,
+    model_base <- hpiModel(hpi_data = rt_df,
                            estimator = 'weighted',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -642,17 +642,17 @@ context('hpiModel.rs(): after rsModel()')
 
   })
 
-### rsIndex() wrapper ---------------------------------------------------------------
+### rtIndex() wrapper ---------------------------------------------------------------
 
-context('rsindex() wrapper')
+context('rtindex() wrapper')
 
   test_that('Function works with proper inputs',{
 
     # Full case
-    full_1 <- rsIndex(sales_df = sales,
+    full_1 <- rtIndex(trans_df = sales,
                       date = 'sale_date',
                       price = 'sale_price',
-                      sale_id = 'sale_id',
+                      trans_id = 'sale_id',
                       prop_id = 'pinx',
                       estimator = 'base',
                       log_dep = TRUE,
@@ -661,10 +661,10 @@ context('rsindex() wrapper')
     expect_is(full_1, 'hpi')
     expect_true(full_1$model$estimator == 'base')
 
-    # Giving a 'sales_df' object
-    full_2 <- rsIndex(sales_df = sales_df,
+    # Giving a 'trans_df' object
+    full_2 <- rtIndex(trans_df = sales_df,
                       price = 'sale_price',
-                      sale_id = 'sale_id',
+                      trans_id = 'sale_id',
                       prop_id = 'pinx',
                       estimator = 'robust',
                       log_dep = TRUE)
@@ -672,8 +672,8 @@ context('rsindex() wrapper')
     expect_is(full_2, 'hpi')
     expect_true(full_2$model$estimator == 'robust')
 
-    # Giving an 'rs_df' object
-    full_3 <- rsIndex(sales_df = rs_df,
+    # Giving an 'rt_df' object
+    full_3 <- rtIndex(trans_df = rt_df,
                       estimator = 'weighted',
                       log_dep = TRUE)
 
@@ -682,43 +682,43 @@ context('rsindex() wrapper')
 
   })
 
-  test_that('Additional arguments in rsIndex() work',{
+  test_that('Additional arguments in rtIndex() work',{
 
-    ## RS Create arguments
+    ## rt Create arguments
 
     # Min Date Model with Clip
-    mindate_index <- rsIndex(sales_df = sales,
+    mindate_index <- rtIndex(trans_df = sales,
                              date = 'sale_date',
                              price = 'sale_price',
-                             sale_id = 'sale_id',
+                             trans_id = 'sale_id',
                              prop_id = 'pinx',
                              min_date = as.Date('2011-01-01'),
                              adj_type = 'clip')
     expect_true(min(mindate_index$index$period) == 2011)
 
     # Max Date Model with Adjust
-    maxdate_index <- rsIndex(sales_df = sales,
+    maxdate_index <- rtIndex(trans_df = sales,
                              date = 'sale_date',
                              price = 'sale_price',
-                             sale_id = 'sale_id',
+                             trans_id = 'sale_id',
                              prop_id = 'pinx',
                              max_date = as.Date('2015-12-31'))
     expect_true(max(maxdate_index$index$period) == 2016)
 
     # Periodicity
-    per_index <- rsIndex(sales_df = sales,
+    per_index <- rtIndex(trans_df = sales,
                          date = 'sale_date',
                          price = 'sale_price',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'pinx',
                          periodicity = 'weekly')
     expect_true(max(per_index$index$period) == 364)
 
     # Sequence Only
-    seq_index <- rsIndex(sales_df = sales_df,
+    seq_index <- rtIndex(trans_df = sales_df,
                          date = 'sale_date',
                          price = 'sale_price',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'pinx',
                          seq_only = TRUE)
     expect_true(nrow(seq_index$data) == 4823)
@@ -726,12 +726,12 @@ context('rsindex() wrapper')
     ## HPI Model
 
     # Trim Model
-    trim_index <- rsIndex(sales_df = rs_df,
+    trim_index <- rtIndex(trans_df = rt_df,
                           trim_model=TRUE)
     expect_true(is.null(trim_index$model$model_obj$qr))
 
     # Log Dep & Robust
-    ld_index <- rsIndex(sales_df = rs_df,
+    ld_index <- rtIndex(trans_df = rt_df,
                         estimator = 'robust',
                         log_dep = FALSE)
     expect_true(ld_index$model$log_dep == FALSE)
@@ -739,7 +739,7 @@ context('rsindex() wrapper')
 
     ## Model to Index
 
-    m2i_index <- rsIndex(sales_df = rs_df,
+    m2i_index <- rtIndex(trans_df = rt_df,
                          estimator = 'robust',
                          log_dep = FALSE,
                          max_period = 80)
@@ -749,19 +749,19 @@ context('rsindex() wrapper')
 
   test_that("Bad arguments generate NULLs: Full Case",{
 
-    expect_error(rsIndex(sales_df = sales,
+    expect_error(rtIndex(trans_df = sales,
                          date = 'sale_price',
                          price = 'sale_price',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE,
                          periodicity = 'monthly'))
 
-    expect_error(rsIndex(sales_df = sales,
+    expect_error(rtIndex(trans_df = sales,
                          date = 'sale_date',
                          price = 'sale_price',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE,
@@ -769,44 +769,44 @@ context('rsindex() wrapper')
 
   })
 
-  test_that("Bad arguments generate errors: Sales_df Case",{
+  test_that("Bad arguments generate errort: trans_df Case",{
 
-    expect_error(rsIndex(sales_df = sales_df,
+    expect_error(rtIndex(trans_df = sales_df,
                          price = 'xx',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE))
-    expect_error(rsIndex(sales_df = sales_df,
+    expect_error(rtIndex(trans_df = sales_df,
                          price = 'sale_price',
-                         sale_id = 'xx',
+                         trans_id = 'xx',
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE))
-    expect_error(rsIndex(sales_df = sales_df,
+    expect_error(rtIndex(trans_df = sales_df,
                          price = 'sale_price',
-                         sale_id = 'sale_id',
+                         trans_id = 'sale_id',
                          prop_id = 'xx',
                          estimator = 'base',
                          log_dep = TRUE))
   })
 
-  test_that("Bad arguments handling: rs_sales Case",{
+  test_that("Bad arguments handling: rt_sales Case",{
 
-    # Bad estimators default to 'base'
-    expect_true(rsIndex(sales_df = rs_df,
+    # Bad estimatort default to 'base'
+    expect_true(rtIndex(trans_df = rt_df,
                         estimator = 'basex',
                         log_dep = TRUE)$model$estimator == 'base')
 
-    expect_error(rsIndex(sales_df = rs_df,
+    expect_error(rtIndex(trans_df = rt_df,
                          estimator = 'robust',
                          log_dep = 'a'))
 
-    expect_error(rsIndex(sales_df = rs_df,
+    expect_error(rtIndex(trans_df = rt_df,
                          estimator = 'robust',
                          trim_model = 'a'))
 
-    expect_error(rsIndex(sales_df = rs_df,
+    expect_error(rtIndex(trans_df = rt_df,
                          estimator = 'robust',
                          max_period = 'a'))
   })
