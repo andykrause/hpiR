@@ -195,7 +195,7 @@ plot.hpirevision <- function(rev_obj,
     theme(legend.position='none',
           legend.title = element_blank())
 
-  structure(rev_plot, class = c('indexplot', class(rev_plot)))
+  structure(rev_plot, class = c('revisionplot', class(rev_plot)))
 
 }
 
