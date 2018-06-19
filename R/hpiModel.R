@@ -110,7 +110,8 @@ hpiModel.rt <- function(hpi_df,
   model_df <- data.frame(time=c(min(hpi_df$period_1),
                                 as.numeric(gsub('time_matrixtime_', '',
                                                 names(rt_mod$coefficients)))),
-                         coefficient=c(0, as.numeric(rt_mod$coefficients)))
+                         coefficient=c(0, as.numeric(rt_mod$coefficients)),
+                         stringsAsFactors=FALSE)
 
   # Combine into list with class 'hpimodel and return
   structure(list(estimator=estimator,
@@ -238,7 +239,8 @@ hpiModel.hed <- function(hpi_df,
   coefs <- c(0, as.numeric(hed_mod$coefficients)[p_names])
 
   model_df <- data.frame(time=periods,
-                         coefficient=coefs)
+                         coefficient=coefs,
+                         stringsAsFactors=FALSE)
 
   # Combine into list
   hed_model <- list(estimator=estimator,

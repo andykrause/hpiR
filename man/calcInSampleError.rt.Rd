@@ -7,7 +7,7 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{pred_data}{Set of sales against which to test predictions}
+\item{pred_df}{Set of sales against which to test predictions}
 
 \item{index}{Index to be tested for accuracy}
 
@@ -25,6 +25,6 @@ Note that ensure prediction types (holdout vs forecast) are done outside of this
 }
 
 \examples{
-calcHPIError(pred_data=rs_data,
+calcHPIError(pred_df=rs_data,
              index=rs_index)
 }

@@ -9,7 +9,7 @@ Lorem Ipsum...
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{pred_data}{Set of sales to be used for predicitive quality of index}
+\item{pred_df}{Set of sales to be used for predicitive quality of index}
 
 \item{k}{default=10; Number of folds to apply to holdout process}
 

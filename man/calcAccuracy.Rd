@@ -13,7 +13,7 @@ Lorem Ipsum...
 
 \item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
-\item{index_data}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
+\item{pred_df}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
 
 \item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
 

@@ -22,7 +22,8 @@ imputeSeries <- function(coef_df,
 
   # Create a DF of all periods
   imp.df <- data.frame(time=c(coef_df$time, miss.periods),
-                       coefficient=c(coef_df$coefficient, rep(0, length(miss.periods))))
+                       coefficient=c(coef_df$coefficient, rep(0, length(miss.periods))),
+                       stringsAsFactors=FALSE)
   imp.df <- imp.df %>% dplyr::arrange(time)
 
   # Loop through and fix those that are missing

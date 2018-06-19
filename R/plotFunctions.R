@@ -18,7 +18,8 @@ plot.hpiindex <- function(index_obj,
   ## Extract Data
   hpi_data <- data.frame(x=index_obj$numeric,
                          y=as.numeric(index_obj$index),
-                         imp=index_obj$imputed)
+                         imp=index_obj$imputed,
+                         stringsAsFactors=FALSE)
 
   ## Make the base plot object
   gg_obj <- ggplot(hpi_data, aes(x=x, y=y)) +
@@ -73,7 +74,8 @@ plot.indexsmooth <- function(s_index){
   # Build Data
   plot_data <- data.frame(period=rep(1:l, 2),
                           index=c(s_index, attr(s_index, 'raw')),
-                          type=c(rep('Smoothed ', l), rep('Raw Index   ', l)))
+                          type=c(rep('Smoothed ', l), rep('Raw Index   ', l)),
+                          stringsAsFactors=FALSE)
 
   # Make Plbot
   smooth_plot <- ggplot(plot_data,
@@ -88,39 +90,45 @@ plot.indexsmooth <- function(s_index){
           legend.title = element_blank())
 
   # Return
-  smooth_plot
+  structure(smooth_plot, class = c('smoothplot', class(smooth_plot)))
 
 }
 
-#' @title plot.blendindex
+#' @title plot.hpiblend
 #' @export
 
-plot.indexblend <- function(b_index){
-
-  # Get index length
-  l <- length(b_index)
+plot.hpiblend <- function(b_index){
 
   # Create index data
-  index_data <- data.frame(period=1:l,
-                           index=as.numeric(unlist(b_index)),
-                           name=as.character('Blended'),
-                           type='b')
+  index_data <- data.frame(period=b_index$period,
+                           index=as.numeric(b_index$index),
+                           name='Blended',
+                           type='b',
+                           stringsAsFactors=FALSE)
 
-  anc <- attr(b_index, 'ancestry')$parents
-  anc_data <- data.frame(period=rep(1:l, length(anc)),
-                         index=unlist(lapply(anc, function(x) x$index)),
+ anc_data <- data.frame(period=rep(b_index$period, length(b_index$parents)),
+                         index=unlist(b_index$parents),
                          name=as.character(paste0('Ancestor  :',
-                                                  c(sort(rep(1:length(anc), l))))),
-                         type='a')
+                                sort(rep(1:length(b_index$parents),
+                                         length(b_index$index))))),
+                         type='a',
+                        stringsAsFactors = FALSE)
+
   plot_data <- rbind(index_data, anc_data)
 
   # Set colors and sizes
   col_vals <- c('blue', rep('gray50', length(anc)))
   size_vals <- c(1.5, rep(.5, length(anc)))
 
+  col_vals <- c('gray50', 'blue')
+  size_vals <- c(.5, 1.5)
+
+
   # Create plot
   blend_plot <- ggplot(plot_data,
-                        aes(x=period, y=index, group = name, color=as.factor(type),
+                        aes(x=period, y=index,
+                            group = as.factor(name),
+                            color=as.factor(type),
                             size=as.factor(type))) +
     geom_line() +
     scale_color_manual(values=col_vals) +
@@ -130,14 +138,14 @@ plot.indexblend <- function(b_index){
     theme(legend.position='none',
           legend.title = element_blank())
 
-  blend_plot
+  structure(blend_plot, class = c('blendplot', class(blend_plot)))
 
 }
 
-#' @title plot.indexrevision
+#' @title plot.hpirevision
 #' @export
 
-plot.indexrevision <- function(rev_obj,
+plot.hpirevision <- function(rev_obj,
                                measure = 'median',
                                ...){
 
@@ -147,9 +155,11 @@ plot.indexrevision <- function(rev_obj,
   if (measure == 'median'){
     plot_data$revision <- plot_data$median
     yint <- rev_obj$median
+    y_lab <- 'Median Revision\n'
   } else {
     plot_data$revision <- plot_data$mean
     yint <- rev_obj$mean
+    y_lab <- 'Mean Revision\n'
   }
 
   # Create Plot
@@ -161,12 +171,13 @@ plot.indexrevision <- function(rev_obj,
     geom_bar(stat='identity') +
     scale_fill_manual(values=c('red', 'blue')) +
     geom_hline(yintercept = yint, size=1, linetype = 2) +
-    ylab('Average Revision\n') +
+    ylab(y_lab) +
     xlab('\nTime Period') +
     theme(legend.position='none',
           legend.title = element_blank())
 
-  rev_plot
+  structure(rev_plot, class = c('indexplot', class(rev_plot)))
+
 }
 
 #' @title plot.indexerrors
@@ -222,7 +233,9 @@ plot.indexerrors <- function(error_obj){
     ylab('Density of Error')
 
   # Plot all four
-  gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag, nrow = 2)
+  structure(gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
+                                    nrow = 2),
+            class = c('errorplot', class(dens_mag)))
 
 }
 
@@ -232,8 +245,11 @@ plot.hpiseries <- function(series_obj){
 
   # Extract the dimensions
   largest <- series_obj[[length(series_obj)]]
-  blank_df <- data.frame(time_period = 1:length(largest),
-                         value=seq(min(largest), max(largest), length.out=length(largest)))
+  blank_df <- data.frame(time_period = 1:length(largest$index),
+                         value=seq(min(largest$index),
+                                   max(largest$index),
+                                   length.out=length(largest$index)),
+                         stringsAsFactors=FALSE)
 
   # Plot canvas
   series_plot <- ggplot(blank_df,
@@ -242,23 +258,27 @@ plot.hpiseries <- function(series_obj){
   # Plot each of the non-terminal indexes
   for(i in 1:length(series_obj)){
 
-    data_df <- data.frame(x=1:length(series_obj[[i]]),
-                          y=as.numeric(series_obj[[i]]))
+    data_df <- data.frame(x=1:length(series_obj[[i]]$index),
+                          y=as.numeric(series_obj[[i]]$index),
+                          stringsAsFactors=FALSE)
     series_plot <- series_plot + geom_line(data=data_df,
                                            aes(x=x,y=y),
                                            color='gray70')
   }
 
   # Add the terminal index
-  data_df <- data.frame(x=1:length(series_obj[[length(series_obj)]]),
-                        y=as.numeric(series_obj[[length(series_obj)]]))
+  data_df <- data.frame(x=1:length(series_obj[[length(series_obj)]]$index),
+                        y=as.numeric(series_obj[[length(series_obj)]]$index),
+                        stringsAsFactors=FALSE)
 
-  series_plot + geom_line(data=data_df,
-                          aes(x=x,y=y),
-                          color='red',
-                          size=2) +
-            ylab('Index Value\n') +
-            xlab('\nTime Period')
+  series_plot <- series_plot + geom_line(data=data_df,
+                                         aes(x=x,y=y),
+                                         color='red',
+                                         size=2) +
+                               ylab('Index Value\n') +
+                               xlab('\nTime Period')
+
+  structure(series_plot, class = c('seriesplot', class(series_plot)))
 
 }
 
@@ -269,7 +289,8 @@ plot.indexvolatility <- function(vol_obj){
   # Set up dimensions
   data_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
                         volatility = c(rep(NA_integer_, attr(vol_obj, 'window')),
-                                       as.numeric(vol_obj$roll)))
+                                       as.numeric(vol_obj$roll)),
+                        stringsAsFactors=FALSE)
 
   # Plot base volatility
   vol_plot <- ggplot(data_df, aes(x=time_period, y=volatility)) +
@@ -281,14 +302,16 @@ plot.indexvolatility <- function(vol_obj){
 
   # Plot Original Index
   orig_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
-                        index=as.numeric(attr(vol_obj, 'orig')))
+                        index=as.numeric(attr(vol_obj, 'orig')),
+                        stringsAsFactors=FALSE)
   orig_plot <- ggplot(orig_df, aes(x=time_period, y=index)) +
     geom_line(color='black', size=2) +
     ylab('Index Value\n') +
     xlab('\nTime Period')
 
   # Combine
-  suppressWarnings(gridExtra::grid.arrange(vol_plot, orig_plot, nrow = 2))
+  structure(gridExtra::grid.arrange(vol_plot, orig_plot, nrow = 2),
+            class = c('volatilityplot', class(orig_plot)))
 
 }
 

@@ -9,7 +9,7 @@ Lorem Ipsum...
 \arguments{
 \item{train_df}{Data.frame of training data}
 
-\item{pred_data}{Data to be used for prediction}
+\item{pred_df}{Data to be used for prediction}
 }
 \value{
 list

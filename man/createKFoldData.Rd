@@ -11,7 +11,7 @@ Lorem Ipsum...
 
 \item{full_data}{Complete dataset of this model type}
 
-\item{pred_data}{Data to be used for prediction}
+\item{pred_df}{Data to be used for prediction}
 }
 \value{
 list

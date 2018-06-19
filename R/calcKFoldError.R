@@ -2,7 +2,7 @@
 #' @description Estimate out-of-sample index errors using a KFold process
 #' @usage Lorem Ipsum...
 #' @param hpi_obj Object of class 'hpi'
-#' @param pred_data Set of sales to be used for predicitive quality of index
+#' @param pred_df Set of sales to be used for predicitive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
 #' @param seed random seed generator to control the folding process
 #' @param ... Additional Arguments
@@ -14,7 +14,7 @@
 #' @export
 
 calcKFoldError <- function(hpi_obj,
-                           pred_data,
+                           pred_df,
                            k=10,
                            seed=1,
                            ...){
@@ -24,9 +24,9 @@ calcKFoldError <- function(hpi_obj,
     stop()
   }
 
-  if (!any('data.frame' %in% class(pred_data)) ||
-      !any(class(pred_data) %in% c('rt', 'hed'))){
-    message('"pred_data" argument must be a data.frame with additional class of ',
+  if (!any('data.frame' %in% class(pred_df)) ||
+      !any(class(pred_df) %in% c('rt', 'hed'))){
+    message('"pred_df" argument must be a data.frame with additional class of ',
             ' "rt" or "hed"')
     stop()
   }
@@ -55,7 +55,7 @@ calcKFoldError <- function(hpi_obj,
   k_data <- purrr::map(.x=k_folds,
                        .f=createKFoldData,
                        full_data=hpi_obj$data,
-                       pred_data=pred_data)
+                       pred_df=pred_df)
 
   # Extract training and scoring into their own lists
   k_train <- purrr::map(.x=k_data,
@@ -95,7 +95,7 @@ calcKFoldError <- function(hpi_obj,
 #' @usage Lorem Ipsum...
 #' @param score_ids Vector of row ids to be included in scoring data
 #' @param full_data Complete dataset of this model type
-#' @param pred_data Data to be used for prediction
+#' @param pred_df Data to be used for prediction
 #' @return list
 #' \item{train} Training data
 #' \item{score} Scoring data
@@ -107,18 +107,18 @@ calcKFoldError <- function(hpi_obj,
 
 createKFoldData <- function(score_ids,
                             full_data,
-                            pred_data){
-  UseMethod("createKFoldData", pred_data)
+                            pred_df){
+  UseMethod("createKFoldData", pred_df)
 }
 
 #' @export
 createKFoldData.rt <- function(score_ids,
                                full_data,
-                               pred_data){
+                               pred_df){
 
   train_df <- full_data[-score_ids, ]
   score_df <- matchKFold(train_df,
-                         pred_data)
+                         pred_df)
   list(train=train_df,
        score=score_df)
 }
@@ -127,7 +127,7 @@ createKFoldData.rt <- function(score_ids,
 #' @description Makes specific selections of scoring data (Generic Method)
 #' @usage Lorem Ipsum...
 #' @param train_df Data.frame of training data
-#' @param pred_data Data to be used for prediction
+#' @param pred_df Data to be used for prediction
 #' @return list
 #' \item{train} Training data
 #' \item{score} Scoring data
@@ -138,7 +138,7 @@ createKFoldData.rt <- function(score_ids,
 #' @export
 
 matchKFold <- function(train_df,
-                       pred_data){
+                       pred_df){
 
   UseMethod("matchKFold")
 
@@ -146,22 +146,22 @@ matchKFold <- function(train_df,
 
 #' @export
 matchKFold.rt <- function(train_df,
-                          pred_data){
+                          pred_df){
 
-  score_df <- pred_data[!paste0(pred_data$sale_id1, "_", pred_data$sale_id2) %in%
-                          paste0(train_df$sale_id1, "_", train_df$sale_id2), ]
+  score_df <- pred_df[!paste0(pred_df$trans_id1, "_", pred_df$trans_id2) %in%
+                          paste0(train_df$trans_id1, "_", train_df$trans_id2), ]
   score_df
 
 }
 
 #' @export
 matchKFold.hed <- function(train_df,
-                           pred_data){
+                           pred_df){
 
   # Choose every other one
-  x1 <- which(!pred_data$sale_id1 %in% train_df$sale_id)[c(T,F)]
-  x2 <- which(!pred_data$sale_id2 %in% train_df$sale_id)[c(T,F)]
+  x1 <- which(!pred_df$trans_id1 %in% train_df$trans_id)[c(T,F)]
+  x2 <- which(!pred_df$trans_id2 %in% train_df$trans_id)[c(T,F)]
 
-  pred_data[unique(c(x1, x2)), ]
+  pred_df[unique(c(x1, x2)), ]
 
 }

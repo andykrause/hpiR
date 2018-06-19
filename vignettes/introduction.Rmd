@@ -660,7 +660,7 @@ As we see from the plots of the indexes above and from the volatility numbers, t
 
 Like the `calcVolatility()`, `smoothIndex()` can take object from three levels of results and can be done **in_place** such that the smoothed indexes are added to the larger object.  A distinct name can be given to the smoothed index with the **in_place_name** argument (default is **"smoothed"**")
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
 
      # Standard Input (ts object)
      index_smooth <- smoothIndex(index = hed_hpi$index$index,
@@ -684,219 +684,258 @@ Like the `calcVolatility()`, `smoothIndex()` can take object from three levels o
      
 ```
 
-<!-- #### Index Series -->
+#### Index Series
 
-<!-- Two other aspects or metrics of house price indexes are revision and accuracy.  Revision refers to how much original estimate change over time as new data is accumulated (new transactions occur).  Accuracy refers to how class to the actual market the index values are.  Both concepts are described more fully below.  What both metric require is a series of indexes.   -->
+Two other aspects or metrics of house price indexes are revision and accuracy.  Revision refers to how much original index values change over time as new data is accumulated (new transactions occur).  Accuracy refers to how close to the actual market the index values are.  Both concepts are described more fully below.  What both metric require is a series of indexes.
 
-<!-- A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 13, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13, up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc.  -->
+A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such that the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 12, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13; on up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc.
 
-<!-- The `calcIndexSeries()` will create these series.  The `hpi_obj` argument must be a full `hpi` object (created with one of the index wrappers). `train_period` sets how many periods to use for initial training (length of the shortest period). The `max_period` argument will control the end period to estimate a series up to (defaults to the original length of the index in the `hpi` object.). The `name_prefix` argument will give a name to each of the indexes of the series (followed by the index #).   -->
+The `createSeries()` function will create these series.  The **hpi_obj** argument must be a full **hpi** object (created with one of the index wrappers). **train_period** sets how many periods to use for initial training (length of the shortest period). The **max_period** argument (default is the entire length of existing index) will control the end period to estimate a series up to (defaults to the original length of the index in the **hpi** object.). The **name_prefix** argument will give a name to each of the indexes of the series (followed by the index #), but is not required (default is NULL or no naming).
 
-<!-- By default, the `calcIndexSeries` function will return just an index series (a series of `ts` objects); however, if you'd like to add the series to a full `hpi` object us `in_place = TRUE`.  The name in the full `hpi` object defaults to `series` but can be changed with the `in_place_name` argument.   -->
+By default, the `createSeries()` function will return just an index series, an object of class **hpiseries** (a series of **hpiindex** objects); however, if you'd like to add the series to a full **hpi** object use **"in_place = TRUE"**`.  The name in the full **hpi** object defaults to **"series"** but can be changed with the **in_place_name** argument.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE}  -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--    # Just create a series from 24 to 30 -->
-<!--    hed_series <- calcIndexSeries(hpi_obj = hed_hpi, -->
-<!--                                  train_period = 24, -->
-<!--                                  max_period = 30) -->
+   # Just create a series from 24 to 30
+   hed_series <- createSeries(hpi_obj = hed_hpi,
+                              train_period = 24,
+                              max_period = 30)
 
-<!--    # Create a series of full length, add to 'hpi' object, give it a name -->
-<!--    rs_hpi <- calcIndexSeries(hpi_obj = rs_hpi, -->
-<!--                            train_period = 24, -->
-<!--                            max_period = 48, -->
-<!--                            name_prefix = 'rs_series_', -->
-<!--                            in_place = TRUE, -->
-<!--                            in_place_name = 'series_24_to_48') -->
+   class(hed_series)
+   class(hed_series[[1]])
+   class(hed_series[[1]]$index)
 
-<!--    # Check name -->
-<!--    names(rs_hpi$series_24_to_48[1]) -->
+   # Create a series of full length, add to 'hpi' object, give it a name
+   rt_hpi <- createSeries(hpi_obj = rt_hpi,
+                          train_period = 24,
+                          max_period = 48,
+                          name_prefix = 'rs_series_',
+                          in_place = TRUE,
+                          in_place_name = 'series_24_to_48')
 
-<!-- ``` -->
+   # Check name
+   names(rt_hpi$series_24_to_48[1])
 
-<!-- A series can be plotted with the `plot.hpiseries()` method. -->
+   
+   class(rt_hpi)
+   class(rt_hpi$series_24_to_48)
+   class(rt_hpi$series_24_to_48[[1]])
+   class(rt_hpi$series_24_to_48[[1]]$index)
+ 
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE}  -->
+A series can be plotted with the `plot.hpiseries()` method.
 
-<!--   plot(rs_hpi$series_24_to_48) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-<!-- ``` -->
+  plot(rt_hpi$series_24_to_48)
 
-<!-- #### Revision -->
+```
 
-<!-- The red line in the plot shows the final index (period 48) after all of the transactions have been considered. The various grey lines show the index value at that period for each of non-final estimated series (24 through 47).  In this instance, as if often the case with repeat sales models, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.  -->
+#### Revision
 
-<!-- Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile.  -->
+The red line in the plot shows the final index (period 48) after all of the transactions have been considered. The various grey lines show the index value at that period for each of non-final estimated series (24 through 47).  In this instance, as if often the case with repeat sales models, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
 
-<!-- The second calculation simply averages all revisions across all periods to provide a single value of the average revision for the index series. -->
+Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile.
 
-<!-- We can plot the revisions with the `plot.indexrevision()` method to show the average revision by time period.  -->
+The second calculation simply averages all revisions across all periods to provide a single value of the average and median revision for the index series.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--   hed_rev <- calcRevision(series_obj = hed_series) -->
-<!--   rs_rev <- calcRevision(series_obj = rs_hpi$series_24_to_48) -->
+  hed_rev <- calcRevision(series_obj = hed_series)
+  class(hed_rev)  
 
-<!--   plot(hed_rev) -->
-<!--   plot(rs_rev) -->
+  rt_rev <- calcRevision(series_obj = rt_hpi$series_24_to_48)
+  class(rt_rev)  
 
-<!-- ``` -->
+```
 
-<!-- The revision can be pulled from an existing `hpi` object, so long as the `series_name` argument (default == `series`) matches the name of the series object that you added to the `hpi` object using  added directly to a full `hpi` object by using the `in_place` argument.  If so, it will default to being named `rev`, which can be changed by the `in_place_name` argument.    -->
+We can plot the revisions with the `plot.hpirevision()` method to show the average revision by time period. The **measure** argument (default = **"median"**) determines whether median or mean revisions will be shown. 
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
+  
+  plot(hed_rev)
 
-<!--   # Pull from an 'hpi' object -->
-<!--   hed_rev <- calcRevision(series_obj = rs_hpi, -->
-<!--                           series_name = 'series_24_to_48') # an hpi object -->
-<!--   class(hed_rev) -->
+```
 
-<!--   # Add to an hpi object -->
-<!--   rs_hpi <- calcRevision(series_obj = rs_hpi, -->
-<!--                        series_name = 'series_24_to_48', -->
-<!--                        in_place = TRUE, -->
-<!--                        in_place_name = 'rev_24_to_48') -->
-<!--   class(rs_hpi) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-<!-- ``` -->
+  plot(rt_rev, measure = 'mean')
 
-<!-- #### Predictive Ability -->
+```
 
-<!-- Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting. -->
+The revision can be pulled from an existing **hpi** object, so long as the `series_name` argument (default == `series`) matches the name of the series object that you added to the `hpi` object using  added directly to a full `hpi` object by using the `in_place` argument.  If so, it will default to being named `rev`, which can be changed by the `in_place_name` argument.
 
-<!-- The `calcAccuracy()` function requires a full `hpi` object as its main argument.  `test_type` defines the manner of testing accuracy; at the moment the only working options is `rs` which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  `test_method` sets the manner in which the test is employed, **insample**, **kfold**, or **forecast**.  If the `hpi_obj` does not match the `test_type` (in all cases `rs` for now), then you must supply the `rs` sales data in the `index_data` argument.   -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+  # Pull from an 'hpi' object
+  rt_rev <- calcRevision(series_obj = rt_hpi,
+                          series_name = 'series_24_to_48') # an hpi object
+  class(rt_rev)
 
-<!--     rs_is_error <- calcAccuracy(hpi_obj = rs_hpi, -->
-<!--                                 test_type = 'rs', -->
-<!--                                 test_method = 'insample') -->
+  # Add to an hpi object
+  rt_hpi <- calcRevision(series_obj = rt_hpi,
+                         series_name = 'series_24_to_48',
+                         in_place = TRUE,
+                         in_place_name = 'rev_24_to_48')
+  class(rt_hpi)
+  class(rt_hpi$rev_24_to_48)
+  
+```
 
-<!-- ``` -->
+#### Predictive Ability
 
-<!-- The `calcAccuracy()` function returns a data.frame with the actual (repeat) sale price compared to the one predicted by the index.  The returned object is of class 'indexerrors' and 'data.frame'.   -->
+Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
 
-<!-- As with the other analytical functions, the results of the error calculations can be added to the `hpi_obj` by returning them in place (**in_place == TRUE**).  A name (default = 'errors') may also be given.  -->
+The `calcAccuracy()` function requires a full **hpi** object as its main argument.  **test_type** defines the manner of testing accuracy; at the moment the only working options is **"rt"** which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  **test_method** sets the manner in which the test is employed, **"insample"**, **"kfold"**, or **"forecast"**.  If the "hpi_obj"" does not match the **"test_type"** (in all cases **"rt"** for now), then you must supply the **"rs"**" sales data in the **pred_df**index_data` argument.
 
-<!-- *Note that the prediction data is trimmed due to the fact that the  -->
+The `calcAccuracy()` function returns a data.frame with the actual (repeat) sale price compared to the one predicted by the index.  The returned object is of class 'indexerrors' and 'data.frame'.  A **test_method** attribute indicates the type of accuracy test performed. 
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--     # Returns an error object in place -->
-<!--     hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                           test_type = 'rs', -->
-<!--                           test_method = 'insample', -->
-<!--                           index_data = rs_hpi$data, -->
-<!--                           in_place = TRUE, -->
-<!--                           in_place_name = 'is_errors') -->
+    rt_is_error <- calcAccuracy(hpi_obj = rt_hpi,
+                                test_type = 'rt',
+                                test_method = 'insample')
 
-<!--     # Check results -->
-<!--     class(rs_is_error) -->
-<!--     class(hed_hpi$is_errors) -->
+   class(rt_is_error)
+   attr(rt_is_error, 'test_method')
 
-<!-- ``` -->
+```
 
-<!-- To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.   -->
+As with the other analytical functions, the results of the error calculations can be added to the **hpi_obj** by returning them in place (**in_place == TRUE**).  A name (**"default = 'errors'"**") may also be given.
 
-<!-- Two addition arguments are availabile here: 1) "k" - the number of folds to make (default = 10); and 2) "seed" a value to the control the random sampling (default = 1).  -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+    # Returns an error object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'insample',
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'is_errors')
 
-<!--   rs_kf_error <- calcAccuracy(hpi_obj = rs_hpi, -->
-<!--                               test_type = 'rs', -->
-<!--                               test_method = 'kfold') -->
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$is_errors)
 
-<!-- ``` -->
+```
 
-<!-- We can also return these in place. -->
+To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+Two addition arguments are availabile here: 1) **"k"** - the number of folds to make (default = 10); and 2) **"seed"** a value to the control the random sampling (default = 1).
 
-<!--     # Returns an error object in place -->
-<!--     hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                           test_type = 'rs', -->
-<!--                           test_method = 'kfold', -->
-<!--                           k = 10, -->
-<!--                           seed = 1, -->
-<!--                           index_data = rs_hpi$data, -->
-<!--                           in_place = TRUE, -->
-<!--                           in_place_name = 'kf_errors') -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--     # Check results -->
-<!--     class(rs_kf_error) -->
-<!--     class(hed_hpi$kf_errors) -->
+  rt_kf_error <- calcAccuracy(hpi_obj = rt_hpi,
+                              test_type = 'rt',
+                              test_method = 'kfold',
+                              k = 10,
+                              seed = 123)
+   class(rt_kf_error)
+   attr(rt_kf_error, 'test_method')
+   
+```
 
-<!-- ``` -->
+We can also return these in place.
 
-<!-- A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?" -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- This method does require that the `hpi_obj` have a series object in it.  If the `hpi_obj` passed directly to it does not, it will estimate one.  If the `hpi_obj` does have one, the `series_name` argument should be used to indicate the name of this series (if it isn't the default of 'series') -->
+    # Returns an error object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'kfold',
+                            k = 10,
+                            seed = 1,
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'kf_errors')
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$kf_errors)
 
-<!--   rs_fc_error <- calcAccuracy(hpi_obj = rs_hpi, -->
-<!--                               test_type = 'rs', -->
-<!--                               test_method = 'forecast') -->
+```
 
-<!-- ``` -->
+A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"
 
-<!-- It can also be returned in place from an `hpi_obj` with an existing series.  -->
+This method does require that the **hpi_obj** have a series object in it.  If the **hpi_obj** passed directly to it does not, it will estimate one.  If the **hpi_obj** does have one, the **series_name** argument should be used to indicate the name of this series (if it isn't the default of **"series"**")
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, warning=FALSE}
 
-<!--   # Estimating the series 'on the fly' -->
-<!--   hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                         test_type = 'rs', -->
-<!--                         test_method = 'forecast', -->
-<!--                         index_data = rs_hpi$data, -->
-<!--                         series_name = 'series', -->
-<!--                         in_place=TRUE, -->
-<!--                         in_place_name = 'fc_errors') -->
+  rt_fc_error <- calcAccuracy(hpi_obj = rt_hpi,
+                              test_type = 'rt',
+                              test_method = 'forecast')
+  class(rt_fc_error)
+  attr(rt_fc_error, 'test_method')
 
-<!--   # Check results -->
-<!--   class(rs_fc_error) -->
-<!--   class(hed_hpi$fc_errors) -->
+```
 
-<!-- ``` -->
+It can also be returned in place from an **hpi_obj** with an existing series.
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!-- <!--   plot(hed_error) --> -->
-<!-- <!--   plot(rs_error) --> -->
+  # Estimating the series 'on the fly'
+  hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                          test_type = 'rt',
+                          test_method = 'forecast',
+                          pred_df = rt_hpi$data,
+                          series_name = 'series',
+                          in_place=TRUE,
+                          in_place_name = 'fc_errors')
 
-<!-- We can then compare the summary statistics of the errors, which seem to suggest that the hedonic price modeling approach is slighly more accurate than the repeat sales model. -->
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$fc_errors)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```
 
-<!--   error_df <- data.frame(rsi = round(as.numeric(summary(abs(rs_is_error$pred_error))), 3), -->
-<!--                          rsk = round(as.numeric(summary(abs(rs_kf_error$pred_error))), 3), -->
-<!--                          rsf = round(as.numeric(summary(abs(rs_fc_error$pred_error))), 3), -->
-<!--                          hi= round(as.numeric(summary(abs( -->
-<!--                            hed_hpi$is_errors$pred_error))), 3), -->
-<!--                          hk = round(as.numeric(summary(abs( -->
-<!--                            hed_hpi$kf_errors$pred_error))), 3), -->
-<!--                          hf = round(as.numeric(summary(abs( -->
-<!--                            hed_hpi$fc_errors$pred_error))), 3)) -->
+A plotting method (`plot.indexerrors()`) shows a number of diagnostics about the errors. 
 
-<!--   names(error_df) <- c('RS - In Sample', 'RS - KFold', 'RS - Forecast',  -->
-<!--                        'Hed - In Sample', 'Hed - KFold', 'Hed - Forecast') -->
-<!--   rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max') -->
-<!--   knitr::kable(error_df) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=5.5}
 
-<!-- ``` -->
+ plot(hed_hpi$fc_errors)
 
-<!-- ### Blending and Smoothing Indexes -->
+```  
 
-<!-- It may be advantageous to blend indexes. The `blendIndexes` function will blend any number of identical length indexes.  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list. -->
+We can then compare the summary statistics of the errors, which seem to suggest that the hedonic price modeling approach is slighly more accurate than the repeat sales model.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-<!--   blend_index <- blendIndexes(index_list = list(rs_hpi$index, -->
-<!--                                                 hed_hpi$index), -->
-<!--                               weights=c(.6, .4)) -->
+  error_df <- data.frame(rti = round(as.numeric(summary(abs(rt_is_error$pred_error))), 3),
+                         rtk = round(as.numeric(summary(abs(rt_kf_error$pred_error))), 3),
+                         rtf = round(as.numeric(summary(abs(rt_fc_error$pred_error))), 3),
+                         hi= round(as.numeric(summary(abs(
+                           hed_hpi$is_errors$pred_error))), 3),
+                         hk = round(as.numeric(summary(abs(
+                           hed_hpi$kf_errors$pred_error))), 3),
+                         hf = round(as.numeric(summary(abs(
+                           hed_hpi$fc_errors$pred_error))), 3),
+                        stringsAsFactors=FALSE)
 
-<!--   plot(blend_index) -->
+  names(error_df) <- c('RT - In Sample', 'RT - KFold', 'RT - Forecast',
+                       'Hed - In Sample', 'Hed - KFold', 'Hed - Forecast')
+  rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')
+  knitr::kable(error_df)
 
-<!-- ``` -->
+```
+
+### Blending Indexes
+
+It may be advantageous to blend ndexes. The `blendIndexes()` function will blend any number of identical length indexes (objects of class **hpiindex**).  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
+
+  blend_index <- blendIndexes(index_list = list(rt_hpi$index,
+                                                hed_hpi$index),
+                              weights=c(.6, .4))
+
+  plot(blend_index)
+  class(plot(blend_index))
+
+```
 
 
 

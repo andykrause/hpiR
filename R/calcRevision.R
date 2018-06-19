@@ -35,8 +35,8 @@ calcRevision <- function(series_obj,
 
   # Check class
   if (is.null(series) || !'hpiseries' %in% class(series)){
-    message('"series_obj" must be of class "hpi_series" or a full "hpi" object with ',
-            ' a "series_obj" object')
+    message('"series_obj" must be of class "hpiseries" or a full "hpi" object with ',
+            ' an "hpiseries" object in it and identified by the "series_name" argument')
     stop()
   }
 
@@ -44,7 +44,8 @@ calcRevision <- function(series_obj,
   index_diffs <- purrr::map(.x=2:length(series),
                             index_obj=series,
                             .f=function(x, index_obj){
-                              index_obj[[x]][-length(index_obj[[x]])] - index_obj[[x - 1]]
+                              (index_obj[[x]]$index[-length(index_obj[[x]]$index)] -
+                                 index_obj[[x - 1]]$index)
                              })
 
   # Extract differences and place into lists by period (essentially transposing list)
@@ -54,7 +55,7 @@ calcRevision <- function(series_obj,
   period_diffs <- purrr::map(.x = period_diffs,
                              .f = function(x) rev(unlist(x)))
 
-  # Calculate the means
+  # Calculate the mean and medians
   period_means <- unlist(purrr::map(.x=period_diffs,
                                     .f=mean))
   period_medians <- unlist(purrr::map(.x=period_diffs,
@@ -64,10 +65,11 @@ calcRevision <- function(series_obj,
   # Package and Return
   rev_obj <- structure(list(period = data.frame(period=1:length(period_means),
                                                 mean=period_means,
-                                                median=period_medians),
+                                                median=period_medians,
+                                                stringsAsFactors=FALSE),
                             median = median(unlist(period_means)),
                             mean = mean(unlist(period_means))),
-                       class='indexrevision')
+                       class='hpirevision')
 
   if (in_place && 'hpi' %in% class(series_obj)){
     series_obj[[in_place_name]] <- rev_obj

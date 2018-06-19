@@ -5,7 +5,7 @@
 #' @param series_name default = 'series'; name of the object in hpi_obj containing the series
 #' @param test_method default = 'insample'; also 'kfold' or 'forecast'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
-#' @param index_data = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
 #' @param ... Additional Arguments
 #' @return hpimodel object
 #' @section Further Details:
@@ -16,7 +16,7 @@
 calcAccuracy <- function(hpi_obj,
                          test_method = 'insample',
                          test_type = 'rt',
-                         index_data = NULL,
+                         pred_df = NULL,
                          series_name = 'series',
                          in_place = FALSE,
                          in_place_name = 'acc',
@@ -42,15 +42,15 @@ calcAccuracy <- function(hpi_obj,
 
   # Check agreement between test_type and hpi_obj
   if (!test_type %in% class(hpi_obj$data)){
-    if (is.null(index_data) ||
-          class(index_data) != test_type){
+    if (is.null(pred_df) ||
+          class(pred_df) != test_type){
        message('When "test_type" (', test_type, ') does not match the "hpi" object model ',
-               'type (', class(hpi_obj$data)[1], ') you must provide an "index_data" object ',
+               'type (', class(hpi_obj$data)[1], ') you must provide an "pred_df" object ',
                'of the necessary class, in this case: ', test_type)
        stop()
      }
   } else {
-    index_data <- hpi_obj$data
+    pred_df <- hpi_obj$data
   }
 
   # Check for series
@@ -74,23 +74,23 @@ calcAccuracy <- function(hpi_obj,
       }
 
       # Estimate Series
-      hpi_obj <- calcIndexSeries(hpi_obj = hpi_obj,
-                                 train_period = train_period,
-                                 max_period = max_period,
-                                 in_place = TRUE,
-                                 in_place_name = series_name)
+      hpi_obj <- createSeries(hpi_obj = hpi_obj,
+                              train_period = train_period,
+                              max_period = max_period,
+                              in_place = TRUE,
+                              in_place_name = series_name)
 
     } # Ends if(is.null(hpi....))
   } # Ends if(test_method == 'series')
 
-  # Clip pred_data to size of index
+  # Clip pred_df to size of index
   if (test_type == 'rt') {
-    if (max(index_data$period_2) > max(hpi_obj$index$period)){
+    if (max(pred_df$period_2) > max(hpi_obj$index$period)){
       message("Trimming prediction date down to period ", max(hpi_obj$index$period),
               " and before.")
-      index_data <- index_data %>%
+      pred_df <- pred_df %>%
         dplyr::filter(period_2 <= max(hpi_obj$index$period))
-      class(index_data) <- c('rt', 'data.frame')
+      class(pred_df) <- c('rt', 'data.frame')
     }
   }
 
@@ -98,7 +98,7 @@ calcAccuracy <- function(hpi_obj,
 
   # In sample
   if (test_method == 'insample'){
-    error_obj <- calcInSampleError(pred_data = index_data,
+    error_obj <- calcInSampleError(pred_df = pred_df,
                                    index = hpi_obj$index$index,
                                    ...)
   }
@@ -106,14 +106,14 @@ calcAccuracy <- function(hpi_obj,
   # kfold
   if (test_method == 'kfold'){
     error_obj <- calcKFoldError(hpi_obj = hpi_obj,
-                                pred_data = index_data,
+                                pred_df = pred_df,
                                 ...)
   }
 
   # Forecast
   if (test_method == 'forecast'){
     error_obj <- calcForecastError(is_obj = hpi_obj[[series_name]],
-                                   pred_data = index_data,
+                                   pred_df = pred_df,
                                    ...)
   }
 

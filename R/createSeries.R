@@ -1,4 +1,4 @@
-#' @title calcIndexSeries
+#' @title createSeries
 #' @description Calculates a series of indexes, each one period longer than the previous
 #' @usage Lorem Ipsum...
 #' @param hpi_obj Object of class 'hpi'
@@ -15,13 +15,13 @@
 #' a <- 1
 #' @export
 
-calcIndexSeries <- function(hpi_obj,
-                            train_period,
-                            max_period=NULL,
-                            name_prefix=NULL,
-                            in_place = FALSE,
-                            in_place_name = 'series',
-                            ...){
+createSeries <- function(hpi_obj,
+                         train_period,
+                         max_period=NULL,
+                         name_prefix=NULL,
+                         in_place = FALSE,
+                         in_place_name = 'series',
+                         ...){
 
   # Check for proper class
   if (!'hpi' %in% class(hpi_obj)){
@@ -78,7 +78,7 @@ calcIndexSeries <- function(hpi_obj,
 
   # Convert models to indexes
   is_series <- purrr::map(.x=is_models,
-                          .f=function(x) modelToIndex(x)$index)
+                          .f=modelToIndex)
 
   # Name
   if (!is.null(name_prefix)) names(is_series) <- paste0(name_prefix, time_range)

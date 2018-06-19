@@ -2,7 +2,7 @@
 #' @description Estimate out-of-sample index errors using a forecast method
 #' @usage Lorem Ipsum...
 #' @param is_obj Object of class 'hpiseries'
-#' @param pred_data Set of sales to be used for predicitive quality of index
+#' @param pred_df Set of sales to be used for predicitive quality of index
 #' @param return_indexes Defaul = FALSE; return the forecasted indexes
 #' @param ... Additional Arguments
 #' @return x
@@ -13,7 +13,7 @@
 #' @export
 
 calcForecastError <- function(is_obj,
-                              pred_data,
+                              pred_df,
                               return_indexes=FALSE,
                               ...){
 
@@ -24,29 +24,29 @@ calcForecastError <- function(is_obj,
     stop()
   }
 
-  if (!any('data.frame' %in% class(pred_data)) ||
-      !any(class(pred_data) %in% c('rt', 'hed'))){
-    message('"pred_data" argument must be a data.frame with additional class of ',
+  if (!any('data.frame' %in% class(pred_df)) ||
+      !any(class(pred_df) %in% c('rt', 'hed'))){
+    message('"pred_df" argument must be a data.frame with additional class of ',
             ' "rt" or "hed"')
     stop()
   }
 
   # Set start and end
-  start <- end(is_obj[[1]])[1] + 1
-  end <- end(is_obj[[length(is_obj)]])[1]
+  start <- end(is_obj[[1]]$index)[1] + 1
+  end <- end(is_obj[[length(is_obj)]]$index)[1]
   time_range <- start:end
 
   # Get data
   fc_preddata <- purrr::map(.x = time_range,
-                            hpi_df = pred_data,
+                            hpi_df = pred_df,
                             train=FALSE,
                             .f=buildForecastIDs)
 
   # Predict value
   fc_forecasts <- purrr::map(.x=is_obj[-length(is_obj)],
                              .f=function(x){
-                                 new_x <- forecast(ets(x, model='ANN'), h=1)
-                                 ts(c(x, new_x$mean), start=start(x),
+                                 new_x <- forecast(ets(x$index, model='ANN'), h=1)
+                                 ts(c(x$index, new_x$mean), start=start(x),
                                     frequency=frequency(x))
                               }
                            )
@@ -54,9 +54,9 @@ calcForecastError <- function(is_obj,
   # Iterate through score and calc errors
   fc_error <- purrr::map2(.x=fc_preddata,
                           .y=fc_forecasts,
-                          pred_data=pred_data,
-                          .f=function(x, y, pred_data){
-                            calcInSampleError(pred_data=pred_data[x, ],
+                          pred_df=pred_df,
+                          .f=function(x, y, pred_df){
+                            calcInSampleError(pred_df=pred_df[x, ],
                                               index=y)
                             })
 

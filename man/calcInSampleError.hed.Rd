@@ -7,7 +7,7 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{pred_data}{Set of sales against which to test predictions}
+\item{pred_df}{Set of sales against which to test predictions}
 
 \item{index}{Index to be tested for accuracy}
 

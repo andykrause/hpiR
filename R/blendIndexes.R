@@ -52,10 +52,15 @@ blendIndexes <- function(index_list,
   # Sum and convert to TS
   index_blend <- Reduce('+', index_w)
 
-  attr(index_blend, 'class') <- c('indexblend', 'hpiindex', class(index_blend))
-  attr(index_blend, 'ancestry') <- list(weights=weights,
-                                        parents=index_list)
   # Return Values
-  index_blend
+  structure(list(name = index_list[[1]]$name,
+                 numeric = index_list[[1]]$numeric,
+                 period = index_list[[1]]$period,
+                 index = index_blend,
+                 imputed = lapply(index_list, function(x) x$imputed),
+                 blended = TRUE,
+                 weights=weights,
+                 parents=lapply(index_list, function(x) x$index)),
+            class = c('hpiblend', 'hpiindex'))
 
 }

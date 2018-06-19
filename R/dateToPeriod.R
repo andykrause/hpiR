@@ -106,7 +106,8 @@ dateToPeriod <- function(trans_df,
     trans_df$date_period <- year_period + 1
     period_table <- data.frame(names = unique(lubridate::year(date_span)),
                                values = unique(lubridate::year(date_span)),
-                               periods = unique(lubridate::year(date_span)))
+                               periods = unique(lubridate::year(date_span)),
+                               stringsAsFactors=FALSE)
   }
 
   # Create Month or Quarter
@@ -126,7 +127,8 @@ dateToPeriod <- function(trans_df,
         period = unique((12 * (lubridate::year(date_span) -
                          min(lubridate::year(date_span))) +
                           (lubridate::month(date_span, label=FALSE) -
-                            lubridate::month(min_date)) + 1)))
+                            lubridate::month(min_date)) + 1)),
+        stringsAsFactors=FALSE)
     }
 
     if (periodicity == 'quarterly'){
@@ -140,7 +142,8 @@ dateToPeriod <- function(trans_df,
         numeric = unique((lubridate::year(date_span) +
                         (lubridate::quarter(date_span) - 1) / 4)),
         period = seq(1:length(unique(paste0(lubridate::year(date_span), '-Q',
-                                     lubridate::quarter(date_span))))))
+                                     lubridate::quarter(date_span))))),
+        stringsAsFactors=FALSE)
     }
   }
 
@@ -177,7 +180,8 @@ dateToPeriod <- function(trans_df,
       period = unique((52 * (lubridate::year(date_span) -
                          min(lubridate::year(date_span))) +
                           ((lubridate::week(date_span) -
-                            lubridate::week(min_date))) + 1)))
+                            lubridate::week(min_date))) + 1)),
+      stringsAsFactors=FALSE)
   }
 
   # Check for missing periods %
