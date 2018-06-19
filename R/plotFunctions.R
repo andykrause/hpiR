@@ -202,7 +202,8 @@ plot.hpirevision <- function(rev_obj,
 #' @title plot.indexerrors
 #' @export
 
-plot.indexerrors <- function(error_obj){
+plot.indexerrors <- function(error_obj,
+                             return_plot = FALSE){
 
   # Get period count
   p_cnt <- length(unique(error_obj$pred_period))
@@ -251,9 +252,17 @@ plot.indexerrors <- function(error_obj){
     xlab('Error') +
     ylab('Density of Error')
 
-  # Plot all four
-  gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
-                                    nrow = 2)
+  # Combine
+  full_plot <- gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
+                                       nrow = 2)
+
+  # Plot
+  plot(full_plot)
+
+  # Return or plot
+  if (return_plot){
+    return(structure(full_plot, class = c('errorplot', class(full_plot))))
+  }
 
 }
 
@@ -318,17 +327,8 @@ plot.indexvolatility <- function(vol_obj){
     geom_hline(yintercept = vol_obj$mean, size=1, linetype = 2, color='gray50') +
     geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
 
-  # Plot Original Index
-  orig_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
-                        index=as.numeric(attr(vol_obj, 'orig')),
-                        stringsAsFactors=FALSE)
-  orig_plot <- ggplot(orig_df, aes(x=time_period, y=index)) +
-    geom_line(color='black', size=2) +
-    ylab('Index Value\n') +
-    xlab('\nTime Period')
-
-  # Combine
-  gridExtra::grid.arrange(vol_plot, orig_plot, nrow = 2)
+  # Return Plot
+  structure(vol_plot, class = c('volatilityplot', class(vol_plot)))
 
 }
 

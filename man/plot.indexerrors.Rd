@@ -4,5 +4,5 @@
 \alias{plot.indexerrors}
 \title{plot.indexerrors}
 \usage{
-plot.indexerrors(error_obj)
+plot.indexerrors(error_obj, return_plot = FALSE)
 }

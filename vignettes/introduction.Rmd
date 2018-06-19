@@ -580,6 +580,7 @@ Plotting an **indexVolatility** object show the original index (bottom panel) an
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
   plot(index_vol)
+  class(plot(index_vol))
 
 ```
 
@@ -889,11 +890,13 @@ It can also be returned in place from an **hpi_obj** with an existing series.
 
 ```
 
-A plotting method (`plot.indexerrors()`) shows a number of diagnostics about the errors. 
+A plotting method (`plot.indexerrors()`) shows a number of diagnostics about the errors. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add **"return_plot = TRUE"** to the argument list.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=5.5}
 
  plot(hed_hpi$fc_errors)
+ plot_obj <- plot(hed_hpi$fc_errors, return_plot = TRUE)
+ class(plot_obj)
 
 ```  
 
