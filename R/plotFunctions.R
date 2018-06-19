@@ -30,12 +30,14 @@ plot.hpiindex <- function(index_obj,
 
   if (show_imputed){
 
-    hpi_data$imp <- ifelse(hpi_data$imp, 3, 0)
+    hpi_data$imp <- ifelse(hpi_data$imp, 1, 0)
 
     gg_obj <- gg_obj +
-      geom_point(data=hpi_data, aes(x=x, y=y,
-                                    color=as.factor(imp),
-                                    size=imp)) +
+      geom_point(data=hpi_data,
+                 aes(x=x, y=y,
+                     color=as.factor(imp),
+                     size=imp)) +
+      scale_color_manual(values=c('black', 'red')) +
       theme(legend.position="none")
   }
 

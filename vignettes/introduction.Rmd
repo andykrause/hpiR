@@ -216,6 +216,59 @@ A simple plot (with the `plot.hpiindex()` method) shows the results of this esti
 
 ```
 
+In situations where there are empty periods in the model obj (there was no or not enough data to estimate a particular period), the `modelToIndex()` will impute (using the `imputeTS` package) the missing periods.  For missing periods at the start of the index or before the first non-100 period, all periods are given a value of 100.  For missing internal periods (those with estimated periods both before and after) a stine interpolation is used and for those missing at the end a last observation carried forward (LOCF) is used.  The **imputed** slot in the **hpiindex** object will indicate which periods have been imputed. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Missing beginning
+  rt_model_imp <- rt_full
+  rt_model_imp$coefficients$coefficient[2:3] <- NA
+  rt_index_imp <- modelToIndex(rt_model_imp)
+  
+  rt_index_imp$index[1:4]
+  rt_index_imp$imputed[1:4]
+  
+```
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Missing internal
+  rt_model_imp <- rt_full
+  rt_model_imp$coefficients$coefficient[3:5] <- NA
+  rt_index_imp <- modelToIndex(rt_model_imp)
+  
+  rt_index_imp$index[1:6]
+  rt_index_imp$imputed[1:6]
+  
+```
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Missing end
+  rt_model_imp <- rt_full
+  rt_model_imp$coefficients$coefficient[82:84] <- NA
+  rt_index_imp <- modelToIndex(rt_model_imp)
+  
+  rt_index_imp$index[80:84]
+  rt_index_imp$imputed[80:84]
+  
+```
+
+The plot function can show the imputed periods as well. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rt_model_imp <- rt_full
+  rt_model_imp$coefficients$coefficient[c(4, 7, 23, 55, 78, 83)] <- NA
+  rt_index_imp <- modelToIndex(rt_model_imp)
+  
+  plot(rt_index_imp, show_imputed=TRUE)
+  
+```
+
+
+#### Wrapper Function
+
 A wrapper function, `rtIndex()`, will do all of the above taking it from a raw data.frame of transaction data through to the repeat transaction index creation and storing all results in a unified object of class **hpi**.
 
 There are three 'levels of entry' with the wrapper function.
@@ -936,9 +989,3 @@ It may be advantageous to blend ndexes. The `blendIndexes()` function will blend
   class(plot(blend_index))
 
 ```
-
-
-
-
-
-
