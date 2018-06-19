@@ -13,33 +13,29 @@
 #' a <- 1
 #' @export
 
-smoothIndex <- function(index,
+smoothIndex <- function(index_obj,
                         order=3,
                         in_place = FALSE,
                         in_place_name = 'smoothed',
                         ...){
 
-  ## Save index_obj for future returning
-  index_obj <- index
-
-  ## Strip from hpi or hpiindex objects
+  ## Strip from hpi objects
   if ('hpi' %in% class(index_obj)){
-    index <- index$index$index
+    hpi_obj <- index_obj
+    index_obj <- index_obj$index
+  } else {
+    if (in_place) message('In order to use "in_place" you must supply an object of ',
+                          'class "hpi" to "index_obj"')
   }
 
-  if ('hpiindex' %in% class(index_obj)){
-    index <- index$index
-  }
-
-  ## Check for classes
-  if (!'ts' %in% class(index)){
-    message('The "index" object must be of class "ts"')
+  if (!'hpiindex' %in% class(index_obj)){
+    message('The "index_obj" object must be of class "hpiindex"')
     stop()
   }
 
   # Check order
   if (all(class(order) %in% c('numeric', 'integer')) && !is.na(order) &&
-      order > 0 && order <= length(index) / 2){
+      order > 0 && order <= length(index_obj$index) / 2){
     order <- as.integer(round(order, 0))
   } else {
     message('"order" argument must be a positive integer less than half the length of ',
@@ -48,7 +44,7 @@ smoothIndex <- function(index,
   }
 
   # Create Smoothed index (retain existing)
-  s_index <- index
+  s_index <- index_obj$index
 
   # Smooth with moving average (Multiple orders are possible; done sequentially)
   for(o.i in order){
@@ -61,37 +57,48 @@ smoothIndex <- function(index,
 
   # Fill in low end NAs with original index
   na_low <- na_smooth[na_smooth < length(s_index) / 2]
-  s_index[na_low] <- index[na_low]
+  s_index[na_low] <- index_obj$index[na_low]
 
   # Fill in High end NAs with forecasted values (off of smoothed)
   na_high <- na_smooth[na_smooth >= length(s_index) / 2]
   high_fc <- forecast(ets(s_index[1:(na_high[1] - 1)], model='ANN'), h=length(na_high))
-  new_high <- (high_fc$mean + index[na_high]) / 2
+  new_high <- (high_fc$mean + index_obj$index[na_high]) / 2
   s_index[na_high] <- new_high
-
-  # Add Class and Attributes
-  class(s_index) <- c('indexsmooth', class(index))
-  attr(s_index, 'raw') <- index
-  attr(s_index, 'order') <- order
-
-  ## Return
 
   # If returing in place
   if (in_place){
 
-    if ('hpi' %in% class(index_obj)){
-      index_obj$index[[in_place_name]] <- s_index
-      return(index_obj)
+    if (in_place_name == 'is_smoothed'){
+      message('"is_smoothed" is a reserved name.',
+              'Please choose a different "in_place_name"')
+      stop()
     }
 
-    if ('hpiindex' %in% class(index_obj)){
-      index_obj[[in_place_name]] <- s_index
+    index_obj[[in_place_name]] <- s_index
+    index_obj$is_smoothed  <- TRUE
+    attr(index_obj[[in_place_name]], 'order') <- order
+
+    if (exists('hpi_obj')){
+      hpi_obj$index <- index_obj
+      return(hpi_obj)
+    } else {
       return(index_obj)
     }
   }
 
+  # Add Class and Attributes
+  sm_index <- index_obj[c('name', 'numeric', 'period', 'imputed')]
+  sm_index$index <- s_index
+  sm_index$original <- index_obj$index
+  sm_index$order <- order
+  sm_index$smoothed <- TRUE
+  class(sm_index) <- unique(c('indexsmooth', 'hpiindex'))
+
+  ## Return
+
+
   # If just returning result of smoothing
-  s_index
+  sm_index
 
 }
 

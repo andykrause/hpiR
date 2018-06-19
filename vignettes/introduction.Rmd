@@ -650,7 +650,8 @@ As we see from the plots of the indexes above and from the volatility numbers, t
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-  hed_smooth <- smoothIndex(hed_hpi, order = 5)
+  hed_smooth <- smoothIndex(index_obj = hed_hpi, 
+                            order = 5)
 
   class(hed_smooth)
   
@@ -662,26 +663,22 @@ Like the `calcVolatility()`, `smoothIndex()` can take object from three levels o
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
 
-     # Standard Input (ts object)
-     index_smooth <- smoothIndex(index = hed_hpi$index$index,
-                                 order = 3)
-     class(index_smooth)
-
-     # Hpi Index object
-     hed_hpi$index <- smoothIndex(index = hed_hpi$index,
-                                order = 4,
-                                in_place = TRUE)
-     class(hed_hpi$index)
-     names(hed_hpi$index)
-      
      # Full HPI Object
-     hed_hpi <- smoothIndex(index = hed_hpi,
+     hed_hpi <- smoothIndex(index_obj = hed_hpi,
                             order = 8,
                             in_place = TRUE,
                             in_place_name = 'sm8')
      class(hed_hpi)
      names(hed_hpi$index)
-     
+
+```
+
+The **in_place** smoothing can be plotted with the 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
+   
+   plot(hed_hpi$index, smooth='sm8')
+
 ```
 
 #### Index Series

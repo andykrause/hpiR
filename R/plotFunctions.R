@@ -13,6 +13,7 @@
 
 plot.hpiindex <- function(index_obj,
                           show_imputed=FALSE,
+                          smooth=NULL,
                           ...){
 
   ## Extract Data
@@ -36,6 +37,25 @@ plot.hpiindex <- function(index_obj,
                                     color=as.factor(imp),
                                     size=imp)) +
       theme(legend.position="none")
+  }
+
+  if (!is.null(smooth)){
+
+    if (smooth %in% names(index_obj)){
+
+      sm_data <- data.frame(x=index_obj$numeric,
+                             y=as.numeric(index_obj[[smooth]]),
+                             stringsAsFactors=FALSE)
+
+      gg_obj <- gg_obj +
+        geom_line(data=sm_data,
+                  aes(x=x, y=y),
+                  size=1,
+                  linetype=2,
+                  color='red')
+
+    }
+
   }
 
   # Return Values
@@ -69,21 +89,23 @@ plot.hpi <- function(hpi_obj,
 plot.indexsmooth <- function(s_index){
 
   # Extract Length
-  l <- length(s_index)
+  l <- length(s_index$index)
 
   # Build Data
   plot_data <- data.frame(period=rep(1:l, 2),
-                          index=c(s_index, attr(s_index, 'raw')),
+                          index=c(s_index$index, s_index$original),
                           type=c(rep('Smoothed ', l), rep('Raw Index   ', l)),
                           stringsAsFactors=FALSE)
 
   # Make Plbot
   smooth_plot <- ggplot(plot_data,
-                        aes(x=period, y=index, color=as.factor(type),
+                        aes(x=period, y=index,
+                            group = as.factor(type),
+                            color=as.factor(type),
                             size=as.factor(type))) +
     geom_line() +
     scale_color_manual(values=c('gray50', 'red')) +
-    scale_size_manual(values=c(1.2, 2.5)) +
+    scale_size_manual(values=c(1.2, 1.8)) +
     ylab('Index Value\n') +
     xlab('\nTime Period') +
     theme(legend.position='bottom',
@@ -107,9 +129,9 @@ plot.hpiblend <- function(b_index){
                            stringsAsFactors=FALSE)
 
  anc_data <- data.frame(period=rep(b_index$period, length(b_index$parents)),
-                         index=unlist(b_index$parents),
-                         name=as.character(paste0('Ancestor  :',
-                                sort(rep(1:length(b_index$parents),
+                        index=unlist(b_index$parents),
+                        name=as.character(paste0('Ancestor  :',
+                              sort(rep(1:length(b_index$parents),
                                          length(b_index$index))))),
                          type='a',
                         stringsAsFactors = FALSE)
@@ -117,9 +139,6 @@ plot.hpiblend <- function(b_index){
   plot_data <- rbind(index_data, anc_data)
 
   # Set colors and sizes
-  col_vals <- c('blue', rep('gray50', length(anc)))
-  size_vals <- c(1.5, rep(.5, length(anc)))
-
   col_vals <- c('gray50', 'blue')
   size_vals <- c(.5, 1.5)
 
@@ -233,9 +252,8 @@ plot.indexerrors <- function(error_obj){
     ylab('Density of Error')
 
   # Plot all four
-  structure(gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
-                                    nrow = 2),
-            class = c('errorplot', class(dens_mag)))
+  gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
+                                    nrow = 2)
 
 }
 
@@ -310,8 +328,7 @@ plot.indexvolatility <- function(vol_obj){
     xlab('\nTime Period')
 
   # Combine
-  structure(gridExtra::grid.arrange(vol_plot, orig_plot, nrow = 2),
-            class = c('volatilityplot', class(orig_plot)))
+  gridExtra::grid.arrange(vol_plot, orig_plot, nrow = 2)
 
 }
 

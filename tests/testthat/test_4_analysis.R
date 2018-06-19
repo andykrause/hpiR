@@ -128,18 +128,13 @@ context('smoothIndex()')
 
    test_that('smoothing Function works with a variety of inputs',{
 
-     # Standard Input (ts object)
-     expect_is(index_smooth <- smoothIndex(index = hed_index$index$index,
-                                           order = 3),
-               'indexsmooth')
-
      # Hpi Index object
-     expect_is(index_smooth <- smoothIndex(index = hed_index$index,
+     expect_is(index_smooth <- smoothIndex(index_obj = hed_index$index,
                                            order = 4),
                'indexsmooth')
 
      # Full HPI Object
-     expect_is(index_smooth <- smoothIndex(index = hed_index,
+     expect_is(index_smooth <- smoothIndex(index_obj = hed_index,
                                            order = 6),
                'indexsmooth')
 
@@ -148,36 +143,24 @@ context('smoothIndex()')
   test_that('Errors are given when index is bad',{
 
     # Non-sensical index
-    expect_error(index_smooth <- smoothIndex(index = 'abc',
+    expect_error(index_smooth <- smoothIndex(index_obj = 'abc',
                                              order = 3))
 
     # Negative Order
-    expect_error(index_smooth <- smoothIndex(index = hed_index,
+    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
                                              order = -3))
 
     # Char Window
-    expect_error(index_smooth <- smoothIndex(index = hed_index,
+    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
                                              order = 'x'))
 
     # NA Window
-    expect_error(index_smooth <- smoothIndex(index = hed_index,
+    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
                                              order = NA_integer_))
 
   })
 
   test_that('Returning in place works',{
-
-    # Standard Input (ts object)
-    expect_is(index_smooth <- smoothIndex(index = hed_index$index$index,
-                                          order = 3,
-                                          in_place = TRUE),
-              'indexsmooth')
-
-    # Add it to the Hpi Index object
-    expect_is(hed_index$index <- smoothIndex(index = hed_index$index,
-                                             order = 3,
-                                             in_place = TRUE),
-              'hpiindex')
 
     # Add it to the Full HPI Object (to the hpiindex object)
     expect_is(hed_index <- smoothIndex(index = hed_index,
@@ -189,9 +172,10 @@ context('smoothIndex()')
     expect_is(hed_index <- smoothIndex(index = hed_index,
                                        order = 3,
                                        in_place = TRUE,
-                                       in_place_name = 'xxx'),
+                                       in_place_name = 'sss'),
               'hpi')
-    expect_is(hed_index$index$xxx, 'indexsmooth')
+    expect_is(hed_index$index$sss, 'ts')
+    expect_true(hed_index$index$is_smoothed)
 
   })
 
