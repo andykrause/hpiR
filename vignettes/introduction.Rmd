@@ -112,9 +112,6 @@ We now have a dataset that includes a new field (**date_period**) indicating the
 
 Finally, there information on the minimum date, maximum date and the periodicity can also be found in the attributes of **hpi_df** objects. Any object of class **hpi_df** can be used in all future analyses.
 
-
-
-
 ### Repeat Transactions (Sales) Model
 
 We start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular methods to create a house price index. 
@@ -189,7 +186,7 @@ We can then convert those model results into an index with the `modelToIndex()` 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                      
-  rt_index <- modelToIndex(rt_model)
+  rt_index <- modelToIndex(model_obj = rt_model)
 
   class(rt_index)
 
@@ -199,7 +196,7 @@ If you want to limit the extent of the index (clip periods from the end of it) y
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                      
-  rt_short <- modelToIndex(rt_model,
+  rt_short <- modelToIndex(model_obj = rt_model,
                            max_period = 50)
 
   length(rt_short$index)
@@ -223,7 +220,7 @@ In situations where there are empty periods in the model obj (there was no or no
   # Missing beginning
   rt_model_imp <- rt_full
   rt_model_imp$coefficients$coefficient[2:3] <- NA
-  rt_index_imp <- modelToIndex(rt_model_imp)
+  rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
   rt_index_imp$index[1:4]
   rt_index_imp$imputed[1:4]
@@ -235,7 +232,7 @@ In situations where there are empty periods in the model obj (there was no or no
   # Missing internal
   rt_model_imp <- rt_full
   rt_model_imp$coefficients$coefficient[3:5] <- NA
-  rt_index_imp <- modelToIndex(rt_model_imp)
+  rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
   rt_index_imp$index[1:6]
   rt_index_imp$imputed[1:6]
@@ -247,7 +244,7 @@ In situations where there are empty periods in the model obj (there was no or no
   # Missing end
   rt_model_imp <- rt_full
   rt_model_imp$coefficients$coefficient[82:84] <- NA
-  rt_index_imp <- modelToIndex(rt_model_imp)
+  rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
   rt_index_imp$index[80:84]
   rt_index_imp$imputed[80:84]
@@ -260,7 +257,7 @@ The plot function can show the imputed periods as well.
 
   rt_model_imp <- rt_full
   rt_model_imp$coefficients$coefficient[c(4, 7, 23, 55, 78, 83)] <- NA
-  rt_index_imp <- modelToIndex(rt_model_imp)
+  rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
   plot(rt_index_imp, show_imputed=TRUE)
   
@@ -450,7 +447,7 @@ The output from `hpiModel()` can be converted to an index with the `modelToIndex
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  hed_index <- modelToIndex(hed_model)
+  hed_index <- modelToIndex(model_obj = hed_model)
 
   class(hed_index)
 
@@ -783,6 +780,31 @@ A series can be plotted with the `plot.hpiseries()` method.
 
 ```
 
+A wrapper function, `smoothSeries()` will smooth an entire series of indexes.  It can be returned to a named object, or "in place" as an object in a larger "hpi" collection. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Standard Return
+  rt_sseries <- smoothSeries(series_obj = rt_hpi$series_24_to_48,
+                             order = 5)
+  class(rt_sseries)
+  length(rt_sseries)
+  class(rt_sseries[[1]])
+
+  # Return in place
+  rt_hpi <- smoothSeries(series_obj = rt_hpi,
+                         series_name = 'series_24_to_48',
+                         order = 5,
+                         in_place = TRUE,
+                         in_place_name = 'sseries')
+  class(rt_hpi)
+  class(rt_hpi$sseries)
+  length(rt_hpi$sseries)
+  class(rt_hpi$sseries[[1]])
+
+```
+
+
 #### Revision
 
 The red line in the plot shows the final index (period 48) after all of the transactions have been considered. The various grey lines show the index value at that period for each of non-final estimated series (24 through 47).  In this instance, as if often the case with repeat sales models, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
@@ -821,7 +843,7 @@ The revision can be pulled from an existing **hpi** object, so long as the `seri
 
   # Pull from an 'hpi' object
   rt_rev <- calcRevision(series_obj = rt_hpi,
-                          series_name = 'series_24_to_48') # an hpi object
+                         series_name = 'series_24_to_48') # an hpi object
   class(rt_rev)
 
   # Add to an hpi object

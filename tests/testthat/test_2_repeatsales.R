@@ -507,7 +507,7 @@ context('hpiModel.rt(): after rtModel()')
   })
 
   test_that('modelToIndex fails with a NULL',{
-    expect_true(is.null(modelToIndex(hpimodel = 'abc')))
+    expect_true(is.null(modelToIndex(model_obj = 'abc')))
   })
 
   test_that('modelToIndex imputes properly, BASE model, LogDEP',{

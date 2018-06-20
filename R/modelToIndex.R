@@ -1,6 +1,6 @@
 #' @title modelToIndex
 #' @description Converts model results into a house price index
-#' @param hpimodel Model results object
+#' @param model_obj Model results object
 #' @param max_period Maximum number of periods that should have been estimated.
 #' @param ... Additional arguments
 #' @return rs model object
@@ -12,13 +12,13 @@
 
 ### Convert model estimates into zpiindex object -----------------------------------------
 
-modelToIndex <- function(hpimodel,
-                         max_period=max(hpimodel$coefficients$time),
+modelToIndex <- function(model_obj,
+                         max_period=max(model_obj$coefficients$time),
                          ...){
 
   ## Check for proper class
-  if (!'hpimodel' %in% class(hpimodel)){
-    message('"hpimodel" object must be of class "hpimodel"')
+  if (!'hpimodel' %in% class(model_obj)){
+    message('"model_obj" object must be of class "hpimodel"')
     return(NULL)
   }
 
@@ -28,16 +28,16 @@ modelToIndex <- function(hpimodel,
     return(NULL)
   }
 
-  if (max_period > max(hpimodel$coefficients$time)){
+  if (max_period > max(model_obj$coefficients$time)){
     message('"max_period" cannot be greater than maximum period in the estimated model.',
             ' Setting to maximum of estimated model')
-    max_period <- max(hpimodel$coefficients$time)
+    max_period <- max(model_obj$coefficients$time)
   }
 
   ## Deal with imputations
 
   # Extract coefficients
-  coef_df <- hpimodel$coefficients[1:max_period, ]
+  coef_df <- model_obj$coefficients[1:max_period, ]
 
   # Set up imputation identification vector
   is_imputed <- rep(0, length(coef_df$coef))
@@ -74,12 +74,12 @@ modelToIndex <- function(hpimodel,
   }
 
   # Convert estimate to an index value
-  if (hpimodel$log_dep){
+  if (model_obj$log_dep){
     estimate <- c(exp(coef_df$coefficient) - 1)
     index_value <- ((estimate + 1) * 100)[1:max_period]
   } else {
-    estimate <- ((coef_df$coefficient + hpimodel$base_price) /
-                    hpimodel$base_price)
+    estimate <- ((coef_df$coefficient + model_obj$base_price) /
+                    model_obj$base_price)
     index_value <- ((estimate) * 100)[1:max_period]
   }
 
@@ -89,9 +89,9 @@ modelToIndex <- function(hpimodel,
               end=max_period)
 
   # Set as classed list and return
-  structure(list(name = hpimodel$periods$name[1:max_period],
-                 numeric = hpimodel$periods$numeric[1:max_period],
-                 period = hpimodel$periods$period[1:max_period],
+  structure(list(name = model_obj$periods$name[1:max_period],
+                 numeric = model_obj$periods$numeric[1:max_period],
+                 period = model_obj$periods$period[1:max_period],
                  index = index,
                  imputed = is_imputed[1:max_period]),
             class = 'hpiindex')
