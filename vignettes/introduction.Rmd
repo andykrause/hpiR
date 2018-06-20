@@ -1015,7 +1015,7 @@ It may be advantageous to blend ndexes. The `blendIndexes()` function will blend
 ## Class Structures
 
 | Type | Class | Inherits | Created by | Description |
-| :----- | :----- | :-----: | :-----: | :------ | 
+| :---- | :----- | :------: | :-----: | :-------------------------------------- | 
 | **Master** | | | | |
 | | `hpi` | ~many | *****Index()** + others | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
 ||||||
@@ -1041,13 +1041,13 @@ It may be advantageous to blend ndexes. The `blendIndexes()` function will blend
 | | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
 | **Visualization** | | | | |
-| | `indexplot` | `gg', 'ggplot' | **plot.hpiindex()** | Plotting object for an index |
-| | `smoothplot` | `gg', 'ggplot' | **plot.indexsmooth()** | Plotting object for a smoothed index |
-| | `blendplot` | `gg', 'ggplot' | **plot.hpiblend()** | Plotting object for a blended index |
-| | `revisionplot` | `gg', 'ggplot' | **plot.hpirevision()** | Plotting object for revision statistics |
-| | `seriesplot` | `gg', 'ggplot' | **plot.hpiseries()** | Plotting object for an index series |
-| | `volatiltyplot` | `gg', 'ggplot' | **plot.hpiindex()** | Plotting object for an index |
-| | `errorplot` | `gtable', 'gTree', 'grob', 'gDesc' | **plot.indexerrors()** | Plotting object for a error results|
+| | `indexplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+| | `smoothplot` | `gg`, `ggplot` | **plot.indexsmooth()** | Plotting object for a smoothed index |
+| | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
+| | `revisionplot` | `gg`, `ggplot` | **plot.hpirevision()** | Plotting object for revision statistics |
+| | `seriesplot` | `gg`, `ggplot` | **plot.hpiseries()** | Plotting object for an index series |
+| | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+| | `errorplot` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
 
 
 
