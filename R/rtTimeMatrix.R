@@ -21,7 +21,7 @@ rtTimeMatrix <- function(rt_df
   if(class(rt_df)[1] != 'rt'){
     message('The rt_df object you have supplied is not of class rt. You can create ',
             'an rt object with the rtCreateTrans() function.')
-    return(NULL)
+    stop()
   }
 
   # Extract start/end/diff

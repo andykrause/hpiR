@@ -26,13 +26,13 @@ hedModel <- function(estimator,
   # hed_df object
   if (!'hed' %in% class(hed_df)){
     message('\nIncorrect class for "hed_df" object.  Must be of class "hed"')
-    return(NULL)
+    stop()
   }
 
   # Check that class is available
   if (!paste0('hedModel.', class(estimator)) %in% methods(hedModel)){
     message('\nInvalid estimator type: "', class(estimator), '" method not available.')
-    return(NULL)
+    stop()
   }
 
   # Check for sparseness

@@ -27,25 +27,25 @@ rtModel <- function(rt_df,
   # rt_df object
   if (!'rt' %in% class(rt_df)){
     message('\nIncorrect class for "rt_df" object.  Must be of class "rt"')
-    return(NULL)
+    stop()
   }
 
   # timematrix
   if (!'timematrix' %in% class(time_matrix)){
     message('\nIncorrect class for "time_matrix" object.  Must be of class "timematrix"')
-    return(NULL)
+    stop()
   }
 
   # Agreement between lengths of rt_df, time_matrix and price_diff
   if (length(unique(c(nrow(rt_df), nrow(time_matrix), length(price_diff)))) > 1){
     message('\n# of Observations of "rt_df", "time_matrix" and "price_diff" do not match')
-    return(NULL)
+    stop()
   }
 
   # Check that class is available
   if (!paste0('rtModel.', class(estimator)) %in% methods(rtModel)){
     message('\nInvalid estimator type: "', class(estimator), '" method not available.')
-    return(NULL)
+    stop()
   }
 
   # Check for sparseness

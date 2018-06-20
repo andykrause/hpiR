@@ -4,10 +4,10 @@
 \alias{modelToIndex}
 \title{modelToIndex}
 \usage{
-modelToIndex(hpimodel, max_period = max(hpimodel$coefficients$time), ...)
+modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 }
 \arguments{
-\item{hpimodel}{Model results object}
+\item{model_obj}{Model results object}
 
 \item{max_period}{Maximum number of periods that should have been estimated.}
 

@@ -324,11 +324,10 @@ context('hedModel()')
   test_that('Check for errors with bad arguments',{
 
     # Base: Return warning if wrong rs_df
-    expect_is(hed_model <- hedModel(hed_df = sales,
-                                    estimator=structure('base', class='base'),
-                                    hed_spec = as.formula(paste0('log(price) ~ ',
-                                                          'as.factor(baths) + tot_sf'))),
-              'NULL')
+    expect_error(hed_model <- hedModel(hed_df = sales,
+                                       estimator=structure('base', class='base'),
+                                       hed_spec = as.formula(paste0('log(price) ~ ',
+                                                          'as.factor(baths) + tot_sf'))))
 
     # Weighted: Bad spec
     expect_error(hed_model <- hedModel(hed_df = hed_df,
@@ -337,11 +336,10 @@ context('hedModel()')
                                        estimator=structure('weighted', class='weighted')))
 
     # Bad estimator class
-    expect_is(hed_model <- hedModel(hed_df = hed_df,
-                                    hed_spec = as.formula(paste0('log(price) ~ ',
-                                                                 'as.factor(baths) + tot_sf')),
-                                    estimator=structure('fobust', class='fobust')),
-              'NULL')
+    expect_error(hed_model <- hedModel(hed_df = hed_df,
+                                       hed_spec = as.formula(paste0('log(price) ~ ',
+                                                            'as.factor(baths) + tot_sf')),
+                                       estimator=structure('fobust', class='fobust')))
 
   })
 

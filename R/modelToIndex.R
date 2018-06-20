@@ -19,13 +19,13 @@ modelToIndex <- function(model_obj,
   ## Check for proper class
   if (!'hpimodel' %in% class(model_obj)){
     message('"model_obj" object must be of class "hpimodel"')
-    return(NULL)
+    stop()
   }
 
   ## Check max period
   if (!any(class(max_period) %in% c('integer', 'numeric'))){
     message('"max_period" argument must be numeric/integer')
-    return(NULL)
+    stop()
   }
 
   if (max_period > max(model_obj$coefficients$time)){

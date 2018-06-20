@@ -71,7 +71,7 @@ hpiModel.rt <- function(hpi_df,
   # If any NA, NaN, or Inf/-Inf
   if (any(!is.finite(price_diff))){
     message('NA, negative, zero or non-finite values in the price field')
-    return(NULL)
+    stop()
   }
 
   # Extract base period mean price
@@ -98,7 +98,7 @@ hpiModel.rt <- function(hpi_df,
   # Check for successful model estimation
   if (class(rt_mod) != 'rtmod'){
     message('Model estimator was unsuccessful')
-    return(NULL)
+    stop()
   }
 
   # Remove qr to keep model obj small
@@ -165,7 +165,7 @@ hpiModel.hed <- function(hpi_df,
   if (!is.null(hed_spec)){
     if (class(hed_spec) != 'formula'){
       message('"hed_spec" argument must be of class "formula"')
-      return(NULL)
+      stop()
     } else {
       hed_spec <- update(hed_spec, ~ . +as.factor(date_period))
     }
@@ -173,7 +173,7 @@ hpiModel.hed <- function(hpi_df,
 
     if (is.null(dep_var) | is.null(ind_var)){
       message('"dep_var" and "ind_var" must be supplied')
-      return(NULL)
+      stop()
     }
 
     if(log_dep){

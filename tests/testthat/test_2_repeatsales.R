@@ -177,7 +177,7 @@ context('rtTimeMatrix()')
     expect_is(time_matrix <- rtTimeMatrix(rt_df), 'timematrix')
 
     # Returns a NULL without
-    expect_is(time_matrix <- rtTimeMatrix(sales_df), 'NULL')
+    expect_error(time_matrix <- rtTimeMatrix(sales_df))
 
     # Returns correct number of rows
     expect_true(nrow(rtTimeMatrix(rt_df[1:2000,])) == 2000)
@@ -218,30 +218,30 @@ context('hpiModel.rt(): Prior to rtModel() call')
 
     # Zero Price
     rt_dfx$price_1[1] <- 0
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
-                                   estimator = 'base',
-                                   log_dep = TRUE), 'NULL')
+    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+                                      estimator = 'base',
+                                      log_dep = TRUE))
     expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
                                    estimator = 'base',
                                    log_dep = FALSE), 'hpimodel')
 
     # NA
     rt_dfx$price_1[1] <- NA_integer_
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
-                                   estimator = 'base',
-                                   log_dep = TRUE), 'NULL')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
-                                   estimator = 'base',
-                                   log_dep = FALSE), 'NULL')
+    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+                                      estimator = 'base',
+                                      log_dep = TRUE))
+    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+                                      estimator = 'base',
+                                      log_dep = FALSE))
 
     # Infinity
     rt_dfx$price_1[1] <- Inf
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
-                                   estimator = 'base',
-                                   log_dep = TRUE), 'NULL')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
-                                   estimator = 'base',
-                                   log_dep = FALSE), 'NULL')
+    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+                                      estimator = 'base',
+                                      log_dep = TRUE))
+    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+                                      estimator = 'base',
+                                      log_dep = FALSE))
 
   })
 
@@ -275,32 +275,28 @@ context('rtModel()')
   test_that('Check for errort with bad arguments',{
 
     # Base: Return warning if wrong rt_df
-    expect_is(rt_model <- rtModel(rt_df = sales,
-                                  time_matrix = time_matrix,
-                                  price_diff = price_diff_l,
-                                  estimator=structure('base', class='base')),
-              'NULL')
+    expect_error(rt_model <- rtModel(rt_df = sales,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff_l,
+                                     estimator=structure('base', class='base')))
 
     # Robust: Return warning if wrong time_matrix
-    expect_is(rt_model <- rtModel(rt_df = rt_df,
-                                  time_matrix = sales,
-                                  price_diff = price_diff_l,
-                                  estimator=structure('robust', class='robust')),
-              'NULL')
+    expect_error(rt_model <- rtModel(rt_df = rt_df,
+                                     time_matrix = sales,
+                                     price_diff = price_diff_l,
+                                     estimator=structure('robust', class='robust')))
 
     # Weighted: Dimensions of data do not match
-    expect_is(rt_model <- rtModel(rt_df = rt_df,
-                                  time_matrix = time_matrix,
-                                  price_diff = price_diff_l[-1],
-                                  estimator=structure('weighted', class='weighted')),
-              'NULL')
+    expect_error(rt_model <- rtModel(rt_df = rt_df,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff_l[-1],
+                                     estimator=structure('weighted', class='weighted')))
 
     # Bad estimator class
-    expect_is(rt_model <- rtModel(rt_df = rt_df,
-                                  time_matrix = time_matrix,
-                                  price_diff = price_diff,
-                                  estimator=structure('base', class='xxx')),
-              'NULL')
+    expect_error(rt_model <- rtModel(rt_df = rt_df,
+                                     time_matrix = time_matrix,
+                                     price_diff = price_diff,
+                                     estimator=structure('base', class='xxx')))
 
   })
 
@@ -506,8 +502,8 @@ context('hpiModel.rt(): after rtModel()')
                                     trim_model=FALSE)), 'hpiindex')
   })
 
-  test_that('modelToIndex fails with a NULL',{
-    expect_true(is.null(modelToIndex(model_obj = 'abc')))
+  test_that('modelToIndex fails with an error',{
+    expect_error(modelToIndex(model_obj = 'abc'))
   })
 
   test_that('modelToIndex imputes properly, BASE model, LogDEP',{
@@ -747,7 +743,7 @@ context('rtindex() wrapper')
 
   })
 
-  test_that("Bad arguments generate NULLs: Full Case",{
+  test_that("Bad arguments generate Errors: Full Case",{
 
     expect_error(rtIndex(trans_df = sales,
                          date = 'sale_price',
