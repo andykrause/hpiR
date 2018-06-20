@@ -7,11 +7,11 @@
 Lorem Ipsum...
 }
 \arguments{
-\item{series}{Series to be smoothed}
-
 \item{order}{Number of nearby period to smooth with}
 
 \item{...}{Additional Arguments}
+
+\item{series}{Series to be smoothed}
 }
 \value{
 a list of objects ts and 'smooth_index` object with smoothed index

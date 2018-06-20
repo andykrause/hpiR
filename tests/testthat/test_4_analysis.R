@@ -179,7 +179,6 @@ context('smoothIndex()')
 
   })
 
-
 ### Series Functions ----------------------------------------------------------------
 
 context('createSeries()')
@@ -256,40 +255,59 @@ context('createSeries()')
 
   })
 
-context('buildForecastIDs()')
+context('smoothSeries()')
 
-  test_that('buildForecastIDs works', {
+  # Create Series
+  rt_series <- createSeries(hpi_obj = rt_index, train_period = 24)
 
-    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_df = hed_index$data,
-                                             train = TRUE)) == 11863)
+  test_that('smoothSeries() works as intended', {
 
-    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_df = rt_index$data,
-                                             train = TRUE)) == 287)
+    # Standard Return
+    expect_is(rt_sseries <- smoothSeries(series_obj = rt_series,
+                                         order = 5),
+              'hpiseries')
+    expect_is(rt_sseries[[1]], 'indexsmooth')
+    expect_is(rt_sseries[[1]], 'hpiindex')
+    expect_true(length(rt_sseries) == length(rt_series))
 
-    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_df = hed_index$data,
-                                             train = FALSE)) == 437)
+    # Return in place
+    rt_index <- createSeries(hpi_obj = rt_index,
+                             train_period = 24,
+                             max_period = 50,
+                             in_place = TRUE)
 
-    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_df = rt_index$data,
-                                             train = FALSE)) == 21)
+    expect_is(rt_index <- smoothSeries(series_obj = rt_index,
+                                       order = 5,
+                                       series_name = 'series',
+                                       in_place=TRUE),
+              'hpi')
+    expect_is(rt_index$series, 'hpiseries')
+    expect_is(rt_index$smooth_series[[1]], 'indexsmooth')
+    expect_is(rt_index$series[[1]], 'hpiindex')
 
   })
 
-  test_that('buildForecastIDs() does not work with bad arguments',{
+  test_that('smoothSeries() breaks with bad arguments.',{
 
-    # Bad Data
-    expect_error(is_data <- buildForecastIDs(time_cut = 33,
-                                             hpi_df = hed_index,
-                                             train = TRUE))
+    # Bad series obj
+    expect_error(rt_sseries <- smoothSeries(series_obj = rt_series[[1]],
+                                            order = 5))
 
-    # Bad time cut
-    expect_error(is_data <- buildForecastIDs(time_cut = -1,
-                                             hpi_df = hed_index$data,
-                                             train = TRUE))
+    # Bad order
+    expect_error(rt_sseries <- smoothSeries(series_obj = rt_series,
+                                            order = -1))
 
+    # Create series
+    rt_index <- createSeries(hpi_obj = rt_index,
+                             train_period = 24,
+                             max_period = 50,
+                             in_place = TRUE)
+
+    # Bad series name
+    expect_error(rt_sseries <- smoothSeries(series_obj = rt_index,
+                                            order = 3,
+                                            series_name = 'xxx',
+                                            in_place = TRUE))
   })
 
 ### Revision Functions --------------------------------------------------------------
@@ -479,6 +497,42 @@ context('calcKFoldError()')
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                             pred_df = rt_index$data[0, ]),
               'indexerrors')
+
+  })
+
+  context('buildForecastIDs()')
+
+  test_that('buildForecastIDs works', {
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                                   hpi_df = hed_index$data,
+                                                   train = TRUE)) == 11863)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                                   hpi_df = rt_index$data,
+                                                   train = TRUE)) == 287)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                                   hpi_df = hed_index$data,
+                                                   train = FALSE)) == 437)
+
+    expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
+                                                   hpi_df = rt_index$data,
+                                                   train = FALSE)) == 21)
+
+  })
+
+  test_that('buildForecastIDs() does not work with bad arguments',{
+
+    # Bad Data
+    expect_error(is_data <- buildForecastIDs(time_cut = 33,
+                                             hpi_df = hed_index,
+                                             train = TRUE))
+
+    # Bad time cut
+    expect_error(is_data <- buildForecastIDs(time_cut = -1,
+                                             hpi_df = hed_index$data,
+                                             train = TRUE))
 
   })
 

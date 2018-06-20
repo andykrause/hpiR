@@ -115,18 +115,43 @@ smoothIndex <- function(index_obj,
 #' a <- 1
 #' @export
 
-
-## TODO figure out passing ... to map()
-
-smoothSeries <- function(series,
+smoothSeries <- function(series_obj,
                          order=3,
+                         series_name = 'series',
+                         in_place = FALSE,
+                         in_place_name = 'smooth_series',
                          ...){
 
-  s_series <- purrr::map(.x=series,
+  # If an hpi object
+  if ('hpi' %in% class(series_obj)){
+    hpi_obj <- series_obj
+    series_obj <- hpi_obj[[series_name]]
+    if (is.null(series_obj) || !'hpiseries' %in% class(series_obj)){
+      message('When supplying an object of class "hpi" to the "series_obj" you must ',
+              ' supply a valid "series_name" (one that points to an "hpiseries" object).')
+      stop()
+    }
+  }
+
+  # Bad series_obj
+  if (!'hpiseries' %in% class(series_obj)){
+    message('"series_obj" must be of class "hpiseries" (or of "hpi")')
+    stop()
+  }
+
+  # Apply smoothing to all indexes
+  s_series <- purrr::map(.x=series_obj,
                          order=order,
                          .f=smoothIndex)
   class(s_series) <- 'hpiseries'
 
+  # Return in place
+  if (in_place && exists('hpi_obj')){
+    hpi_obj[[in_place_name]] <- s_series
+    return(hpi_obj)
+  }
+
+  # Return standard
   s_series
 
 }
