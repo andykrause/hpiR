@@ -4,10 +4,10 @@
 \alias{buildForecastIDs}
 \title{buildForecastIDs}
 \usage{
-Lorem Ipsum...
+buildForecastIDs(time_cut, hpi_df, ...)
 }
 \arguments{
-\item{time_cut}{Period of forecast}
+\item{time_cut}{Period after which to cut off data}
 
 \item{hpi_df}{Data to be converted to training or scoring}
 
@@ -16,16 +16,19 @@ Lorem Ipsum...
 \item{...}{Additional Arguments}
 }
 \value{
-data.frame of training or scoring observations
+vector of row_ids indicating inclusion in the forecasting data as either the training
+set (train = TRUE) or the scoring set (train = FALSE)
 }
 \description{
 Create training or scoring data for the forecast error calculations
 }
 \section{Further Details}{
 
-Lorem Ispum...
+This function is rarely (if ever) used directly.  Most often called by `calcForecastError()`
 }
 
 \examples{
-a <- 1
+\dontrun{
+buildForecastIDs(time_cut, hpi_df, ...)
+}
 }

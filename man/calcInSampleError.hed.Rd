@@ -2,25 +2,7 @@
 % Please edit documentation in R/calcInSampleError.R
 \name{calcInSampleError.hed}
 \alias{calcInSampleError.hed}
-\title{calcInSampleError.hed}
+\title{calcInSampleError.rt}
 \usage{
-Lorem Ipsum...
+\method{calcInSampleError}{hed}(pred_df, index, ...)
 }
-\arguments{
-\item{pred_df}{Set of sales against which to test predictions}
-
-\item{index}{Index to be tested for accuracy}
-
-\item{...}{Additional Arguments}
-}
-\value{
-data.frame of property id, predicted price and error
-}
-\description{
-Estimate the predictive error of an index by relative improvment in a hedonic price model
-}
-\section{Further Details}{
-
-Note that ensure prediction types (holdout vs forecast) are done outside of this function
-}
-

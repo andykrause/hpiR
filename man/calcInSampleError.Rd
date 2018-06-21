@@ -4,27 +4,33 @@
 \alias{calcInSampleError}
 \title{calcInSampleError}
 \usage{
-Lorem Ipsum...
+calcInSampleError(pred_df, index)
 }
 \arguments{
 \item{pred_df}{Set of sales against which to test predictions}
 
-\item{index}{Index to be tested for accuracy}
+\item{index}{Index (of class) to be tested for accuracy}
 
 \item{...}{Additional Arguments}
 }
 \value{
-hpimodel object
+object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+\item{prop_id}
+\item{pred_price}
+\item{pred_error}
+\item{pred_period}
 }
 \description{
-Estimate the predictive error of an index. Generic method.
+Estimate the predictive error of an index via an in-sample approach. Generic method.
 }
 \section{Further Details}{
 
-Note that ensure prediction types (holdout vs forecast) are done outside of this function
+In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
 }
 
 \examples{
-calcHPIError(pred_df=rs_data,
-             index=rs_index)
+\dontrun{
+index_error <- calcInSampleError(pred_df = rt_index$data,
+                                 index = rt_index$index$index)
+}
 }

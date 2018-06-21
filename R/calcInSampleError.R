@@ -1,16 +1,22 @@
 #' @title calcInSampleError
-#' @description Estimate the predictive error of an index. Generic method.
-#' @usage Lorem Ipsum...
+#' @description Estimate the predictive error of an index via an in-sample approach. Generic method.
+#' @usage calcInSampleError(pred_df, index)
 #' @param pred_df Set of sales against which to test predictions
-#' @param index Index to be tested for accuracy
+#' @param index Index (of class) to be tested for accuracy
 #' @param ... Additional Arguments
-#' @return hpimodel object
+#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' \item{prop_id}
+#' \item{pred_price}
+#' \item{pred_error}
+#' \item{pred_period}
 #' @section Further Details:
-#' Note that ensure prediction types (holdout vs forecast) are done outside of this function
+#' In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
 #' @examples
-#' calcHPIError(pred_df=rs_data,
-#'              index=rs_index)
-#' @export
+#' \dontrun{
+#' index_error <- calcInSampleError(pred_df = rt_index$data,
+#'                                  index = rt_index$index$index)
+#'}
+#'@export
 
 calcInSampleError <- function(pred_df,
                               index,
@@ -33,17 +39,6 @@ calcInSampleError <- function(pred_df,
 }
 
 #' @title calcInSampleError.rt
-#' @description Estimate the predictive error of an index by predicting second sale price of a repeat sale
-#' @usage Lorem Ipsum...
-#' @param pred_df Set of sales against which to test predictions
-#' @param index Index to be tested for accuracy
-#' @param ... Additional Arguments
-#' @return data.frame of property id, predicted price and error
-#' @section Further Details:
-#' Note that ensure prediction types (holdout vs forecast) are done outside of this function
-#' @examples
-#' calcHPIError(pred_df=rs_data,
-#'              index=rs_index)
 #' @export
 
 calcInSampleError.rt <- function(pred_df,
@@ -77,15 +72,7 @@ calcInSampleError.rt <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.hed
-#' @description Estimate the predictive error of an index by relative improvment in a hedonic price model
-#' @usage Lorem Ipsum...
-#' @param pred_df Set of sales against which to test predictions
-#' @param index Index to be tested for accuracy
-#' @param ... Additional Arguments
-#' @return data.frame of property id, predicted price and error
-#' @section Further Details:
-#' Note that ensure prediction types (holdout vs forecast) are done outside of this function
+#' @title calcInSampleError.rt
 #' @export
 
 calcInSampleError.hed <- function(pred_df,

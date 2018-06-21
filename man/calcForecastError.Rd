@@ -4,28 +4,39 @@
 \alias{calcForecastError}
 \title{calcForecastError}
 \usage{
-Lorem Ipsum...
+hed_error <- calcForecastError(is_obj = hed_series, pred_df = rt_data)
 }
 \arguments{
 \item{is_obj}{Object of class 'hpiseries'}
 
 \item{pred_df}{Set of sales to be used for predicitive quality of index}
 
-\item{return_indexes}{Defaul = FALSE; return the forecasted indexes}
+\item{return_forecasts}{Default = FALSE; return the forecasted indexes}
 
 \item{...}{Additional Arguments}
 }
 \value{
-x
+object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+\item{prop_id}
+\item{pred_price}
+\item{pred_error}
+\item{pred_period}
 }
 \description{
 Estimate out-of-sample index errors using a forecast method
 }
 \section{Further Details}{
 
-If 'max_period' is left NULL, then it will forecast up to the end of the data
+If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
+in the 'forecasts` attribute of the `indexerrors` object. (attr(error_obj, 'forecasts')
+
+For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
+inheriting from `hpi_df`
 }
 
 \examples{
-a <- 1
+\dontrun{
+index_error <- calcForecastError(is_obj = hed_index$series,
+                                 pred_df = rt_index$data)
+}
 }

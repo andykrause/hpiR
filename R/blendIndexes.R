@@ -1,14 +1,25 @@
 #' @title blendIndexes
 #' @description Blend together two or more indexes
-#' @usage Lorem Ipsum...
-#' @param index_list A list of identical length indexes
-#' @param weights default=NULL; A vector of weights
+#' @usage blendIndexes(index_list, weights)
+#' @param index_list A list of identical length indexes (objects of class `hpiindex`)
+#' @param weights default=NULL; A vector of weights the same length as the `index_list`
 #' @param ... Additional Arguments
-#' @return a ts object with blended index
+#' @return an `hpiblend` (S3) object, inheriting from `hpiindex` (S3) object containing:
+#' \item{name: vector of period names}
+#' \item{numeric: vector of period absolute values}
+#' \item{period: vector of period relative values}
+#' \item{index: `ts` object of the blended index values}
+#' \item{imputed: list with a vector of imputation for each of parent indexes}
+#' \item{blended: logical indicating that this is a blended index}
+#' \item{weights: vector of the weights used to blend}
+#' \item{parents: list of `ts` objects of the parent indexes}
 #' @section Further Details:
-#' Leaving weights to be NULL results in a 1/n weighting.
-#' @examples
-#' a <- 1
+#' Leaving "weights" to be NULL results in a 1/n weighting.
+#'@examples
+#'\dontrun{
+#'blend_index <- blendIndexes(index_list = list(rt_index, hed_index),
+#'                            weights = c(.6, .4))
+#'}
 #' @export
 
 blendIndexes <- function(index_list,

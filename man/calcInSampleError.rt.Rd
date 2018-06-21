@@ -4,27 +4,5 @@
 \alias{calcInSampleError.rt}
 \title{calcInSampleError.rt}
 \usage{
-Lorem Ipsum...
-}
-\arguments{
-\item{pred_df}{Set of sales against which to test predictions}
-
-\item{index}{Index to be tested for accuracy}
-
-\item{...}{Additional Arguments}
-}
-\value{
-data.frame of property id, predicted price and error
-}
-\description{
-Estimate the predictive error of an index by predicting second sale price of a repeat sale
-}
-\section{Further Details}{
-
-Note that ensure prediction types (holdout vs forecast) are done outside of this function
-}
-
-\examples{
-calcHPIError(pred_df=rs_data,
-             index=rs_index)
+\method{calcInSampleError}{rt}(pred_df, index, ...)
 }

@@ -1,16 +1,30 @@
 #' @title calcAccuracy
-#' @description Estimate index Accuracy using one of a number of measures
-#' @usage Lorem Ipsum...
+#' @description Estimate index Accuracy using one of a variety of approaches
+#' @usage calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in_place_name, ...)
 #' @param hpi_obj Object of class 'hpi'
-#' @param series_name default = 'series'; name of the object in hpi_obj containing the series
 #' @param test_method default = 'insample'; also 'kfold' or 'forecast'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
 #' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param series_name default = 'series'; name of the object in hpi_obj containing the series
+#' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
+#' @param in_place_name default = 'acc'; Name for returning in place
 #' @param ... Additional Arguments
-#' @return hpimodel object
+#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' \item{prop_id}
+#' \item{pred_price}
+#' \item{pred_error}
+#' \item{pred_period}
 #' @section Further Details:
-#' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair (ABS)
-#' 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.  (REL)
+#' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
+#' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
+#' (This approach is not ready yet).
+#' `series_name` only needs to be supplied when running a test_method of type "forecast"
+#'@examples
+#'\dontrun{
+#' index_error <- calcAccuracy(hpi_obj = rt_hpi,
+#'                             test_type = 'rt',
+#'                             test_method = 'insample')
+#'}
 #' @export
 
 calcAccuracy <- function(hpi_obj,
