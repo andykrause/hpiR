@@ -20,7 +20,7 @@ test_that("Basic dateToPeriod() functionality is working", {
   sales_df <- dateToPeriod(trans_df = sales,
                            date = 'sale_date',
                            periodicity = 'monthly')
-  expect_is(sales_df, 'hpi_df')
+  expect_is(sales_df, 'hpidata')
   expect_true(!is.null(attr(sales_df, 'period_table')))
   expect_true(digest::digest(sales_df$date_period) ==
                 'ad2b649a8470371eff6f18cfdad93c92')
@@ -40,7 +40,7 @@ test_that('Handling of sales_df and date field is working', {
   # With a POSIXt field
   sales$date_p <- lubridate::as_datetime(sales$sale_date, tz='UTC')
   expect_is(dateToPeriod(trans_df=sales,
-                         date = 'date_p'), 'hpi_df')
+                         date = 'date_p'), 'hpidata')
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'date_p')$date_period[1] == 4)
 })
@@ -51,43 +51,43 @@ test_that('Handling of periodicity field is working', {
   # Annual
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='annual'), 'hpi_df')
+                         periodicity='annual'), 'hpidata')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='yearly'), 'hpi_df')
+                         periodicity='yearly'), 'hpidata')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='A'), 'hpi_df')
+                         periodicity='A'), 'hpidata')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='Y'), 'hpi_df')
+                         periodicity='Y'), 'hpidata')
 
   # Quarterly
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='Q'), 'hpi_df')
+                         periodicity='Q'), 'hpidata')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='quarterly'), 'hpi_df')
+                         periodicity='quarterly'), 'hpidata')
 
   # Monthly
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='M'), 'hpi_df')
+                         periodicity='M'), 'hpidata')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='montHly'), 'hpi_df')
+                         periodicity='montHly'), 'hpidata')
 
   # Weekly
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='Weekly'), 'hpi_df')
+                         periodicity='Weekly'), 'hpidata')
   expect_true(attr(dateToPeriod(trans_df=sales,
                                 date = 'sale_date',
                                 periodicity='Weekly'), 'periodicity') == 'weekly')
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
-                         periodicity='W'), 'hpi_df')
+                         periodicity='W'), 'hpidata')
 
   # Daily
   expect_error(dateToPeriod(trans_df=sales,
@@ -104,7 +104,7 @@ test_that('Min and Max Date clips are working', {
                          date = 'sale_date',
                          periodicity='monthly',
                          min_date = as.Date('2010-01-03')),
-            'hpi_df')
+            'hpidata')
   expect_true(attr(dateToPeriod(trans_df=sales,
                                 date = 'sale_date',
                                 periodicity='monthly',
@@ -122,7 +122,7 @@ test_that('Min and Max Date clips are working', {
                          periodicity='monthly',
                          min_date = as.Date('2010-01-03'),
                          adj_type='clip'),
-            'hpi_df')
+            'hpidata')
   expect_true(attr(dateToPeriod(trans_df=sales,
                                 date = 'sale_date',
                                 periodicity='monthly',
@@ -141,7 +141,7 @@ test_that('Min and Max Date clips are working', {
                          date = 'sale_date',
                          periodicity='monthly',
                          max_date = as.Date('2016-12-21')),
-            'hpi_df')
+            'hpidata')
   expect_true(attr(dateToPeriod(trans_df=sales,
                                 date = 'sale_date',
                                 periodicity='monthly',
@@ -159,7 +159,7 @@ test_that('Min and Max Date clips are working', {
                          periodicity='monthly',
                          max_date = as.Date('2016-12-21'),
                          adj_type='clip'),
-            'hpi_df')
+            'hpidata')
   expect_true(attr(dateToPeriod(trans_df=sales,
                                 date = 'sale_date',
                                 periodicity='monthly',
@@ -270,7 +270,7 @@ test_that('Bad date arguments are converted or give errors', {
                          date = 'sale_date',
                          min_date = '2011-11-01',
                          max_date = Sys.time()),
-            'hpi_df')
+            'hpidata')
 
   # Conversion works for a vector
   sales_x <- sales
@@ -279,7 +279,7 @@ test_that('Bad date arguments are converted or give errors', {
                          date = 'sale_date',
                          min_date = '2011-11-01',
                          max_date = Sys.time()),
-            'hpi_df')
+            'hpidata')
 
   # Conversion fails for a bad string
   expect_error(dateToPeriod(trans_df=sales,

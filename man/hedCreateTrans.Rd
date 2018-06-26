@@ -18,10 +18,10 @@ trans_df class from dateToPeriod() function}
 \item{price}{field containing the transaction price}
 
 \item{date}{default=NULL, field containing the date of the transaction.
-Only necessary if not passing an `hpi_df` object}
+Only necessary if not passing an `hpidata` object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
-Only necessary if not passing a `hpi_df` object}
+Only necessary if not passing a `hpidata` object}
 }
 \value{
 data.frame of transactions with standardized period field. Note that a full data.frame of the possible

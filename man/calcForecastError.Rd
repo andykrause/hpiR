@@ -31,7 +31,7 @@ If you set `return_forecasts` = TRUE, the forecasted indexes for each period wil
 in the 'forecasts` attribute of the `indexerrors` object. (attr(error_obj, 'forecasts')
 
 For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
-inheriting from `hpi_df`
+inheriting from `hpidata`
 }
 
 \examples{

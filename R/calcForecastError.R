@@ -15,7 +15,7 @@
 #' in the 'forecasts` attribute of the `indexerrors` object. (attr(error_obj, 'forecasts')
 #'
 #' For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
-#' inheriting from `hpi_df`
+#' inheriting from `hpidata`
 #'@examples
 #'\dontrun{
 #' index_error <- calcForecastError(is_obj = hed_index$series,

@@ -19,8 +19,8 @@ hpiModel <- function(hpi_df,
                      trim_model=TRUE,
                      ...){
 
-  if (!'hpi_df' %in% class(hpi_df)){
-    message('"hpi_df" object must be of class "hpi_df"')
+  if (!'hpidata' %in% class(hpi_df)){
+    message('"hpi_df" object must be of class "hpidata"')
     stop()
   }
 

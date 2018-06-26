@@ -7,7 +7,7 @@
 rtIndex(trans_df, ...)
 }
 \arguments{
-\item{trans_df}{data.frame of transactions.  Can be a 'hpi_df' or an 'rt' object.}
+\item{trans_df}{data.frame of transactions.  Can be a 'hpidata' or an 'rt' object.}
 
 \item{...}{Additional Arguments}
 

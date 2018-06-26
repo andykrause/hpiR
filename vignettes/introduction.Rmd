@@ -116,7 +116,7 @@ Finally, there information on the minimum date, maximum date and the periodicity
 
 We start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular methods to create a house price index. 
 
-First, we use the `rtCreateTrans()` function to convert the raw transaction data (the **hpi_df** object) into a data.frame of repeat transactions (properties that have sold multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field as well as a unique transaction id field and a field denoting the transaction price.  
+First, we use the `rtCreateTrans()` function to convert the raw transaction data (the **hpidata** object) into a data.frame of repeat transactions (properties that have sold multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field as well as a unique transaction id field and a field denoting the transaction price.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -155,7 +155,7 @@ In the event of more than two transactions, all pairs of transactions are create
 
 Next, we use this data to estimate a repeat transactions model.  In this simple example we will use the **"base"** estimator (a simple OLS) with a logged dependent variable (**"log_dep = TRUE"**).  Models may also be estimated via a robust regression model (**"estimator = 'robust'"**) or a weighted OLS model (**"estimator = 'weighted'"**) as originally suggested by Case and Shiller
 
-The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpi_df` object that is passed to it, in this case that class is 'rt' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
+The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpidata` object that is passed to it, in this case that class is 'rt' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                           
@@ -307,7 +307,7 @@ There are three 'levels of entry' with the wrapper function.
 
 ```
 
-2. You can provide a **hpi_df** object (one that has been through the `dateToPeriod()` function).  In this case, the following arguments are valid:
+2. You can provide a **hpidata** object (one that has been through the `dateToPeriod()` function).  In this case, the following arguments are valid:
 
    * **date** (required)
    * **price** (required)

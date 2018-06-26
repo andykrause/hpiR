@@ -1,14 +1,14 @@
 #' @title dateToPeriod
 #' @description Convert dates into time periods for use in sale-resale models
-#' @param trans_df data.frame of raw sales transactions
+#' @param trans_df data.frame of raw transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
 #' @return data frame with three new fields:
-#' date_period: integer value counting from the minimum sale date in the periodicity selected. Base value is 1. Primarily for modeling
+#' date_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
 #' date_value: float value of year and periodicty in numeric form (primarily for plotting)
 #' date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
 #' @section Further Details:
-#' date_period conat from the minimum sale date provided.  As such the period counts
+#' date_period conat from the minimum transaction date provided.  As such the period counts
 #' are relative, not absolute
 #' Additionally, this function modifies the data.frame that it is given and return that same
 #' data.frame that it is given and returns that data.frame with the new fields attached.
@@ -197,7 +197,7 @@ dateToPeriod <- function(trans_df,
   }
 
   # Add attribute information
-  attr(trans_df, 'class') <- c('hpi_df', attr(trans_df, 'class'))
+  attr(trans_df, 'class') <- c('hpidata', attr(trans_df, 'class'))
   attr(trans_df, 'periodicity') <- periodicity
   attr(trans_df, 'min_date') <- min_date
   attr(trans_df, 'max_date') <- max_date

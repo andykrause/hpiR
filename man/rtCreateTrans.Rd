@@ -8,7 +8,7 @@ rtCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
   periodicity = NULL, seq_only = FALSE, ...)
 }
 \arguments{
-\item{trans_df}{transactions in either a data.frame or a `hpi_df`` class from
+\item{trans_df}{transactions in either a data.frame or a `hpidata`` class from
 dateToPeriod() function}
 
 \item{prop_id}{field contain the unique property identification}
@@ -18,10 +18,10 @@ dateToPeriod() function}
 \item{price}{field containing the transaction price}
 
 \item{date}{default=NULL, field containing the date of the sale.
-Only necessary if not passing an `hpi_df` object}
+Only necessary if not passing an `hpidata` object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
-Only necessary if not passing a `hpi_df` object}
+Only necessary if not passing a `hpidata` object}
 
 \item{seq_only}{default=FALSE, indicating whether to only include sequential repeat observations
 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.}
@@ -38,7 +38,7 @@ Create repeat sale pairs from a data frame of sale transactions
 Properties with greater than two tranactions during the period will make pairwise matches
 among all sales.  Any property transacting twice in the same period will remove the lower
 priced of the two transactions.
-If passing a raw data.frame (not a `hpi_df`` object) the "date" field should refer to
+If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 a field containing a vector of class POSIXt or Date.
 }
 

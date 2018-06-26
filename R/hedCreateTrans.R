@@ -6,9 +6,9 @@
 #' @param trans_id field containing the unique transaction identification
 #' @param price field containing the transaction price
 #' @param date default=NULL, field containing the date of the transaction.
-#' Only necessary if not passing an `hpi_df` object
+#' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
-#' Only necessary if not passing a `hpi_df` object
+#' Only necessary if not passing a `hpidata` object
 #' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `hed` object
 #' @section Further Details:
@@ -32,7 +32,7 @@ hedCreateTrans <- function(trans_df,
                            ...){
 
   # Calculate the necessary date field
-  if (!'hpi_df' %in% class(trans_df)){
+  if (!'hpidata' %in% class(trans_df)){
     if (is.null(date)){
       message('You must provide the name of a field with date of transaction (date=)')
       stop()
@@ -82,7 +82,7 @@ hedCreateTrans <- function(trans_df,
     message('No Hedonic Sales Created\n')
     return(NULL)
   } else {
-    class(hed_df) <- c('hed', 'hpi_df', class(hed_df))
+    class(hed_df) <- c('hed', 'hpidata', class(hed_df))
   }
 
   # Return _df

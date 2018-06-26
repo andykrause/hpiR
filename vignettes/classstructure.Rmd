@@ -15,21 +15,32 @@ This vignette explains the various classes of objects and data used in the `hpiR
 
 ## Class Structures
 
-The table below shows the basic information on the various S3 classes used in the package.  The naming convention of classes is such that those with "hpi" prefixes refer to object containing information relevant to the entire `hpi` collection object, those with "index" prefixes refer to information relevant only to the index itself, and those with "rt" or "hed" with information specific to a particular index method ("rt" for repeat transaction and "hed" for hedonic model)^[Additional methods will be added here in the future.]
+The table below shows the basic information on the various S3 classes used in the package.  The naming convention of classes is such that prefixes indicate the domain of the information contained with: 
+
+* **"super"** = objects refering to information relevant to the entire hpi series
+* **"hpi"** = objects refering to information relevant to the entire hpi collection
+* **"index"** = objects refering to information relevant only to the index itself
+* **"rt"** or **"hed"** =  objects with information specific to a particular index method ("rt" for repeat transaction and "hed" for hedonic model)^[Additional methods will be added here in the future.]
 
 The `hpi` collection object is the "core" unit of the `hpiR` package. The object will contain all the information, temporary object and analysis about a single house price index.  
 
-The `hpiseries` object is a "super-unit" that contains multiple house price indexes within it.  Indexes within a series share the same data, modeling approach and parameters; they differ only in the length of the indexes.  Additionally there are two types of analyses that can only be applied to 
+The `hpiseries` object is a "super-unit" that contains multiple house price indexes within it.  Indexes within a series share the same data, modeling approach and parameters; they differ only in the length of the indexes.  Additionally there are two types of analyses that can only be applied to series: forecast accuracy (`calcForecastError`) and revision (`calcRevision`). Also note that in an `hpiseries` object the data objects are moved out of the `hpi` objects and into the `hpiseries` object to avoid duplication of data storage.  
 
 | Type | Class | Inherits | Created by | Description |
 | :---- | :----- | :------: | :-----: | :-------------------------------------- | 
-| **Master** | | | | |
+| **Super** | | | | |
+| | `serieshpi` | *~many* | `createSeries()` | A series of progressively longer indexes.  
+||||||
+| **Core** | | | | |
 | | `hpi` | ~many | *****Index()** + others | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
 ||||||
 | **Data** | | | | |
-| | `hpi_df` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
-| | `rt` | `hpi_df`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
-| | `hed` | `hpi_df`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
+| | `hpidata` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
+||||||
+
+
+| | `rt` | `hpidata`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
+| | `hed` | `hpidata`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
 ||||||
 | **Model** | | | | |
 | | `hpimodel` | Multiple (ex. `lm`) | **hpiModel()** | Flexible list containing results of the particular model selected |
@@ -55,4 +66,39 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `seriesplot` | `gg`, `ggplot` | **plot.hpiseries()** | Plotting object for an index series |
 | | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `errorplot` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
+
+## Examples
+
+Begin by loading the `hpiR` package. We'll assume that you've followed the instructions in the **"introduction"** vignette in order to obtain the package.  
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  suppressMessages(suppressWarnings(library(hpiR)))
+  suppressMessages(suppressWarnings(library(knitr)))
+
+```
+
+```{r eval=FALSE, messages=FALSE, echo=TRUE}
+  
+  library(hpiR)
+
+```
+
+Next, load the example dataset of Seattle house transactions into your R session.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  data(seattle_sales)
+
+```
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
+                            date = 'sale_date',
+                            periodicity = 'monthly')
+
+```
+
+
 

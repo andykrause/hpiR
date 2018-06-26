@@ -1,14 +1,14 @@
 #' @title rtCreateTrans
 #' @description Create repeat sale pairs from a data frame of sale transactions
-#' @param trans_df transactions in either a data.frame or a `hpi_df`` class from
+#' @param trans_df transactions in either a data.frame or a `hpidata`` class from
 #' dateToPeriod() function
 #' @param prop_id field contain the unique property identification
 #' @param trans_id field containing the unique transaction identification
 #' @param price field containing the transaction price
 #' @param date default=NULL, field containing the date of the sale.
-#' Only necessary if not passing an `hpi_df` object
+#' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
-#' Only necessary if not passing a `hpi_df` object
+#' Only necessary if not passing a `hpidata` object
 #' @param seq_only default=FALSE, indicating whether to only include sequential repeat observations
 #' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
 #' @return data.frame of repeat transactions. Note that a full data.frame of the possible
@@ -17,7 +17,7 @@
 #' Properties with greater than two tranactions during the period will make pairwise matches
 #' among all sales.  Any property transacting twice in the same period will remove the lower
 #' priced of the two transactions.
-#' If passing a raw data.frame (not a `hpi_df`` object) the "date" field should refer to
+#' If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 #' a field containing a vector of class POSIXt or Date.
 #' @examples
 #' ## With a raw data.frame
@@ -50,7 +50,7 @@ rtCreateTrans <- function(trans_df,
                           ...){
 
   # Crate the sales_df if not provided
-  if (!'hpi_df' %in% class(trans_df)){
+  if (!'hpidata' %in% class(trans_df)){
     if (is.null(date)){
       message('You must provide the name of a field with date of transaction (date=)')
       stop()
@@ -199,7 +199,7 @@ rtCreateTrans <- function(trans_df,
     message('No Repeat Transactions Created\n')
     return(NULL)
   } else {
-    class(rt_df) <- c('rt', 'hpi_df', class(rt_df))
+    class(rt_df) <- c('rt', 'hpidata', class(rt_df))
   }
 
   # Add period table attribute

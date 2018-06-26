@@ -31,7 +31,7 @@ hedIndex <- function(trans_df,
 
   } else {
 
-    if (!'hpi_df' %in% class(trans_df)){
+    if (!'hpidata' %in% class(trans_df)){
 
       if (is.null(list(...)$date) ||
           (!any(class(trans_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
@@ -46,17 +46,17 @@ hedIndex <- function(trans_df,
     } # Ends if(!trans_df...)
 
     if (is.null(list(...)$trans_id)){
-      message('When not supplying an "hpi_df" object a valid',
+      message('When not supplying an "hpidata" object a valid',
               '"trans_id" argument must be supplied')
       stop()
     }
     if (is.null(list(...)$prop_id)){
-      message('When not supplying an "hpi_df" object a ',
+      message('When not supplying an "hpidata" object a ',
               '"prop_id" argument must be supplied')
       stop()
     }
     if (is.null(list(...)$price)){
-      message('When not supplying an "hpi_df" object a ',
+      message('When not supplying an "hpidata" object a ',
               '"price" argument must be supplied')
       stop()
     }
