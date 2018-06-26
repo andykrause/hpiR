@@ -1,0 +1,58 @@
+---
+title: "Classes in `hpiR`"
+author: "Andy Krause"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+This vignette explains the various classes of objects and data used in the `hpiR` package.  It also (re)creates the example data objects that are attached to the package.  
+
+## Class Structures
+
+The table below shows the basic information on the various S3 classes used in the package.  The naming convention of classes is such that those with "hpi" prefixes refer to object containing information relevant to the entire `hpi` collection object, those with "index" prefixes refer to information relevant only to the index itself, and those with "rt" or "hed" with information specific to a particular index method ("rt" for repeat transaction and "hed" for hedonic model)^[Additional methods will be added here in the future.]
+
+The `hpi` collection object is the "core" unit of the `hpiR` package. The object will contain all the information, temporary object and analysis about a single house price index.  
+
+The `hpiseries` object is a "super-unit" that contains multiple house price indexes within it.  Indexes within a series share the same data, modeling approach and parameters; they differ only in the length of the indexes.  Additionally there are two types of analyses that can only be applied to 
+
+| Type | Class | Inherits | Created by | Description |
+| :---- | :----- | :------: | :-----: | :-------------------------------------- | 
+| **Master** | | | | |
+| | `hpi` | ~many | *****Index()** + others | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
+||||||
+| **Data** | | | | |
+| | `hpi_df` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
+| | `rt` | `hpi_df`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
+| | `hed` | `hpi_df`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
+||||||
+| **Model** | | | | |
+| | `hpimodel` | Multiple (ex. `lm`) | **hpiModel()** | Flexible list containing results of the particular model selected |
+| | `rtmod` | Multiple (ex. `lm`) | **rtModel()** | List containing model results of repeat transaction model
+| | `hedmod` | Multiple (ex. `lm`) | **hedModel()** | List containing model results of hedonic model
+||||||
+| **Index** | | | | |
+| | `hpiindex` | ~`ts` | **modelToIndex()** | List containing index information.  `index` slot is a `ts` object |
+| | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
+| | `hpiblend` | `hpiindex`, `ts` | **blendIndexes()** | Blended two or more indexes | 
+||||||
+| **Analytical** | | | | |
+| | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
+| | `hpiseries` | `hpiindex`, ~`ts`| **createSeries()** | creates a series of indexes that grow in length |
+| | `hpirevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
+| | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
+||||||
+| **Visualization** | | | | |
+| | `indexplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+| | `smoothplot` | `gg`, `ggplot` | **plot.indexsmooth()** | Plotting object for a smoothed index |
+| | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
+| | `revisionplot` | `gg`, `ggplot` | **plot.hpirevision()** | Plotting object for revision statistics |
+| | `seriesplot` | `gg`, `ggplot` | **plot.hpiseries()** | Plotting object for an index series |
+| | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+| | `errorplot` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
+
