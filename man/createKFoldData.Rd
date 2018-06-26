@@ -4,28 +4,32 @@
 \alias{createKFoldData}
 \title{createKFoldData}
 \usage{
-Lorem Ipsum...
+createKFoldData(score_ids, full_data, pred_df)
 }
 \arguments{
 \item{score_ids}{Vector of row ids to be included in scoring data}
 
-\item{full_data}{Complete dataset of this model type}
+\item{full_data}{Complete dataset (class `hpi_df``) of this model type (rt or hed)}
 
 \item{pred_df}{Data to be used for prediction}
 }
 \value{
 list
-\item{train} Training data
-\item{score} Scoring data
+\item{train} Training data.frame
+\item{score} Scoring data.frame
 }
 \description{
-create the datasets for the kfold error testing (Generic Method)
+Create the datasets for the kfold error testing (Generic Method)
 }
 \section{Further Details}{
 
-Lorem Ipsum...
+Called from calcKFoldError
 }
 
 \examples{
-a <- 1
+\dontrun{
+kfold_df <- createKFoldData(score_ids = kfold_df$score,
+                            full_data = hpi_obj$data,
+                            pred_df = hpi_obj$pred_data)
+}
 }

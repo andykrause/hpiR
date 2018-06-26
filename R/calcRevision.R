@@ -1,17 +1,27 @@
 #' @title calcRevision
 #' @description Estimate revision figures for a series of indexes
-#' @usage Lorem Ipsum...
-#' @param index_obj A list of progressively longer indexes (from calcForecstErrors())
-#' @param series_name default = 'series'; name of the series if extracting
-#' @param in_place default = FALSE; calculating in place (adding to hpi)
+#' @usage calcRevision(series_obj)
+#' @param index_obj A list of progressively longer indexes (an 'hpiseries' object from createSeries())
+#' @param series_name default = 'series'; Name of the series if extracting an existing one
+#' @param in_place default = FALSE; Calculating in place (adding to hpi)
 #' @param in_place_name default = 'rev'; name of revision object in_place
 #' @param ... Additional Arguments
 #' @return list containing:
-#' \item{period} Mean revision by period
-#' \item{total} Mean revision of all periods in all indexes
+#' \item{period: Data.frame containing the period number, mean and median for that period}
+#' \item{mean: Mean revision for all periods}
+#' \item{median: Median revision for all periods}
 #' @section Further Details:
+#' You can provide an 'hpi' object to the `index_obj` argument and the function will extract the series from it
+#' given that the `series_name` argument is correct.
+#'
+#' The revision object can be generate "in place" inside of the `hpi` object by setting `in_place` equal to TRUE.
 #' @examples
-#' a <- 1
+#'\dontrun{
+#' hed_rev <- calcRevision(series_obj = hed_series,
+#'                         series_name = 'series_1',
+#'                         in_place = TRUE,
+#'                         in_place_name = 'revision')
+#'}
 #' @export
 
 calcRevision <- function(series_obj,

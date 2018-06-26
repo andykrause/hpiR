@@ -1,16 +1,23 @@
 #' @title calcVolatility
 #' @description Calculate index volatility
-#' @param index time-series index object
-#' @param window periods over which to calculate the volatility
-#' @param in_place default = FALSE; adds volatility metric to the `hpiindex` object
+#' @param index An object of class `hpiindex`
+#' @param window Rolling periods over which to calculate the volatility
+#' @param in_place default = FALSE; Adds volatility metric to the `hpiindex` object
 #' (may be within an `hpi` object)
-#' @param in_place_name default = 'vol'; name of volatility object in `hpiindex` object
+#' @param in_place_name default = 'vol'; Name of volatility object in `hpiindex` object
 #' @param ... Additional arguments
-#' @return A metric of volatility
+#' @return an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
+#' \item{roll: volatility at each rolling point}
+#' \item{mean: overall mean volatility}
+#' \item{median: overall median volatility}
 #' @section Further Details:
+#' You may also provide an `hpi` object to this function.  If you do, it will
+#' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 #' @examples
-#' index_vol <- calcVolatility(index=index,
-#'                             window=3)
+#' \dontrun{
+#' index_vol <- calcVolatility(index = hpi_index,
+#'                             window = 3)
+#' }
 #' @export
 
 calcVolatility <- function(index,

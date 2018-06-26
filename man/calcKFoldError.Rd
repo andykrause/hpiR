@@ -4,30 +4,34 @@
 \alias{calcKFoldError}
 \title{calcKFoldError}
 \usage{
-Lorem Ipsum...
+calcKFoldError(hpi_obj, pred_df, k, seed)
 }
 \arguments{
-\item{hpi_obj}{Object of class 'hpi'}
+\item{hpi_obj}{Hpi object of class 'hpi'}
 
-\item{pred_df}{Set of sales to be used for predicitive quality of index}
+\item{pred_df}{Data.frame of sales to be used for assessing predictive quality of index}
 
 \item{k}{default=10; Number of folds to apply to holdout process}
 
-\item{seed}{random seed generator to control the folding process}
+\item{seed}{default=1; Random seed generator to control the folding process}
 
 \item{...}{Additional Arguments}
 }
 \value{
-hpimodel object
+object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+\item{prop_id}
+\item{pred_price}
+\item{pred_error}
+\item{pred_period}
 }
 \description{
 Estimate out-of-sample index errors using a KFold process
 }
-\section{Further Details}{
-
-Lorem Ipsum...
-}
-
 \examples{
-a <- 1
+\dontrun{
+index_error <- calcKFoldError(hpi_obj = rt_index,
+                              pred_df = rt_index$data,
+                              k = 10,
+                              seed = 10)
+}
 }

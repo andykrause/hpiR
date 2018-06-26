@@ -4,34 +4,40 @@
 \alias{createSeries}
 \title{createSeries}
 \usage{
-Lorem Ipsum...
+createSeries(hpi_obj, train_period = 12)
 }
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{max_period}{Default=NULL; Maximum number of periods to forecast up to}
+\item{train_period}{Number of periods to use as purely training before creating indexes}
 
-\item{name_prefix}{Default=NULL; Prefix to add before last time period if naming indexes}
+\item{max_period}{default=NULL; Maximum number of periods to create the index up to}
 
-\item{in_place}{Add to existing hpi object}
+\item{name_prefix}{default=NULL; Prefix to add before last time period if naming indexes}
+
+\item{in_place}{Add to existing hpi object?}
 
 \item{in_place_name}{default = 'series'; Give it a different name than the default}
 
 \item{...}{Additional Arguments}
-
-\item{train_range}{Number of periods to use as purely training before forecast starts}
 }
 \value{
-hpimodel object
+An `hpiseries` object -- a list of `hpiindex` objects.
 }
 \description{
 Calculates a series of indexes, each one period longer than the previous
 }
 \section{Further Details}{
 
+`train_peried` Represents the shortest index that you will create. For certain approaches
+, such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.
+
 If 'max_period' is left NULL, then it will forecast up to the end of the data
 }
 
 \examples{
-a <- 1
+\dontrun{
+hpi_series <- createSereis(hpi_obj = hpi_obj,
+                           train_period = 12)
+}
 }

@@ -1,16 +1,23 @@
 #' @title calcKFoldError
 #' @description Estimate out-of-sample index errors using a KFold process
-#' @usage Lorem Ipsum...
-#' @param hpi_obj Object of class 'hpi'
-#' @param pred_df Set of sales to be used for predicitive quality of index
+#' @usage calcKFoldError(hpi_obj, pred_df, k, seed)
+#' @param hpi_obj Hpi object of class 'hpi'
+#' @param pred_df Data.frame of sales to be used for assessing predictive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
-#' @param seed random seed generator to control the folding process
+#' @param seed default=1; Random seed generator to control the folding process
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' \item{prop_id}
+#' \item{pred_price}
+#' \item{pred_error}
+#' \item{pred_period}
 #' @examples
-#' a <- 1
+#' \dontrun{
+#' index_error <- calcKFoldError(hpi_obj = rt_index,
+#'                               pred_df = rt_index$data,
+#'                               k = 10,
+#'                               seed = 10)
+#' }
 #' @export
 
 calcKFoldError <- function(hpi_obj,
@@ -91,18 +98,22 @@ calcKFoldError <- function(hpi_obj,
 }
 
 #' @title createKFoldData
-#' @description create the datasets for the kfold error testing (Generic Method)
-#' @usage Lorem Ipsum...
+#' @description Create the datasets for the kfold error testing (Generic Method)
+#' @usage createKFoldData(score_ids, full_data, pred_df)
 #' @param score_ids Vector of row ids to be included in scoring data
-#' @param full_data Complete dataset of this model type
+#' @param full_data Complete dataset (class `hpi_df``) of this model type (rt or hed)
 #' @param pred_df Data to be used for prediction
 #' @return list
-#' \item{train} Training data
-#' \item{score} Scoring data
+#' \item{train} Training data.frame
+#' \item{score} Scoring data.frame
 #' @section Further Details:
-#' Lorem Ipsum...
+#' Called from calcKFoldError
 #' @examples
-#' a <- 1
+#'\dontrun{
+#' kfold_df <- createKFoldData(score_ids = kfold_df$score,
+#'                             full_data = hpi_obj$data,
+#'                             pred_df = hpi_obj$pred_data)
+#' }
 #' @export
 
 createKFoldData <- function(score_ids,
@@ -125,16 +136,19 @@ createKFoldData.rt <- function(score_ids,
 
 #' @title matchKFoldData
 #' @description Makes specific selections of scoring data (Generic Method)
-#' @usage Lorem Ipsum...
+#' @usage matchKFold(train_df, pred_df)
 #' @param train_df Data.frame of training data
-#' @param pred_df Data to be used for prediction
+#' @param pred_df Data.frame (class `hpi_df``) to be used for prediction
 #' @return list
 #' \item{train} Training data
 #' \item{score} Scoring data
 #' @section Further Details:
-#' Lorem Ipsum...
+#' Called from createKFoldData
 #' @examples
-#' a <- 1
+#' \dontrun{
+#' kfold_df$score <- matchKFold(train_df = kfold_df$train,
+#'                              pred_df = hpi_obj$pred_data)
+#' }
 #' @export
 
 matchKFold <- function(train_df,

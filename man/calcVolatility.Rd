@@ -8,28 +8,35 @@ calcVolatility(index, window, in_place = FALSE,
   in_place_name = "volatility", ...)
 }
 \arguments{
-\item{index}{time-series index object}
+\item{index}{An object of class `hpiindex`}
 
-\item{window}{periods over which to calculate the volatility}
+\item{window}{Rolling periods over which to calculate the volatility}
 
-\item{in_place}{default = FALSE; adds volatility metric to the `hpiindex` object
+\item{in_place}{default = FALSE; Adds volatility metric to the `hpiindex` object
 (may be within an `hpi` object)}
 
-\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
+\item{in_place_name}{default = 'vol'; Name of volatility object in `hpiindex` object}
 
 \item{...}{Additional arguments}
 }
 \value{
-A metric of volatility
+an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
+\item{roll: volatility at each rolling point}
+\item{mean: overall mean volatility}
+\item{median: overall median volatility}
 }
 \description{
 Calculate index volatility
 }
 \section{Further Details}{
 
+You may also provide an `hpi` object to this function.  If you do, it will
+extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 }
 
 \examples{
-index_vol <- calcVolatility(index=index,
-                            window=3)
+\dontrun{
+index_vol <- calcVolatility(index = hpi_index,
+                            window = 3)
+}
 }

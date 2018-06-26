@@ -4,12 +4,12 @@
 \alias{matchKFold}
 \title{matchKFoldData}
 \usage{
-Lorem Ipsum...
+matchKFold(train_df, pred_df)
 }
 \arguments{
 \item{train_df}{Data.frame of training data}
 
-\item{pred_df}{Data to be used for prediction}
+\item{pred_df}{Data.frame (class `hpi_df``) to be used for prediction}
 }
 \value{
 list
@@ -21,9 +21,12 @@ Makes specific selections of scoring data (Generic Method)
 }
 \section{Further Details}{
 
-Lorem Ipsum...
+Called from createKFoldData
 }
 
 \examples{
-a <- 1
+\dontrun{
+kfold_df$score <- matchKFold(train_df = kfold_df$train,
+                             pred_df = hpi_obj$pred_data)
+}
 }
