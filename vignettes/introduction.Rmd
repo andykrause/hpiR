@@ -776,7 +776,7 @@ If you want to add it to the **hpiindex** object under a different name -- say i
 
 ```
 
-#### Predictive Ability
+#### Fitting Accuracy
 
 Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
 
@@ -891,9 +891,19 @@ We can also return these in place.
     # Check results
     class(hed_hpi)
     names(hed_hpi)
-    class(hed_hpi$kf_accuracy)
+    class(hed_hpi$index$kf_accuracy)
 
 ```
+
+A plotting method (`plot.indexaccuracy()`) shows a number of diagnostics about the accuracy analysis. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add **"return_plot = TRUE"** to the argument list.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=5.5}
+
+ plot(hed_hpi$index$kf_accuracy)
+ plot_obj <- plot(hed_hpi$index$kf_accuracy, return_plot = TRUE)
+ class(plot_obj)
+
+```  
 
 ### Index Series
 
@@ -1032,7 +1042,6 @@ As above, it can be used on the raw index values or the smoothed ones (**smooth 
   
 ``` 
 
-
 #### Revision
 
 As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
@@ -1044,8 +1053,8 @@ The second calculation simply averages all revisions across all periods to provi
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   # Return to a revision object
-  hed_rev <- calcRevision(series_obj = hed_series)
-  class(hed_rev)  
+  rt_rev <- calcRevision(series_obj = rt_series)
+  class(rt_rev)  
 
   # Return in place (with smooth)
   rt_series <- calcRevision(series_obj = rt_series,
@@ -1060,7 +1069,7 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
   
-  plot(hed_rev)
+  plot(rt_rev)
 
 ```
 
@@ -1078,68 +1087,3 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
 
 
 
-
-
-
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE, warning=FALSE}
-
-  rt_fc_error <- calcAccuracy(hpi_obj = rt_hpi,
-                              test_type = 'rt',
-                              test_method = 'forecast')
-  class(rt_fc_error)
-  attr(rt_fc_error, 'test_method')
-
-```
-
-It can also be returned in place from an **hpi_obj** with an existing series.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-  # Estimating the series 'on the fly'
-  hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
-                          test_type = 'rt',
-                          test_method = 'forecast',
-                          pred_df = rt_hpi$data,
-                          series_name = 'series',
-                          in_place=TRUE,
-                          in_place_name = 'fc_errors')
-
-    # Check results
-    class(hed_hpi)
-    names(hed_hpi)
-    class(hed_hpi$fc_errors)
-
-```
-
-A plotting method (`plot.indexerrors()`) shows a number of diagnostics about the errors. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add **"return_plot = TRUE"** to the argument list.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=5.5}
-
- plot(hed_hpi$fc_errors)
- plot_obj <- plot(hed_hpi$fc_errors, return_plot = TRUE)
- class(plot_obj)
-
-```  
-
-We can then compare the summary statistics of the errors, which seem to suggest that the hedonic price modeling approach is slighly more accurate than the repeat sales model.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-  error_df <- data.frame(rti = round(as.numeric(summary(abs(rt_is_error$pred_error))), 3),
-                         rtk = round(as.numeric(summary(abs(rt_kf_error$pred_error))), 3),
-                         rtf = round(as.numeric(summary(abs(rt_fc_error$pred_error))), 3),
-                         hi= round(as.numeric(summary(abs(
-                           hed_hpi$is_errors$pred_error))), 3),
-                         hk = round(as.numeric(summary(abs(
-                           hed_hpi$kf_errors$pred_error))), 3),
-                         hf = round(as.numeric(summary(abs(
-                           hed_hpi$fc_errors$pred_error))), 3),
-                        stringsAsFactors=FALSE)
-
-  names(error_df) <- c('RT - In Sample', 'RT - KFold', 'RT - Forecast',
-                       'Hed - In Sample', 'Hed - KFold', 'Hed - Forecast')
-  rownames(error_df) <- c("Min", '25th', 'Median', 'Mean', '75th', 'Max')
-  knitr::kable(error_df)
-
-```

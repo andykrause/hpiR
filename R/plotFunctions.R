@@ -89,7 +89,7 @@ plot.hpi <- function(hpi_obj,
 #' @title plot.hpiblend
 #' @export
 
-#' @title plot.indexvol
+#' @title plot.indexvolatility
 #' @export
 
 plot.indexvolatility <- function(vol_obj){
@@ -109,7 +109,7 @@ plot.indexvolatility <- function(vol_obj){
     geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
 
   # Return Plot
-  structure(vol_plot, class = c('volatilityplot', class(vol_plot)))
+  structure(vol_plot, class = c('plotvolatility', class(vol_plot)))
 
 }
 
@@ -175,7 +175,7 @@ plot.indexaccuracy <- function(error_obj,
 
   # Return or plot
   if (return_plot){
-    return(structure(full_plot, class = c('errorplot', class(full_plot))))
+    return(structure(full_plot, class = c('plotaccuracy', class(full_plot))))
   }
 
 }
@@ -235,7 +235,7 @@ plot.serieshpi<- function(series_obj,
     ylab('Index Value\n') +
     xlab('\nTime Period')
 
-  structure(series_plot, class = c('seriesplot', class(series_plot)))
+  structure(series_plot, class = c('plotseries', class(series_plot)))
 
 }
 
@@ -273,7 +273,7 @@ plot.seriesrevision <- function(rev_obj,
     theme(legend.position='none',
           legend.title = element_blank())
 
-  structure(rev_plot, class = c('revisionplot', class(rev_plot)))
+  structure(rev_plot, class = c('plotrevision', class(rev_plot)))
 
 }
 

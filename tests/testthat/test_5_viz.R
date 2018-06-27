@@ -45,7 +45,8 @@ hed_index <- hedIndex(trans_df = hed_df,
 rt_index <- rtIndex(trans_df = rt_df,
                     estimator = 'base',
                     log_dep = TRUE,
-                    periodicity = 'monthly')
+                    periodicity = 'monthly',
+                    smooth = TRUE)
 
 
 # ### Test all plot functions --------------------------------------------------------------
@@ -59,31 +60,22 @@ context('Plot functions')
 
   })
 
+
   test_that('plot.hpi works', {
 
       expect_is(plot(rt_index), 'plotindex')
-
-  })
-
- ## Smooth
-
-  index_smooth <- smoothIndex(index_obj = hed_index$index,
-                              order = 4)
-
-  test_that('plot.indexsmooth works', {
-
-    expect_is(plot(index_smooth), 'smoothplot')
+      expect_is(plot(rt_index, smooth=TRUE), 'plotindex')
 
   })
 
  ## Volatility
 
-  index_vol <- calcVolatility(index = hed_index$index$index,
+  index_vol <- calcVolatility(index = hed_index$index$value,
                               window = 3)
 
   test_that('plot.indexvolatility works', {
 
-    expect_is(plot(index_vol), 'volatilityplot')
+    expect_is(plot(index_vol), 'plotvolatility')
 
   })
 
@@ -92,9 +84,9 @@ context('Plot functions')
   rt_series <- createSeries(hpi_obj = rt_index,
                             train_period = 24)
 
-  test_that('plot.hpiseries works', {
+  test_that('plot.serieshpi works', {
 
-    expect_is(plot(rt_series), 'seriesplot')
+    expect_is(plot(rt_series), 'plotseries')
 
   })
 
@@ -104,7 +96,7 @@ context('Plot functions')
 
   test_that('plot.hpirevision works', {
 
-    expect_is(plot(rev_obj), 'revisionplot')
+    expect_is(plot(rev_obj), 'plotrevision')
 
   })
 
@@ -120,26 +112,15 @@ context('Plot functions')
                               test_method = 'kfold',
                               pred_df = rt_index$data)
 
-  rt_fc_error <- calcAccuracy(hpi_obj = rt_index,
-                              test_type = 'rt',
-                              test_method = 'forecast',
-                              pred_df = rt_index$data)
+  rt_fc_error <- calcSeriesAccuracy(series_obj = rt_series,
+                                    test_type = 'rt',
+                                    test_method = 'forecast',
+                                    pred_df = rt_index$data)
 
   test_that('plot.indexerrors works', {
 
-    expect_is(plot(rt_is_error, return_plot = TRUE), 'errorplot')
-    expect_is(plot(rt_kf_error, return_plot = TRUE), 'errorplot')
-    expect_is(plot(rt_fc_error, return_plot = TRUE), 'errorplot')
-
-  })
-
- ## Blend
-
-  blend_index <- blendIndexes(index_list = list(rt_index$index,
-                                                hed_index$index))
-
-  test_that('plot.hpiblend works', {
-
-    expect_is(plot(blend_index), 'blendplot')
+    expect_is(plot(rt_is_error, return_plot = TRUE), 'plotaccuracy')
+    expect_is(plot(rt_kf_error, return_plot = TRUE), 'plotaccuracy')
+    expect_is(plot(rt_fc_error$accuracy, return_plot = TRUE), 'plotaccuracy')
 
   })

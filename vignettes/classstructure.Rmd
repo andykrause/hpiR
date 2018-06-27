@@ -63,11 +63,11 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `plotseries` | `gg`, `ggplot` | **plot.serieshpi()** | Plotting object for an index series |
 | | `plotrevision` | `gg`, `ggplot` | **plot.seriesrevision()** | Plotting object for revision statistics |
+| | `plotaccuracy` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
 
 
 
 | | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
-| | `errorplot` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
 
 ## Examples
 
@@ -213,11 +213,25 @@ An example `rtdata` object
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
+  ex_plotvolatility <- plot(ex_indexvolatility)
+  class(ex_plotvolatility)
+ 
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
   ex_indexaccuracy <- calcAccuracy(hpi_obj = ex_hpi,
                                    test_type = 'rt',
                                    test_method = 'insample')
   
   class(ex_indexaccuracy)
+ 
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_plotaccuracy <- plot(ex_indexaccuracy, return_plot = TRUE)
+  class(ex_plotaccuracy)
  
 ```
 
@@ -268,7 +282,10 @@ An example `rtdata` object
   
   devtools::use_data(ex_hpi, overwrite=TRUE)
   devtools::use_data(ex_indexvolatility, overwrite=TRUE)
+  devtools::use_data(ex_plotvolatility, overwrite=TRUE)
+  
   devtools::use_data(ex_indexaccuracy, overwrite=TRUE)  
+  devtools::use_data(ex_plotaccuracy, overwrite=TRUE)  
   
   devtools::use_data(ex_hpiseries, overwrite=TRUE)
   devtools::use_data(ex_plotseries, overwrite=TRUE)
