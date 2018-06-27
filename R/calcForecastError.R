@@ -36,9 +36,9 @@ calcForecastError <- function(is_obj,
   }
 
   if (!any('data.frame' %in% class(pred_df)) ||
-      !any(class(pred_df) %in% c('rt', 'hed'))){
+      !any(class(pred_df) %in% c('rtdata', 'heddata'))){
     message('"pred_df" argument must be a data.frame with additional class of ',
-            ' "rt" or "hed"')
+            ' "rtdata" or "heddata"')
     stop()
   }
 
@@ -122,9 +122,9 @@ buildForecastIDs <- function(time_cut,
 }
 
 #' @export
-buildForecastIDs.hed <- function(time_cut,
-                                 hpi_df,
-                                 train=TRUE){
+buildForecastIDs.heddata <- function(time_cut,
+                                     hpi_df,
+                                     train=TRUE){
 
   if(train){
     time_ids <- which(hpi_df$date_period < time_cut)
@@ -136,9 +136,9 @@ buildForecastIDs.hed <- function(time_cut,
 }
 
 #' @export
-buildForecastIDs.rt <- function(time_cut,
-                                hpi_df,
-                                train=TRUE){
+buildForecastIDs.rtdata <- function(time_cut,
+                                    hpi_df,
+                                    train=TRUE){
 
   # Extract data if given a full 'hpi' object
   if ('hpi' %in% class(hpi_df)){

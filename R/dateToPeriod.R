@@ -26,7 +26,7 @@ dateToPeriod <- function(trans_df,
 
   # Check for data.frame in trans_df
   if (!'data.frame' %in% class(trans_df)){
-    message('"trans_df" must be a data.frame (or inherit from one)')
+    message('"trans_df" must be a "data.frame" (or inherit from one)')
     stop()
   }
 
@@ -41,7 +41,7 @@ dateToPeriod <- function(trans_df,
   periodicity <- tolower(periodicity)
   if (!periodicity %in% c('weekly', 'monthly', 'quarterly', 'annual', 'yearly',
                           'w', 'm', 'q', 'a', 'y')){
-    message('"Periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
+    message('"periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
     stop()
   } else {
     if (periodicity == 'yearly') periodicity <- 'annual'
@@ -64,7 +64,7 @@ dateToPeriod <- function(trans_df,
   } else {
     if (min_date > min(trans_date)){
       if (adj_type == 'move'){
-        message('Supplied min_date" is greater than minimum of transactions. ',
+        message('Supplied "min_date" is greater than minimum of transactions. ',
                 'Adjusting.\n')
         min_date <- min(trans_date)
       }
@@ -160,7 +160,7 @@ dateToPeriod <- function(trans_df,
       min_date <- gsub('12-30', '12-29', min_date)
       max_date <- gsub('12-30', '12-29', max_date)
       message('Treating all Dec 31st and Dec 30th (in leap years) dates as Dec 29th ',
-              'to avoid 53 week issues')
+              'to avoid 53rd week issues')
     }
 
     # Create Week period
@@ -205,12 +205,11 @@ dateToPeriod <- function(trans_df,
 
   # Return values
   trans_df
-
 }
 
 #' @title checkDate
 #' @description Checks and converts date arguments into proper format
-#' @param x_date Date string
+#' @param x_date Date string or vector
 #' @param name Name of argument to return in error/warning message
 #' @return Adjusted date field
 #' @export
@@ -244,5 +243,4 @@ checkDate <- function(x_date,
 
   # Return
   x_date
-
 }

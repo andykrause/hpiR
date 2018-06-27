@@ -25,7 +25,8 @@ context('rtCreateTrans()')
     expect_is(rt_df <- rtCreateTrans(trans_df=sales_df,
                                      prop_id='pinx',
                                      trans_id='sale_id',
-                                     price='sale_price'), 'rt')
+                                     price='sale_price'),
+              'rtdata')
     expect_true(nrow(rt_df) == 5102)
   })
 
@@ -38,7 +39,7 @@ context('rtCreateTrans()')
                                      price='sale_price',
                                      date='sale_date',
                                      periodicity='monthly'),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 5102)
   })
 
@@ -51,7 +52,7 @@ context('rtCreateTrans()')
                                      date='sale_date',
                                      periodicity='monthly',
                                      min_date = as.Date('2012-03-21')),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 5102)
 
     expect_is(rt_df <- rtCreateTrans(trans_df=sales,
@@ -62,7 +63,7 @@ context('rtCreateTrans()')
                                      periodicity='monthly',
                                      min_date = as.Date('2012-03-21'),
                                      adj_type='clip'),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 2827)
 
     expect_is(rt_df <- rtCreateTrans(trans_df=sales,
@@ -72,7 +73,7 @@ context('rtCreateTrans()')
                                      date='sale_date',
                                      periodicity='monthly',
                                      max_date = as.Date('2015-03-21')),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 5102)
 
     expect_is(rt_df <- rtCreateTrans(trans_df=sales,
@@ -83,7 +84,7 @@ context('rtCreateTrans()')
                                      periodicity='monthly',
                                      max_date = as.Date('2014-03-21'),
                                      adj_type='clip'),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 1148)
   })
 
@@ -96,7 +97,7 @@ context('rtCreateTrans()')
                                      date='sale_date',
                                      periodicity='monthly',
                                      seq_only = TRUE),
-              'rt')
+              'rtdata')
     expect_true(nrow(rt_df) == 4823)
 
   })
@@ -173,7 +174,7 @@ context('rtTimeMatrix()')
 
   test_that('Time matrix operates properly', {
 
-    # Work with an 'rt' object
+    # Work with an 'rtdata' object
     expect_is(time_matrix <- rtTimeMatrix(rt_df), 'timematrix')
 
     # Returns a NULL without
@@ -187,11 +188,11 @@ context('rtTimeMatrix()')
                   nrow(attr(rt_df, 'period_table')) - 1)
   })
 
-## hpiModel.rt(): Prior to rtModel() call -------------------------------------------
+## hpiModel.rtdata(): Prior to rtModel() call -------------------------------------------
 
-context('hpiModel.rt(): Prior to rtModel() call')
+context('hpiModel.rtdata(): Prior to rtModel() call')
 
-  test_that('hpiModel.rt works in simplest format',{
+  test_that('hpiModel.rtdata works in simplest format',{
     expect_is(rt_model <- hpiModel(hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE),
@@ -223,7 +224,8 @@ context('hpiModel.rt(): Prior to rtModel() call')
                                       log_dep = TRUE))
     expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
                                    estimator = 'base',
-                                   log_dep = FALSE), 'hpimodel')
+                                   log_dep = FALSE),
+              'hpimodel')
 
     # NA
     rt_dfx$price_1[1] <- NA_integer_
@@ -300,7 +302,7 @@ context('rtModel()')
 
   })
 
-  test_that('Performance with sparte data',{
+  test_that('Performance with sparse data',{
 
     ## Moderate Sparteness
 
@@ -361,11 +363,11 @@ context('rtModel()')
 
   })
 
-## hpiModel.rt() after rtModel --------------------------------------------------------
+## hpiModel.rtdata() after rtModel --------------------------------------------------------
 
-context('hpiModel.rt(): after rtModel()')
+context('hpiModel.rtdata(): after rtModel()')
 
-  test_that('hpiModel.rt works in both trim_model cases', {
+  test_that('hpiModel.rtdata works in both trim_model cases', {
     expect_is(rt_model <- hpiModel(hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE,
@@ -400,7 +402,7 @@ context('hpiModel.rt(): after rtModel()')
                                   trim_model=FALSE)$model_obj$qr))
   })
 
-  test_that('hpiModel.rt outputs are correct', {
+  test_that('hpiModel.rtdata outputs are correct', {
 
     # Run a model of each estimator type
     rt_model_base <- hpiModel(hpi_df = rt_df,

@@ -25,7 +25,8 @@ context('hedCreateTrans()')
     expect_is(hed_df <- hedCreateTrans(trans_df=sales_df,
                                        prop_id='pinx',
                                        trans_id='sale_id',
-                                       price='sale_price'), 'hed')
+                                       price='sale_price'),
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
   })
 
@@ -37,7 +38,8 @@ context('hedCreateTrans()')
                                        trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
-                                       periodicity='monthly'), 'hed')
+                                       periodicity='monthly'),
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
     assign('hed_df', hed_df, .GlobalEnv)
   })
@@ -53,7 +55,7 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        min_date = as.Date('2012-03-21')),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
 
     # Min date with adj
@@ -64,7 +66,8 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        min_date = as.Date('2012-03-21'),
-                                       adj_type='clip'), 'hed')
+                                       adj_type='clip'),
+              'heddata')
     expect_true(nrow(hed_df) == 33922)
 
     # Max with move
@@ -75,7 +78,7 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        max_date = as.Date('2015-03-21')),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
 
     # Max with clip
@@ -87,7 +90,7 @@ context('hedCreateTrans()')
                                        periodicity='monthly',
                                        max_date = as.Date('2014-03-21'),
                                        adj_type='clip'),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 21536)
 
   })
@@ -148,9 +151,9 @@ context('hedCreateTrans()')
 
   })
 
-## hpiModel.hed up to hedModel ------------------------------------------------------
+## hpiModel.heddata up to hedModel ------------------------------------------------------
 
-context('hpiModel.hed(): before hedModel()')
+context('hpiModel.heddata(): before hedModel()')
 
   # Create hed data
   hed_df <- hedCreateTrans(trans_df=sales,
@@ -401,11 +404,11 @@ context('hedModel()')
 
   })
 
-### hpiModel.hed after hedModel --------------------------------------------------------
+### hpiModel.heddata after hedModel --------------------------------------------------------
 
-context('hpiModel.hed()')
+context('hpiModel.heddata()')
 
-  test_that('hpiModel.hed works in both trim_model cases', {
+  test_that('hpiModel.heddata works in both trim_model cases', {
 
     # Base
     expect_is(hed_model <- hpiModel(hpi_df = hed_df,
@@ -464,7 +467,7 @@ context('hpiModel.hed()')
 
   })
 
-  test_that('hpiModel.hed outputs are correct', {
+  test_that('hpiModel.heddata outputs are correct', {
 
     # Run a model of each estimator type
     hed_model_base <- hpiModel(hpi_df = hed_df,

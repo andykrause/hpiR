@@ -1,7 +1,7 @@
 #' @title rtIndex
 #' @description Creates a house price index from a set of ttransactions using the
 #' repeat transactions method
-#' @param trans_df data.frame of transactions.  Can be a 'hpidata' or an 'rt' object.
+#' @param trans_df data.frame of transactions.  Can be a 'hpidata' or an 'rtdata' object.
 #' @param date Field contain the transaction date
 #' @param price Field contain the transaction price
 #' @param trans_id Field containing the unique transaction identifier
@@ -24,7 +24,7 @@ rtIndex <- function(trans_df,
                     ...){
 
   # Check if trans_df is an rt_df object
-  if ('rt' %in% class(trans_df)){
+  if ('rtdata' %in% class(trans_df)){
 
     rt_trans <- trans_df
 
@@ -66,9 +66,9 @@ rtIndex <- function(trans_df,
                               # prop_id = prop_id,
                               # price = price,
                               ...)
-  } # Ends if/else ('rt' %in% ...)
+  } # Ends if/else ('rtdata' %in% ...)
 
-  if (!'rt' %in% class(rt_trans)){
+  if (!'rtdata' %in% class(rt_trans)){
     message('Converting transactions data to repeat transaction object failed')
     stop()
   }

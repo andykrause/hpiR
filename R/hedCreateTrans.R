@@ -82,7 +82,7 @@ hedCreateTrans <- function(trans_df,
     message('No Hedonic Sales Created\n')
     return(NULL)
   } else {
-    class(hed_df) <- c('hed', 'hpidata', class(hed_df))
+    class(hed_df) <- c('heddata', 'hpidata', class(hed_df))
   }
 
   # Return _df

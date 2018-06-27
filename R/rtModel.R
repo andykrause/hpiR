@@ -25,8 +25,8 @@ rtModel <- function(rt_df,
   ## Check for proper classes
 
   # rt_df object
-  if (!'rt' %in% class(rt_df)){
-    message('\nIncorrect class for "rt_df" object.  Must be of class "rt"')
+  if (!'rtdata' %in% class(rt_df)){
+    message('\nIncorrect class for "rt_df" object.  Must be of class "rtdata"')
     stop()
   }
 

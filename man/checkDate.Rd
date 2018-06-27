@@ -7,7 +7,7 @@
 checkDate(x_date, name)
 }
 \arguments{
-\item{x_date}{Date string}
+\item{x_date}{Date string or vector}
 
 \item{name}{Name of argument to return in error/warning message}
 }

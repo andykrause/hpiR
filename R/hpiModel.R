@@ -24,11 +24,11 @@ hpiModel <- function(hpi_df,
     stop()
   }
 
-  UseMethod("hpiModel")
+  UseMethod("hpiModel", hpi_df)
 
 }
 
-#' @title hpiModel.rt
+#' @title hpiModel.rtdata
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
@@ -52,11 +52,11 @@ hpiModel <- function(hpi_df,
 #'                      log_dep = TRUE)
 #' @export
 
-hpiModel.rt <- function(hpi_df,
-                        estimator='base',
-                        log_dep=TRUE,
-                        trim_model=TRUE,
-                        ...){
+hpiModel.rtdata <- function(hpi_df,
+                            estimator='base',
+                            log_dep=TRUE,
+                            trim_model=TRUE,
+                            ...){
 
   # Create time matrix
   time_matrix <- rtTimeMatrix(hpi_df)
@@ -125,7 +125,7 @@ hpiModel.rt <- function(hpi_df,
             class='hpimodel')
 }
 
-#' @title hpiModel.hed
+#' @title hpiModel.heddata
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
 #' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
@@ -152,14 +152,14 @@ hpiModel.rt <- function(hpi_df,
 #'                      log_dep = TRUE)
 #' @export
 
-hpiModel.hed <- function(hpi_df,
-                         estimator='base',
-                         log_dep=TRUE,
-                         hed_spec=NULL,
-                         dep_var=NULL,
-                         ind_var=NULL,
-                         trim_model=TRUE,
-                         ...){
+hpiModel.heddata <- function(hpi_df,
+                             estimator='base',
+                             log_dep=TRUE,
+                             hed_spec=NULL,
+                             dep_var=NULL,
+                             ind_var=NULL,
+                             trim_model=TRUE,
+                             ...){
 
   # Create specification
   if (!is.null(hed_spec)){

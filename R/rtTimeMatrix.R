@@ -18,9 +18,9 @@ rtTimeMatrix <- function(rt_df
                          ){
 
   # Check for proper class
-  if(class(rt_df)[1] != 'rt'){
-    message('The rt_df object you have supplied is not of class rt. You can create ',
-            'an rt object with the rtCreateTrans() function.')
+  if (!"rtdata" %in% class(rt_df)){
+    message('The rt_df object you have supplied is not of class "rtdata". You can create ',
+            'an rtdata object with the rtCreateTrans() function.')
     stop()
   }
 

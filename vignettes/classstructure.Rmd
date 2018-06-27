@@ -36,12 +36,13 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | **Data** | | | | |
 | | `hpidata` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
+| | `rtdata` | `hpidata`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
+| | `heddata` | `hpidata`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
 ||||||
 
 
-| | `rt` | `hpidata`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
-| | `hed` | `hpidata`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
-||||||
+
+
 | **Model** | | | | |
 | | `hpimodel` | Multiple (ex. `lm`) | **hpiModel()** | Flexible list containing results of the particular model selected |
 | | `rtmod` | Multiple (ex. `lm`) | **rtModel()** | List containing model results of repeat transaction model
@@ -96,9 +97,29 @@ Next, load the example dataset of Seattle house transactions into your R session
 
   sales_hdf <- dateToPeriod(trans_df = seattle_sales,
                             date = 'sale_date',
-                            periodicity = 'monthly')
+                            periodicity = 'monthly',
+                            min_date = '2015-01-01',
+                            adj_type = 'clip')
 
 ```
 
+```{r eval=FALSE, messages=FALSE, echo=FALSE}
 
+  devtools::use_data(sales_hdf, overwrite=TRUE)
 
+```
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
+                              prop_id = 'pinx',
+                              trans_id = 'sale_id',
+                              price = 'sale_price')
+
+```
+
+```{r eval=FALSE, messages=FALSE, echo=FALSE}
+
+  devtools::use_data(sales_rtdf, overwrite=TRUE)
+
+```

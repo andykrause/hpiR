@@ -34,30 +34,23 @@ Begin by loading the `hpiR` packages (assuming that you've already downloaded it
 
 This package provides a sample dataset to work with.  This dataset, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author.]  The data is open and free to share.
 
-The data can be loaded into an object by wrapping the `data(seattle_sales)` command with `get`.   
+The data can be loaded with the `data(seattle_sales)` command.   
+
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales <- get(data(seattle_sales))
+  data(seattle_sales)
 
 ```
 
-<!-- A simple plot shows the location of these sales across the city. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!-- #  ggplot(sales) + geom_sf() -->
-
-<!-- ``` -->
-
 All of the potential models that we can create with this package require the transaction date to be converted to a numeric and relative time period.  Relative, here, mean relative to the base period which is assumed to be the first period in the transaction data.  
 
-The `dateToPeriod()` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are *"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*, with *"yearly"* as the default.  In addition to the transaction data (**trans_df**) and the period type selection (**periodicity**), the `dateToPeriod()` function also requires an input telling it which field in the data contains the transaction date (**date**).
+The `dateToPeriod()` function will convert R date fields into relative time periods, based on a periodicity of choice.  The available options are *"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*, with *"yearly"* as the default.  In addition to the transaction data (**trans_df**) and the period type selection (**periodicity**), the `dateToPeriod()` function also requires an input telling it which field in the data contains the transaction date (**date**). The `dateToPeriod()` function will return an object of class **"hpidata"** which inherits from **"data.frame"**. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_df <- dateToPeriod(trans_df = sales,
-                           date = 'sale_date',
-                           periodicity = 'monthly')
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
+                            date = 'sale_date',
+                            periodicity = 'monthly')
 
 ```
 
@@ -65,11 +58,11 @@ The default specification of `dateToPeriod()` will use the minimum and maximum d
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_df <- dateToPeriod(trans_df = sales,
-                           date = 'sale_date',
-                           periodicity = 'monthly',
-                           min_date = as.Date('2009-12-01'),
-                           max_date = as.Date('2017-01-01'))
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
+                            date = 'sale_date',
+                            periodicity = 'monthly',
+                            min_date = as.Date('2009-12-01'),
+                            max_date = as.Date('2017-01-01'))
 
 ```
 
@@ -77,11 +70,11 @@ If the dates that are provided as alternative minimums and maximums are within t
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_df <- dateToPeriod(trans_df = sales,
-                           date = 'sale_date',
-                           periodicity = 'monthly',
-                           min_date = as.Date('2010-12-01'),
-                           max_date = as.Date('2016-01-01'))
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
+                            date = 'sale_date',
+                            periodicity = 'monthly',
+                            min_date = as.Date('2010-12-01'),
+                            max_date = as.Date('2016-01-01'))
 
 ```
 
@@ -89,49 +82,49 @@ Alternatively, you can use the **min_date** and **max_date** parameters to clip 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_clipped <- dateToPeriod(trans_df = sales,
-                                date = 'sale_date',
-                                periodicity = 'monthly',
-                                min_date = as.Date('2010-12-01'),
-                                max_date = as.Date('2016-01-01'),
-                                adj_type = 'clip')
+  sales_hdf_clip <- dateToPeriod(trans_df = seattle_sales,
+                                 date = 'sale_date',
+                                 periodicity = 'monthly',
+                                 min_date = as.Date('2010-12-01'),
+                                 max_date = as.Date('2016-01-01'),
+                                 adj_type = 'clip')
 
 ```
 
-For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales_df` object going forward).
+For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales_hdf` object going forward).
 
 We now have a dataset that includes a new field (**date_period**) indicating the period of each transaction relative to the first transaction in the data (at a monthly periodicity).  Additional information on the full extend of the periods as well as their numeric and date values can be found in the **"period_table"** attribute of the new object of class **trans_df** (also a **data.frame**); or accessed by:
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  head(attr(sales_df, 'period_table'))
+  head(attr(sales_hdf, 'period_table'))
 
-  class(sales_df)
+  class(sales_hdf)
 
 ```
 
-Finally, there information on the minimum date, maximum date and the periodicity can also be found in the attributes of **hpi_df** objects. Any object of class **hpi_df** can be used in all future analyses.
+Finally, there information on the minimum date, maximum date and the periodicity can also be found in the attributes of **hpidata** objects. Any object of class **hpidata** can be used in all future analyses.
 
 ### Repeat Transactions (Sales) Model
 
-We start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular methods to create a house price index. 
+Let's start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular methods to create a house price index. 
 
-First, we use the `rtCreateTrans()` function to convert the raw transaction data (the **hpidata** object) into a data.frame of repeat transactions (properties that have sold multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field as well as a unique transaction id field and a field denoting the transaction price.  
+First, we use the `rtCreateTrans()` function to convert the transaction data (the **hpidata** object) into a data.frame of repeat transactions (properties that have transacted multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field, a unique transaction id field and a field denoting the transaction price.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rt_sales <- rtCreateTrans(trans_df = sales_df,
-                            prop_id = 'pinx',
-                            trans_id = 'sale_id',
-                            price = 'sale_price')
+  sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
+                              prop_id = 'pinx',
+                              trans_id = 'sale_id',
+                              price = 'sale_price')
                           
 ```
 
-This function creates a data.frame with seven fields: the property id, the time period for the first transaction and the second transaction, the prices for the two tranactions and the unique transaction ids for both.  The resulting object has classes **rt** and inherits from **data.frame**. 
+This function creates a data.frame with seven fields: the property id, the time period for the first transaction and the second transaction, the prices for the two tranactions and the unique transaction ids for both.  The resulting object has classes **rtdata** and inherits from **hpidata** and **data.frame**. 
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  knitr::kable(rt_sales[4280:4289, ])
+  knitr::kable(sales_rtdf[4280:4289, ])
 
 ```
 
@@ -139,27 +132,27 @@ In the event of more than two transactions, all pairs of transactions are create
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rt_sales_so <- rtCreateTrans(trans_df = sales_df,
-                               prop_id = 'pinx',
-                               trans_id = 'sale_id',
-                               price = 'sale_price',
-                               seq_only = TRUE)
+  sales_rtdf_so <- rtCreateTrans(trans_df = sales_hdf,
+                                 prop_id = 'pinx',
+                                 trans_id = 'sale_id',
+                                 price = 'sale_price',
+                                 seq_only = TRUE)
                           
 ```
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  knitr::kable(rt_sales_so[4280:4289, ])
+  knitr::kable(sales_rtdf_so[4280:4289, ])
 
 ```
 
 Next, we use this data to estimate a repeat transactions model.  In this simple example we will use the **"base"** estimator (a simple OLS) with a logged dependent variable (**"log_dep = TRUE"**).  Models may also be estimated via a robust regression model (**"estimator = 'robust'"**) or a weighted OLS model (**"estimator = 'weighted'"**) as originally suggested by Case and Shiller
 
-The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpidata` object that is passed to it, in this case that class is 'rt' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
+The `hpiModel()` function is an S3 method that will dispatch on the class of the `hpidata` object that is passed to it, in this case that class is 'rtdata' signifying that the data is in **repeat-transaction** format.  Again, we'll use a **"base"**" estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class **hpimodel** that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                           
-  rt_model <- hpiModel(hpi_df = rt_sales,
+  rt_model <- hpiModel(hpi_df = sales_rtdf,
                        estimator = 'base',
                        log_dep = TRUE)
 
@@ -171,7 +164,7 @@ The objects resulting from regression model can be rather large, so by default t
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
                      
-  rt_full <- hpiModel(hpi_df = rt_sales,
+  rt_full <- hpiModel(hpi_df = sales_rtdf,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model = FALSE)
@@ -288,7 +281,7 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rt_1 <- rtIndex(trans_df = sales,
+  rt_1 <- rtIndex(trans_df = seattle_sales,
                   periodicity = 'monthly',
                   min_date = '2010-06-01',
                   max_date = '2015-11-30',
@@ -321,11 +314,11 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_df <- dateToPeriod(trans_df = sales,
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
                            date = 'sale_date',
                            periodicity = 'monthly')
 
-  rt_2 <- rtIndex(trans_df = sales_df,
+  rt_2 <- rtIndex(trans_df = sales_hdf,
                   date = 'sale_date',
                   price = 'sale_price',
                   trans_id = 'sale_id',
@@ -349,12 +342,12 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rt_sales <- rtCreateTrans(trans_df = sales_df,
+  sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
                             prop_id = 'pinx',
                             trans_id = 'sale_id',
                             price = 'sale_price')
 
-  rt_3 <- rtIndex(trans_df = rt_sales,
+  rt_3 <- rtIndex(trans_df = sales_rtdf,
                   estimator = 'robust',
                   log_dep = TRUE,
                   trim_model = FALSE,
@@ -382,7 +375,7 @@ First, we create a set of hedonic model ready data with the `hedCreateTrans()` f
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  hed_sales <- hedCreateTrans(trans_df = sales,
+  hed_sales <- hedCreateTrans(trans_df = seattle_sales,
                               prop_id = 'pinx',
                               trans_id = 'sale_id',
                               price = 'sale_price',
@@ -486,7 +479,7 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  hed_1 <- hedIndex(trans_df = sales,
+  hed_1 <- hedIndex(trans_df = seattle_sales,
                     periodicity = 'monthly',
                     min_date = '2010-06-01',
                     max_date = '2015-11-30',
@@ -523,15 +516,14 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_df <- dateToPeriod(trans_df = sales,
+  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
                            date = 'sale_date',
-                           periodicity = 'monthly')
+                           periodicity = 'monthly',
+                           min_date = '2010-02-01',
+                           max_date = '2015-11-30',
+                           adj_type = 'move')
 
-  hed_2 <- hedIndex(trans_df = sales,
-                    periodicity = 'monthly',
-                    min_date = '2010-02-01',
-                    max_date = '2015-11-30',
-                    adj_type = 'move',
+  hed_2 <- hedIndex(trans_df = sales_hdf,
                     date = 'sale_date',
                     price = 'sale_price',
                     trans_id = 'sale_id',
@@ -559,7 +551,7 @@ There are three 'levels of entry' with the wrapper function.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
 
-  hed_sales <- hedCreateTrans(trans_df = sales_df,
+  hed_sales <- hedCreateTrans(trans_df = sales_hdf,
                               prop_id = 'pinx',
                               trans_id = 'sale_id',
                               price = 'sale_price')
@@ -593,7 +585,7 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  rt_hpi <- rtIndex(trans_df = rt_sales,
+  rt_hpi <- rtIndex(trans_df = sales_rtdf,
                     estimator = 'robust',
                     log_dep = TRUE,
                     trim_model = FALSE,

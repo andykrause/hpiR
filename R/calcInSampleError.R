@@ -28,9 +28,9 @@ calcInSampleError <- function(pred_df,
   }
 
   if (!any('data.frame' %in% class(pred_df)) ||
-        !any(class(pred_df) %in% c('rt', 'hed'))){
+        !any(class(pred_df) %in% c('rtdata', 'heddata'))){
     message('"pred_df" argument must be a data.frame with additional class of ',
-            ' "rt" or "hed"')
+            ' "rtdata" or "heddata"')
     stop()
   }
 
@@ -38,10 +38,10 @@ calcInSampleError <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.rt
+#' @title calcInSampleError.rtdata
 #' @export
 
-calcInSampleError.rt <- function(pred_df,
+calcInSampleError.rtdata <- function(pred_df,
                                  index,
                                  ...){
 
@@ -72,12 +72,12 @@ calcInSampleError.rt <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.rt
+#' @title calcInSampleError.heddata
 #' @export
 
-calcInSampleError.hed <- function(pred_df,
-                                  index,
-                                  ...){
+calcInSampleError.heddata <- function(pred_df,
+                                      index,
+                                      ...){
 
   # Future method
 

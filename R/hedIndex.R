@@ -25,7 +25,7 @@ hedIndex <- function(trans_df,
 ){
 
   # Check if trans_df is an hed_df object
-  if ('hed' %in% class(trans_df)){
+  if ('heddata' %in% class(trans_df)){
 
     hed_trans <- trans_df
 
@@ -64,9 +64,9 @@ hedIndex <- function(trans_df,
     # Create Tranactions object
     hed_trans <- hedCreateTrans(trans_df = trans_df,
                                ...)
-  } # Ends if/else ('hed' %in% ...)
+  } # Ends if/else ('heddata' %in% ...)
 
-  if (!'hed' %in% class(hed_trans)){
+  if (!'heddata' %in% class(hed_trans)){
     message('Converting sales data to hedonic sales object failed')
     stop()
   }

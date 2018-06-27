@@ -32,9 +32,9 @@ calcKFoldError <- function(hpi_obj,
   }
 
   if (!any('data.frame' %in% class(pred_df)) ||
-      !any(class(pred_df) %in% c('rt', 'hed'))){
+      !any(class(pred_df) %in% c('rtdata', 'heddata'))){
     message('"pred_df" argument must be a data.frame with additional class of ',
-            ' "rt" or "hed"')
+            ' "rtdata" or "heddata"')
     stop()
   }
 
@@ -123,9 +123,9 @@ createKFoldData <- function(score_ids,
 }
 
 #' @export
-createKFoldData.rt <- function(score_ids,
-                               full_data,
-                               pred_df){
+createKFoldData.rtdata <- function(score_ids,
+                                   full_data,
+                                   pred_df){
 
   train_df <- full_data[-score_ids, ]
   score_df <- matchKFold(train_df,
@@ -159,8 +159,8 @@ matchKFold <- function(train_df,
 }
 
 #' @export
-matchKFold.rt <- function(train_df,
-                          pred_df){
+matchKFold.rtdata <- function(train_df,
+                              pred_df){
 
   score_df <- pred_df[!paste0(pred_df$trans_id1, "_", pred_df$trans_id2) %in%
                           paste0(train_df$trans_id1, "_", train_df$trans_id2), ]
@@ -169,8 +169,8 @@ matchKFold.rt <- function(train_df,
 }
 
 #' @export
-matchKFold.hed <- function(train_df,
-                           pred_df){
+matchKFold.heddata <- function(train_df,
+                               pred_df){
 
   # Choose every other one
   x1 <- which(!pred_df$trans_id1 %in% train_df$trans_id)[c(T,F)]

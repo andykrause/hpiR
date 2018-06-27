@@ -24,7 +24,7 @@ hedModel <- function(estimator,
   ## Check for proper classes
 
   # hed_df object
-  if (!'hed' %in% class(hed_df)){
+  if (!'heddata' %in% class(hed_df)){
     message('\nIncorrect class for "hed_df" object.  Must be of class "hed"')
     stop()
   }

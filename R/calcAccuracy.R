@@ -55,12 +55,12 @@ calcAccuracy <- function(hpi_obj,
   }
 
   # Check agreement between test_type and hpi_obj
-  if (!test_type %in% class(hpi_obj$data)){
+  if (!paste0(test_type, 'data') %in% class(hpi_obj$data)){
     if (is.null(pred_df) ||
-          class(pred_df) != test_type){
+          !paste0(test_type, 'data') %in% class(pred_df)){
        message('When "test_type" (', test_type, ') does not match the "hpi" object model ',
                'type (', class(hpi_obj$data)[1], ') you must provide an "pred_df" object ',
-               'of the necessary class, in this case: ', test_type)
+               'of the necessary class, in this case: ', paste0(test_type, 'data'))
        stop()
      }
   } else {
@@ -104,7 +104,7 @@ calcAccuracy <- function(hpi_obj,
               " and before.")
       pred_df <- pred_df %>%
         dplyr::filter(period_2 <= max(hpi_obj$index$period))
-      class(pred_df) <- c('rt', 'data.frame')
+      class(pred_df) <- c('rtdata', 'data.frame')
     }
   }
 
