@@ -485,7 +485,7 @@ context('calcSeriesAccuracy()')
     expect_true('accuracy' %in% names(hed_series$hpis[[1]]$index))
 
     # Smooth
-    expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
+    expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                                test_method = 'kfold',
                                                test_type = 'rt',
                                                pred_df = rt_index$data,
@@ -605,64 +605,44 @@ context('calcForecastError()')
                                               smooth = TRUE),
               'serieshpi')
     expect_is(rt_series$accuracy_smooth, 'indexaccuracy')
-  })
+  })### Revision Functions --------------------------------------------------------------
 
-  ### Revision Functions --------------------------------------------------------------
-
-  context('calcRevision()')
-
-  # Add Series to the hpi object for further testing
-  hed_index <- createSeries(hpi_obj = hed_index,
-                            train_period = 24,
-                            max_period = 84,
-                            in_place = TRUE)
-
-  # Add Series to the hpi object for further testing
-  rt_index <- createSeries(hpi_obj = rt_index,
-                           train_period = 24,
-                           max_period = 84,
-                           in_place = TRUE,
-                           in_place_name = 's84')
+context('calcRevision()')
 
   test_that('calcRevision() works',{
 
     # Standard series object
-    expect_is(calcRevision(series_obj = hed_index$series), 'hpirevision')
+    expect_is(hed_rev <- calcRevision(series_obj = hed_series),
+              'seriesrevision')
 
-    # Extract from an hpi object
-    expect_is(calcRevision(series_obj = hed_index), 'hpirevision')
+    # In place
+    expect_is(hed_series <- calcRevision(series_obj = hed_series,
+                                         in_place = TRUE),
+              'serieshpi')
+    expect_is(hed_series$revision, 'seriesrevision')
 
-    # Extract from an hpi object with a different name
-    expect_is(calcRevision(series_obj = rt_index,
-                           series_name = 's84'), 'hpirevision')
+    # With smooth
+    expect_is(rt_rev_s <- calcRevision(series_obj = rt_series,
+                                       smooth = TRUE),
+              'seriesrevision')
 
-  })
-
-  test_that('calcRevision() with in_place additions works',{
-
-    # Standard in_place
-    expect_is(calcRevision(series_obj = hed_index,
-                           in_place = TRUE),
-              'hpi')
-
-    # In place with new name
-    expect_is(rt_index <- calcRevision(series_obj = rt_index,
-                                       series_name = 's84',
-                                       in_place = TRUE,
-                                       in_place_name ='r84'),
-              'hpi')
-    expect_is(rt_index$r84, 'hpirevision')
+    # With smooth in place
+    expect_is(rt_series <- calcRevision(series_obj = rt_series,
+                                        smooth = TRUE,
+                                        in_place = TRUE),
+              'serieshpi')
+    expect_is(rt_series$revision_smooth, 'seriesrevision')
 
   })
 
   test_that('Bad arguments create errors',{
 
     # Bad series_obj
-    expect_error(hed_rev <- calcRevision(series_obj = hed_index$data))
+    expect_error(hed_rev <- calcRevision(series_obj = hed_series$data))
 
-    # Bad series_name
-    expect_error(hed_rev <- calcRevision(series_obj = hed_index,
-                                         series_name = 'xxx'))
+    # Bad smooth = TRUE
+    expect_error(hed_rev <- calcRevision(series_obj = hed_series,
+                                         smooth = TRUE))
 
   })
 

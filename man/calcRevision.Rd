@@ -7,8 +7,6 @@
 calcRevision(series_obj)
 }
 \arguments{
-\item{series_name}{default = 'series'; Name of the series if extracting an existing one}
-
 \item{in_place}{default = FALSE; Calculating in place (adding to hpi)}
 
 \item{in_place_name}{default = 'rev'; name of revision object in_place}
@@ -16,6 +14,8 @@ calcRevision(series_obj)
 \item{...}{Additional Arguments}
 
 \item{index_obj}{A list of progressively longer indexes (an 'hpiseries' object from createSeries())}
+
+\item{series_name}{default = 'series'; Name of the series if extracting an existing one}
 }
 \value{
 list containing:

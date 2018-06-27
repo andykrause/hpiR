@@ -1030,20 +1030,12 @@ As above, it can be used on the raw index values or the smoothed ones (**smooth 
   length(rt_series$hpis)
   class(rt_series$accuracy_smooth)
   
-    
 ``` 
-
-
-
-
-
-
-
 
 
 #### Revision
 
-The red line in the plot shows the final index (period 48) after all of the transactions have been considered. The various grey lines show the index value at that period for each of non-final estimated series (24 through 47).  In this instance, as if often the case with repeat sales models, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
+As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
 
 Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile.
 
@@ -1051,12 +1043,17 @@ The second calculation simply averages all revisions across all periods to provi
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
+  # Return to a revision object
   hed_rev <- calcRevision(series_obj = hed_series)
   class(hed_rev)  
 
-  rt_rev <- calcRevision(series_obj = rt_hpi$series_24_to_48)
-  class(rt_rev)  
-
+  # Return in place (with smooth)
+  rt_series <- calcRevision(series_obj = rt_series,
+                            in_place = TRUE,
+                            smooth = TRUE)
+  class(rt_series)
+  class(rt_series$revision_smooth)
+  
 ```
 
 We can plot the revisions with the `plot.hpirevision()` method to show the average revision by time period. The **measure** argument (default = **"median"**) determines whether median or mean revisions will be shown. 
@@ -1069,28 +1066,20 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-  plot(rt_rev, measure = 'mean')
+  plot(rt_series$revision_smooth, measure = 'mean')
 
 ```
 
-The revision can be pulled from an existing **hpi** object, so long as the `series_name` argument (default == `series`) matches the name of the series object that you added to the `hpi` object using  added directly to a full `hpi` object by using the `in_place` argument.  If so, it will default to being named `rev`, which can be changed by the `in_place_name` argument.
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  # Pull from an 'hpi' object
-  rt_rev <- calcRevision(series_obj = rt_hpi,
-                         series_name = 'series_24_to_48') # an hpi object
-  class(rt_rev)
 
-  # Add to an hpi object
-  rt_hpi <- calcRevision(series_obj = rt_hpi,
-                         series_name = 'series_24_to_48',
-                         in_place = TRUE,
-                         in_place_name = 'rev_24_to_48')
-  class(rt_hpi)
-  class(rt_hpi$rev_24_to_48)
-  
-```
+
+
+
+
+
+
+
 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, warning=FALSE}

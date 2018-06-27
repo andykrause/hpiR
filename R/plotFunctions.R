@@ -239,11 +239,11 @@ plot.serieshpi<- function(series_obj,
 
 }
 
-#' @title plot.hpirevision
+#' @title plot.seriesrevision
 #' @export
 
-plot.hpirevision <- function(rev_obj,
-                               measure = 'median',
+plot.seriesrevision <- function(rev_obj,
+                                measure = 'median',
                                ...){
 
   # Make Data
