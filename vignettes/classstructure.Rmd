@@ -53,26 +53,17 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
 | | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
-| | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
+| | `indexaccuracy` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
 | **Series** | | | | |
 | | `seriesrevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
+
 ||||||
 | **Visualization** | | | | |
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `plotseries` | `gg`, `ggplot` | **plot.serieshpi()** | Plotting object for an index series |
 | | `plotrevision` | `gg`, `ggplot` | **plot.seriesrevision()** | Plotting object for revision statistics |
 
-
-
-
-
-| | `hpiblend` | `hpiindex`, `ts` | **blendIndexes()** | Blended two or more indexes | 
-||||||
-| **Analytical** | | | | |
-
-||||||
-| | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
 
 
 | | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |

@@ -1143,18 +1143,3 @@ We can then compare the summary statistics of the errors, which seem to suggest 
   knitr::kable(error_df)
 
 ```
-
-### Blending Indexes
-
-It may be advantageous to blend ndexes. The `blendIndexes()` function will blend any number of identical length indexes (objects of class **hpiindex**).  Provide a list of indexes (of the same length), plus a set of weights that control the blending process.  If the **weights** argument is left blank, it will be blended evenly (1/n). Weights vector must be the same length as the index list.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
-
-  blend_index <- blendIndexes(index_list = list(rt_hpi$index,
-                                                hed_hpi$index),
-                              weights=c(.6, .4))
-
-  plot(blend_index)
-  class(plot(blend_index))
-
-```
