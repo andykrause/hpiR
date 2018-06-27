@@ -243,9 +243,7 @@ An example `rtdata` object
  
 ```
 
-
 #### Saving objects to the package
-
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
   

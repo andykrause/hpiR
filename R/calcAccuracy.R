@@ -32,7 +32,6 @@ calcAccuracy <- function(hpi_obj,
                          test_type = 'rt',
                          pred_df = NULL,
                          smooth = FALSE,
-                         series_name = 'series',
                          in_place = FALSE,
                          in_place_name = 'accuracy',
                          ...){
@@ -44,8 +43,8 @@ calcAccuracy <- function(hpi_obj,
   }
 
   # check for allowed test_method
-  if (!test_method %in% c('insample', 'kfold', 'forecast')){
-    message('"test_method" must be one of "insample", "kfold" or "forecast"')
+  if (!test_method %in% c('insample', 'kfold')){
+    message('"test_method" must be one of "insample" or "kfold"')
     stop()
   }
 
@@ -74,36 +73,6 @@ calcAccuracy <- function(hpi_obj,
     stop()
   }
 
-  # Check for series
-  if (test_method == 'forecast'){
-
-    if (is.null(hpi_obj[[series_name]]) ||
-        any(!class(hpi_obj[[series_name]]) == 'hpiseries')){
-
-      # Set default training period
-      if (is.null(list(...)$train_period)){
-        train_period <- as.integer(floor(length(hpi_obj$index$index) / 4))
-      } else {
-        train_period <- list(...)$train_period
-      }
-
-      # Set default max period
-      if (is.null(list(...)$max_period)){
-        max_period <- length(hpi_obj$index$index)
-      } else {
-        max_period <- list(...)$max_period
-      }
-
-      # Estimate Series
-      hpi_obj <- createSeries(hpi_obj = hpi_obj,
-                              train_period = train_period,
-                              max_period = max_period,
-                              in_place = TRUE,
-                              in_place_name = series_name)
-
-    } # Ends if(is.null(hpi....))
-  } # Ends if(test_method == 'series')
-
   # Clip pred_df to size of index
   if (test_type == 'rt') {
     if (max(pred_df$period_2) > max(hpi_obj$index$period)){
@@ -124,32 +93,145 @@ calcAccuracy <- function(hpi_obj,
     if (smooth) index_name <- 'smooth'
 
     accr_obj <- calcInSampleError(pred_df = pred_df,
-                                   index = hpi_obj$index[[index_name]],
+                                  index = hpi_obj$index[[index_name]],
                                    ...)
   }
 
   # kfold
   if (test_method == 'kfold'){
     accr_obj <- calcKFoldError(hpi_obj = hpi_obj,
-                                pred_df = pred_df,
+                               pred_df = pred_df,
                                 ...)
-  }
-
-  # Forecast
-  if (test_method == 'forecast'){
-    accr_obj <- calcForecastError(is_obj = hpi_obj[[series_name]],
-                                   pred_df = pred_df,
-                                   ...)
   }
 
   # Return results
 
   if (in_place){
 
-    hpi_obj[[in_place_name]] <- accr_obj
+    hpi_obj$index[[in_place_name]] <- accr_obj
     return(hpi_obj)
   }
 
   accr_obj
 
 }
+
+#' @title calcSeriesAccuracy
+#' @description Calculates accuracy over a series of indexes
+#' @usage Lorem Ipsum...
+#' @param series_obj Series object to be calculted
+#' @param test_method default = 'insample'; also 'kfold' or 'forecast'
+#' @param test_type default = 'rt'; Type of data to use for test.  See details.
+#' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param ... Additional Arguments
+#' @return `serieshpi` object
+#' @section Further Details:
+#' Leaving order blank default to a moving average with order 3.
+#' @export
+
+calcSeriesAccuracy <- function(series_obj,
+                               test_method = 'insample',
+                               test_type = 'rt',
+                               pred_df = NULL,
+                               smooth = FALSE,
+                               ...){
+
+  # Bad series_obj
+  if (!'serieshpi' %in% class(series_obj)){
+    message('The "series_obj" must be of class "serieshpi"')
+    stop()
+  }
+
+  # check for allowed test_method
+  if (!test_method %in% c('insample', 'kfold', 'forecast')){
+    message('"test_method" must be one of "insample", "kfold" or "forecast"')
+    stop()
+  }
+
+  # check for allowed test_method
+  if (!test_type %in% c('rt', 'hed')){
+    message('"test_type" must be one of "rt", "hed"')
+    stop()
+  }
+
+  # Check agreement between test_type and hpi_obj
+  if (!paste0(test_type, 'data') %in% class(series_obj$data)){
+    if (is.null(pred_df) ||
+        !paste0(test_type, 'data') %in% class(pred_df)){
+      message('When "test_type" (', test_type, ') does not match the "hpi" object model ',
+              'type (', class(series_obj$data)[1], ') you must provide an "pred_df" object ',
+              'of the necessary class, in this case: ', paste0(test_type, 'data'))
+      stop()
+    }
+  } else {
+    pred_df <- series_obj$data
+  }
+
+  # If not forecast:
+  if (test_method != 'forecast'){
+
+    # Calculate accuracy
+    suppressMessages(
+      a_hpis <- purrr::map(.x=series_obj$hpis,
+                           test_method = test_method,
+                           test_type = test_type,
+                           pred_df = pred_df,
+                           orig_data = series_obj$data,
+                           .f = function(x, test_method, test_type, pred_df,
+                                         orig_data){
+                             x$data <- orig_data
+                             s_ind <- calcAccuracy(x,
+                                                   test_method,
+                                                   test_type,
+                                                   pred_df,
+                                                   smooth=FALSE,
+                                                   in_place=TRUE)
+                             s_ind$index$accuracy$series = length(x$index$value)
+                             s_ind
+                           }))
+
+    if (smooth){
+      suppressMessages(
+        a_hpis <- purrr::map(.x=a_hpis,
+                             test_method = test_method,
+                             test_type = test_type,
+                             pred_df = pred_df,
+                             orig_data = series_obj$data,
+                             .f = function(x, test_method, test_type, pred_df,
+                                           orig_data){
+                               x$data <- orig_data
+                               s_ind <- calcAccuracy(x,
+                                                     test_method,
+                                                     test_type,
+                                                     pred_df,
+                                                     smooth=FALSE,
+                                                     in_place=TRUE,
+                                                     in_place_name = 'accuracy_smooth')
+                               s_ind$index$accuracy$series = length(x$index$value)
+                               s_ind
+                             }))
+    }
+
+    # Add to series obj
+    series_obj$hpis <- a_hpis
+
+  } else {
+
+   accr_obj <- calcForecastError(is_obj = series_obj,
+                                 pred_df = pred_df,
+                                 smooth = smooth,
+                                 ...)
+
+   if (!smooth){
+     series_obj[['accuracy']] <- accr_obj
+   } else {
+     series_obj[['accuracy_smooth']] <- accr_obj
+   }
+
+  }
+
+  # Return standard
+  series_obj
+
+}
+

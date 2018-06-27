@@ -111,3 +111,60 @@ calcVolatility <- function(index,
   vol_obj
 
 }
+
+#' @title calcSeriesVolatility
+#' @description Calculates volatility over a series of indexes
+#' @usage Lorem Ipsum...
+#' @param series_obj Series object to be calculted
+#' @param window default = 3; Rolling periods over which to calculate the volatility
+#' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
+#' @param ... Additional Arguments
+#' @return `serieshpi` object
+#' @section Further Details:
+#' Leaving order blank default to a moving average with order 3.
+#' @export
+
+calcSeriesVolatility <- function(series_obj,
+                                 window = 3,
+                                 smooth = FALSE,
+                                 ...){
+
+  # Bad series_obj
+  if (!'serieshpi' %in% class(series_obj)){
+    message('The "series_obj" must be of class "serieshpi"')
+    stop()
+  }
+
+  # Apply smoothing to all indexes
+  s_hpis <- purrr::map(.x=series_obj$hpis,
+                       window = window,
+                       .f = function(x, window){
+                         ind <- x$index
+                         s_ind <- calcVolatility(ind, window, smooth=FALSE,
+                                                 in_place=TRUE)
+                         x$index <- s_ind
+                         x
+                       })
+
+  if (smooth){
+
+    s_hpis <- purrr::map(.x=s_hpis,
+                         window = window,
+                         .f = function(x, window){
+                           ind <- x$index
+                           s_ind <- calcVolatility(ind, window, smooth=TRUE,
+                                                   in_place=TRUE)
+                           x$index <- s_ind
+                           x
+                         })
+
+  }
+
+  # Add to series obj
+  series_obj$hpis <- s_hpis
+
+  # Return standard
+  series_obj
+
+}
+

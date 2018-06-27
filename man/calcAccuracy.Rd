@@ -15,13 +15,13 @@ calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in
 
 \item{pred_df}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
 
-\item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
-
 \item{in_place}{default = FALSE; Should the result be returned into an existing `hpi` object}
 
 \item{in_place_name}{default = 'acc'; Name for returning in place}
 
 \item{...}{Additional Arguments}
+
+\item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
 }
 \value{
 object of class `indexerrors` inheriting from class `data.frame` containing the following fields:

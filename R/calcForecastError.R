@@ -30,8 +30,8 @@ calcForecastError <- function(is_obj,
 
   # Check Classes
 
-  if (!'hpiseries' %in% class(is_obj)){
-    message('"is_obj" argument must be of class "hpiseries"')
+  if (!'serieshpi' %in% class(is_obj)){
+    message('"is_obj" argument must be of class "serieshpi"')
     stop()
   }
 
@@ -43,8 +43,8 @@ calcForecastError <- function(is_obj,
   }
 
   # Set start and end
-  start <- end(is_obj[[1]]$index)[1] + 1
-  end <- end(is_obj[[length(is_obj)]]$index)[1]
+  start <- end(is_obj$hpis[[1]]$index$value)[1] + 1
+  end <- end(is_obj$hpis[[length(is_obj$hpis)]]$index$value)[1]
   time_range <- start:end
 
   # Get data
@@ -54,11 +54,26 @@ calcForecastError <- function(is_obj,
                             .f=buildForecastIDs)
 
   # Predict value
-  fc_forecasts <- purrr::map(.x=is_obj[-length(is_obj)],
+  if ('smooth' %in% names(list(...)) &&
+       isTRUE(list(...)$smooth) &&
+       'smooth' %in% names(is_obj$hpis[[1]]$index)){
+    index_name <- 'smooth'
+  } else {
+    if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
+      message('No smoothed indexes found.  Create them with "smoothSeries()" and ',
+              'try again')
+      stop()
+    }
+    index_name <- 'value'
+  }
+
+
+  fc_forecasts <- purrr::map(.x=is_obj$hpis[-length(is_obj$hpis)],
                              .f=function(x){
-                                 new_x <- forecast(ets(x$index, model='ANN'), h=1)
-                                 ts(c(x$index, new_x$mean), start=start(x),
-                                    frequency=frequency(x))
+                                 new_x <- forecast(ets(x$index[[index_name]],
+                                                       model='ANN'), h=1)
+                                 ts(c(x$index[[index_name]], new_x$mean), start=start(x),
+                                                   frequency=frequency(x))
                               }
                            )
 
@@ -72,7 +87,7 @@ calcForecastError <- function(is_obj,
                             })
 
   error_df <- bind_rows(fc_error)
-  class(error_df) <- unique(c('indexerrors', class(error_df)))
+  class(error_df) <- unique(c('indexaccuracy', class(error_df)))
   attr(error_df, 'test_method') <- 'forecast'
 
   # If returnning errors
