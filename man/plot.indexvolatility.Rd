@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.indexvolatility}
 \alias{plot.indexvolatility}
-\title{plot.indexvol}
+\title{plot.hpiblend}
 \usage{
 plot.indexvolatility(vol_obj)
 }

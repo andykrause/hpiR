@@ -53,9 +53,11 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
 | | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
+| | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
+||||||
 | **Visualization** | | | | |
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
-
+| | `plotseries` | `gg`, `ggplot` | **plot.serieshpi()** | Plotting object for an index series |
 
 
 
@@ -65,13 +67,11 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `hpiblend` | `hpiindex`, `ts` | **blendIndexes()** | Blended two or more indexes | 
 ||||||
 | **Analytical** | | | | |
-| | `hpiseries` | `hpiindex`, ~`ts`| **createSeries()** | creates a series of indexes that grow in length |
 | | `hpirevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
-| | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
 | | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
 | | `revisionplot` | `gg`, `ggplot` | **plot.hpirevision()** | Plotting object for revision statistics |
-| | `seriesplot` | `gg`, `ggplot` | **plot.hpiseries()** | Plotting object for an index series |
+
 | | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `errorplot` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
 
@@ -227,6 +227,22 @@ An example `rtdata` object
  
 ```
 
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_serieshpi <- createSeries(hpi_obj = ex_hpi,
+                               train_period = 48,
+                               max_period = 60)
+  class(ex_serieshpi)
+ 
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_plotseries <- plot(ex_serieshpi)
+  class(ex_plotseries)
+ 
+```
+
 
 #### Saving objects to the package
 
@@ -242,11 +258,13 @@ An example `rtdata` object
   devtools::use_data(ex_hpiindex, overwrite=TRUE)
   devtools::use_data(ex_smoothindex, overwrite=TRUE)
   devtools::use_data(ex_plotindex, overwrite=TRUE)
-  devtools::use_data(ex_hpi, overwrite=TRUE)
   
+  devtools::use_data(ex_hpi, overwrite=TRUE)
   devtools::use_data(ex_indexvolatility, overwrite=TRUE)
   devtools::use_data(ex_indexaccuracy, overwrite=TRUE)  
   
+  devtools::use_data(ex_hpiseries, overwrite=TRUE)
+  devtools::use_data(ex_plotseries, overwrite=TRUE)
   
   
 

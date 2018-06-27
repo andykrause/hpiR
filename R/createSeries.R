@@ -4,9 +4,6 @@
 #' @param hpi_obj Object of class 'hpi'
 #' @param train_period Number of periods to use as purely training before creating indexes
 #' @param max_period default=NULL; Maximum number of periods to create the index up to
-#' @param name_prefix default=NULL; Prefix to add before last time period if naming indexes
-#' @param in_place Add to existing hpi object?
-#' @param in_place_name default = 'series'; Give it a different name than the default
 #' @param ... Additional Arguments
 #' @return An `hpiseries` object -- a list of `hpiindex` objects.
 #' @section Further Details:
@@ -24,9 +21,6 @@
 createSeries <- function(hpi_obj,
                          train_period,
                          max_period=NULL,
-                         name_prefix=NULL,
-                         in_place = FALSE,
-                         in_place_name = 'series',
                          ...){
 
   # Check for proper class
@@ -71,30 +65,24 @@ createSeries <- function(hpi_obj,
                         train = TRUE,
                         .f = buildForecastIDs)
 
-  # Run models
-  is_models <- purrr::map(.x=is_data,
-                          y=hpi_obj$data,
-                          hed_spec=hpi_obj$model$mod_spec,
-                          log_dep = hpi_obj$model$log_dep,
-                          .f=function(x, y, hed_spec, log_dep, ...){
-                            hpiModel(hpi_df=y[x, ],
-                                     hed_spec=hed_spec,
-                                    log_dep=log_dep)
-                             })
-
-  # Convert models to indexes
-  is_series <- purrr::map(.x=is_models,
-                          .f=modelToIndex)
-
-  # Name
-  if (!is.null(name_prefix)) names(is_series) <- paste0(name_prefix, time_range)
-
-  if (in_place){
-    hpi_obj[[in_place_name]] <-  structure(is_series, class='hpiseries')
-    return(hpi_obj)
-  }
+  # Run models, indexes and combine into hpi objects
+  is_hpis <- purrr::map(.x=is_data,
+                        y=hpi_obj$data,
+                        hed_spec=hpi_obj$model$mod_spec,
+                        log_dep = hpi_obj$model$log_dep,
+                        .f=function(x, y, hed_spec, log_dep, ...){
+                            mod <- hpiModel(hpi_df=y[x, ],
+                                            hed_spec=hed_spec,
+                                            log_dep=log_dep,
+                                            ...)
+                            ind <- modelToIndex(mod, ...)
+                            structure(list(model = mod,
+                                           index = ind),
+                                      class = 'hpi')
+                          })
 
   # Return Values
-  structure(is_series, class='hpiseries')
-
+  structure(list(data = hpi_obj$data,
+                 hpis = is_hpis),
+            class='serieshpi')
 }

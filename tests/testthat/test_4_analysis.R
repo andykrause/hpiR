@@ -169,12 +169,12 @@ context('createSeries()')
   test_that('Index Series works', {
 
    expect_is(hed_series <- createSeries(hpi_obj = hed_index,
-                                           train_period = 24),
-             'hpiseries')
+                                        train_period = 24),
+             'serieshpi')
 
    expect_is(rt_series <- createSeries(hpi_obj = rt_index,
-                                          train_period = 24),
-             'hpiseries')
+                                       train_period = 24),
+             'serieshpi')
 
   })
 
@@ -182,59 +182,31 @@ context('createSeries()')
 
     # Train Range and max period
     expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
-                                                     train_period = 12,
-                                                     max_period = 50)) == 39)
+                                                  train_period = 12,
+                                                  max_period = 50)$hpis) == 39)
 
     # Max period is limited to lenght of 'hpi' object index
     expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
-                                                     train_period = 12,
-                                                     max_period = 150)) == 73)
-
-    # Name Prefix
-    expect_true(names(rt_series <- createSeries(hpi_obj = rt_index,
-                                                   train_period = 24,
-                                                   max_period = 70,
-                                                   name_prefix = 'xxx'))[1] == 'xxx24')
-
+                                                  train_period = 12,
+                                                  max_period = 150)$hpis) == 73)
   })
 
-  test_that('Creating in place (adding to hpi object) works', {
-
-    # Basic in_place
-    expect_is(hed_index <- createSeries(hpi_obj = hed_index,
-                                           train_period = 24,
-                                           max_period = 50,
-                                           in_place = TRUE),
-              'hpi')
-    expect_is(hed_index$series, 'hpiseries')
-
-    # With name
-    expect_is(hed_index <- createSeries(hpi_obj = hed_index,
-                                           train_period = 24,
-                                           max_period = 50,
-                                           in_place = TRUE,
-                                           in_place_name = 'xxx'),
-              'hpi')
-    expect_is(hed_index$xxx, 'hpiseries')
-
-  })
-
-  test_that('Bad argument create errors',{
+  test_that('Bad arguments create errors',{
 
     # Bad hpi_obj
     expect_error(hed_series <- createSeries(hpi_obj = hed_index$index,
-                                               train_period = 24,
-                                               max_period = 50))
+                                            train_period = 24,
+                                            max_period = 50))
 
     # Bad train_period
     expect_error(hed_series <- createSeries(hpi_obj = hed_index,
-                                               train_period = 'x',
-                                               max_period = 50))
+                                            train_period = 'x',
+                                            max_period = 50))
 
     # Bad train_period
     expect_error(hed_series <- createSeries(hpi_obj = hed_index,
-                                               train_period = 99,
-                                               max_period = 50))
+                                            train_period = 99,
+                                            max_period = 50))
 
   })
 
@@ -246,27 +218,11 @@ context('smoothSeries()')
   test_that('smoothSeries() works as intended', {
 
     # Standard Return
-    expect_is(rt_sseries <- smoothSeries(series_obj = rt_series,
-                                         order = 5),
-              'hpiseries')
-    expect_is(rt_sseries[[1]], 'indexsmooth')
-    expect_is(rt_sseries[[1]], 'hpiindex')
-    expect_true(length(rt_sseries) == length(rt_series))
-
-    # Return in place
-    rt_index <- createSeries(hpi_obj = rt_index,
-                             train_period = 24,
-                             max_period = 50,
-                             in_place = TRUE)
-
-    expect_is(rt_index <- smoothSeries(series_obj = rt_index,
-                                       order = 5,
-                                       series_name = 'series',
-                                       in_place=TRUE),
-              'hpi')
-    expect_is(rt_index$series, 'hpiseries')
-    expect_is(rt_index$smooth_series[[1]], 'indexsmooth')
-    expect_is(rt_index$series[[1]], 'hpiindex')
+    expect_is(rt_series <- smoothSeries(series_obj = rt_series,
+                                        order = 5),
+              'serieshpi')
+    expect_is(rt_series$hpis[[1]]$index$smooth, 'indexsmooth')
+    expect_is(rt_series$hpis[[1]]$index, 'hpiindex')
 
   })
 
@@ -280,17 +236,6 @@ context('smoothSeries()')
     expect_error(rt_sseries <- smoothSeries(series_obj = rt_series,
                                             order = -1))
 
-    # Create series
-    rt_index <- createSeries(hpi_obj = rt_index,
-                             train_period = 24,
-                             max_period = 50,
-                             in_place = TRUE)
-
-    # Bad series name
-    expect_error(rt_sseries <- smoothSeries(series_obj = rt_index,
-                                            order = 3,
-                                            series_name = 'xxx',
-                                            in_place = TRUE))
   })
 
 ### Revision Functions --------------------------------------------------------------

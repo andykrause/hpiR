@@ -89,45 +89,153 @@ plot.hpi <- function(hpi_obj,
 #' @title plot.hpiblend
 #' @export
 
-plot.hpiblend <- function(b_index){
+#' @title plot.indexvol
+#' @export
 
-  # Create index data
-  index_data <- data.frame(period=b_index$period,
-                           index=as.numeric(b_index$index),
-                           name='Blended',
-                           type='b',
-                           stringsAsFactors=FALSE)
+plot.indexvolatility <- function(vol_obj){
 
- anc_data <- data.frame(period=rep(b_index$period, length(b_index$parents)),
-                        index=unlist(b_index$parents),
-                        name=as.character(paste0('Ancestor  :',
-                              sort(rep(1:length(b_index$parents),
-                                         length(b_index$index))))),
-                         type='a',
-                        stringsAsFactors = FALSE)
+  # Set up dimensions
+  data_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
+                        volatility = c(rep(NA_integer_, attr(vol_obj, 'window')),
+                                       as.numeric(vol_obj$roll)),
+                        stringsAsFactors=FALSE)
 
-  plot_data <- rbind(index_data, anc_data)
-
-  # Set colors and sizes
-  col_vals <- c('gray50', 'blue')
-  size_vals <- c(.5, 1.5)
-
-
-  # Create plot
-  blend_plot <- ggplot(plot_data,
-                        aes(x=period, y=index,
-                            group = as.factor(name),
-                            color=as.factor(type),
-                            size=as.factor(type))) +
-    geom_line() +
-    scale_color_manual(values=col_vals) +
-    scale_size_manual(values=size_vals) +
-    ylab('Index Value\n') +
+  # Plot base volatility
+  vol_plot <- ggplot(data_df, aes(x=time_period, y=volatility)) +
+    geom_line(color='navy', size=2) +
+    ylab('Volatility\n') +
     xlab('\nTime Period') +
-    theme(legend.position='none',
-          legend.title = element_blank())
+    geom_hline(yintercept = vol_obj$mean, size=1, linetype = 2, color='gray50') +
+    geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
 
-  structure(blend_plot, class = c('blendplot', class(blend_plot)))
+  # Return Plot
+  structure(vol_plot, class = c('volatilityplot', class(vol_plot)))
+
+}
+
+#' @title plot.indexaccuracy
+#' @export
+
+plot.indexaccuracy <- function(error_obj,
+                               return_plot = FALSE){
+
+  # Get period count
+  p_cnt <- length(unique(error_obj$pred_period))
+
+  # Make the absolute box plot
+  bar_abs <- ggplot(error_obj, aes(x=as.factor(pred_period),
+                                   y=abs(pred_error)), alpha=.5) +
+    geom_boxplot(fill='lightblue') +
+    coord_cartesian(ylim=c(0, quantile(abs(error_obj$pred_error),.99))) +
+    ylab('Absolute Error') +
+    xlab('Time Period')
+
+  # Make the magnitude box plot
+  bar_mag <- ggplot(error_obj, aes(x=as.factor(pred_period),
+                                   y=pred_error), alpha=.5) +
+    geom_boxplot(fill='salmon') +
+    coord_cartesian(ylim=c(quantile(error_obj$pred_error, .01),
+                           quantile(error_obj$pred_error, .99))) +
+    ylab('Error') +
+    xlab('Time Period')
+
+  # Adjust axis if too many periods
+  if (p_cnt > 12){
+    breaks <- seq(from=min(error_obj$pred_period),
+                  to=max(error_obj$pred_period),
+                  length.out=12)
+    bar_abs <- bar_abs +
+      scale_x_discrete(breaks=breaks)
+
+    bar_mag <- bar_mag +
+      scale_x_discrete(breaks=breaks)
+  }
+
+  # Make absolute density plot
+  dens_abs <- ggplot(error_obj, aes(x=abs(pred_error)), alpha=.5) +
+    geom_density(fill='lightblue') +
+    coord_cartesian(xlim=c(0, quantile(abs(error_obj$pred_error),.99))) +
+    xlab('Absolute Error') +
+    ylab('Density of Error')
+
+  # Make magnitude density plot
+  dens_mag <- ggplot(error_obj, aes(x=pred_error), alpha=.5) +
+    geom_density(fill='salmon') +
+    coord_cartesian(xlim=c(quantile(error_obj$pred_error, .01),
+                           quantile(error_obj$pred_error, .99))) +
+    xlab('Error') +
+    ylab('Density of Error')
+
+  # Combine
+  full_plot <- gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
+                                       nrow = 2)
+
+  # Plot
+  plot(full_plot)
+
+  # Return or plot
+  if (return_plot){
+    return(structure(full_plot, class = c('errorplot', class(full_plot))))
+  }
+
+}
+
+
+#' @title plot.serieshpi
+#' @export
+
+plot.serieshpi<- function(series_obj,
+                          smooth = FALSE){
+
+  # Extract the indexes
+  indexes_. <- purrr::map(.x=series_obj$hpis,
+                          .f = function(x) x$index)
+
+  # Get the longest
+  largest <- indexes_.[[length(indexes_.)]]
+
+  # Set the value field
+  if (smooth && 'smooth' %in% names(largest)){
+    index_name <- 'smooth'
+  } else {
+    index_name <- 'value'
+  }
+
+  # Create blank_df
+  blank_df <- data.frame(time_period = 1:length(largest[[index_name]]),
+                         value=seq(min(largest[[index_name]]),
+                                   max(largest[[index_name]]),
+                                   length.out=length(largest[[index_name]])),
+                         stringsAsFactors=FALSE)
+
+  # Plot canvas
+  series_plot <- ggplot(blank_df,
+                        aes(x=time_period, y=value))
+
+  # Plot each of the non-terminal indexes
+  for(i in 1:length(indexes_.)){
+
+    data_df <- data.frame(x=1:length(indexes_.[[i]][[index_name]]),
+                          y=as.numeric(indexes_.[[i]][[index_name]]),
+                          stringsAsFactors=FALSE)
+    series_plot <- series_plot + geom_line(data=data_df,
+                                           aes(x=x,y=y),
+                                           color='gray70')
+  }
+
+  # Add the terminal index
+  data_df <- data.frame(x=1:length(indexes_.[[length(indexes_.)]][[index_name]]),
+                        y=as.numeric(indexes_.[[length(indexes_.)]][[index_name]]),
+                        stringsAsFactors=FALSE)
+
+  series_plot <- series_plot + geom_line(data=data_df,
+                                         aes(x=x,y=y),
+                                         color='red',
+                                         size=2) +
+    ylab('Index Value\n') +
+    xlab('\nTime Period')
+
+  structure(series_plot, class = c('seriesplot', class(series_plot)))
 
 }
 
@@ -169,136 +277,46 @@ plot.hpirevision <- function(rev_obj,
 
 }
 
-#' @title plot.indexerrors
-#' @export
 
-plot.indexerrors <- function(error_obj,
-                             return_plot = FALSE){
 
-  # Get period count
-  p_cnt <- length(unique(error_obj$pred_period))
+plot.hpiblend <- function(b_index){
 
-  # Make the absolute box plot
-  bar_abs <- ggplot(error_obj, aes(x=as.factor(pred_period),
-                                   y=abs(pred_error)), alpha=.5) +
-    geom_boxplot(fill='lightblue') +
-    coord_cartesian(ylim=c(0, quantile(abs(error_obj$pred_error),.99))) +
-    ylab('Absolute Error') +
-    xlab('Time Period')
+  # Create index data
+  index_data <- data.frame(period=b_index$period,
+                           index=as.numeric(b_index$index),
+                           name='Blended',
+                           type='b',
+                           stringsAsFactors=FALSE)
 
-  # Make the magnitude box plot
-  bar_mag <- ggplot(error_obj, aes(x=as.factor(pred_period),
-                                   y=pred_error), alpha=.5) +
-    geom_boxplot(fill='salmon') +
-    coord_cartesian(ylim=c(quantile(error_obj$pred_error, .01),
-                           quantile(error_obj$pred_error, .99))) +
-    ylab('Error') +
-    xlab('Time Period')
+  anc_data <- data.frame(period=rep(b_index$period, length(b_index$parents)),
+                         index=unlist(b_index$parents),
+                         name=as.character(paste0('Ancestor  :',
+                                                  sort(rep(1:length(b_index$parents),
+                                                           length(b_index$index))))),
+                         type='a',
+                         stringsAsFactors = FALSE)
 
-  # Adjust axis if too many periods
-  if (p_cnt > 12){
-    breaks <- seq(from=min(error_obj$pred_period),
-                    to=max(error_obj$pred_period),
-                    length.out=12)
-    bar_abs <- bar_abs +
-      scale_x_discrete(breaks=breaks)
+  plot_data <- rbind(index_data, anc_data)
 
-    bar_mag <- bar_mag +
-      scale_x_discrete(breaks=breaks)
-  }
+  # Set colors and sizes
+  col_vals <- c('gray50', 'blue')
+  size_vals <- c(.5, 1.5)
 
-  # Make absolute density plot
-  dens_abs <- ggplot(error_obj, aes(x=abs(pred_error)), alpha=.5) +
-    geom_density(fill='lightblue') +
-    coord_cartesian(xlim=c(0, quantile(abs(error_obj$pred_error),.99))) +
-    xlab('Absolute Error') +
-    ylab('Density of Error')
 
-  # Make magnitude density plot
-  dens_mag <- ggplot(error_obj, aes(x=pred_error), alpha=.5) +
-    geom_density(fill='salmon') +
-    coord_cartesian(xlim=c(quantile(error_obj$pred_error, .01),
-                           quantile(error_obj$pred_error, .99))) +
-    xlab('Error') +
-    ylab('Density of Error')
-
-  # Combine
-  full_plot <- gridExtra::grid.arrange(bar_abs, bar_mag, dens_abs, dens_mag,
-                                       nrow = 2)
-
-  # Plot
-  plot(full_plot)
-
-  # Return or plot
-  if (return_plot){
-    return(structure(full_plot, class = c('errorplot', class(full_plot))))
-  }
-
-}
-
-#' @title plot.hpiseries
-#' @export
-plot.hpiseries <- function(series_obj){
-
-  # Extract the dimensions
-  largest <- series_obj[[length(series_obj)]]
-  blank_df <- data.frame(time_period = 1:length(largest$index),
-                         value=seq(min(largest$index),
-                                   max(largest$index),
-                                   length.out=length(largest$index)),
-                         stringsAsFactors=FALSE)
-
-  # Plot canvas
-  series_plot <- ggplot(blank_df,
-                        aes(x=time_period, y=value))
-
-  # Plot each of the non-terminal indexes
-  for(i in 1:length(series_obj)){
-
-    data_df <- data.frame(x=1:length(series_obj[[i]]$index),
-                          y=as.numeric(series_obj[[i]]$index),
-                          stringsAsFactors=FALSE)
-    series_plot <- series_plot + geom_line(data=data_df,
-                                           aes(x=x,y=y),
-                                           color='gray70')
-  }
-
-  # Add the terminal index
-  data_df <- data.frame(x=1:length(series_obj[[length(series_obj)]]$index),
-                        y=as.numeric(series_obj[[length(series_obj)]]$index),
-                        stringsAsFactors=FALSE)
-
-  series_plot <- series_plot + geom_line(data=data_df,
-                                         aes(x=x,y=y),
-                                         color='red',
-                                         size=2) +
-                               ylab('Index Value\n') +
-                               xlab('\nTime Period')
-
-  structure(series_plot, class = c('seriesplot', class(series_plot)))
-
-}
-
-#' @title plot.indexvol
-#' @export
-plot.indexvolatility <- function(vol_obj){
-
-  # Set up dimensions
-  data_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
-                        volatility = c(rep(NA_integer_, attr(vol_obj, 'window')),
-                                       as.numeric(vol_obj$roll)),
-                        stringsAsFactors=FALSE)
-
-  # Plot base volatility
-  vol_plot <- ggplot(data_df, aes(x=time_period, y=volatility)) +
-    geom_line(color='navy', size=2) +
-    ylab('Volatility\n') +
+  # Create plot
+  blend_plot <- ggplot(plot_data,
+                       aes(x=period, y=index,
+                           group = as.factor(name),
+                           color=as.factor(type),
+                           size=as.factor(type))) +
+    geom_line() +
+    scale_color_manual(values=col_vals) +
+    scale_size_manual(values=size_vals) +
+    ylab('Index Value\n') +
     xlab('\nTime Period') +
-    geom_hline(yintercept = vol_obj$mean, size=1, linetype = 2, color='gray50') +
-    geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
+    theme(legend.position='none',
+          legend.title = element_blank())
 
-  # Return Plot
-  structure(vol_plot, class = c('volatilityplot', class(vol_plot)))
+  structure(blend_plot, class = c('blendplot', class(blend_plot)))
 
 }
-

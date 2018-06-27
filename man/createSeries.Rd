@@ -13,12 +13,6 @@ createSeries(hpi_obj, train_period = 12)
 
 \item{max_period}{default=NULL; Maximum number of periods to create the index up to}
 
-\item{name_prefix}{default=NULL; Prefix to add before last time period if naming indexes}
-
-\item{in_place}{Add to existing hpi object?}
-
-\item{in_place_name}{default = 'series'; Give it a different name than the default}
-
 \item{...}{Additional Arguments}
 }
 \value{
