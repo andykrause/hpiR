@@ -352,7 +352,7 @@ context('calcRevision()')
 
   })
 
-### Test Accuracy Functions --------------------------------------------------------------
+### Accuracy Functions --------------------------------------------------------------
 
 context('calcErrors() before error functions')
 
@@ -394,7 +394,7 @@ context('calcErrors() before error functions')
     expect_is(rts <- calcAccuracy(hpi_obj = rt_index,
                                   test_type = 'rt',
                                   pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
     # with limited start and end and new name
     expect_is(hes <- calcAccuracy(hpi_obj = hed_index,
@@ -403,7 +403,7 @@ context('calcErrors() before error functions')
                                   train_period = 24,
                                   max_period = 36,
                                   series_name = 's36'),
-              'indexerrors')
+              'indexaccuracy')
 
   })
 
@@ -413,7 +413,7 @@ context('calcInSampleError()')
 
     # Bad Data
     expect_error(rt_error <- calcInSampleError(pred_df = hed_index,
-                                               index = hed_index$index$index))
+                                               index = hed_index$index$value))
 
     # Bad Index
     expect_error(rt_error <- calcInSampleError(pred_df = rt_index$data,
@@ -425,24 +425,29 @@ context('calcInSampleError()')
 
     # All data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data,
-                                            index = hed_index$index$index),
-              'indexerrors')
+                                            index = hed_index$index$value),
+              'indexaccuracy')
+
+    # All data smooth
+    expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data,
+                                            index = hed_index$index$smooth),
+              'indexaccuracy')
 
     # Sparse data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data[1:4, ],
-                                            index = hed_index$index$index),
-              'indexerrors')
+                                            index = hed_index$index$value),
+              'indexaccuracy')
 
     # No data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data[0, ],
-                                            index = hed_index$index$index),
-              'indexerrors')
+                                            index = hed_index$index$value),
+              'indexaccuracy')
 
   })
 
 context('calcKFoldError()')
 
-  test_that('in sample error fails with bad arguments',{
+  test_that('kFold error fails with bad arguments',{
 
     # Bad hpi_obj
     expect_error(rt_error <- calcKFoldError(hpi_obj = hed_index$index,
@@ -461,6 +466,7 @@ context('calcKFoldError()')
     expect_error(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                             pred_df = rt_index$data,
                                             seed = 'x'))
+
   })
 
   test_that('kfold works',{
@@ -468,20 +474,27 @@ context('calcKFoldError()')
     # All data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
+    # All data - smooth
+    expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
+                                         pred_df = rt_index$data,
+                                         smooth = TRUE),
+              'indexaccuracy')
 
     # Sparse data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data[1:40, ]),
-              'indexerrors')
+              'indexaccuracy')
 
     # No data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                             pred_df = rt_index$data[0, ]),
-              'indexerrors')
+              'indexaccuracy')
 
   })
+
+#### Forecast --------------------------------------------------------------------
 
   context('buildForecastIDs()')
 
@@ -538,17 +551,17 @@ context('calcForecastError()')
     # All data
     expect_is(rt_error <- calcForecastError(is_obj = hed_index$series,
                                             pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
     # Sparse data
     expect_is(rt_error <- calcForecastError(is_obj = hed_index$series,
                                             pred_df = rt_index$data[1:40, ]),
-              'indexerrors')
+              'indexaccuracy')
 
     # No data
     expect_is(rt_error <- calcForecastError(is_obj = hed_index$series,
                                             pred_df = rt_index$data[0, ]),
-              'indexerrors')
+              'indexaccuracy')
 
   })
 
@@ -561,7 +574,7 @@ context('calcAccuracy() after error functions')
                                        test_type = 'rt',
                                        test_method = 'insample',
                                        pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -571,7 +584,7 @@ context('calcAccuracy() after error functions')
                                         in_place = TRUE,
                                         in_place_name = 'errors'),
               'hpi')
-    expect_is(hed_index$errors, 'indexerrors')
+    expect_is(hed_index$errors, 'indexaccuracy')
     expect_true(attr(hed_index$errors, 'test_method') == 'insample')
 
   })
@@ -583,7 +596,7 @@ context('calcAccuracy() after error functions')
                                        test_type = 'rt',
                                        test_method = 'kfold',
                                        pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -593,7 +606,7 @@ context('calcAccuracy() after error functions')
                                         in_place = TRUE,
                                         in_place_name = 'errors'),
               'hpi')
-    expect_is(hed_index$errors, 'indexerrors')
+    expect_is(hed_index$errors, 'indexaccuracy')
     expect_true(attr(hed_index$errors, 'test_method') == 'kfold')
 
   })
@@ -605,7 +618,7 @@ context('calcAccuracy() after error functions')
                                        test_type = 'rt',
                                        test_method = 'forecast',
                                        pred_df = rt_index$data),
-              'indexerrors')
+              'indexaccuracy')
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -615,7 +628,7 @@ context('calcAccuracy() after error functions')
                                         in_place = TRUE,
                                         in_place_name = 'errors'),
               'hpi')
-    expect_is(hed_index$errors, 'indexerrors')
+    expect_is(hed_index$errors, 'indexaccuracy')
     expect_true(attr(hed_index$errors, 'test_method') == 'forecast')
 
   })

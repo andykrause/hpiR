@@ -776,11 +776,124 @@ If you want to add it to the **hpiindex** object under a different name -- say i
 
 ```
 
+#### Predictive Ability
 
+Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
 
+The `calcAccuracy()` function requires a full **hpi** object as its main argument.  **test_type** defines the manner of testing accuracy; at the moment the only working options is **"rt"** which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  **test_method** sets the manner in which the test is employed, **"insample"**, **"kfold"**, or **"forecast"**.  If the "hpi_obj"" does not match the **"test_type"** (in all cases **"rt"** for now), then you must supply the **"rs"**" sales data in the **pred_df**index_data` argument.
 
+The `calcAccuracy()` function returns a data.frame with the actual (repeat) sale price compared to the one predicted by the index.  The returned object is of class 'indexerrors' and 'data.frame'.  A **test_method** attribute indicates the type of accuracy test performed. 
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
+    rt_is_acc <- calcAccuracy(hpi_obj = rt_hpi,
+                                test_type = 'rt',
+                                test_method = 'insample')
+
+   class(rt_is_acc)
+   attr(rt_is_acc, 'test_method')
+
+```
+
+The smoothed index (if present) can be analyzed by setting **smooth = TRUE**
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+    rts_is_acc <- calcAccuracy(hpi_obj = rt_hpi,
+                                 test_type = 'rt',
+                                 test_method = 'insample',
+                                 smooth = TRUE)
+
+   class(rts_is_acc)
+   attr(rts_is_acc, 'test_method')
+
+```
+
+As with the other analytical functions, the results of the error calculations can be added to the **hpi_obj** by returning them in place (**in_place == TRUE**).  A name (**"default = 'accuracy'"**") may also be given.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+    # Returns an error object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'insample',
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'is_accuracy')
+
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$is_accuracy)
+    
+    # Returns an error object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'insample',
+                            smooth = TRUE,
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'smooth_is_accuracy')
+
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$smooth_is_accuracy)
+    
+
+```
+
+To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
+
+Two addition arguments are availabile here: 1) **"k"** - the number of folds to make (default = 10); and 2) **"seed"** a value to the control the random sampling (default = 1).
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
+                             test_type = 'rt',
+                             test_method = 'kfold',
+                             k = 10,
+                             seed = 123)
+   class(rt_kf_accr)
+   attr(rt_kf_accr, 'test_method')
+   
+```
+
+We can do this with smoothed indexes.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  rts_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
+                              test_type = 'rt',
+                              test_method = 'kfold',
+                              k = 10,
+                              seed = 123,
+                              smooth = TRUE)
+   class(rts_kf_accr)
+   attr(rts_kf_accr, 'test_method')
+   
+```
+
+We can also return these in place.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+    # Returns an error object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'kfold',
+                            k = 10,
+                            seed = 1,
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'kf_accuracy')
+
+    # Check results
+    class(hed_hpi)
+    names(hed_hpi)
+    class(hed_hpi$kf_accuracy)
+
+```
 
 #### Index Series
 
@@ -906,80 +1019,6 @@ The revision can be pulled from an existing **hpi** object, so long as the `seri
   
 ```
 
-#### Predictive Ability
-
-Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
-
-The `calcAccuracy()` function requires a full **hpi** object as its main argument.  **test_type** defines the manner of testing accuracy; at the moment the only working options is **"rt"** which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  **test_method** sets the manner in which the test is employed, **"insample"**, **"kfold"**, or **"forecast"**.  If the "hpi_obj"" does not match the **"test_type"** (in all cases **"rt"** for now), then you must supply the **"rs"**" sales data in the **pred_df**index_data` argument.
-
-The `calcAccuracy()` function returns a data.frame with the actual (repeat) sale price compared to the one predicted by the index.  The returned object is of class 'indexerrors' and 'data.frame'.  A **test_method** attribute indicates the type of accuracy test performed. 
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-    rt_is_error <- calcAccuracy(hpi_obj = rt_hpi,
-                                test_type = 'rt',
-                                test_method = 'insample')
-
-   class(rt_is_error)
-   attr(rt_is_error, 'test_method')
-
-```
-
-As with the other analytical functions, the results of the error calculations can be added to the **hpi_obj** by returning them in place (**in_place == TRUE**).  A name (**"default = 'errors'"**") may also be given.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-    # Returns an error object in place
-    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
-                            test_type = 'rt',
-                            test_method = 'insample',
-                            pred_df = rt_hpi$data,
-                            in_place = TRUE,
-                            in_place_name = 'is_errors')
-
-    # Check results
-    class(hed_hpi)
-    names(hed_hpi)
-    class(hed_hpi$is_errors)
-
-```
-
-To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
-
-Two addition arguments are availabile here: 1) **"k"** - the number of folds to make (default = 10); and 2) **"seed"** a value to the control the random sampling (default = 1).
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-  rt_kf_error <- calcAccuracy(hpi_obj = rt_hpi,
-                              test_type = 'rt',
-                              test_method = 'kfold',
-                              k = 10,
-                              seed = 123)
-   class(rt_kf_error)
-   attr(rt_kf_error, 'test_method')
-   
-```
-
-We can also return these in place.
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
-
-    # Returns an error object in place
-    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
-                            test_type = 'rt',
-                            test_method = 'kfold',
-                            k = 10,
-                            seed = 1,
-                            pred_df = rt_hpi$data,
-                            in_place = TRUE,
-                            in_place_name = 'kf_errors')
-
-    # Check results
-    class(hed_hpi)
-    names(hed_hpi)
-    class(hed_hpi$kf_errors)
-
-```
 
 A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"
 

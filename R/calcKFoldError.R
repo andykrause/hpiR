@@ -24,6 +24,7 @@ calcKFoldError <- function(hpi_obj,
                            pred_df,
                            k=10,
                            seed=1,
+                           smooth = FALSE,
                            ...){
 
   if (!'hpi' %in% class(hpi_obj)){
@@ -78,7 +79,21 @@ calcKFoldError <- function(hpi_obj,
 
   # Create K indexes (just extract index)
   k_index <- purrr::map(.x=k_model,
-                        .f=function(x) modelToIndex(x)$index)
+                        .f=modelToIndex)
+
+  # Deal with smoothing
+  if (!smooth){
+    k_index <- purrr::map(.x = k_index,
+                          .f = function(x) x$value)
+  } else {
+    smooth_order <- 3
+    if ('smooth_order' %in% names(list(...))){
+      smooth_order <- list(...)$smooth_order
+    }
+    k_index <- purrr::map(.x = k_index,
+                          .f = smoothIndex,
+                          order=smooth_order)
+  }
 
   # Iterate through score and calc errors
   k_error <- purrr::map2(.x=k_score,
@@ -86,14 +101,14 @@ calcKFoldError <- function(hpi_obj,
                          .f=calcInSampleError)
 
   # Bind results together and return
-  error_df <- dplyr::bind_rows(k_error) %>%
+  accr_df <- dplyr::bind_rows(k_error) %>%
     dplyr::filter(!is.na(prop_id))
 
-  class(error_df) <- unique(c('indexerrors', class(error_df)))
-  attr(error_df, 'test_method') <- 'kfold'
+  class(accr_df) <- unique(c('indexaccuracy', class(accr_df)))
+  attr(accr_df, 'test_method') <- 'kfold'
 
   # Return Values
-  error_df
+  accr_df
 
 }
 

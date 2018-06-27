@@ -95,7 +95,6 @@ calcVolatility <- function(index,
   if (in_place){
 
     if (smooth & in_place_name == 'volatility') in_place_name <- 'volatility_smooth'
-inde
     if ('hpi' %in% class(index_obj)){
       index_obj$index[[in_place_name]] <- vol_obj
       return(index_obj)

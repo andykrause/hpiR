@@ -140,6 +140,8 @@ An example `rtdata` object
 
 ```
 
+### Modeling 
+
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   ex_hpimodel <- hpiModel(hpi_df = ex_rtdata,
@@ -167,6 +169,8 @@ An example `rtdata` object
 
 ```
 
+### Index and Smoothing
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_hpiindex <- modelToIndex(model_obj = ex_hpimodel)
@@ -188,6 +192,8 @@ An example `rtdata` object
 
 ```
 
+### Wrapper
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_hpi <- rtIndex(trans_df = ex_rtdata,
@@ -200,7 +206,26 @@ An example `rtdata` object
  
 ```
 
+### Analysis
 
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_indexvolatility <- calcVolatility(index = ex_hpiindex,
+                                       window = 5)
+  
+  class(ex_indexvolatility)
+ 
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_indexaccuracy <- calcAccuracy(hpi_obj = ex_hpi,
+                                   test_type = 'rt',
+                                   test_method = 'insample')
+  
+  class(ex_indexaccuracy)
+ 
+```
 
 
 #### Saving objects to the package
@@ -217,8 +242,10 @@ An example `rtdata` object
   devtools::use_data(ex_hpiindex, overwrite=TRUE)
   devtools::use_data(ex_smoothindex, overwrite=TRUE)
   devtools::use_data(ex_plotindex, overwrite=TRUE)
-  
   devtools::use_data(ex_hpi, overwrite=TRUE)
+  
+  devtools::use_data(ex_indexvolatility, overwrite=TRUE)
+  devtools::use_data(ex_indexaccuracy, overwrite=TRUE)  
   
   
   

@@ -42,8 +42,8 @@ calcInSampleError <- function(pred_df,
 #' @export
 
 calcInSampleError.rtdata <- function(pred_df,
-                                 index,
-                                 ...){
+                                     index,
+                                     ...){
 
   # Calculate the index adjustment to apply
   adj <- index[pred_df$period_2] / index[pred_df$period_1]
@@ -62,7 +62,7 @@ calcInSampleError.rtdata <- function(pred_df,
                          stringsAsFactors=FALSE)
 
   # Add classes
-  class(error_df) <- c('indexerrors', 'data.frame')
+  class(error_df) <- c('indexaccuracy', 'data.frame')
 
   # Add attribute
   attr(error_df, 'test_method') <- 'insample'

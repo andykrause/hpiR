@@ -31,9 +31,10 @@ calcAccuracy <- function(hpi_obj,
                          test_method = 'insample',
                          test_type = 'rt',
                          pred_df = NULL,
+                         smooth = FALSE,
                          series_name = 'series',
                          in_place = FALSE,
-                         in_place_name = 'acc',
+                         in_place_name = 'accuracy',
                          ...){
 
   # Check for class of hpi_obj
@@ -65,6 +66,12 @@ calcAccuracy <- function(hpi_obj,
      }
   } else {
     pred_df <- hpi_obj$data
+  }
+
+  # Check for smooth
+  if (smooth && !'smooth' %in% names(hpi_obj$index)){
+    message('"hpi_obj" has no smoothed index.  Please add one or set "smooth" to FALSE')
+    stop()
   }
 
   # Check for series
@@ -112,21 +119,25 @@ calcAccuracy <- function(hpi_obj,
 
   # In sample
   if (test_method == 'insample'){
-    error_obj <- calcInSampleError(pred_df = pred_df,
-                                   index = hpi_obj$index$index,
+
+    index_name <- 'value'
+    if (smooth) index_name <- 'smooth'
+
+    accr_obj <- calcInSampleError(pred_df = pred_df,
+                                   index = hpi_obj$index[[index_name]],
                                    ...)
   }
 
   # kfold
   if (test_method == 'kfold'){
-    error_obj <- calcKFoldError(hpi_obj = hpi_obj,
+    accr_obj <- calcKFoldError(hpi_obj = hpi_obj,
                                 pred_df = pred_df,
                                 ...)
   }
 
   # Forecast
   if (test_method == 'forecast'){
-    error_obj <- calcForecastError(is_obj = hpi_obj[[series_name]],
+    accr_obj <- calcForecastError(is_obj = hpi_obj[[series_name]],
                                    pred_df = pred_df,
                                    ...)
   }
@@ -135,10 +146,10 @@ calcAccuracy <- function(hpi_obj,
 
   if (in_place){
 
-    hpi_obj[[in_place_name]] <- error_obj
+    hpi_obj[[in_place_name]] <- accr_obj
     return(hpi_obj)
   }
 
-  error_obj
+  accr_obj
 
 }
