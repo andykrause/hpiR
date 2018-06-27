@@ -92,7 +92,7 @@ modelToIndex <- function(model_obj,
   structure(list(name = model_obj$periods$name[1:max_period],
                  numeric = model_obj$periods$numeric[1:max_period],
                  period = model_obj$periods$period[1:max_period],
-                 index = index,
+                 value = index,
                  imputed = is_imputed[1:max_period]),
             class = 'hpiindex')
 }

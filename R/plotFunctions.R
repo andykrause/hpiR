@@ -13,18 +13,18 @@
 
 plot.hpiindex <- function(index_obj,
                           show_imputed=FALSE,
-                          smooth=NULL,
+                          smooth=FALSE,
                           ...){
 
   ## Extract Data
   hpi_data <- data.frame(x=index_obj$numeric,
-                         y=as.numeric(index_obj$index),
+                         y=as.numeric(index_obj$value),
                          imp=index_obj$imputed,
                          stringsAsFactors=FALSE)
 
   ## Make the base plot object
   gg_obj <- ggplot(hpi_data, aes(x=x, y=y)) +
-    geom_line(size=2) +
+    geom_line(size=1.1) +
     ylab("Index Value\n") +
     xlab('\nTime Period')
 
@@ -41,21 +41,22 @@ plot.hpiindex <- function(index_obj,
       theme(legend.position="none")
   }
 
-  if (!is.null(smooth)){
+  if (smooth){
 
-    if (smooth %in% names(index_obj)){
+    if ('smooth' %in% names(index_obj)){
 
       sm_data <- data.frame(x=index_obj$numeric,
-                             y=as.numeric(index_obj[[smooth]]),
-                             stringsAsFactors=FALSE)
+                            y=as.numeric(index_obj$smooth),
+                            stringsAsFactors=FALSE)
 
       gg_obj <- gg_obj +
         geom_line(data=sm_data,
                   aes(x=x, y=y),
                   size=1,
-                  linetype=2,
+                  linetype=1,
                   color='red')
-
+    } else {
+      message('No smoothed index (index_obj$smooth) present.\n')
     }
 
   }
@@ -82,39 +83,6 @@ plot.hpi <- function(hpi_obj,
                      ...){
 
   plot(hpi_obj$index, ...)
-
-}
-
-#' @title plot.indexsmooth
-#' @export
-
-plot.indexsmooth <- function(s_index){
-
-  # Extract Length
-  l <- length(s_index$index)
-
-  # Build Data
-  plot_data <- data.frame(period=rep(1:l, 2),
-                          index=c(s_index$index, s_index$original),
-                          type=c(rep('Smoothed ', l), rep('Raw Index   ', l)),
-                          stringsAsFactors=FALSE)
-
-  # Make Plbot
-  smooth_plot <- ggplot(plot_data,
-                        aes(x=period, y=index,
-                            group = as.factor(type),
-                            color=as.factor(type),
-                            size=as.factor(type))) +
-    geom_line() +
-    scale_color_manual(values=c('gray50', 'red')) +
-    scale_size_manual(values=c(1.2, 1.8)) +
-    ylab('Index Value\n') +
-    xlab('\nTime Period') +
-    theme(legend.position='bottom',
-          legend.title = element_blank())
-
-  # Return
-  structure(smooth_plot, class = c('smoothplot', class(smooth_plot)))
 
 }
 

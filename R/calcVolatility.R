@@ -1,7 +1,7 @@
 #' @title calcVolatility
 #' @description Calculate index volatility
 #' @param index An object of class `hpiindex`
-#' @param window Rolling periods over which to calculate the volatility
+#' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param in_place default = FALSE; Adds volatility metric to the `hpiindex` object
 #' (may be within an `hpi` object)
 #' @param in_place_name default = 'vol'; Name of volatility object in `hpiindex` object
@@ -21,9 +21,10 @@
 #' @export
 
 calcVolatility <- function(index,
-                           window,
+                           window = 3,
                            in_place = FALSE,
                            in_place_name = 'volatility',
+                           smooth = FALSE,
                            ...){
 
   ## Save index_obj for future returning
@@ -33,11 +34,29 @@ calcVolatility <- function(index,
   ## Strip from hpi or hpiindex objects
 
   if ('hpi' %in% class(index_obj)){
-    index <- index$index$index
+    if (!smooth){
+      index <- index$index$value
+    } else {
+      index <- index$index$smooth
+      # Check to make sure a NULL wasn't given by smooth
+      if (is.null(index)){
+        message ('No smoothed index present. Please set "smooth = FALSE"')
+        stop()
+      }
+    }
   }
 
   if ('hpiindex' %in% class(index_obj)){
-    index <- index$index
+    if (!smooth){
+      index <- index$value
+    } else {
+      index <- index$smooth
+      # Check to make sure a NULL wasn't given by smooth
+      if (is.null(index)){
+        message ('No smoothed index present. Please set "smooth = FALSE"')
+        stop()
+      }
+    }
   }
 
   ## Check for classes
@@ -75,6 +94,8 @@ calcVolatility <- function(index,
   # If returing in place
   if (in_place){
 
+    if (smooth & in_place_name == 'volatility') in_place_name <- 'volatility_smooth'
+inde
     if ('hpi' %in% class(index_obj)){
       index_obj$index[[in_place_name]] <- vol_obj
       return(index_obj)

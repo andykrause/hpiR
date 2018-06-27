@@ -5,7 +5,7 @@
 \title{calcVolatility}
 \usage{
 calcVolatility(index, window, in_place = FALSE,
-  in_place_name = "volatility", ...)
+  in_place_name = "volatility", smooth = FALSE, ...)
 }
 \arguments{
 \item{index}{An object of class `hpiindex`}

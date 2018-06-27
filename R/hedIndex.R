@@ -109,6 +109,24 @@ hedIndex <- function(trans_df,
     stop()
   }
 
+  if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
+
+    if (!'smooth_order' %in% names(list(...))){
+      smooth_order  <- 3
+    } else {
+      smooth_order <- list(...)$smooth_order
+    }
+
+    hed_index <- smoothIndex(index_obj = hed_index,
+                             order = smooth_order,
+                             in_place = TRUE,
+                             ...)
+    if (!'indexsmooth' %in% class(hed_index$smooth)){
+      message('Smoothing index failed')
+      stop()
+    }
+  }
+
   # Return Values
   structure(list(data=hed_trans,
                  model=hed_model,

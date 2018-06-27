@@ -50,6 +50,9 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | **Index** | | | | |
 | | `hpiindex` | ~`ts` | **modelToIndex()** | List containing index information.  `index` slot is a `ts` object |
+||||||
+| | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
+| | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
 | **Visualization** | | | | |
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 
@@ -58,16 +61,14 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 
 
 
-| | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
+
 | | `hpiblend` | `hpiindex`, `ts` | **blendIndexes()** | Blended two or more indexes | 
 ||||||
 | **Analytical** | | | | |
-| | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
 | | `hpiseries` | `hpiindex`, ~`ts`| **createSeries()** | creates a series of indexes that grow in length |
 | | `hpirevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
 | | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
-| | `smoothplot` | `gg`, `ggplot` | **plot.indexsmooth()** | Plotting object for a smoothed index |
 | | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
 | | `revisionplot` | `gg`, `ggplot` | **plot.hpirevision()** | Plotting object for revision statistics |
 | | `seriesplot` | `gg`, `ggplot` | **plot.hpiseries()** | Plotting object for an index series |
@@ -182,10 +183,18 @@ An example `rtdata` object
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
+  ex_smoothindex <- smoothIndex(ex_hpiindex)
+  class(ex_smoothindex)
+
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
   ex_hpi <- rtIndex(trans_df = ex_rtdata,
                     estimator = 'robust',
                     log_dep = TRUE,
-                    trim_model = TRUE)
+                    trim_model = TRUE,
+                    smooth = TRUE)
   
   class(ex_hpi)
  
@@ -206,7 +215,9 @@ An example `rtdata` object
   devtools::use_data(ex_rtmodel, overwrite=TRUE)
   devtools::use_data(ex_hedmodel, overwrite=TRUE)
   devtools::use_data(ex_hpiindex, overwrite=TRUE)
+  devtools::use_data(ex_smoothindex, overwrite=TRUE)
   devtools::use_data(ex_plotindex, overwrite=TRUE)
+  
   devtools::use_data(ex_hpi, overwrite=TRUE)
   
   

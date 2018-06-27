@@ -11,11 +11,11 @@ Lorem Ipsum...
 
 \item{in_place}{default = FALSE; adds volatility metric to the `hpiindex` object}
 
-\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
-
 \item{...}{Additional Arguments}
 
 \item{index}{Index to be smoothed}
+
+\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
 }
 \value{
 a ts and 'smooth_index` object with smoothed index

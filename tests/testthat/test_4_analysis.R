@@ -38,13 +38,15 @@
                         log_dep = FALSE,
                         dep_var = 'price',
                         ind_var = c('tot_sf', 'beds', 'baths'),
-                        weights = runif(nrow(hed_df), 0, 1))
+                        weights = runif(nrow(hed_df), 0, 1),
+                        smooth = TRUE)
 
   # Full repeat sales index
   rt_index <- rtIndex(trans_df = rt_df,
                       estimator = 'base',
                       log_dep = TRUE,
-                      periodicity = 'monthly')
+                      periodicity = 'monthly',
+                      smooth = TRUE)
 
 ### Volatility Function -------------------------------------------------------------
 
@@ -55,7 +57,7 @@ context('calcVolatility()')
   test_that('Volatility Function works with a variety of inputs',{
 
     # Standard Input (ts object)
-    expect_is(index_vol <- calcVolatility(index = hed_index$index$index,
+    expect_is(index_vol <- calcVolatility(index = hed_index$index$value,
                                           window = 3),
               'indexvolatility')
 
@@ -71,15 +73,37 @@ context('calcVolatility()')
 
   })
 
+  test_that('Volatility Function works for smoothed indexes',{
+
+    # Standard Input (ts object)
+    expect_is(index_vol <- calcVolatility(index = hed_index$index$smooth,
+                                          window = 3),
+              'indexvolatility')
+
+    # Hpi Index object
+    expect_is(index_vol <- calcVolatility(index = hed_index$index,
+                                          window = 3,
+                                          smooth = TRUE),
+              'indexvolatility')
+
+    # Full HPI Object
+    expect_is(index_vol <- calcVolatility(index = hed_index,
+                                          window = 3,
+                                          smooth = TRUE),
+              'indexvolatility')
+
+  })
+
+
   test_that('Errors are given when index is bad',{
 
     # Non-sensical index
     expect_error(index_vol <- calcVolatility(index = 'abc',
-                                                  window = 3))
+                                             window = 3))
 
     # Negative Window
     expect_error(index_vol <- calcVolatility(index = hed_index$index,
-                                                  window = -1))
+                                             window = -1))
 
     # Char Window
     expect_error(index_vol <- calcVolatility(index = hed_index$index,
@@ -87,29 +111,46 @@ context('calcVolatility()')
 
     # NA Window
     expect_error(index_vol <- calcVolatility(index = hed_index$index,
-                                                  window = NA_integer_))
+                                             window = NA_integer_,
+                                             smooth = TRUE))
 
   })
 
   test_that('Returning in place works',{
 
     # Standard Input (ts object)
-    expect_is(index_vol <- calcVolatility(index = hed_index$index$index,
+    expect_is(index_vol <- calcVolatility(index = hed_index$index$value,
                                                window = 3,
                                                in_place = TRUE),
               'indexvolatility')
 
     # Add it to the Hpi Index object
     expect_is(hed_index$index <- calcVolatility(index = hed_index$index,
-                                                     window = 3,
-                                                     in_place = TRUE),
+                                                window = 3,
+                                                in_place = TRUE),
               'hpiindex')
+
+    # Add it to the Hpi Index object Smooth
+    expect_is(hed_index$index <- calcVolatility(index = hed_index$index,
+                                                window = 3,
+                                                in_place = TRUE,
+                                                smooth = TRUE),
+              'hpiindex')
+    expect_is(hed_index$index$volatility_smooth, 'indexvolatility')
 
     # Add it to the Full HPI Object (to the hpiindex object)
     expect_is(hed_index <- calcVolatility(index = hed_index,
-                                               window = 3,
-                                               in_place = TRUE),
+                                          window = 3,
+                                          in_place = TRUE),
               'hpi')
+
+    # Add it to the Full HPI Object (to the hpiindex object) smooth
+    expect_is(hed_index <- calcVolatility(index = hed_index,
+                                          window = 3,
+                                          in_place = TRUE,
+                                          smooth = TRUE),
+              'hpi')
+    expect_is(hed_index$index$volatility_smooth, 'indexvolatility')
 
     # Add it to the Full HPI Object (to the hpiindex object) with new name
     expect_is(hed_index <- calcVolatility(index = hed_index,
@@ -118,64 +159,6 @@ context('calcVolatility()')
                                                in_place_name = 'xxx'),
               'hpi')
     expect_is(hed_index$index$xxx, 'indexvolatility')
-
-
-  })
-
-### Smoothing Functions -------------------------------------------------------------
-
-context('smoothIndex()')
-
-   test_that('smoothing Function works with a variety of inputs',{
-
-     # Hpi Index object
-     expect_is(index_smooth <- smoothIndex(index_obj = hed_index$index,
-                                           order = 4),
-               'indexsmooth')
-
-     # Full HPI Object
-     expect_is(index_smooth <- smoothIndex(index_obj = hed_index,
-                                           order = 6),
-               'indexsmooth')
-
-   })
-
-  test_that('Errors are given when index is bad',{
-
-    # Non-sensical index
-    expect_error(index_smooth <- smoothIndex(index_obj = 'abc',
-                                             order = 3))
-
-    # Negative Order
-    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
-                                             order = -3))
-
-    # Char Window
-    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
-                                             order = 'x'))
-
-    # NA Window
-    expect_error(index_smooth <- smoothIndex(index_obj = hed_index,
-                                             order = NA_integer_))
-
-  })
-
-  test_that('Returning in place works',{
-
-    # Add it to the Full HPI Object (to the hpiindex object)
-    expect_is(hed_index <- smoothIndex(index = hed_index,
-                                       order = 3,
-                                       in_place = TRUE),
-              'hpi')
-
-    # Add it to the Full HPI Object (to the hpiindex object) with new name
-    expect_is(hed_index <- smoothIndex(index = hed_index,
-                                       order = 3,
-                                       in_place = TRUE,
-                                       in_place_name = 'sss'),
-              'hpi')
-    expect_is(hed_index$index$sss, 'ts')
-    expect_true(hed_index$index$is_smoothed)
 
   })
 

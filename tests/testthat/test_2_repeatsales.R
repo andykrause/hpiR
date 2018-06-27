@@ -519,23 +519,23 @@ context('hpiModel.rtdata(): after rtModel()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     # Interpolate interior values
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     # Extrapolate end periods
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -550,23 +550,23 @@ context('hpiModel.rtdata(): after rtModel()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     # Impute interior values
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     # Extrapolate an end value
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -580,21 +580,21 @@ context('hpiModel.rtdata(): after rtModel()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -608,21 +608,21 @@ context('hpiModel.rtdata(): after rtModel()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -636,7 +636,58 @@ context('hpiModel.rtdata(): after rtModel()')
     # Create shortened index
     index_80 <- modelToIndex(model_base, max_period = 80)
     expect_is(index_80, 'hpiindex')
-    expect_true(length(index_80$index) == 80)
+    expect_true(length(index_80$value) == 80)
+
+  })
+
+### smoothIndex()  -------------------------------------------------------------
+
+  context('smoothIndex()')
+
+  model_base <- hpiModel(hpi_df = rt_df,
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         trim_model=TRUE)
+
+  index_base <- modelToIndex(model_obj = model_base)
+
+  test_that('smoothing Function works with a variety of inputs',{
+
+    # Hpi Index object
+    expect_is(index_smooth <- smoothIndex(index_obj = index_base,
+                                          order = 4),
+              'indexsmooth')
+
+  })
+
+  test_that('Errors are given when index is bad',{
+
+    # Non-sensical index
+    expect_error(index_smooth <- smoothIndex(index_obj = 'abc',
+                                             order = 3))
+
+    # Negative Order
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = -3))
+
+    # Char Window
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = 'x'))
+
+    # NA Window
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = NA_integer_))
+
+  })
+
+  test_that('Returning in place works',{
+
+    # Add it to the Full HPI Object (to the hpiindex object)
+    expect_is(index_base <- smoothIndex(index = index_base,
+                                        order = 3,
+                                        in_place = TRUE),
+              'hpiindex')
+    expect_true('smooth' %in% names(index_base))
 
   })
 
@@ -741,7 +792,7 @@ context('rtindex() wrapper')
                          estimator = 'robust',
                          log_dep = FALSE,
                          max_period = 80)
-    expect_true(length(m2i_index$index$index) == 80)
+    expect_true(length(m2i_index$index$value) == 80)
 
   })
 
@@ -807,6 +858,36 @@ context('rtindex() wrapper')
     expect_error(rtIndex(trans_df = rt_df,
                          estimator = 'robust',
                          max_period = 'a'))
+  })
+
+  test_that("Smoothing in_place for 'hpi' object works",{
+
+    full_1 <- rtIndex(trans_df = sales,
+                      date = 'sale_date',
+                      price = 'sale_price',
+                      trans_id = 'sale_id',
+                      prop_id = 'pinx',
+                      estimator = 'base',
+                      log_dep = TRUE,
+                      periodicity = 'monthly',
+                      smooth = TRUE)
+
+    # In wrapper smoothing worked
+    expect_is(full_1$index$smooth, 'indexsmooth')
+
+    # Full HPI Object
+    expect_is(index_smooth <- smoothIndex(index_obj = full_1,
+                                           order = 6),
+               'indexsmooth')
+
+    # Add it to the Full HPI Object (to the hpiindex object) with new name
+    expect_is(full_1s <- smoothIndex(index = full_1,
+                                     order = 3,
+                                     in_place = TRUE),
+               'hpi')
+    expect_is(full_1s$index$smooth, 'ts')
+    expect_is(full_1s$index$smooth, 'indexsmooth')
+
   })
 
 #*****************************************************************************************

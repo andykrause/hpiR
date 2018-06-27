@@ -176,7 +176,6 @@ The objects resulting from regression model can be rather large, so by default t
 
 ```
 
-
 We can then convert those model results into an index with the `modelToIndex()` function.  The output of this function is an objet of class **hpiindex**, which has a time-series object (class **ts**) with an index value (base = 100) for each of the time periods estimated in the **"$index"** slot.  Note that no smoothing is done at this time. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
@@ -194,7 +193,7 @@ If you want to limit the extent of the index (clip periods from the end of it) y
   rt_short <- modelToIndex(model_obj = rt_model,
                            max_period = 50)
 
-  length(rt_short$index)
+  length(rt_short$value)
 
 ```
 
@@ -217,7 +216,7 @@ In situations where there are empty periods in the model obj (there was no or no
   rt_model_imp$coefficients$coefficient[2:3] <- NA
   rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
-  rt_index_imp$index[1:4]
+  rt_index_imp$value[1:4]
   rt_index_imp$imputed[1:4]
   
 ```
@@ -229,7 +228,7 @@ In situations where there are empty periods in the model obj (there was no or no
   rt_model_imp$coefficients$coefficient[3:5] <- NA
   rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
-  rt_index_imp$index[1:6]
+  rt_index_imp$value[1:6]
   rt_index_imp$imputed[1:6]
   
 ```
@@ -241,7 +240,7 @@ In situations where there are empty periods in the model obj (there was no or no
   rt_model_imp$coefficients$coefficient[82:84] <- NA
   rt_index_imp <- modelToIndex(model_obj = rt_model_imp)
   
-  rt_index_imp$index[80:84]
+  rt_index_imp$value[80:84]
   rt_index_imp$imputed[80:84]
   
 ```
@@ -258,6 +257,41 @@ The plot function can show the imputed periods as well.
   
 ```
 
+#### Smoothing
+
+As we see from the plots of the indexes above, these indexes show considerable volatility from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex()` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the **order** argument -- the number of periods over which to smooth. Note that the **order** is saved in the attributes of the **indexsmooth** object. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
+
+  rt_smooth <- smoothIndex(index_obj = rt_index, 
+                           order = 5)
+
+  class(rt_smooth)
+  attr(rt_smooth, 'order')
+
+```
+
+The `smoothIndex()` function can be done **in_place** such that the smoothed indexes are added to the larger **hpiindex** object.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
+
+     # Add to an hpiindex object
+     rt_index <- smoothIndex(index_obj = rt_index,
+                             order = 8,
+                             in_place = TRUE)
+     class(rt_index)
+     names(rt_index)
+     class(rt_index$smooth)
+     
+```
+
+The **in_place** smoothing can be plotted with the 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
+   
+   plot(rt_index, smooth=TRUE)
+
+```
 
 #### Wrapper Function
 
@@ -280,6 +314,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -296,7 +332,8 @@ There are three 'levels of entry' with the wrapper function.
                   estimator = 'robust',
                   log_dep = TRUE,
                   trim_model = TRUE,
-                  max_period = 48)
+                  max_period = 48,
+                  smooth = FALSE)
 
   class(rt_1)
 
@@ -313,6 +350,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -329,7 +368,8 @@ There are three 'levels of entry' with the wrapper function.
                   estimator = 'weighted',
                   log_dep = FALSE,
                   trim_model = FALSE,
-                  max_period = 56)
+                  max_period = 56,
+                  smooth = TRUE)
 
   class(rt_2)
   
@@ -341,6 +381,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -353,7 +395,9 @@ There are three 'levels of entry' with the wrapper function.
                   estimator = 'robust',
                   log_dep = TRUE,
                   trim_model = FALSE,
-                  max_period = 80)
+                  max_period = 80,
+                  smooth = TRUE,
+                  smooth_order = 5)
   
   class(rt_3)
 
@@ -477,6 +521,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
@@ -495,7 +541,8 @@ There are three 'levels of entry' with the wrapper function.
                     trim_model = TRUE,
                     max_period = 48,
                     dep_var = 'price',
-                    ind_var = c('tot_sf', 'beds', 'baths'))
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    smooth = FALSE)
 
   class(hed_1)
 
@@ -515,6 +562,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -535,7 +584,8 @@ There are three 'levels of entry' with the wrapper function.
                     trim_model = FALSE,
                     max_period = 56,
                     dep_var = 'price',
-                    ind_var = c('tot_sf', 'beds', 'baths'))
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    smooth = TRUE)
   
   class(hed_2)
 
@@ -550,6 +600,8 @@ There are three 'levels of entry' with the wrapper function.
    * **log_dep** (optional: TRUE)
    * **trim_model** (optional: FALSE)
    * **max_period** (optional: maximum of data)
+   * **smooth** (optional: default = FALSE)
+   * **smooth_order** (optional, default = 3)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5}
 
@@ -565,7 +617,9 @@ There are three 'levels of entry' with the wrapper function.
                     max_period = 80,
                     dep_var = 'price',
                     ind_var = c('tot_sf', 'beds', 'baths'),
-                    weights = runif(nrow(hed_sales), 0, 1))
+                    weights = runif(nrow(hed_sales), 0, 1),
+                    smooth = TRUE,
+                    smooth_order = 5)
 
   class(hed_3)
   
@@ -581,6 +635,8 @@ Again, we can plot with a simple `plot()` call.
   
 ```
 
+
+
 ### Analyzing an index
 
 Before we start analyzing our indexes, we'll create two example `hpi` objects, one using a repeat sales model and one with a hedonic price model.
@@ -591,7 +647,8 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
                     estimator = 'robust',
                     log_dep = TRUE,
                     trim_model = FALSE,
-                    max_period = 84)
+                    max_period = 84,
+                    smooth = TRUE)
 
   hed_hpi <- hedIndex(trans_df = hed_sales,
                       estimator = 'weighted',
@@ -600,17 +657,18 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
                       max_period = 84,
                       dep_var = 'price',
                       ind_var = c('tot_sf', 'beds', 'baths'),
-                      weights = runif(nrow(hed_sales), 0, 1))
+                      weights = runif(nrow(hed_sales), 0, 1),
+                      smooth = TRUE)
 
 ```
 
-#### Volatility
+#### Volatility 
 
 One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) and median (**median**) are returned by the function.  V
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  index_vol <- calcVolatility(index = hed_hpi$index$index,
+  index_vol <- calcVolatility(index = hed_hpi$index$value,
                               window = 3)
 
   class(index_vol)
@@ -633,7 +691,7 @@ A number of differently classed objects can be passed to the **"index"** argumen
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
  # ts object
- index_vol <- calcVolatility(index = hed_hpi$index$index,
+ index_vol <- calcVolatility(index = hed_hpi$index$value,
                              window = 3)
  class(index_vol)
 
@@ -649,7 +707,27 @@ A number of differently classed objects can be passed to the **"index"** argumen
  
 ```
 
-The `calcVolatility()` function can also return the volatility metrics 'in place', or directly into the **hpiindex** object.  The code below shows how to return these into an **hpiindex** object and a larger **hpi** object under the name **volatility**.  If passed an **hpiindex** object, the results will be stored in the **hpiindex** object which is returned.  If passed an **hpi** object, the results will be stored in the **hpiindex** object with the **hpi** object which is returned. 
+If you want to calculate the volatility of the smoothed index, you need to pass the smoothed index directly or change the **smooth** argument to TRUE (default is false) when passing an **hpiindex** or **hpi** object to `calcVolatility()`.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Direct passing
+  sindex_vol <- calcVolatility(index = hed_hpi$index$smooth,
+                               window = 3)
+
+  class(sindex_vol)
+  names(sindex_vol)
+  
+  # While passing 'hpi' or 'hpiindex'
+  sindex_vol <- calcVolatility(index = hed_hpi$index,
+                               window = 3,
+                               smooth = TRUE)
+  class(sindex_vol)
+  names(sindex_vol)
+
+```
+
+The `calcVolatility()` function can also return the volatility metrics 'in place', or directly into the **hpiindex** object.  The code below shows how to return these into an **hpiindex** object and a larger **hpi** object under the name **volatility**.  If passed an **hpiindex** object, the results will be stored in the **hpiindex** object which is returned.  If passed an **hpi** object, the results will be stored in the **hpiindex** object with the **hpi** object which is returned. A volatility analysis of a smoothed index will place it under the **volatility_smooth** name. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -665,6 +743,14 @@ The `calcVolatility()` function can also return the volatility metrics 'in place
                              window = 3,
                              in_place = TRUE)
    class(hed_hpi$index$volatility)
+   
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_hpi <- calcVolatility(index = hed_hpi,
+                             window = 3,
+                             in_place = TRUE,
+                             smooth = TRUE)
+   class(hed_hpi$index$volatility_smooth)
+   
 
 ```
 
@@ -684,47 +770,17 @@ If you want to add it to the **hpiindex** object under a different name -- say i
    hed_hpi <- calcVolatility(index = hed_hpi,
                              window = 5,
                              in_place = TRUE,
-                             in_place_name = 'vol_5')
+                             smooth = TRUE,
+                             in_place_name = 'vol_3_smooth')
    names(hed_hpi$index)
 
 ```
 
-#### Smoothing
 
-As we see from the plots of the indexes above and from the volatility numbers, these indexes show marked volality from one period to the next. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex()` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the **order** argument -- the number of periods over which to smooth.
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5}
 
-  hed_smooth <- smoothIndex(index_obj = hed_hpi, 
-                            order = 5)
 
-  class(hed_smooth)
-  
-  plot(hed_smooth)
 
-```
-
-Like the `calcVolatility()`, `smoothIndex()` can take object from three levels of results and can be done **in_place** such that the smoothed indexes are added to the larger object.  A distinct name can be given to the smoothed index with the **in_place_name** argument (default is **"smoothed"**")
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
-
-     # Full HPI Object
-     hed_hpi <- smoothIndex(index_obj = hed_hpi,
-                            order = 8,
-                            in_place = TRUE,
-                            in_place_name = 'sm8')
-     class(hed_hpi)
-     names(hed_hpi$index)
-
-```
-
-The **in_place** smoothing can be plotted with the 
-
-```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3}
-   
-   plot(hed_hpi$index, smooth='sm8')
-
-```
 
 #### Index Series
 
