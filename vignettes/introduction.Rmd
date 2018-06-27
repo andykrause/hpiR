@@ -157,6 +157,8 @@ The `hpiModel()` function is an S3 method that will dispatch on the class of the
                        log_dep = TRUE)
 
   class(rt_model)
+  class(rt_model$model_obj)
+  
 
 ```
 

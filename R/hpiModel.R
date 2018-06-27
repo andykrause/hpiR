@@ -96,7 +96,7 @@ hpiModel.rtdata <- function(hpi_df,
                     ...)
 
   # Check for successful model estimation
-  if (class(rt_mod) != 'rtmod'){
+  if (class(rt_mod) != 'rtmodel'){
     message('Model estimator was unsuccessful')
     stop()
   }
@@ -217,7 +217,7 @@ hpiModel.heddata <- function(hpi_df,
                        ...)
 
   # Check for successful model estimation
-  if(class(hed_mod) != 'hedmod'){
+  if(class(hed_mod) != 'hedmodel'){
 
     message('Model estimator was unsuccessful')
     stop()

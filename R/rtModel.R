@@ -73,7 +73,7 @@ rtModel.base <- function(rt_df,
   rt_model <- lm(price_diff ~ time_matrix + 0)
 
   # Assign Class
-  class(rt_model) <- 'rtmod'
+  class(rt_model) <- 'rtmodel'
 
   # Return
   rt_model
@@ -101,7 +101,7 @@ rtModel.robust <- function(rt_df,
   }
 
   # Add class
-  class(rt_model) <- 'rtmod'
+  class(rt_model) <- 'rtmodel'
 
   # Return
   rt_model
@@ -133,7 +133,7 @@ rtModel.weighted <- function(rt_df,
   rt_model <- lm(price_diff ~ time_matrix + 0, weights=wgts)
 
   # Add Class
-  class(rt_model) <- 'rtmod'
+  class(rt_model) <- 'rtmodel'
 
   # Return
   rt_model

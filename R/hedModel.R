@@ -1,8 +1,8 @@
 #' @title hedModel
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
 #' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from rsCreateSales()
-#' @param hed_spec Time matrix object from rsTimeMatrix()
+#' @param hed_df Repeat sales dataset from rtCreateSales()
+#' @param hed_spec Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price betwen the two sales
 #' @param ... Additional arguments
 #' @return rs model object
@@ -74,7 +74,7 @@ hedModel.base <- function(estimator,
                   data=hed_df)
 
   # Add class
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   # Return
   hed_model
@@ -113,7 +113,7 @@ hedModel.robust <- function(estimator,
     hed_model <- robustbase::lmrob(hed_spec, data=hed_df, setting="KS2014")
   }
 
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   hed_model
 
@@ -150,7 +150,7 @@ hedModel.weighted <- function(estimator,
   hed_model <- lm(as.formula(hed_spec), data=hed_df, weights=wgts)
 
   # Add class
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   # Return
   hed_model

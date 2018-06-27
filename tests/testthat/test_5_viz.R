@@ -55,13 +55,13 @@ context('Plot functions')
 
   test_that('plot.hpiindex works', {
 
-    expect_is(plot(rt_index$index), 'indexplot')
+    expect_is(plot(rt_index$index), 'plotindex')
 
   })
 
   test_that('plot.hpi works', {
 
-      expect_is(plot(rt_index), 'indexplot')
+      expect_is(plot(rt_index), 'plotindex')
 
   })
 

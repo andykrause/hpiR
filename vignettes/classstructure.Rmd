@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Introduction
@@ -21,6 +23,8 @@ The table below shows the basic information on the various S3 classes used in th
 * **"hpi"** = objects refering to information relevant to the entire hpi collection
 * **"index"** = objects refering to information relevant only to the index itself
 * **"rt"** or **"hed"** =  objects with information specific to a particular index method ("rt" for repeat transaction and "hed" for hedonic model)^[Additional methods will be added here in the future.]
+    * Suffixes of these classes include **"data"** and **"model"**
+* **"plot"** = objects containing plot objects.  
 
 The `hpi` collection object is the "core" unit of the `hpiR` package. The object will contain all the information, temporary object and analysis about a single house price index.  
 
@@ -32,24 +36,28 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `serieshpi` | *~many* | `createSeries()` | A series of progressively longer indexes.  
 ||||||
 | **Core** | | | | |
-| | `hpi` | ~many | *****Index()** + others | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
+| | `hpi` | *~many* | ** *****Index()** | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
 ||||||
 | **Data** | | | | |
 | | `hpidata` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
 | | `rtdata` | `hpidata`, `data.frame` | **rtCreateTrans()** | Data.frame of repeat transactions with standardized field names |
 | | `heddata` | `hpidata`, `data.frame` | **hedCreatTrans()** | Data.frame of transactions with some standardized field names for use in hedonic model approach |
 ||||||
-
-
-
-
 | **Model** | | | | |
 | | `hpimodel` | Multiple (ex. `lm`) | **hpiModel()** | Flexible list containing results of the particular model selected |
-| | `rtmod` | Multiple (ex. `lm`) | **rtModel()** | List containing model results of repeat transaction model
-| | `hedmod` | Multiple (ex. `lm`) | **hedModel()** | List containing model results of hedonic model
+| | `rtmodel` | Multiple (ex. `lm`) | **rtModel()** | List containing model results of repeat transaction model
+| | `hedmodel` | Multiple (ex. `lm`) | **hedModel()** | List containing model results of hedonic model
 ||||||
 | **Index** | | | | |
 | | `hpiindex` | ~`ts` | **modelToIndex()** | List containing index information.  `index` slot is a `ts` object |
+| **Visualization** | | | | |
+| | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+
+
+
+
+
+
 | | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
 | | `hpiblend` | `hpiindex`, `ts` | **blendIndexes()** | Blended two or more indexes | 
 ||||||
@@ -59,8 +67,6 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `hpirevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
 | | `indexerrors` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
-| **Visualization** | | | | |
-| | `indexplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `smoothplot` | `gg`, `ggplot` | **plot.indexsmooth()** | Plotting object for a smoothed index |
 | | `blendplot` | `gg`, `ggplot` | **plot.hpiblend()** | Plotting object for a blended index |
 | | `revisionplot` | `gg`, `ggplot` | **plot.hpirevision()** | Plotting object for revision statistics |
@@ -79,47 +85,131 @@ Begin by loading the `hpiR` package. We'll assume that you've followed the instr
 
 ```
 
-```{r eval=FALSE, messages=FALSE, echo=TRUE}
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
   
   library(hpiR)
 
 ```
 
-Next, load the example dataset of Seattle house transactions into your R session.
+Next, load the example dataset of Seattle house transactions into your R session.  We'll limit to just the central city (**area** equal to 13, 14, 15 and 79)
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   data(seattle_sales)
 
+  central_sales <- seattle_sales %>%
+    dplyr::filter(area %in% c(13, 14, 15, 79))
+
+```
+
+#### Data
+
+An example `hpidata` object
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  ex_hpidata <- dateToPeriod(trans_df = central_sales,
+                             date = 'sale_date',
+                             periodicity = 'monthly')
+  class(ex_hpidata)
+
+```
+
+An example `rtdata` object
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  ex_rtdata <- rtCreateTrans(trans_df = ex_hpidata,
+                             prop_id = 'pinx',
+                             trans_id = 'sale_id',
+                             price = 'sale_price')
+  class(ex_rtdata)
+
 ```
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_hdf <- dateToPeriod(trans_df = seattle_sales,
-                            date = 'sale_date',
-                            periodicity = 'monthly',
-                            min_date = '2015-01-01',
-                            adj_type = 'clip')
-
-```
-
-```{r eval=FALSE, messages=FALSE, echo=FALSE}
-
-  devtools::use_data(sales_hdf, overwrite=TRUE)
+  ex_heddata <- hedCreateTrans(trans_df = central_sales,
+                               prop_id = 'pinx',
+                               trans_id = 'sale_id',
+                               price = 'sale_price',
+                               date= 'sale_date',
+                               periodicity = 'monthly')
+  class(ex_heddata)
 
 ```
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
-                              prop_id = 'pinx',
-                              trans_id = 'sale_id',
-                              price = 'sale_price')
+  ex_hpimodel <- hpiModel(hpi_df = ex_rtdata,
+                          estimator = 'base',
+                          log_dep = TRUE)
+
+  ex_rtmodel <- ex_hpimodel$model_obj
+  
+  class(ex_hpimodel)
+  class(ex_rtmodel)
 
 ```
 
-```{r eval=FALSE, messages=FALSE, echo=FALSE}
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  devtools::use_data(sales_rtdf, overwrite=TRUE)
+  ex_hpimodel_h <- hpiModel(hpi_df = ex_heddata,
+                            estimator = 'base',
+                            dep_var = 'price',
+                            ind_var = c('tot_sf', 'beds', 'baths'),
+                            log_dep = TRUE)
+  ex_hedmodel <- ex_hpimodel_h$model_obj
+
+  class(ex_hpimodel_h)
+  class(ex_hedmodel)
+
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_hpiindex <- modelToIndex(model_obj = ex_hpimodel)
+  class(ex_hpiindex)
+  
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_plotindex <- plot(ex_hpiindex)
+  class(ex_plotindex)
+
+```
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_hpi <- rtIndex(trans_df = ex_rtdata,
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = TRUE)
+  
+  class(ex_hpi)
+ 
+```
+
+
+
+
+#### Saving objects to the package
+
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+  
+  devtools::use_data(ex_hpidata, overwrite=TRUE)
+  devtools::use_data(ex_rtdata, overwrite=TRUE)
+  devtools::use_data(ex_heddata, overwrite=TRUE)
+  devtools::use_data(ex_hpimodel, overwrite=TRUE)
+  devtools::use_data(ex_rtmodel, overwrite=TRUE)
+  devtools::use_data(ex_hedmodel, overwrite=TRUE)
+  devtools::use_data(ex_hpiindex, overwrite=TRUE)
+  devtools::use_data(ex_plotindex, overwrite=TRUE)
+  devtools::use_data(ex_hpi, overwrite=TRUE)
+  
+  
+  
 
 ```

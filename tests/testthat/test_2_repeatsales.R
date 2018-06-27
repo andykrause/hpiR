@@ -317,21 +317,21 @@ context('rtModel()')
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff_l200,
                                   estimator=structure('base', class='base')),
-              'rtmod')
+              'rtmodel')
 
     # Robust works but gives warning
     expect_is(rt_model <- rtModel(rt_df = rt_df200,
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff_l200,
                                   estimator=structure('robust', class='robust')),
-              'rtmod')
+              'rtmodel')
 
     # Weighted works
     expect_is(rt_model <- rtModel(rt_df = rt_df200,
                                   time_matrix = time_matrix200,
                                   price_diff = price_diff200,
                                   estimator=structure('weighted', class='weighted')),
-              'rtmod')
+              'rtmodel')
 
     ## Check severe sparteness
 
@@ -346,7 +346,7 @@ context('rtModel()')
                                   time_matrix = time_matrix20,
                                   price_diff = price_diff_l20,
                                   estimator=structure('base', class='base')),
-              'rtmod')
+              'rtmodel')
 
     # Robust: Works, but gives warning from lmrob()
     expect_warning(rt_model <- rtModel(rt_df = rt_df20,
@@ -359,7 +359,7 @@ context('rtModel()')
                                   time_matrix = time_matrix20,
                                   price_diff = price_diff20,
                                   estimator=structure('weighted', class='weighted')),
-              'rtmod')
+              'rtmodel')
 
   })
 
@@ -434,9 +434,9 @@ context('hpiModel.rtdata(): after rtModel()')
     expect_true(rt_model_wgt$coefficients$coefficient[1] == 0)
 
     # Modelobj
-    expect_is(rt_model_base$model_obj, 'rtmod')
-    expect_is(rt_model_robust$model_obj, 'rtmod')
-    expect_is(rt_model_wgt$model_obj, 'rtmod')
+    expect_is(rt_model_base$model_obj, 'rtmodel')
+    expect_is(rt_model_robust$model_obj, 'rtmodel')
+    expect_is(rt_model_wgt$model_obj, 'rtmodel')
 
     # Model spec
     expect_true(is.null(rt_model_base$model_spec))

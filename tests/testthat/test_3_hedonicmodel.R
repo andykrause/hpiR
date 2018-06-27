@@ -358,14 +358,14 @@ context('hedModel()')
                                     estimator=structure('base', class='base'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Robust works but gives warning
     expect_is(hed_model <- hedModel(hed_df = hed_df200,
                                     estimator=structure('robust', class='robust'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Weighted works
     expect_is(hed_model <- hedModel(hed_df = hed_df200,
@@ -373,7 +373,7 @@ context('hedModel()')
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf')),
                                     weights = runif(nrow(hed_df200), 0, 1)),
-              'hedmod')
+              'hedmodel')
 
     ## Check severe sparseness
 
@@ -385,14 +385,14 @@ context('hedModel()')
                                     estimator=structure('base', class='base'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Robust works but gives warning
     expect_is(hed_model <- hedModel(hed_df = hed_df20,
                                     estimator=structure('robust', class='robust'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Weighted works
     expect_is(hed_model <- hedModel(hed_df = hed_df20,
@@ -400,7 +400,7 @@ context('hedModel()')
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf')),
                                     weights = runif(nrow(hed_df20), 0, 1)),
-              'hedmod')
+              'hedmodel')
 
   })
 
@@ -506,9 +506,9 @@ context('hpiModel.heddata()')
     expect_true(hed_model_wgt$coefficients$coefficient[1] == 0)
 
     # Modelobj
-    expect_is(hed_model_base$model_obj, 'hedmod')
-    expect_is(hed_model_robust$model_obj, 'hedmod')
-    expect_is(hed_model_wgt$model_obj, 'hedmod')
+    expect_is(hed_model_base$model_obj, 'hedmodel')
+    expect_is(hed_model_robust$model_obj, 'hedmodel')
+    expect_is(hed_model_wgt$model_obj, 'hedmodel')
 
     # Model spec
     expect_true(is.null(hed_model_base$model_spec))

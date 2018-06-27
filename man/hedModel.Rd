@@ -9,9 +9,9 @@ hedModel(estimator, hed_df, hed_spec, ...)
 \arguments{
 \item{estimator}{Type of model to estimates (base, robust, weighted)}
 
-\item{hed_df}{Repeat sales dataset from rsCreateSales()}
+\item{hed_df}{Repeat sales dataset from rtCreateSales()}
 
-\item{hed_spec}{Time matrix object from rsTimeMatrix()}
+\item{hed_spec}{Time matrix object from rtTimeMatrix()}
 
 \item{...}{Additional arguments}
 
