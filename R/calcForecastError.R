@@ -26,6 +26,7 @@
 calcForecastError <- function(is_obj,
                               pred_df,
                               return_forecasts = FALSE,
+                              forecast_length = 1,
                               ...){
 
   # Check Classes
@@ -50,6 +51,7 @@ calcForecastError <- function(is_obj,
   # Get data
   fc_preddata <- purrr::map(.x = time_range,
                             hpi_df = pred_df,
+                            forecast_length = forecast_length,
                             train=FALSE,
                             .f=buildForecastIDs)
 
@@ -67,11 +69,10 @@ calcForecastError <- function(is_obj,
     index_name <- 'value'
   }
 
-
   fc_forecasts <- purrr::map(.x=is_obj$hpis[-length(is_obj$hpis)],
                              .f=function(x){
                                  new_x <- forecast(ets(x$index[[index_name]],
-                                                       model='ANN'), h=1)
+                                                       model='ANN'), h=forecast_length)
                                  ts(c(x$index[[index_name]], new_x$mean), start=start(x),
                                                    frequency=frequency(x))
                               }
@@ -87,7 +88,7 @@ calcForecastError <- function(is_obj,
                             })
 
   error_df <- bind_rows(fc_error)
-  class(error_df) <- unique(c('indexaccuracy', class(error_df)))
+  class(error_df) <- unique(c('seriesaccuracy', 'indexaccuracy', class(error_df)))
   attr(error_df, 'test_method') <- 'forecast'
 
   # If returnning errors
@@ -119,6 +120,7 @@ calcForecastError <- function(is_obj,
 
 buildForecastIDs <- function(time_cut,
                              hpi_df,
+                             forecast_length,
                              train=TRUE){
 
   if (!'data.frame' %in% class(hpi_df)){
@@ -139,20 +141,22 @@ buildForecastIDs <- function(time_cut,
 #' @export
 buildForecastIDs.heddata <- function(time_cut,
                                      hpi_df,
+                                     forecast_length,
                                      train=TRUE){
 
   if(train){
     time_ids <- which(hpi_df$date_period < time_cut)
   } else {
-    time_ids <- which(hpi_df$date_period == time_cut)
+    time_seq <- time_cut:(time_cut + (forecast_length - 1))
+    time_ids <- which(hpi_df$date_period %in% time_seq)
   }
   time_ids
-
 }
 
 #' @export
 buildForecastIDs.rtdata <- function(time_cut,
                                     hpi_df,
+                                    forecast_length,
                                     train=TRUE){
 
   # Extract data if given a full 'hpi' object
@@ -163,7 +167,8 @@ buildForecastIDs.rtdata <- function(time_cut,
   if(train){
     time_ids <- which(hpi_df$period_2 < time_cut)
   } else {
-    time_ids <- which(hpi_df$period_2 == time_cut)
+    time_seq <- time_cut:(time_cut + (forecast_length - 1))
+    time_ids <- which(hpi_df$period_2 %in% time_seq)
   }
   time_ids
 }

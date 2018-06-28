@@ -19,7 +19,7 @@ This vignette explains the various classes of objects and data used in the `hpiR
 
 The table below shows the basic information on the various S3 classes used in the package.  The naming convention of classes is such that prefixes indicate the domain of the information contained with: 
 
-* **"super"** = objects refering to information relevant to the entire hpi series
+* **"series"** = objects refering to information relevant to the entire hpi series
 * **"hpi"** = objects refering to information relevant to the entire hpi collection
 * **"index"** = objects refering to information relevant only to the index itself
 * **"rt"** or **"hed"** =  objects with information specific to a particular index method ("rt" for repeat transaction and "hed" for hedonic model)^[Additional methods will be added here in the future.]
@@ -57,17 +57,14 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | **Series** | | | | |
 | | `seriesrevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
-
+| | `seriesaccuracy` | `indexaccuracy` | **calcSeriesAccuracy()** | Calculate the period, mean and median revision |
 ||||||
 | **Visualization** | | | | |
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `plotseries` | `gg`, `ggplot` | **plot.serieshpi()** | Plotting object for an index series |
 | | `plotrevision` | `gg`, `ggplot` | **plot.seriesrevision()** | Plotting object for revision statistics |
-| | `plotaccuracy` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexerrors()** | Plotting object for a error results|
-
-
-
-| | `volatiltyplot` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
+| | `plotaccuracy` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexaccuracy()** | Plotting object for a error results|
+| | `plotvolatility` | `gg`, `ggplot` | **plot.indexvolatility()** | Plotting object for an index |
 
 ## Examples
 
@@ -202,6 +199,7 @@ An example `rtdata` object
 
 ### Analysis
 
+#### Volatilitye
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_indexvolatility <- calcVolatility(index = ex_hpiindex,
@@ -217,6 +215,8 @@ An example `rtdata` object
   class(ex_plotvolatility)
  
 ```
+
+#### Accuracy (Fitting)
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -235,6 +235,8 @@ An example `rtdata` object
  
 ```
 
+#### Series
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_serieshpi <- createSeries(hpi_obj = ex_hpi,
@@ -251,6 +253,7 @@ An example `rtdata` object
  
 ```
 
+#### Revision
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 

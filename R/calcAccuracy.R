@@ -172,7 +172,7 @@ calcSeriesAccuracy <- function(series_obj,
 
     # Calculate accuracy
     suppressMessages(
-      a_hpis <- purrr::map(.x=series_obj$hpis,
+      accr_df <- purrr::map(.x=series_obj$hpis,
                            test_method = test_method,
                            test_type = test_type,
                            pred_df = pred_df,
@@ -184,36 +184,44 @@ calcSeriesAccuracy <- function(series_obj,
                                                    test_method,
                                                    test_type,
                                                    pred_df,
-                                                   smooth=FALSE,
-                                                   in_place=TRUE)
-                             s_ind$index$accuracy$series = length(x$index$value)
+                                                   smooth=FALSE)
+                             s_ind$series = length(x$index$value)
                              s_ind
-                           }))
+                           }) %>%
+        dplyr::bind_rows())
+
+      # Add to series object
+       series_obj$accuracy <- structure(accr_df,
+                                        class = unique(c('seriesaccuracy',
+                                                         'indexaccuracy',
+                                                         class(accr_df))))
 
     if (smooth){
       suppressMessages(
-        a_hpis <- purrr::map(.x=a_hpis,
-                             test_method = test_method,
-                             test_type = test_type,
-                             pred_df = pred_df,
-                             orig_data = series_obj$data,
-                             .f = function(x, test_method, test_type, pred_df,
-                                           orig_data){
-                               x$data <- orig_data
-                               s_ind <- calcAccuracy(x,
-                                                     test_method,
-                                                     test_type,
-                                                     pred_df,
-                                                     smooth=FALSE,
-                                                     in_place=TRUE,
-                                                     in_place_name = 'accuracy_smooth')
-                               s_ind$index$accuracy$series = length(x$index$value)
+        s_accr_df <- purrr::map(.x=series_obj$hpis,
+                                test_method = test_method,
+                                test_type = test_type,
+                                pred_df = pred_df,
+                                orig_data = series_obj$data,
+                                .f = function(x, test_method, test_type, pred_df,
+                                             orig_data){
+                                  x$data <- orig_data
+                                  s_ind <- calcAccuracy(x,
+                                                        test_method,
+                                                        test_type,
+                                                        pred_df,
+                                                        smooth=TRUE)
+                               s_ind$series = length(x$index$value)
                                s_ind
-                             }))
-    }
+                             }) %>%
+          dplyr::bind_rows())
 
-    # Add to series obj
-    series_obj$hpis <- a_hpis
+      # Add to series object
+      series_obj$accuracy_smooth <- structure(s_accr_df,
+                                              class = unique(c('seriesaccuracy',
+                                                               'indexaccuracy',
+                                                                class(s_accr_df))))
+    }
 
   } else {
 
@@ -234,4 +242,3 @@ calcSeriesAccuracy <- function(series_obj,
   series_obj
 
 }
-

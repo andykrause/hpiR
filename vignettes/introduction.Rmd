@@ -919,8 +919,8 @@ The `createSeries()` function will return an object of class **hpiseries** (data
 
    # Just create a series from 24 to 30
    rt_series <- createSeries(hpi_obj = rt_hpi,
-                              train_period = 24,
-                              max_period = 30)
+                             train_period = 24,
+                             max_period = 30)
 
    class(rt_series)
    class(rt_series$data)
@@ -985,7 +985,7 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
                                   test_type = 'rt')
   class(rt_series)
   length(rt_series$hpis)
-  class(rt_series$hpis[[1]]$index$accuracy)
+  class(rt_series$accuracy)
   
   # WIth smooth
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -994,7 +994,7 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
                                   smooth = TRUE)
   class(rt_series)
   length(rt_series$hpis)
-  class(rt_series$hpis[[1]]$index$accuracy_smooth)
+  class(rt_series$accuracy_smooth)
   
   # kFold: Standard Return
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -1002,7 +1002,7 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
                                   test_type = 'rt')
   class(rt_series)
   length(rt_series$hpis)
-  class(rt_series$hpis[[1]]$index$accuracy)
+  class(rt_series$accuracy)
   
   # Kfold: WIth smooth
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -1011,7 +1011,7 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
                                   smooth = TRUE)
   class(rt_series)
   length(rt_series$hpis)
-  class(rt_series$hpis[[1]]$index$accuracy_smooth)
+  class(rt_series$accuracy_smooth)
   
 ```
 

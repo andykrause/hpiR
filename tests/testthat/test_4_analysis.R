@@ -453,7 +453,8 @@ context('calcSeriesAccuracy()')
                                               test_method = 'insample',
                                               test_type = 'rt'),
               'serieshpi')
-    expect_true('accuracy' %in% names(rt_series$hpis[[1]]$index))
+    expect_true('accuracy' %in% names(rt_series))
+    expect_is(rt_series$accuracy, 'seriesaccuracy')
 
     # Smooth
     expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -461,7 +462,8 @@ context('calcSeriesAccuracy()')
                                               test_type = 'rt',
                                               smooth = TRUE),
               'serieshpi')
-    expect_true('accuracy_smooth' %in% names(rt_series$hpis[[1]]$index))
+    expect_true('accuracy_smooth' %in% names(rt_series))
+    expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
 
     # Smooth when no smooth existing
     expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
@@ -470,7 +472,8 @@ context('calcSeriesAccuracy()')
                                               smooth = TRUE,
                                               pred_df = rt_series$data),
               'serieshpi')
-    expect_true('accuracy_smooth' %in% names(hed_series$hpis[[1]]$index))
+    expect_true('accuracy_smooth' %in% names(hed_series))
+    expect_is(hed_series$accuracy_smooth, 'seriesaccuracy')
 
   })
 
@@ -482,7 +485,8 @@ context('calcSeriesAccuracy()')
                                               test_type = 'rt',
                                               pred_df = rt_index$data),
               'serieshpi')
-    expect_true('accuracy' %in% names(hed_series$hpis[[1]]$index))
+    expect_true('accuracy' %in% names(hed_series))
+    expect_is(hed_series$accuracy, 'seriesaccuracy')
 
     # Smooth
     expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -491,7 +495,8 @@ context('calcSeriesAccuracy()')
                                                pred_df = rt_index$data,
                                                smooth = TRUE),
               'serieshpi')
-    expect_true('accuracy_smooth' %in% names(rt_series$hpis[[1]]$index))
+    expect_true('accuracy_smooth' %in% names(rt_series))
+    expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
 
     # Smooth when no smooth existing
     expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
@@ -500,8 +505,9 @@ context('calcSeriesAccuracy()')
                                                smooth = TRUE,
                                                pred_df = rt_series$data),
               'serieshpi')
-    expect_true('accuracy_smooth' %in% names(hed_series$hpis[[1]]$index))
-
+    expect_true('accuracy_smooth' %in% names(hed_series))
+    expect_is(hed_series$accuracy_smooth, 'seriesaccuracy')
+dev
   })
 
 #### Forecast --------------------------------------------------------------------

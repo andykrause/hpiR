@@ -54,8 +54,8 @@ createSeries <- function(hpi_obj,
     stop()
   }
 
-  # Trim by time
-  time_range <- train_period:max_period
+  # Trim by time (The +1 ensures that the buildForecastIds function works properly)
+  time_range <- (train_period:max_period) + 1
 
   ## Set up data
 
