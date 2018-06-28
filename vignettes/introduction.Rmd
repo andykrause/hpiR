@@ -93,7 +93,7 @@ Alternatively, you can use the **min_date** and **max_date** parameters to clip 
 
 For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales_hdf` object going forward).
 
-We now have a dataset that includes a new field (**date_period**) indicating the period of each transaction relative to the first transaction in the data (at a monthly periodicity).  Additional information on the full extend of the periods as well as their numeric and date values can be found in the **"period_table"** attribute of the new object of class **trans_df** (also a **data.frame**); or accessed by:
+We now have a dataset that includes two new fields (**trans_date** and **trans_period**) indicating the date of transaction and the period of each transaction relative to the first transaction in the data (at a monthly periodicity), respectively.  Additional information on the full extend of the periods as well as their numeric and date values can be found in the **"period_table"** attribute of the new object of class **trans_df** (also a **data.frame**); or accessed by:
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 

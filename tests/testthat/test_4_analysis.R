@@ -302,22 +302,22 @@ context('calcInSampleError()')
     # All data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data,
                                             index = hed_index$index$value),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # All data smooth
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data,
                                             index = hed_index$index$smooth),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # Sparse data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data[1:4, ],
                                             index = hed_index$index$value),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # No data
     expect_is(rt_error <- calcInSampleError(pred_df = rt_index$data[0, ],
                                             index = hed_index$index$value),
-              'indexaccuracy')
+              'hpiaccuracy')
 
   })
 
@@ -350,23 +350,23 @@ context('calcKFoldError()')
     # All data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # All data - smooth
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data,
                                          smooth = TRUE),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # Sparse data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data[1:40, ]),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # No data
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                             pred_df = rt_index$data[0, ]),
-              'indexaccuracy')
+              'hpiaccuracy')
 
   })
 
@@ -379,7 +379,7 @@ context('calcAccuracy() after error functions')
                                        test_type = 'rt',
                                        test_method = 'insample',
                                        pred_df = rt_index$data),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -389,7 +389,7 @@ context('calcAccuracy() after error functions')
                                         in_place = TRUE,
                                         in_place_name ='acc'),
               'hpi')
-    expect_is(hed_index$index$acc, 'indexaccuracy')
+    expect_is(hed_index$index$acc, 'hpiaccuracy')
     expect_true(attr(hed_index$index$acc, 'test_method') == 'insample')
 
   })
@@ -401,7 +401,7 @@ context('calcAccuracy() after error functions')
                                        test_type = 'rt',
                                        test_method = 'kfold',
                                        pred_df = rt_index$data),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -411,7 +411,7 @@ context('calcAccuracy() after error functions')
                                         in_place = TRUE,
                                         in_place_name = 'errors'),
               'hpi')
-    expect_is(hed_index$index$errors, 'indexaccuracy')
+    expect_is(hed_index$index$errors, 'hpiaccuracy')
     expect_true(attr(hed_index$index$errors, 'test_method') == 'kfold')
 
   })
@@ -590,7 +590,7 @@ context('calcForecastError()')
     # All data
     expect_is(hed_acc <- calcForecastError(is_obj = hed_series,
                                            pred_df = rt_index$data),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # All data, longer forecast length
     expect_is(hed_acc <- calcForecastError(is_obj = hed_series,
@@ -602,7 +602,7 @@ context('calcForecastError()')
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
                                           pred_df = rt_index$data,
                                           smooth = TRUE),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # All data, smoothed, longer forecast length
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
@@ -614,13 +614,13 @@ context('calcForecastError()')
     # Sparse data
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
                                           pred_df = rt_index$data[1:40, ]),
-              'indexaccuracy')
+              'hpiaccuracy')
 
     # No data
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
                                             pred_df = rt_index$data[0, ],
                                             smooth=TRUE),
-              'indexaccuracy')
+              'hpiaccuracy')
 
   })
 

@@ -208,7 +208,7 @@ calcSeriesAccuracy <- function(series_obj,
 
     # Add Class info
     accr_df <- structure(accr_df,
-                         class = unique(c('seriesaccuracy', 'indexaccuracy',
+                         class = unique(c('seriesaccuracy', 'hpiaccuracy',
                                          class(accr_df))))
     # Add to series object
     if (!smooth){

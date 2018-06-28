@@ -62,7 +62,7 @@ calcInSampleError.rtdata <- function(pred_df,
                          stringsAsFactors=FALSE)
 
   # Add classes
-  class(error_df) <- c('indexaccuracy', 'data.frame')
+  class(error_df) <- c('hpiaccuracy', 'data.frame')
 
   # Add attribute
   attr(error_df, 'test_method') <- 'insample'

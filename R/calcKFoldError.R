@@ -104,7 +104,7 @@ calcKFoldError <- function(hpi_obj,
   accr_df <- dplyr::bind_rows(k_error) %>%
     dplyr::filter(!is.na(prop_id))
 
-  class(accr_df) <- unique(c('indexaccuracy', class(accr_df)))
+  class(accr_df) <- unique(c('hpiaccuracy', class(accr_df)))
   attr(accr_df, 'test_method') <- 'kfold'
 
   # Return Values

@@ -113,10 +113,10 @@ plot.indexvolatility <- function(vol_obj){
 
 }
 
-#' @title plot.indexaccuracy
+#' @title plot.hpiaccuracy
 #' @export
 
-plot.indexaccuracy <- function(error_obj,
+plot.hpiaccuracy <- function(error_obj,
                                return_plot = FALSE){
 
   # Get period count
