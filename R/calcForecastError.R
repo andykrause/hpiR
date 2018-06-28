@@ -120,7 +120,7 @@ calcForecastError <- function(is_obj,
 
 buildForecastIDs <- function(time_cut,
                              hpi_df,
-                             forecast_length,
+                             forecast_length = 1,
                              train=TRUE){
 
   if (!'data.frame' %in% class(hpi_df)){
@@ -134,6 +134,12 @@ buildForecastIDs <- function(time_cut,
     stop()
   }
 
+  if (!class(forecast_length) %in% c('numeric', 'integer') ||
+       forecast_length < 1){
+    message('"forecast_length" must be a positive integer')
+    stop()
+  }
+
   UseMethod("buildForecastIDs", hpi_df)
 
 }
@@ -141,7 +147,7 @@ buildForecastIDs <- function(time_cut,
 #' @export
 buildForecastIDs.heddata <- function(time_cut,
                                      hpi_df,
-                                     forecast_length,
+                                     forecast_length = 1,
                                      train=TRUE){
 
   if(train){
@@ -156,7 +162,7 @@ buildForecastIDs.heddata <- function(time_cut,
 #' @export
 buildForecastIDs.rtdata <- function(time_cut,
                                     hpi_df,
-                                    forecast_length,
+                                    forecast_length = 1,
                                     train=TRUE){
 
   # Extract data if given a full 'hpi' object

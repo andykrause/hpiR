@@ -197,6 +197,12 @@ calcSeriesAccuracy <- function(series_obj,
                                                          class(accr_df))))
 
     if (smooth){
+
+      if (!'smooth' %in% names(series_obj$hpis[[1]]$index)){
+        message('Not smoothed indexes found. Please add or set smooth to FALSE')
+        stop()
+      }
+
       suppressMessages(
         s_accr_df <- purrr::map(.x=series_obj$hpis,
                                 test_method = test_method,

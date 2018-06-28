@@ -465,16 +465,12 @@ context('calcSeriesAccuracy()')
     expect_true('accuracy_smooth' %in% names(rt_series))
     expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
 
-    # Smooth when no smooth existing
-    expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
-                                              test_method = 'insample',
-                                              test_type = 'rt',
-                                              smooth = TRUE,
-                                              pred_df = rt_series$data),
-              'serieshpi')
-    expect_true('accuracy_smooth' %in% names(hed_series))
-    expect_is(hed_series$accuracy_smooth, 'seriesaccuracy')
-
+    # Smooth when no smooth existing (ERROR)
+    expect_error(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
+                                                  test_method = 'insample',
+                                                  test_type = 'rt',
+                                                  smooth = TRUE,
+                                                 pred_df = rt_series$data))
   })
 
   test_that('calcSeriesAccuracy() kfold works',{
@@ -498,16 +494,13 @@ context('calcSeriesAccuracy()')
     expect_true('accuracy_smooth' %in% names(rt_series))
     expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
 
-    # Smooth when no smooth existing
-    expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
+    # Smooth when no smooth existing (ERROR)
+    expect_error(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
                                                test_method = 'kfold',
                                                test_type = 'rt',
                                                smooth = TRUE,
-                                               pred_df = rt_series$data),
-              'serieshpi')
-    expect_true('accuracy_smooth' %in% names(hed_series))
-    expect_is(hed_series$accuracy_smooth, 'seriesaccuracy')
-dev
+                                               pred_df = rt_series$data))
+
   })
 
 #### Forecast --------------------------------------------------------------------
@@ -526,7 +519,8 @@ context('buildForecastIDs()')
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = hed_index$data,
-                                                   train = FALSE)) == 437)
+                                                   forecast_length = 2,
+                                                   train = FALSE)) == 960)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = rt_index$data,
@@ -543,6 +537,12 @@ context('buildForecastIDs()')
 
     # Bad time cut
     expect_error(is_data <- buildForecastIDs(time_cut = -1,
+                                             hpi_df = hed_index$data,
+                                             train = TRUE))
+
+    # Bad forecast_length
+    expect_error(is_data <- buildForecastIDs(time_cut = 33,
+                                             forecast_length = 'x',
                                              hpi_df = hed_index$data,
                                              train = TRUE))
 
@@ -564,6 +564,12 @@ context('calcForecastError()')
     expect_error(hed_acc <- calcForecastError(is_obj = hed_series,
                                               pred_df = rt_index$data,
                                               smooth = TRUE))
+
+    # Smooth when not present
+    expect_error(hed_acc <- calcForecastError(is_obj = hed_series,
+                                              pred_df = rt_index$data,
+                                              forecast_length = 'x'))
+
   })
 
   test_that('Forecast works',{
@@ -573,12 +579,24 @@ context('calcForecastError()')
                                            pred_df = rt_index$data),
               'indexaccuracy')
 
+    # All data, longer forecast length
+    expect_is(hed_acc <- calcForecastError(is_obj = hed_series,
+                                           pred_df = rt_index$data,
+                                           forecast_length = 3),
+              'seriesaccuracy')
+
     # All data, smoothed
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
                                           pred_df = rt_index$data,
                                           smooth = TRUE),
               'indexaccuracy')
 
+    # All data, smoothed, longer forecast length
+    expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
+                                          pred_df = rt_index$data,
+                                          smooth = TRUE,
+                                          forecast_length = 4),
+              'seriesaccuracy')
 
     # Sparse data
     expect_is(rt_acc <- calcForecastError(is_obj = rt_series,
@@ -601,7 +619,7 @@ context('calcForecastError()')
                                                test_method = 'forecast',
                                                pred_df = rt_index$data),
               'serieshpi')
-    expect_is(hed_series$accuracy, 'indexaccuracy')
+    expect_is(hed_series$accuracy, 'seriesaccuracy')
 
     # Returns a series with accuracy: smooth
     expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -610,8 +628,10 @@ context('calcForecastError()')
                                               pred_df = rt_series$data,
                                               smooth = TRUE),
               'serieshpi')
-    expect_is(rt_series$accuracy_smooth, 'indexaccuracy')
-  })### Revision Functions --------------------------------------------------------------
+    expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
+  })
+
+### Revision Functions --------------------------------------------------------------
 
 context('calcRevision()')
 
