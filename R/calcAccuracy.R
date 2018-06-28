@@ -134,6 +134,7 @@ calcSeriesAccuracy <- function(series_obj,
                                test_type = 'rt',
                                pred_df = NULL,
                                smooth = FALSE,
+                               summarize = FALSE,
                                ...){
 
   # Bad series_obj
@@ -170,76 +171,65 @@ calcSeriesAccuracy <- function(series_obj,
   # If not forecast:
   if (test_method != 'forecast'){
 
+    # Check for smooth indexes
+    if (smooth && !'smooth' %in% names(series_obj$hpis[[1]]$index)){
+        message('Not smoothed indexes found. Please add or set smooth to FALSE')
+        stop()
+    }
+
     # Calculate accuracy
     suppressMessages(
       accr_df <- purrr::map(.x=series_obj$hpis,
-                           test_method = test_method,
-                           test_type = test_type,
-                           pred_df = pred_df,
-                           orig_data = series_obj$data,
-                           .f = function(x, test_method, test_type, pred_df,
-                                         orig_data){
-                             x$data <- orig_data
-                             s_ind <- calcAccuracy(x,
-                                                   test_method,
-                                                   test_type,
-                                                   pred_df,
-                                                   smooth=FALSE)
-                             s_ind$series = length(x$index$value)
-                             s_ind
-                           }) %>%
-        dplyr::bind_rows())
+                              test_method = test_method,
+                              test_type = test_type,
+                              pred_df = pred_df,
+                              orig_data = series_obj$data,
+                              .f = function(x, test_method, test_type, pred_df,
+                                            orig_data){
+                                x$data <- orig_data
+                                s_ind <- calcAccuracy(x,
+                                                      test_method,
+                                                      test_type,
+                                                      pred_df,
+                                                      smooth=smooth)
+                                s_ind$series = length(x$index$value)
+                                s_ind
+                             }) %>% dplyr::bind_rows())
 
-      # Add to series object
-       series_obj$accuracy <- structure(accr_df,
-                                        class = unique(c('seriesaccuracy',
-                                                         'indexaccuracy',
-                                                         class(accr_df))))
-
-    if (smooth){
-
-      if (!'smooth' %in% names(series_obj$hpis[[1]]$index)){
-        message('Not smoothed indexes found. Please add or set smooth to FALSE')
-        stop()
-      }
-
-      suppressMessages(
-        s_accr_df <- purrr::map(.x=series_obj$hpis,
-                                test_method = test_method,
-                                test_type = test_type,
-                                pred_df = pred_df,
-                                orig_data = series_obj$data,
-                                .f = function(x, test_method, test_type, pred_df,
-                                             orig_data){
-                                  x$data <- orig_data
-                                  s_ind <- calcAccuracy(x,
-                                                        test_method,
-                                                        test_type,
-                                                        pred_df,
-                                                        smooth=TRUE)
-                               s_ind$series = length(x$index$value)
-                               s_ind
-                             }) %>%
-          dplyr::bind_rows())
-
-      # Add to series object
-      series_obj$accuracy_smooth <- structure(s_accr_df,
-                                              class = unique(c('seriesaccuracy',
-                                                               'indexaccuracy',
-                                                                class(s_accr_df))))
+    # If summarizing
+    if (summarize){
+      accr_df <- accr_df %>%
+        dplyr::group_by(prop_id, pred_period) %>%
+        dplyr::summarize(pred_price = mean(pred_price),
+                  pred_error = mean(pred_error),
+                  series = 0) %>%
+        dplyr::ungroup()
     }
+
+    # Add Class info
+    accr_df <- structure(accr_df,
+                         class = unique(c('seriesaccuracy', 'indexaccuracy',
+                                         class(accr_df))))
+    # Add to series object
+    if (!smooth){
+      series_obj$accuracy <- accr_df
+    } else {
+      series_obj$accuracy_smooth <- accr_df
+    }
+
+  # If it is a forecast method
 
   } else {
 
-   accr_obj <- calcForecastError(is_obj = series_obj,
+   accr_df <- calcForecastError(is_obj = series_obj,
                                  pred_df = pred_df,
                                  smooth = smooth,
                                  ...)
 
    if (!smooth){
-     series_obj[['accuracy']] <- accr_obj
+     series_obj[['accuracy']] <- accr_df
    } else {
-     series_obj[['accuracy_smooth']] <- accr_obj
+     series_obj[['accuracy_smooth']] <- accr_df
    }
 
   }

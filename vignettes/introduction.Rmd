@@ -1015,6 +1015,25 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
   
 ```
 
+One thing to note about series accuracy is that the training data will be evaluated separated for each index in the series, meaning that there will be many prediction errors for each observation.  By setting the **summarize** option to TRUE, the mean for each observation will be calculated.   
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Standard Return
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'insample',
+                                  test_type = 'rt')
+  nrow(rt_series$accuracy)
+  
+  # Summarized
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'insample',
+                                  test_type = 'rt',
+                                  summarize = TRUE)
+  nrow(rt_series$accuracy)
+  
+```
+
 #### Forecast Accuracy
 
 A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"

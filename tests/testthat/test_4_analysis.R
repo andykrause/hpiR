@@ -503,6 +503,19 @@ context('calcSeriesAccuracy()')
 
   })
 
+
+  test_that('calcSeriesAccuracy() summarize works',{
+
+    expect_true(nrow(calcSeriesAccuracy(series_obj = rt_series,
+                                        test_method = 'insample',
+                                        test_type = 'rt')$accuracy) == 112082)
+
+    expect_true(nrow(calcSeriesAccuracy(series_obj = rt_series,
+                                        test_method = 'insample',
+                                        test_type = 'rt',
+                                        summarize = TRUE)$accuracy) == 4823)
+  })
+
 #### Forecast --------------------------------------------------------------------
 
 context('buildForecastIDs()')
