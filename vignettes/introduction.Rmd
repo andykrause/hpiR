@@ -975,23 +975,28 @@ A wrapper function, `calcSeriesVolatility()` will calculate volatility for all *
   
 ```
 
-A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpiindex** objects in a series.  The calculations will occur "in place" and a series object will be returned by the function.  Note that running this function on kfold method may be computationally intense depending on your data size and index length.  
+A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpiindex** objects in a series and return to an object of class `seriesaccuracy`.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   # Standard Return
-  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+  rt_sacc <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'insample',
                                   test_type = 'rt')
-  class(rt_series)
-  length(rt_series$hpis)
-  class(rt_series$accuracy)
-  
-  # WIth smooth
+  class(rt_sacc)
+
+```
+
+The calculations can occur "in place" and a series object will be returned by the function.  Note that running this function on kfold method may be computationally intense depending on your data size and index length.  
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # With smooth
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'insample',
                                   test_type = 'rt',
-                                  smooth = TRUE)
+                                  smooth = TRUE,
+                                  in_place=TRUE)
   class(rt_series)
   length(rt_series$hpis)
   class(rt_series$accuracy_smooth)
@@ -999,7 +1004,8 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
   # kFold: Standard Return
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'kfold',
-                                  test_type = 'rt')
+                                  test_type = 'rt',
+                                  in_place=TRUE)
   class(rt_series)
   length(rt_series$hpis)
   class(rt_series$accuracy)
@@ -1008,7 +1014,8 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpi
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'kfold',
                                   test_type = 'rt',
-                                  smooth = TRUE)
+                                  smooth = TRUE,
+                                  in_place=TRUE)
   class(rt_series)
   length(rt_series$hpis)
   class(rt_series$accuracy_smooth)
@@ -1022,14 +1029,16 @@ One thing to note about series accuracy is that the training data will be evalua
   # Standard Return
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'insample',
-                                  test_type = 'rt')
+                                  test_type = 'rt',
+                                  in_place=TRUE)
   nrow(rt_series$accuracy)
   
   # Summarized
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'insample',
                                   test_type = 'rt',
-                                  summarize = TRUE)
+                                  summarize = TRUE,
+                                  in_place=TRUE)
   nrow(rt_series$accuracy)
   
 ```
@@ -1045,7 +1054,8 @@ As above, it can be used on the raw index values or the smoothed ones (**smooth 
   # Standard Return
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'forecast',
-                                  test_type = 'rt')
+                                  test_type = 'rt',
+                                  in_place=TRUE)
   class(rt_series)
   length(rt_series$hpis)
   class(rt_series$accuracy)
@@ -1054,11 +1064,20 @@ As above, it can be used on the raw index values or the smoothed ones (**smooth 
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                   test_method = 'forecast',
                                   test_type = 'rt',
-                                  smooth = TRUE)
+                                  smooth = TRUE,
+                                  in_place=TRUE)
   class(rt_series)
   length(rt_series$hpis)
   class(rt_series$accuracy_smooth)
   
+``` 
+
+We can plot the `seriesaccuracy` objects, which look identical to `hpiaccuracy` objects. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  plot(rt_series$accuracy_smooth)
+
 ``` 
 
 #### Revision

@@ -88,7 +88,7 @@ calcForecastError <- function(is_obj,
                             })
 
   error_df <- bind_rows(fc_error)
-  class(error_df) <- unique(c('seriesaccuracy', 'indexaccuracy', class(error_df)))
+  class(error_df) <- unique(c('seriesaccuracy', 'hpiaccuracy', class(error_df)))
   attr(error_df, 'test_method') <- 'forecast'
 
   # If returnning errors

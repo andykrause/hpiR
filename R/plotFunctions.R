@@ -117,7 +117,7 @@ plot.indexvolatility <- function(vol_obj){
 #' @export
 
 plot.hpiaccuracy <- function(error_obj,
-                               return_plot = FALSE){
+                             return_plot = FALSE){
 
   # Get period count
   p_cnt <- length(unique(error_obj$pred_period))
@@ -183,9 +183,11 @@ plot.hpiaccuracy <- function(error_obj,
 #' @title plot.seriesaccuracy
 #' @export
 plot.seriesaccuracy <- function(accr_obj,
-                        ...){
+                                return_plot = FALSE,
+                                ...){
 
-  return(plot(accr_obj, ...))
+  class(accr_obj) <- c('hpiaccuracy', 'data.frame')
+  plot(accr_obj, return_plot=TRUE, ...)
 
 }
 

@@ -37,6 +37,7 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 ||||||
 | **Core** | | | | |
 | | `hpi` | *~many* | ** *****Index()** | Unified house price index object (S3 list) containing data, model and index as well as additional analytics that can be added to it.  
+| | `hpiaccuracy` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
 | **Data** | | | | |
 | | `hpidata` | `data.frame` | **dateToPeriod()** | Transaction data.frame with dates converted to relative periods |
@@ -49,24 +50,27 @@ The `hpiseries` object is a "super-unit" that contains multiple house price inde
 | | `hedmodel` | Multiple (ex. `lm`) | **hedModel()** | List containing model results of hedonic model
 ||||||
 | **Index** | | | | |
-| | `hpiindex` | ~`ts` | **modelToIndex()** | List containing index information.  `index` slot is a `ts` object |
 ||||||
+| | `hpiindex` | ~`ts` | **modelToIndex()** | List containing index information.  `index` slot is a `ts` object |
 | | `indexsmooth` | `ts` | **smoothIndex()** | smooths an index based on the order argument | 
 | | `indexvolatility` | NONE | **calcVolatility()** | contains rolling, mean and median volatility of an index | 
-| | `indexaccuracy` | `data.frame` | **calcAccuracy()**, and subordinates | Calculate the error |
 ||||||
 | **Series** | | | | |
 | | `seriesrevision` | NONE | **calcRevision()** | Calculate the period, mean and median revision |
-| | `seriesaccuracy` | `indexaccuracy` | **calcSeriesAccuracy()** | Calculate the period, mean and median revision |
+| | `seriesaccuracy` | `hpiaccuracy` | **calcSeriesAccuracy()** | Calculate the period, mean and median revision |
 ||||||
 | **Visualization** | | | | |
 | | `plotindex` | `gg`, `ggplot` | **plot.hpiindex()** | Plotting object for an index |
 | | `plotseries` | `gg`, `ggplot` | **plot.serieshpi()** | Plotting object for an index series |
 | | `plotrevision` | `gg`, `ggplot` | **plot.seriesrevision()** | Plotting object for revision statistics |
-| | `plotaccuracy` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.indexaccuracy()** | Plotting object for a error results|
+| | `plotaccuracy` | `gtable`, `gTree`, `grob`, `gDesc` | **plot.hpiaccuracy()** | Plotting object for a error results|
 | | `plotvolatility` | `gg`, `ggplot` | **plot.indexvolatility()** | Plotting object for an index |
 
-## Examples
+## Examples And Explanation
+
+Small examples of any of the classes in the table above are available in the `hpiR` as pre-loaded data.  Use `data(ex_'name of class')` to access. Ex: `data(ex_hpidata)`. 
+
+### Loading
 
 Begin by loading the `hpiR` package. We'll assume that you've followed the instructions in the **"introduction"** vignette in order to obtain the package.  
 
@@ -83,7 +87,7 @@ Begin by loading the `hpiR` package. We'll assume that you've followed the instr
 
 ```
 
-Next, load the example dataset of Seattle house transactions into your R session.  We'll limit to just the central city (**area** equal to 13, 14, 15 and 79)
+Next, load the example dataset of Seattle house transactions into your R session.  We'll limit to just the central city (**area** equal to 13, 14, and 15).  This can also be accessed via `data(ex_sales)`.
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -94,11 +98,18 @@ Next, load the example dataset of Seattle house transactions into your R session
   ex_sales <- seattle_sales %>%
     dplyr::filter(area %in% c(13, 14, 15))
 
+  # Or just load it
+  data(ex_sales)
+  
 ```
 
-#### Data
+### Data
 
-An example `hpidata` object
+#### `hpidata`
+
+`hpidata` objects inherit from `data.frame`, but are very flexible and the collection of fields that may be in these objects is solely dependent on the data being used.  The only requirements for creating an `hpidata` object is that there must be a date field that can be turned into a period field.  
+
+The `dateToPeriod()` function will create an `hpidata` object by converting the date into a period.  The only difference between the `hpidata` object and the original data.frame is the **trans_date** and  **trans_period** columns and the **periodicity**, **min_date**, **max_date** and **period_table** attributes. 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -107,9 +118,15 @@ An example `hpidata` object
                              periodicity = 'monthly')
   class(ex_hpidata)
 
+  str(ex_hpidata)
+  
 ```
 
-An example `rtdata` object
+#### Method-based data objects
+
+Each of the methods (currently just **rt** and **hed**) will have their own data object classes that include the necessary fields and structures for these method types.  The name format here is "xxxdata"", where 'xxx' is the method abbreviation.  
+
+The `rtdata` object holds repeat transactions and contains the eight standard fields shown below as well as the **period_table** attribute.  
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
@@ -118,58 +135,97 @@ An example `rtdata` object
                              trans_id = 'sale_id',
                              price = 'sale_price')
   class(ex_rtdata)
-
+  str(ex_rtdata)
+  
 ```
+
+The `heddata` object requires no changes from the original `hpidata` object and looks the same, with the exception of field standardization (**pinx** is now **prop_id**, **sale_id** is now **trans_id**, **sale_price** is now **price**, **sale_date** is now **date**. ) 
 
 ```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
-  ex_heddata <- hedCreateTrans(trans_df = central_sales,
+  ex_heddata <- hedCreateTrans(trans_df = ex_sales,
                                prop_id = 'pinx',
                                trans_id = 'sale_id',
                                price = 'sale_price',
-                               date= 'sale_date',
+                               date = 'sale_date',
                                periodicity = 'monthly')
   class(ex_heddata)
+  str(ex_heddata)
 
 ```
 
 ### Modeling 
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+Results from modeling the data prior to creating indexes is stored in `hpimodel` objects.  These object contain eight standard slots, shown below.  The slots are standardized across methods, with the exception of the `model_obj` slot which will contain an object that is specific to the method being used to estimate the index. 
 
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+  
   ex_hpimodel <- hpiModel(hpi_df = ex_rtdata,
                           estimator = 'base',
                           log_dep = TRUE)
+  class(ex_hpimodel)
+  str(ex_hpimodel, max.level=1)
+
+```    
+
+Below we see an example of a `model_obj` from a repeat transactions model. This is very similar to what you'd get from a call to a linear model (`lm(...)`)
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
 
   ex_rtmodel <- ex_hpimodel$model_obj
-  
-  class(ex_hpimodel)
   class(ex_rtmodel)
+  str(ex_rtmodel, max.level=1, give.attr=FALSE)
 
 ```
 
+We also show an example of a `model_obj` from a hedonic price method, again similar to an `lm(...)` output. 
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  ex_hpimodel_h <- hpiModel(hpi_df = ex_heddata,
-                            estimator = 'base',
-                            dep_var = 'price',
-                            ind_var = c('tot_sf', 'beds', 'baths'),
-                            log_dep = TRUE)
-  ex_hedmodel <- ex_hpimodel_h$model_obj
-
-  class(ex_hpimodel_h)
+  ex_hedmodel <- hpiModel(hpi_df = ex_heddata,
+                          estimator = 'base',
+                          dep_var = 'price',
+                          ind_var = c('tot_sf', 'beds', 'baths'),
+                          log_dep = TRUE)$model_obj
   class(ex_hedmodel)
+  str(ex_hedmodel, max.level=1, give.attr=FALSE)
 
 ```
 
 ### Index and Smoothing
 
+The `modelToIndex` function will take an `hpimodel` object and turn it into an `hpiindex` object.  `hpiindex` object are fairly basic, contain five standard slots. 
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_hpiindex <- modelToIndex(model_obj = ex_hpimodel)
   class(ex_hpiindex)
+  str(ex_hpiindex, max.level=1)
   
 ```
+
+If we want to add a smoothed index to this object, we use the `smoothIndex` function.  In its default state, this function just return a simple `ts` (time-series) object of the smoothed index. 
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_smoothindex <- smoothIndex(ex_hpiindex)
+  class(ex_smoothindex)
+  str(ex_smoothindex)
+
+```
+
+To add it to the `hpiindex` object, we add the **"in_place = TRUE"** argument which will add it to the **smooth** slot in the `hpiindex` object. Note that the class of **temp_index** stays the same, only teh **smooth** slot is added with an object of class `smoothindex` (inheriting from `ts`).
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  temp_index <- smoothIndex(ex_hpiindex, in_place = TRUE)
+  class(temp_index)
+  class(temp_index$smooth)
+  str(temp_index)
+
+```
+
+If you want to store plots of `hpiindex` objects, the are returned as `plotindex` objects, inheriting from `gg` and `ggplot` (from the `ggplot2` package)
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -178,14 +234,9 @@ An example `rtdata` object
 
 ```
 
-```{r eval=TRUE, messages=FALSE, echo=FALSE}
-
-  ex_smoothindex <- smoothIndex(ex_hpiindex)
-  class(ex_smoothindex)
-
-```
-
 ### Wrapper
+
+The `rtIndex` (and associated `hedIndex`) wrapper combine the above steps -- data prep, modeling and index creation -- into a single function, the output of which is an hpi collection, or simply, an `hpi` object.  This objects is combination of a data object (`hpidata`), a model object (`hpimodel`) and an index object (`hpiindex`).  
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -194,22 +245,41 @@ An example `rtdata` object
                     log_dep = TRUE,
                     trim_model = TRUE,
                     smooth = TRUE)
-  
   class(ex_hpi)
+  str(ex_hpi, max.level=1)
  
 ```
 
-### Analysis
+### Analyzing Indexes
 
-#### Volatilitye
+#### Volatility
+
+Index volatility can be calculated by providing an `hpiindex` object to the `calcVolatility()` function. The result is an object of class `indexvolatility`, containing three vector objects as well as two attributes indicating the original index and the window used. 
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_indexvolatility <- calcVolatility(index = ex_hpiindex,
                                        window = 5)
-  
   class(ex_indexvolatility)
+  str(ex_indexvolatility)
+  
  
 ```
+
+The `indexvolatility` object can be nested within an `hpiindex` object by setting **in_place = TRUE**. 
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  temp_index <- calcVolatility(index = ex_hpiindex,
+                               window = 3, 
+                               in_place = TRUE)
+  class(temp_index)
+  class(temp_index$volatility)
+  str(temp_index, max.level=1, give.attr=FALSE)
+
+```
+
+Volatility plots can be saved in objects of class `plotvolatility`, inheriting from `gg` and `ggplot`
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -220,24 +290,45 @@ An example `rtdata` object
 
 #### Accuracy (Fitting)
 
+Calculating an indexes (fitting) accuracy through either **insample** or **kfold** (out of sample) methods via calcAccuracy returns an object of class `hpiaccuracy`, inheriting from `data.frame`.  These object contain four fields, shown below.  In `hpiaccuracy` objects, each observation in that is being tested is only found once.  This differs from the `seriesaccuracy` objects which are discussed later in which an observation may be tested against an index for each index in the series.  
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  ex_indexaccuracy <- calcAccuracy(hpi_obj = ex_hpi,
+  ex_hpiaccuracy <- calcAccuracy(hpi_obj = ex_hpi,
                                    test_type = 'rt',
                                    test_method = 'insample')
   
-  class(ex_indexaccuracy)
- 
+  class(ex_hpiaccuracy)
+  str(ex_hpiaccuracy)
+  
 ```
+
+`hpiaccuracy` object can be added directly to an `hpi` object with the **in_place = TRUE** argument.^[Accuracy results are added to `hpi` objects and not `hpindex` object because they require data that is outside of the `hpiindex` object and therefore relate to the hpi collection more than just the index.] 
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
-  ex_plotaccuracy <- plot(ex_indexaccuracy, return_plot = TRUE)
+  temp_hpi <- calcAccuracy(hpi_obj = ex_hpi,
+                           test_type = 'rt',
+                           test_method = 'insample',
+                           in_place = TRUE)
+  class(temp_hpi)
+  class(temp_hpi$accuracy)
+  str(temp_hpi, max.level=1, give.attr=FALSE)
+
+```
+
+An `hpiaccuracy` object can be plotted and save to a `plotaccuracy` object, but need the **return_plot=TRUE** argument to return to an object. 
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_plotaccuracy <- plot(ex_hpiaccuracy, return_plot = TRUE)
   class(ex_plotaccuracy)
  
 ```
 
 #### Series
+
+A series of hpis are created with the `createSeries` function.  This results in a `serieshpi` object, with two initial slots: **data** (`hpidata` object) and **hpis** a list of `hpi` objects (minus the data component which has been removed to avoid duplication.)  
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -245,8 +336,11 @@ An example `rtdata` object
                                train_period = 48,
                                max_period = 60)
   class(ex_serieshpi)
+  str(ex_serieshpi, max.level=1)
  
 ```
+
+Series can be plotted and saved into a `plotseries` object. 
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -257,12 +351,29 @@ An example `rtdata` object
 
 #### Revision
 
+The revision of a series is calculated with the `calcRevision()` function and return an object of class `seriesrevision`.  This object contains a data.frame of revision by period and median and mean summaries of overall revision levels. 
+
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
   ex_seriesrevision <- calcRevision(series_obj = ex_serieshpi)
   class(ex_seriesrevision)
+  str(ex_seriesrevision)
  
 ```
+
+To add the revision to the `serieshpi` object, use **in_place = TRUE**.  
+
+```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  temp_series <- calcRevision(series_obj = ex_serieshpi,
+                              in_place = TRUE)
+  class(temp_series)
+  class(temp_series$revision)
+  str(temp_series, max.level=1)
+
+```
+
+Plotting revision can be saved to a `plotrevision` object.
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
 
@@ -271,31 +382,76 @@ An example `rtdata` object
  
 ```
 
-#### Saving objects to the package
+### Series Accuracy
+
+Finally, accuracy can be calculated the series level by providing a `serieshpi` object to the `calcSeriesAccuracy()`, resulting in a `seriesaccuracy` object.  `seriesaccuracy` objects look nearly identical to `hpiaccuracy` objects, however they differ in two respects: 1) they may include estimate of accuracy for the same observation multiple times ^[This will not happen only when using a test_method of type "forecast" and a "forecast_length" of 1.]; 2) they may have a **series** field, indicating from which index in the series the accuracy estimate is from. 
+
+Using the **test_method = 'forecast'** will create a true, prediction-type test of accuracy (out of sample and into the future), where **kfold** is out of sample (but with knowledge of the future) and **insample** is just a simple fitting measure. 
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  # Standard Return
+  ex_seriesaccuracy <- calcSeriesAccuracy(series_obj = ex_serieshpi,
+                                          test_method = 'insample',
+                                          test_type = 'rt')
+  class(ex_seriesaccuracy)
+  str(ex_seriesaccuracy)
+
+```  
+  
+This object can be added directly to the `serieshpi` by using the **in_place = TRUE** argument.
+
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+
+  temp_series <- calcSeriesAccuracy(series_obj = ex_serieshpi,
+                                    test_method = 'insample',
+                                    test_type = 'rt',
+                                    in_place=TRUE)
+  class(temp_series)
+  class(temp_series$accuracy)
+  str(temp_series, max.level=1)
+  
+``` 
+
+Finally, `seriesaccuracy` objects can be saved to a plot of class `plotaccuracy`
 
 ```{r eval=TRUE, messages=FALSE, echo=FALSE}
+
+  ex_plotaccuracy <- plot(ex_seriesaccuracy, return_plot = TRUE)
+  class(ex_plotaccuracy)
+ 
+```
+
+```{r eval=FALSE, messages=FALSE, echo=FALSE}
   
+  # Code for saving objects to the package /data.  Not executed or shown. 
+
   devtools::use_data(ex_sales, overwrite=TRUE)
 
   devtools::use_data(ex_hpidata, overwrite=TRUE)
   devtools::use_data(ex_rtdata, overwrite=TRUE)
   devtools::use_data(ex_heddata, overwrite=TRUE)
+  
   devtools::use_data(ex_hpimodel, overwrite=TRUE)
   devtools::use_data(ex_rtmodel, overwrite=TRUE)
   devtools::use_data(ex_hedmodel, overwrite=TRUE)
+  
   devtools::use_data(ex_hpiindex, overwrite=TRUE)
   devtools::use_data(ex_smoothindex, overwrite=TRUE)
   devtools::use_data(ex_plotindex, overwrite=TRUE)
   
   devtools::use_data(ex_hpi, overwrite=TRUE)
+  
   devtools::use_data(ex_indexvolatility, overwrite=TRUE)
   devtools::use_data(ex_plotvolatility, overwrite=TRUE)
   
-  devtools::use_data(ex_indexaccuracy, overwrite=TRUE)  
+  devtools::use_data(ex_hpiaccuracy, overwrite=TRUE)  
   devtools::use_data(ex_plotaccuracy, overwrite=TRUE)  
   
   devtools::use_data(ex_hpiseries, overwrite=TRUE)
   devtools::use_data(ex_plotseries, overwrite=TRUE)
+  
+  devtools::use_data(ex_seriesaccuracy, overwrite=TRUE)
   
   devtools::use_data(ex_seriesrevision, overwrite=TRUE)
   devtools::use_data(ex_plotrevision, overwrite=TRUE)

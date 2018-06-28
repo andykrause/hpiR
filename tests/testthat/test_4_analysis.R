@@ -449,18 +449,17 @@ context('calcSeriesAccuracy()')
   test_that('calcSeriesAccuracy() insample works',{
 
     # Regular
-    expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+    expect_is(rt_acc <- calcSeriesAccuracy(series_obj = rt_series,
                                               test_method = 'insample',
                                               test_type = 'rt'),
-              'serieshpi')
-    expect_true('accuracy' %in% names(rt_series))
-    expect_is(rt_series$accuracy, 'seriesaccuracy')
+              'seriesaccuracy')
 
-    # Smooth
+    # Smooth and in place
     expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                               test_method = 'insample',
                                               test_type = 'rt',
-                                              smooth = TRUE),
+                                              smooth = TRUE,
+                                              in_place = TRUE),
               'serieshpi')
     expect_true('accuracy_smooth' %in% names(rt_series))
     expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
@@ -476,20 +475,19 @@ context('calcSeriesAccuracy()')
   test_that('calcSeriesAccuracy() kfold works',{
 
     # Regular
-    expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
+    expect_is(hed_acc <- calcSeriesAccuracy(series_obj = hed_series,
+                                            test_method = 'kfold',
+                                            test_type = 'rt',
+                                            pred_df = rt_index$data),
+              'seriesaccuracy')
+
+    # Smooth and in place
+    expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                               test_method = 'kfold',
                                               test_type = 'rt',
-                                              pred_df = rt_index$data),
-              'serieshpi')
-    expect_true('accuracy' %in% names(hed_series))
-    expect_is(hed_series$accuracy, 'seriesaccuracy')
-
-    # Smooth
-    expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
-                                               test_method = 'kfold',
-                                               test_type = 'rt',
-                                               pred_df = rt_index$data,
-                                               smooth = TRUE),
+                                              pred_df = rt_index$data,
+                                              smooth = TRUE,
+                                              in_place = TRUE),
               'serieshpi')
     expect_true('accuracy_smooth' %in% names(rt_series))
     expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
@@ -508,12 +506,13 @@ context('calcSeriesAccuracy()')
 
     expect_true(nrow(calcSeriesAccuracy(series_obj = rt_series,
                                         test_method = 'insample',
-                                        test_type = 'rt')$accuracy) == 112082)
+                                        test_type = 'rt')) == 112082)
 
     expect_true(nrow(calcSeriesAccuracy(series_obj = rt_series,
                                         test_method = 'insample',
                                         test_type = 'rt',
-                                        summarize = TRUE)$accuracy) == 4823)
+                                        summarize = TRUE,
+                                        in_place = TRUE)$accuracy) == 4823)
   })
 
 #### Forecast --------------------------------------------------------------------
@@ -627,19 +626,19 @@ context('calcForecastError()')
   test_that('calcSeriesAccuracy works with forecast',{
 
     # Returns a series with accuracy
-    expect_is(hed_series <- calcSeriesAccuracy(series_obj = hed_series,
-                                               test_type = 'rt',
-                                               test_method = 'forecast',
-                                               pred_df = rt_index$data),
-              'serieshpi')
-    expect_is(hed_series$accuracy, 'seriesaccuracy')
+    expect_is(hed_acc <- calcSeriesAccuracy(series_obj = hed_series,
+                                            test_type = 'rt',
+                                            test_method = 'forecast',
+                                            pred_df = rt_index$data),
+              'seriesaccuracy')
 
-    # Returns a series with accuracy: smooth
+    # Returns a series with accuracy: smooth and in place
     expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
                                               test_type = 'rt',
                                               test_method = 'forecast',
                                               pred_df = rt_series$data,
-                                              smooth = TRUE),
+                                              smooth = TRUE,
+                                              in_place = TRUE),
               'serieshpi')
     expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
   })

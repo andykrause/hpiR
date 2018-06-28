@@ -135,6 +135,7 @@ calcSeriesAccuracy <- function(series_obj,
                                pred_df = NULL,
                                smooth = FALSE,
                                summarize = FALSE,
+                               in_place = FALSE,
                                ...){
 
   # Bad series_obj
@@ -210,6 +211,10 @@ calcSeriesAccuracy <- function(series_obj,
     accr_df <- structure(accr_df,
                          class = unique(c('seriesaccuracy', 'hpiaccuracy',
                                          class(accr_df))))
+
+    # Return if not in place
+    if (!in_place) return(accr_df)
+
     # Add to series object
     if (!smooth){
       series_obj$accuracy <- accr_df
@@ -226,6 +231,10 @@ calcSeriesAccuracy <- function(series_obj,
                                  smooth = smooth,
                                  ...)
 
+   # Return if not in place
+   if (!in_place) return(accr_df)
+
+   # Add to object
    if (!smooth){
      series_obj[['accuracy']] <- accr_df
    } else {

@@ -126,7 +126,7 @@ context('Plot functions')
 
   test_that('plot.seriesaccuracy works', {
 
-    expect_is(plot(rt_fc_error$accuracy, return_plot = TRUE), 'plotaccuracy')
+    expect_is(plot(rt_fc_error, return_plot = TRUE), 'plotaccuracy')
 
   })
 
