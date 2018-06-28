@@ -180,6 +180,14 @@ plot.hpiaccuracy <- function(error_obj,
 
 }
 
+#' @title plot.seriesaccuracy
+#' @export
+plot.seriesaccuracy <- function(accr_obj,
+                        ...){
+
+  return(plot(accr_obj, ...))
+
+}
 
 #' @title plot.serieshpi
 #' @export

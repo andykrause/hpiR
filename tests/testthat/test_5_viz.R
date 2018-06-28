@@ -112,15 +112,22 @@ context('Plot functions')
                               test_method = 'kfold',
                               pred_df = rt_index$data)
 
+  test_that('plot.hpiaccuracy works', {
+
+    expect_is(plot(rt_is_error, return_plot = TRUE), 'plotaccuracy')
+    expect_is(plot(rt_kf_error, return_plot = TRUE), 'plotaccuracy')
+
+  })
+
   rt_fc_error <- calcSeriesAccuracy(series_obj = rt_series,
                                     test_type = 'rt',
                                     test_method = 'forecast',
                                     pred_df = rt_index$data)
 
-  test_that('plot.indexerrors works', {
+  test_that('plot.seriesaccuracy works', {
 
-    expect_is(plot(rt_is_error, return_plot = TRUE), 'plotaccuracy')
-    expect_is(plot(rt_kf_error, return_plot = TRUE), 'plotaccuracy')
     expect_is(plot(rt_fc_error$accuracy, return_plot = TRUE), 'plotaccuracy')
 
   })
+
+
