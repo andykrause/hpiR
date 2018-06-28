@@ -16,7 +16,7 @@ dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
 }
 \value{
 data frame with three new fields:
-date_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
+trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
 date_value: float value of year and periodicty in numeric form (primarily for plotting)
 date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
 }
@@ -25,7 +25,7 @@ Convert dates into time periods for use in sale-resale models
 }
 \section{Further Details}{
 
-date_period conat from the minimum transaction date provided.  As such the period counts
+trans_period conat from the minimum transaction date provided.  As such the period counts
 are relative, not absolute
 Additionally, this function modifies the data.frame that it is given and return that same
 data.frame that it is given and returns that data.frame with the new fields attached.

@@ -4,11 +4,11 @@
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
 #' @return data frame with three new fields:
-#' date_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
+#' trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
 #' date_value: float value of year and periodicty in numeric form (primarily for plotting)
 #' date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
 #' @section Further Details:
-#' date_period conat from the minimum transaction date provided.  As such the period counts
+#' trans_period conat from the minimum transaction date provided.  As such the period counts
 #' are relative, not absolute
 #' Additionally, this function modifies the data.frame that it is given and return that same
 #' data.frame that it is given and returns that data.frame with the new fields attached.
@@ -98,12 +98,15 @@ dateToPeriod <- function(trans_df,
   # Make date span
   date_span <- seq(min_date, max_date, 1)
 
+  # Set standardized data field
+  trans_df$trans_date <- trans_date
+
   # Create inital annual indicator
   year_period <- (lubridate::year(trans_date) - lubridate::year(min_date))
 
   # if Annual Periodicity
   if (periodicity == 'annual'){
-    trans_df$date_period <- year_period + 1
+    trans_df$trans_period <- year_period + 1
     period_table <- data.frame(names = unique(lubridate::year(date_span)),
                                values = unique(lubridate::year(date_span)),
                                periods = unique(lubridate::year(date_span)),
@@ -118,7 +121,7 @@ dateToPeriod <- function(trans_df,
                         lubridate::month(min_date)))
 
     if (periodicity == 'monthly'){
-      trans_df$date_period <- month_period + 1
+      trans_df$trans_period <- month_period + 1
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-',
                               lubridate::month(date_span, label = TRUE))),
@@ -135,7 +138,7 @@ dateToPeriod <- function(trans_df,
       min_qtr <- lubridate::quarter(min_date, with_year=TRUE)
       trans_qtr <- lubridate::quarter(trans_date, with_year=TRUE)
       all_qtr <- as.numeric(as.factor(c(min_qtr, trans_qtr)))
-      trans_df$date_period <- all_qtr[-1]
+      trans_df$trans_period <- all_qtr[-1]
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-Q',
                               lubridate::quarter(date_span))),
@@ -167,7 +170,7 @@ dateToPeriod <- function(trans_df,
     week_period <- (52 * (year_period) +
                     (lubridate::week(trans_date) -
                       lubridate::week(min_date)))
-    trans_df$date_period <- week_period + 1
+    trans_df$trans_period <- week_period + 1
 
     # Create period table
     name <- unique(paste0(lubridate::year(date_span), '-W',
@@ -185,7 +188,7 @@ dateToPeriod <- function(trans_df,
   }
 
   # Check for missing periods %
-  nbr_periods <- length(unique(trans_df$date_period))
+  nbr_periods <- length(unique(trans_df$trans_period))
   if (nbr_periods < nrow(period_table)){
     message("Your choice of periodicity resulted in ",
             nrow(period_table) - nbr_periods, " empty periods out of ",

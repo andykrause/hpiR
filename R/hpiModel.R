@@ -167,7 +167,7 @@ hpiModel.heddata <- function(hpi_df,
       message('"hed_spec" argument must be of class "formula"')
       stop()
     } else {
-      hed_spec <- update(hed_spec, ~ . +as.factor(date_period))
+      hed_spec <- update(hed_spec, ~ . +as.factor(trans_period))
     }
   } else {
 
@@ -180,11 +180,11 @@ hpiModel.heddata <- function(hpi_df,
       dep_var <- paste0('log(', dep_var, ')')
     }
     hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
-                           '+ as.factor(date_period)'))
+                           '+ as.factor(trans_period)'))
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_df$price[hpi_df$date_period == min(hpi_df$date_period)])
+  base_price <- mean(hpi_df$price[hpi_df$trans_period == min(hpi_df$trans_period)])
 
   ## Estimate Model
 
@@ -227,12 +227,12 @@ hpiModel.heddata <- function(hpi_df,
    if (trim_model) hed_mod$qr <- NULL
 
   # If successful create list of results
-  base_period <- min(hpi_df$date_period)
+  base_period <- min(hpi_df$trans_period)
 
   # Period names
-  p_names <- grep('date_period', names(hed_mod$coefficients))
+  p_names <- grep('trans_period', names(hed_mod$coefficients))
   periods <- c(base_period,
-               as.numeric(gsub('[as.factor(date_period)]', '',
+               as.numeric(gsub('[as.factor(trans_period)]', '',
                                names(hed_mod$coefficients)[p_names])))
 
   # Coefficients

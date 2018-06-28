@@ -104,7 +104,7 @@ hedModel.robust <- function(estimator,
                             ...){
 
   # Determine 'sparseness' of the data
-  time_size <- median(table(hed_df$date_period))
+  time_size <- median(table(hed_df$trans_period))
 
   # Use different robust packages based on sparseness
   if(time_size > 5){

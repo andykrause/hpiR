@@ -151,10 +151,10 @@ buildForecastIDs.heddata <- function(time_cut,
                                      train=TRUE){
 
   if(train){
-    time_ids <- which(hpi_df$date_period < time_cut)
+    time_ids <- which(hpi_df$trans_period < time_cut)
   } else {
     time_seq <- time_cut:(time_cut + (forecast_length - 1))
-    time_ids <- which(hpi_df$date_period %in% time_seq)
+    time_ids <- which(hpi_df$trans_period %in% time_seq)
   }
   time_ids
 }

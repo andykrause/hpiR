@@ -69,10 +69,10 @@ hedCreateTrans <- function(trans_df,
                    'trans_id' = trans_id,
                    'price' = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, date_period, desc(price)) %>%
+    dplyr::arrange(prop_id, trans_period, desc(price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', date_period)))
+    dplyr::filter(!duplicated(paste0(prop_id, '_', trans_period)))
 
   # Add period table
   attr(hed_df, 'period_table') <- attr(trans_df, 'period_table')

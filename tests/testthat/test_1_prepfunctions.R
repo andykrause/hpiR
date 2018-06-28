@@ -22,8 +22,7 @@ test_that("Basic dateToPeriod() functionality is working", {
                            periodicity = 'monthly')
   expect_is(sales_df, 'hpidata')
   expect_true(!is.null(attr(sales_df, 'period_table')))
-  expect_true(digest::digest(sales_df$date_period) ==
-                'ad2b649a8470371eff6f18cfdad93c92')
+
 })
 
 # Test sales_df and date field
@@ -31,7 +30,7 @@ test_that('Handling of sales_df and date field is working', {
 
   # Non-df as sales_df
   expect_error(dateToPeriod(trans_df=sales[[pinx]],
-                            date = 'sale_price'))
+                            date = 'sale_date'))
 
   # Non date field
   expect_error(dateToPeriod(trans_df=sales,
@@ -42,7 +41,7 @@ test_that('Handling of sales_df and date field is working', {
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'date_p'), 'hpidata')
   expect_true(dateToPeriod(trans_df=sales,
-                           date = 'date_p')$date_period[1] == 4)
+                           date = 'date_p')$trans_period[1] == 4)
 })
 
 # Test periodicity
@@ -178,53 +177,53 @@ test_that('Min and Max Date clips are working', {
 test_that('Annual periodicity works', {
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
-                           periodicity='annual')$date_period[1] == 4)
+                           periodicity='annual')$trans_period[1] == 4)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2009-12-31'),
-                           periodicity='annual')$date_period[1] == 5)
+                           periodicity='annual')$trans_period[1] == 5)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2011-12-31'),
                            adj_type = 'clip',
-                           periodicity='annual')$date_period[1] == 3)
+                           periodicity='annual')$trans_period[1] == 3)
 })
 
 # Test Monthly
 test_that('Monthly periodicity works', {
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
-                           periodicity='monthly')$date_period[1] == 38)
+                           periodicity='monthly')$trans_period[1] == 38)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2009-12-31'),
-                           periodicity='monthly')$date_period[1] == 39)
+                           periodicity='monthly')$trans_period[1] == 39)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2011-12-31'),
                            adj_type = 'clip',
-                           periodicity='monthly')$date_period[1] == 15)
+                           periodicity='monthly')$trans_period[1] == 15)
 })
 
 # Test Quarterly
 test_that('Quarterly periodicity works', {
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
-                           periodicity='Q')$date_period[1] == 13)
+                           periodicity='Q')$trans_period[1] == 13)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2009-12-31'),
-                           periodicity='Q')$date_period[1] == 14)
+                           periodicity='Q')$trans_period[1] == 14)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2011-12-31'),
                            adj_type = 'clip',
-                           periodicity='q')$date_period[1] == 6)
+                           periodicity='q')$trans_period[1] == 6)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2012-01-01'),
                            adj_type = 'clip',
-                           periodicity='q')$date_period[1] == 5)
+                           periodicity='q')$trans_period[1] == 5)
 
 })
 
@@ -232,21 +231,21 @@ test_that('Quarterly periodicity works', {
 test_that('Weekly periodicity works', {
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
-                           periodicity='w')$date_period[1] == 162)
+                           periodicity='w')$trans_period[1] == 162)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2009-12-31'),
-                           periodicity='W')$date_period[1] == 163)
+                           periodicity='W')$trans_period[1] == 163)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2011-12-31'),
                            adj_type = 'clip',
-                           periodicity='weekly')$date_period[1] == 59)
+                           periodicity='weekly')$trans_period[1] == 59)
   expect_true(dateToPeriod(trans_df=sales,
                            date = 'sale_date',
                            min_date = as.Date('2012-01-01'),
                            adj_type = 'clip',
-                           periodicity='Weekly')$date_period[1] == 58)
+                           periodicity='Weekly')$trans_period[1] == 58)
 
 })
 
@@ -255,7 +254,7 @@ test_that('Missing period warning work', {
   expect_message(dateToPeriod(trans_df=sales,
                               date = 'sale_date',
                               max_date = as.Date('2018-03-31'),
-                              periodicity='M')$date_period[1])
+                              periodicity='M')$trans_period[1])
   expect_message(dateToPeriod(trans_df=sales,
                               date = 'sale_date',
                               min_date = as.Date('2005-03-31'),
