@@ -4,5 +4,5 @@
 \alias{plot.seriesaccuracy}
 \title{plot.seriesaccuracy}
 \usage{
-plot.seriesaccuracy(accr_obj, ...)
+plot.seriesaccuracy(accr_obj, return_plot = FALSE, ...)
 }

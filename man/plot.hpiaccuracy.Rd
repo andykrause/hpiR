@@ -4,5 +4,5 @@
 \alias{plot.hpiaccuracy}
 \title{plot.hpiaccuracy}
 \usage{
-plot.hpiaccuracy(error_obj, return_plot = FALSE)
+plot.hpiaccuracy(error_obj, return_plot = FALSE, do_plot = TRUE)
 }
