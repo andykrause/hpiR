@@ -796,223 +796,128 @@ A plotting method (`plot.hpiaccuracy()`) shows a number of diagnostics about the
 
 ```
 
-<!-- ### Index Series -->
+### Index Series
 
-<!-- Two other aspects or metrics of house price indexes are revision and forecast accuracy.  Revision refers to how much original index values change over time as new data is accumulated (new transactions occur).  Forecast accuracy refers to how well index forecasts capture future market movements. Both concepts are described more fully below.  What both metric require is a series of indexes. -->
+Two other aspects or metrics of house price indexes are revision and forecast accuracy.   Forecast accuracy refers to how well an index forecasts capture future market movements. Revision refers to how much original index values change over time as new data is accumulated (new transactions occur). Both concepts are described more fully below.  To calculate either of these metrics requires a series of indexes.
 
-<!-- A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such that the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 12, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13; on up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc. -->
+A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such that the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 12, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13; on up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc.
 
-<!-- The `createSeries()` function will create these series.  The **hpi_obj** argument must be a full **hpi** object (created with one of the index wrappers). **train_period** sets how many periods to use for initial training (length of the shortest period). The **max_period** argument (default is the entire length of existing index) will control the end period to estimate a series up to (defaults to the original length of the index in the **hpi** object.).  -->
+The `createSeries()` function will create these series.  The `hpi_obj` argument must be a full `hpi` object (created with one of the index wrappers). `train_period` sets how many periods to use for initial training (length of the shortest period). The `max_period` argument (default is the entire length of existing index) will control the end period to estimate a series up to (defaults to the original length of the index in the `hpi` object.).
 
-<!-- The `createSeries()` function will return an object of class **hpiseries** (data plus a series of **hpiindex** objects). -->
+The `createSeries()` function will return an object of class `hpiseries` (data plus a series of `hpiindex` objects).
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r create_series, warning=FALSE, comments=FALSE}
+   rt_series <- createSeries(hpi_obj = rt_hpi,
+                             train_period = 24,
+                             max_period = 30)
 
-<!--    # Just create a series from 24 to 30 -->
-<!--    rt_series <- createSeries(hpi_obj = rt_hpi, -->
-<!--                              train_period = 24, -->
-<!--                              max_period = 30) -->
+```
 
-<!--    class(rt_series) -->
-<!--    class(rt_series$data) -->
-<!--    class(rt_series$hpis) -->
-<!--    class(rt_series$hpis[[1]]) -->
-<!--    class(rt_series$hpis[[1]]$index) -->
-<!--    class(rt_series$hpis[[1]]$index$value) -->
+A series can be plotted with the `plot.serieshpi()` method.
 
-<!-- ``` -->
+```{r plot_series, fig.width=7, fig.height=3.5}
+  plot(rt_series)
 
-<!-- A series can be plotted with the `plot.serieshpi()` method. -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5} -->
+#### Series Analysis
 
-<!--   plot(rt_series) -->
+A wrapper function, `smoothSeries()` will smooth all `hpiindex` objects in a series.  The smoothing will occur "in place" and a series object will be returned by the function.
 
-<!-- ``` -->
+```{r smooth_series}
+  rt_series <- smoothSeries(series_obj = rt_series,
+                             order = 5)
 
-<!-- #### Analytical Wrappers -->
+```
 
-<!-- A wrapper function, `smoothSeries()` will smooth all **hpiindex** objects in a series.  The smoothing will occur "in place" and a series object will be returned by the function.  -->
+A wrapper function, `calcSeriesVolatility()` will calculate volatility for all `hpiindex` objects in a series.  The calculations will occur "in place" and a series object will be returned by the function. Can be done on smoothed indexes as well (`smooth = TRUE`)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r vol_series}
+  rt_series <- calcSeriesVolatility(series_obj = rt_series,
+                                    window = 3,
+                                    smooth = TRUE)
+  
+```
 
-<!--   # Standard Return -->
-<!--   rt_series <- smoothSeries(series_obj = rt_series, -->
-<!--                             order = 5) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$hpis[[1]]$index$smooth) -->
+A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all `hpiindex` objects in a series and return to an object of class `seriesaccuracy`. Smoothed indexes can be evaluated as well (`smooth = TRUE`) 
 
-<!-- ``` -->
+```{r series_acc_is}
+  rt_sacc <- calcSeriesAccuracy(series_obj = rt_series,
+                                test_method = 'insample',
+                                test_type = 'rt')
+  class(rt_sacc)
 
-<!-- A wrapper function, `calcSeriesVolatility()` will calculate volatility for all **hpiindex** objects in a series.  The calculations will occur "in place" and a series object will be returned by the function.  -->
+```
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+These calculations can occur "in place" and a series object will be returned by the function.  Note that running this function on kfold method may be computationally intense depending on your data size and index length. Unlike index accuracy calculations which are saved in the `hpiindex` object, series accuracy calculations are saved in the `serieshpi` object when done "in place". 
 
-<!--   # Standard Return -->
-<!--   rt_series <- calcSeriesVolatility(series_obj = rt_series, -->
-<!--                                     window = 3) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$hpis[[1]]$index$volatility) -->
+```{r series_acc_smooth_inplace}
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'kfold',
+                                  test_type = 'rt',
+                                  smooth = TRUE,
+                                  in_place=TRUE)
 
-<!--   # WIth smooth -->
-<!--   rt_series <- calcSeriesVolatility(series_obj = rt_series, -->
-<!--                                     window = 3, -->
-<!--                                     smooth = TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$hpis[[1]]$index$volatility_smooth) -->
+```
 
-<!-- ``` -->
+One thing to note about series accuracy is that the training data will be evaluated separated for each index in the series, meaning that there will be many prediction errors for each observation.  By setting `summarize = TRUE`, the mean for each observation will be calculated.
 
-<!-- A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all **hpiindex** objects in a series and return to an object of class `seriesaccuracy`.   -->
+```{r summarize_series_acc}
+  series_acc_summ <- calcSeriesAccuracy(series_obj = rt_series,
+                                        test_method = 'insample',
+                                        test_type = 'rt',
+                                        summarize = TRUE)
+  nrow(series_acc_summ)
+  nrow(rt_series$accuracy)
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```
 
-<!--   # Standard Return -->
-<!--   rt_sacc <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'insample', -->
-<!--                                   test_type = 'rt') -->
-<!--   class(rt_sacc) -->
+#### Forecast Accuracy
 
-<!-- ``` -->
+A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"
 
-<!-- The calculations can occur "in place" and a series object will be returned by the function.  Note that running this function on kfold method may be computationally intense depending on your data size and index length.   -->
+As above, it can be used on the raw index values or the smoothed ones (`smooth = TRUE`).  Unlike the insample and kfold accuracy tests (which are saved in the `hpiindex` objects) the forecast accuracy tests are saved in the `serieshpi` object.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r fct_accr}
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  smooth = TRUE,
+                                  in_place = TRUE)
 
-<!--   # With smooth -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'insample', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   smooth = TRUE, -->
-<!--                                   in_place=TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$accuracy_smooth) -->
+```
 
-<!--   # kFold: Standard Return -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'kfold', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   in_place=TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$accuracy) -->
+We can plot the `seriesaccuracy` objects, which look identical to `hpiaccuracy` objects.
 
-<!--   # Kfold: WIth smooth -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'kfold', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   smooth = TRUE, -->
-<!--                                   in_place=TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$accuracy_smooth) -->
+```{r eval=TRUE, messages=FALSE, echo=TRUE}
+  plot(rt_series$accuracy_smooth)
 
-<!-- ``` -->
+```
 
-<!-- One thing to note about series accuracy is that the training data will be evaluated separated for each index in the series, meaning that there will be many prediction errors for each observation.  By setting the **summarize** option to TRUE, the mean for each observation will be calculated.    -->
+#### Revision
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
 
-<!--   # Standard Return -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'insample', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   in_place=TRUE) -->
-<!--   nrow(rt_series$accuracy) -->
+Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile.
 
-<!--   # Summarized -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'insample', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   summarize = TRUE, -->
-<!--                                   in_place=TRUE) -->
-<!--   nrow(rt_series$accuracy) -->
+The second calculation simply averages all revisions across all periods to provide a single value of the average and median revision for the index series.
 
-<!-- ``` -->
+```{r series_rev}
 
-<!-- #### Forecast Accuracy -->
+  # Return to a revision object
+  rt_rev <- calcRevision(series_obj = rt_series)
 
-<!-- A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?" -->
+  # Return in place (with smooth)
+  rt_series <- calcRevision(series_obj = rt_series,
+                            in_place = TRUE,
+                            smooth = TRUE)
+  names(rt_series)
+  
+```
 
-<!-- As above, it can be used on the raw index values or the smoothed ones (**smooth = TRUE**).  Unlike the insample and kfold accuracy tests (which are saved in the **hpiindex** objects) the forecast accuracy tests are saved in the **serieshpi** object.   -->
+We can plot the revisions with the `plot.hpirevision()` method to show the average revision by time period. The `measure argument (default = *"median"*) determines whether median or mean revisions will be shown.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
+```{r plot_rtrev, fig.width=7, fig.height=3.5}
+  plot(rt_rev, measure='median')
 
-<!--   # Standard Return -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'forecast', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   in_place=TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$accuracy) -->
-
-<!--   # Return with smooth -->
-<!--   rt_series <- calcSeriesAccuracy(series_obj = rt_series, -->
-<!--                                   test_method = 'forecast', -->
-<!--                                   test_type = 'rt', -->
-<!--                                   smooth = TRUE, -->
-<!--                                   in_place=TRUE) -->
-<!--   class(rt_series) -->
-<!--   length(rt_series$hpis) -->
-<!--   class(rt_series$accuracy_smooth) -->
-
-<!-- ```  -->
-
-<!-- We can plot the `seriesaccuracy` objects, which look identical to `hpiaccuracy` objects.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   plot(rt_series$accuracy_smooth) -->
-
-<!-- ```  -->
-
-<!-- #### Revision -->
-
-<!-- As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index. -->
-
-<!-- Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile. -->
-
-<!-- The second calculation simply averages all revisions across all periods to provide a single value of the average and median revision for the index series. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   # Return to a revision object -->
-<!--   rt_rev <- calcRevision(series_obj = rt_series) -->
-<!--   class(rt_rev)   -->
-
-<!--   # Return in place (with smooth) -->
-<!--   rt_series <- calcRevision(series_obj = rt_series, -->
-<!--                             in_place = TRUE, -->
-<!--                             smooth = TRUE) -->
-<!--   class(rt_series) -->
-<!--   class(rt_series$revision_smooth) -->
-
-<!-- ``` -->
-
-<!-- We can plot the revisions with the `plot.hpirevision()` method to show the average revision by time period. The **measure** argument (default = **"median"**) determines whether median or mean revisions will be shown.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5} -->
-
-<!--   plot(rt_rev) -->
-
-<!-- ``` -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5} -->
-
-<!--   plot(rt_series$revision_smooth, measure = 'mean') -->
-
-<!-- ``` -->
-
-
-
-
-
-
-
-
-
+```
