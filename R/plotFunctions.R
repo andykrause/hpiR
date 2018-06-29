@@ -24,7 +24,7 @@ plot.hpiindex <- function(index_obj,
 
   ## Make the base plot object
   gg_obj <- ggplot(hpi_data, aes(x=x, y=y)) +
-    geom_line(size=1.1) +
+    geom_line(size=1.1, color='gray40') +
     ylab("Index Value\n") +
     xlab('\nTime Period')
 
@@ -52,7 +52,7 @@ plot.hpiindex <- function(index_obj,
       gg_obj <- gg_obj +
         geom_line(data=sm_data,
                   aes(x=x, y=y),
-                  size=1,
+                  size=1.3,
                   linetype=1,
                   color='red')
     } else {
