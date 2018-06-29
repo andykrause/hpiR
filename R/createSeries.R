@@ -66,19 +66,20 @@ createSeries <- function(hpi_obj,
                         .f = buildForecastIDs)
 
   # Run models, indexes and combine into hpi objects
-  is_hpis <- purrr::map(.x=is_data,
-                        y=hpi_obj$data,
-                        hed_spec=hpi_obj$model$mod_spec,
-                        log_dep = hpi_obj$model$log_dep,
-                        .f=function(x, y, hed_spec, log_dep, ...){
-                            mod <- hpiModel(hpi_df=y[x, ],
-                                            hed_spec=hed_spec,
-                                            log_dep=log_dep,
-                                            ...)
-                            ind <- modelToIndex(mod, ...)
-                            structure(list(model = mod,
-                                           index = ind),
-                                      class = 'hpi')
+  is_hpis <- purrr::map2(.x=is_data,
+                         .y=as.list(time_range),
+                         z=hpi_obj$data,
+                         hed_spec=hpi_obj$model$mod_spec,
+                         log_dep = hpi_obj$model$log_dep,
+                         .f=function(x, y, z, hed_spec, log_dep, ...){
+                             mod <- hpiModel(hpi_df=z[x, ],
+                                             hed_spec=hed_spec,
+                                             log_dep=log_dep,
+                                             ...)
+                             ind <- modelToIndex(mod, max_period=y-1, ...)
+                             structure(list(model = mod,
+                                            index = ind),
+                                       class = 'hpi')
                           })
 
   # Return Values

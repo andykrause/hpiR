@@ -45,7 +45,7 @@ calcForecastError <- function(is_obj,
 
   # Set start and end
   start <- end(is_obj$hpis[[1]]$index$value)[1] + 1
-  end <- end(is_obj$hpis[[length(is_obj$hpis)]]$index$value)[1]
+  end <- end(is_obj$hpis[[length(is_obj$hpis)]]$index$value)[1] + 1
   time_range <- start:end
 
   # Get data
@@ -69,7 +69,7 @@ calcForecastError <- function(is_obj,
     index_name <- 'value'
   }
 
-  fc_forecasts <- purrr::map(.x=is_obj$hpis[-length(is_obj$hpis)],
+  fc_forecasts <- purrr::map(.x=is_obj$hpis,
                              .f=function(x){
                                  new_x <- forecast(ets(x$index[[index_name]],
                                                        model='ANN'), h=forecast_length)
