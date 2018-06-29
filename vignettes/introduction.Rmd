@@ -391,497 +391,410 @@ A plot method exists to cleanly plot `hpi` objects.
 
 ```
 
-<!-- ### Hedonic Price Model -->
+### Hedonic Price Model
 
-<!-- Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat transaction model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex()`).  We'll start with individual steps. -->
+Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat transaction model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex()`).  We'll start with individual steps.
 
-<!-- First, we create a set of hedonic model ready data with the `hedCreateTrans()` function.  Here we provide the raw transaction, along with field names for the property id, the transaction ids, the price and date.  A periodicity (**"yearly"**, **"quarterly"**, **"monthly"** or **"weekly"**) is also required.  Note that this function uses the `dateToPeriod()` discussed above and creates an object of clas **hed** inheriting from **data.frame**.  -->
+First, we create a set of hedonic model ready data with the `hedCreateTrans()` function.  Here we provide the raw transactions, along with field names for the property id, the transaction ids, the price and date.  A periodicity (*"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*) is also required.  Note that this function uses the `dateToPeriod()` discussed above and creates an object of class **heddata** inheriting from **data.frame**.
 
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_sales <- hedCreateTrans(trans_df = seattle_sales, -->
-<!--                               prop_id = 'pinx', -->
-<!--                               trans_id = 'sale_id', -->
-<!--                               price = 'sale_price', -->
-<!--                               date= 'sale_date', -->
-<!--                               periodicity = 'monthly') -->
-
-<!--   class(hed_sales) -->
-
-<!-- ``` -->
-
-<!-- Next, we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The **log_dep** argument will control whether or not the dependent variable (**dep_var**) is converted into log format (as is common in hedonic price studies). -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_model <- hpiModel(hpi_df = hed_sales, -->
-<!--                         estimator = 'base', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = TRUE) -->
-
-<!-- ``` -->
-
-<!-- If you'd like more control over the model specification -- such as using interactions or categorical variables -- you can, instead, provide a fully formed model specification in the **hed_spec** argument. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf') -->
-
-<!--   hed_model <- hpiModel(hpi_df = hed_sales, -->
-<!--                         estimator = 'base', -->
-<!--                         hed_spec = model_spec, -->
-<!--                         log_dep = TRUE) -->
-
-<!-- ``` -->
-
-<!-- In addition the base estimator (OLS) there are Robust Regression (**estimator = "robust"**) and weighted least squares (**estimator = "weighted"**) options. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_model <- hpiModel(hpi_df = hed_sales, -->
-<!--                         estimator = 'robust', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = TRUE) -->
-
-<!-- ``` -->
-
-<!-- Do note that the weighted option requires a vectors of weights. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_model <- hpiModel(hpi_df = hed_sales, -->
-<!--                         estimator = 'weighted', -->
-<!--                         dep_var = 'price', -->
-<!--                         ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                         log_dep = FALSE, -->
-<!--                         weights = runif(nrow(hed_sales), 0, 1)) -->
-
-<!-- ``` -->
-
-<!-- The output from `hpiModel()` can be converted to an index with the `modelToIndex` function. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_index <- modelToIndex(model_obj = hed_model) -->
-
-<!--   class(hed_index) -->
-
-<!-- ``` -->
-
-<!-- And, again, this can be plotted to shown the index. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5} -->
-
-<!--   plot(hed_index) -->
-
-<!-- ``` -->
-
-<!-- The `hedIndex()` wrapper function will perform all of the above hedonic modeling tasks, and then condense the results into an object of class **hpi**. -->
-
-<!-- There are three 'levels of entry' with the wrapper function. -->
-
-<!-- 1. You can give it a raw **data.frame** with your transactions and it will A) Add the periods; B) Create a hedonic sales object; and 3) Create the index.  Under this approach **trans_df** is passed a raw **data.frame** along with the following arguments, some of which are optional (will revert to default if not given) and some of which are required (mostly field names and the model specification): -->
-
-<!--    * **periodicity** (optional: default = 'annual') -->
-<!--    * **min_date** (optional: default = minimum of data) -->
-<!--    * **max_date** (optional: default = maximum of data) -->
-<!--    * **adj_type** (opt: default = 'move') -->
-<!--    * **date** (required) -->
-<!--    * **price** (required) -->
-<!--    * **trans_id** (required) -->
-<!--    * **prop_id** (required) -->
-<!--    * **dep_var** (required, unless **hed_spec** supplied) -->
-<!--    * **ind_var** (required, unless **hed_spec** supplied) -->
-<!--    * **hed_spec** (required, unless **dep_var** and **ind_var** supplied) -->
-<!--    * **estimator** (optional: default = 'base') -->
-<!--    * **log_dep** (optional: TRUE) -->
-<!--    * **trim_model** (optional: FALSE) -->
-<!--    * **max_period** (optional: maximum of data) -->
-<!--    * **smooth** (optional: default = FALSE) -->
-<!--    * **smooth_order** (optional, default = 3) -->
-
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   hed_1 <- hedIndex(trans_df = seattle_sales, -->
-<!--                     periodicity = 'monthly', -->
-<!--                     min_date = '2010-06-01', -->
-<!--                     max_date = '2015-11-30', -->
-<!--                     adj_type = 'clip', -->
-<!--                     date = 'sale_date', -->
-<!--                     price = 'sale_price', -->
-<!--                     trans_id = 'sale_id', -->
-<!--                     prop_id = 'pinx', -->
-<!--                     estimator = 'robust', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = TRUE, -->
-<!--                     max_period = 48, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                     smooth = FALSE) -->
-
-<!--   class(hed_1) -->
-
-<!-- ``` -->
-
-<!-- 2. You can provide an **hpi_df** object (one that has been through the `dateToPeriod` function).  In this case, the following arguments are valid: -->
-
-
-<!--    * **date** (required) -->
-<!--    * **price** (required) -->
-<!--    * **trans_id** (required) -->
-<!--    * **prop_id** (required) -->
-<!--    * **dep_var** (required, unless **hed_spec** supplied) -->
-<!--    * **ind_var** (required, unless **hed_spec** supplied) -->
-<!--    * **hed_spec** (required, unless **dep_var** and **ind_var** supplied) -->
-<!--    * **estimator** (optional: default = 'base') -->
-<!--    * **log_dep** (optional: TRUE) -->
-<!--    * **trim_model** (optional: FALSE) -->
-<!--    * **max_period** (optional: maximum of data) -->
-<!--    * **smooth** (optional: default = FALSE) -->
-<!--    * **smooth_order** (optional, default = 3) -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   sales_hdf <- dateToPeriod(trans_df = seattle_sales, -->
-<!--                            date = 'sale_date', -->
-<!--                            periodicity = 'monthly', -->
-<!--                            min_date = '2010-02-01', -->
-<!--                            max_date = '2015-11-30', -->
-<!--                            adj_type = 'move') -->
-
-<!--   hed_2 <- hedIndex(trans_df = sales_hdf, -->
-<!--                     date = 'sale_date', -->
-<!--                     price = 'sale_price', -->
-<!--                     trans_id = 'sale_id', -->
-<!--                     prop_id = 'pinx', -->
-<!--                     estimator = 'base', -->
-<!--                     log_dep = FALSE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 56, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                     smooth = TRUE) -->
-
-<!--   class(hed_2) -->
-
-<!-- ``` -->
-
-<!-- 3. Finally, you can provide it an **hed** object (one that has been through the `hedCreateTrans()` function).  Only the following arguments can be given in this case. -->
-
-<!--    * **dep_var** (required, unless **hed_spec** supplied) -->
-<!--    * **ind_var** (required, unless **hed_spec** supplied) -->
-<!--    * **hed_spec** (required, unless **dep_var** and **ind_var** supplied) -->
-<!--    * **estimator** (optional: default = 'base') -->
-<!--    * **log_dep** (optional: TRUE) -->
-<!--    * **trim_model** (optional: FALSE) -->
-<!--    * **max_period** (optional: maximum of data) -->
-<!--    * **smooth** (optional: default = FALSE) -->
-<!--    * **smooth_order** (optional, default = 3) -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5} -->
-
-<!--   hed_sales <- hedCreateTrans(trans_df = sales_hdf, -->
-<!--                               prop_id = 'pinx', -->
-<!--                               trans_id = 'sale_id', -->
-<!--                               price = 'sale_price') -->
-
-<!--   hed_3 <- hedIndex(trans_df = hed_sales, -->
-<!--                     estimator = 'weighted', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 80, -->
-<!--                     dep_var = 'price', -->
-<!--                     ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                     weights = runif(nrow(hed_sales), 0, 1), -->
-<!--                     smooth = TRUE, -->
-<!--                     smooth_order = 5) -->
-
-<!--   class(hed_3) -->
-
-<!-- ``` -->
-
-<!-- Again, we can plot with a simple `plot()` call.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=2.5} -->
-
-<!--   plot(hed_3) -->
-
-<!--   class(plot(hed_3)) -->
-
-<!-- ``` -->
-
-
-
-<!-- ### Analyzing an index -->
-
-<!-- Before we start analyzing our indexes, we'll create two example `hpi` objects, one using a repeat sales model and one with a hedonic price model. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   rt_hpi <- rtIndex(trans_df = sales_rtdf, -->
-<!--                     estimator = 'robust', -->
-<!--                     log_dep = TRUE, -->
-<!--                     trim_model = FALSE, -->
-<!--                     max_period = 84, -->
-<!--                     smooth = TRUE) -->
-
-<!--   hed_hpi <- hedIndex(trans_df = hed_sales, -->
-<!--                       estimator = 'weighted', -->
-<!--                       log_dep = TRUE, -->
-<!--                       trim_model = FALSE, -->
-<!--                       max_period = 84, -->
-<!--                       dep_var = 'price', -->
-<!--                       ind_var = c('tot_sf', 'beds', 'baths'), -->
-<!--                       weights = runif(nrow(hed_sales), 0, 1), -->
-<!--                       smooth = TRUE) -->
-
-<!-- ``` -->
-
-<!-- #### Volatility  -->
-
-<!-- One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The **window** over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (**roll**) as well as the summarized average volality(**mean**) and median (**median**) are returned by the function.  V -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   index_vol <- calcVolatility(index = hed_hpi$index$value, -->
-<!--                               window = 3) -->
-
-<!--   class(index_vol) -->
-
-<!--   names(index_vol) -->
-
-<!-- ``` -->
-
-<!-- Plotting an **indexVolatility** object show the original index (bottom panel) and the rolling volatility, the mean (dashed line) and the median (dotted) volatility on the top panel.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=3.5} -->
-
-<!--   plot(index_vol) -->
-<!--   class(plot(index_vol)) -->
-
-<!-- ``` -->
-
-<!-- A number of differently classed objects can be passed to the **"index"** argument in the `calcVolatility()` function.  These include the extracted **ts** object from an **hpiindex** object, the raw **hpiindex** object itself (from `modelToIndex()`), or an **hpi** object from one of the wrappers (`rtIndex()` or `hedIndex()`) -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--  # ts object -->
-<!--  index_vol <- calcVolatility(index = hed_hpi$index$value, -->
-<!--                              window = 3) -->
-<!--  class(index_vol) -->
-
-<!--  # hpiindex object -->
-<!--  index_vol <- calcVolatility(index = hed_hpi$index, -->
-<!--                              window = 3) -->
-<!--  class(index_vol) -->
-
-<!--  # hpi object -->
-<!--  index_vol <- calcVolatility(index = hed_hpi, -->
-<!--                              window = 3) -->
-<!--  class(index_vol) -->
-
-<!-- ``` -->
-
-<!-- If you want to calculate the volatility of the smoothed index, you need to pass the smoothed index directly or change the **smooth** argument to TRUE (default is false) when passing an **hpiindex** or **hpi** object to `calcVolatility()`. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   # Direct passing -->
-<!--   sindex_vol <- calcVolatility(index = hed_hpi$index$smooth, -->
-<!--                                window = 3) -->
-
-<!--   class(sindex_vol) -->
-<!--   names(sindex_vol) -->
-
-<!--   # While passing 'hpi' or 'hpiindex' -->
-<!--   sindex_vol <- calcVolatility(index = hed_hpi$index, -->
-<!--                                window = 3, -->
-<!--                                smooth = TRUE) -->
-<!--   class(sindex_vol) -->
-<!--   names(sindex_vol) -->
-
-<!-- ``` -->
-
-<!-- The `calcVolatility()` function can also return the volatility metrics 'in place', or directly into the **hpiindex** object.  The code below shows how to return these into an **hpiindex** object and a larger **hpi** object under the name **volatility**.  If passed an **hpiindex** object, the results will be stored in the **hpiindex** object which is returned.  If passed an **hpi** object, the results will be stored in the **hpiindex** object with the **hpi** object which is returned. A volatility analysis of a smoothed index will place it under the **volatility_smooth** name.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--    # Add it to the 'hpiindex' object -->
-<!--    hed_hpi$index <- calcVolatility(index = hed_hpi$index, -->
-<!--                                    window = 3, -->
-<!--                                    in_place = TRUE) -->
-
-<!--    class(hed_hpi$index$volatility) -->
-
-<!--    # Add it to the full 'hpi' object (to the hpiindex object) -->
-<!--    hed_hpi <- calcVolatility(index = hed_hpi, -->
-<!--                              window = 3, -->
-<!--                              in_place = TRUE) -->
-<!--    class(hed_hpi$index$volatility) -->
-
-<!--    # Add it to the full 'hpi' object (to the hpiindex object) -->
-<!--    hed_hpi <- calcVolatility(index = hed_hpi, -->
-<!--                              window = 3, -->
-<!--                              in_place = TRUE, -->
-<!--                              smooth = TRUE) -->
-<!--    class(hed_hpi$index$volatility_smooth) -->
-
-
-<!-- ``` -->
-
-<!-- If you want to add it to the **hpiindex** object under a different name -- say if you are comparing volatilities, you can use the **in_place_name** argument to give it a different name. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--    # Add it to the 'hpiindex' object -->
-<!--    hed_hpi$index <- calcVolatility(index = hed_hpi$index, -->
-<!--                                    window = 3, -->
-<!--                                    in_place = TRUE, -->
-<!--                                    in_place_name = 'vol_3') -->
-
-<!--    names(hed_hpi$index) -->
-
-<!--    # Add it to the full 'hpi' object (to the hpiindex object) -->
-<!--    hed_hpi <- calcVolatility(index = hed_hpi, -->
-<!--                              window = 5, -->
-<!--                              in_place = TRUE, -->
-<!--                              smooth = TRUE, -->
-<!--                              in_place_name = 'vol_3_smooth') -->
-<!--    names(hed_hpi$index) -->
-
-<!-- ``` -->
-
-<!-- #### Fitting Accuracy -->
-
-<!-- Next, we can test the predictive ability of an index.  In this case, we will define predictive as the ability to properly predict the second sale price of a repeat sales pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting. -->
-
-<!-- The `calcAccuracy()` function requires a full **hpi** object as its main argument.  **test_type** defines the manner of testing accuracy; at the moment the only working options is **"rt"** which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  **test_method** sets the manner in which the test is employed, **"insample"**, **"kfold"**, or **"forecast"**.  If the "hpi_obj"" does not match the **"test_type"** (in all cases **"rt"** for now), then you must supply an **"rtdata"** object to in the **pred_df**index_data` argument. -->
-
-<!-- The `calcAccuracy()` function returns a data.frame with the actual (repeat) sale price compared to the one predicted by the index.  The returned object is of class 'indexerrors' and 'data.frame'.  A **test_method** attribute indicates the type of accuracy test performed.  -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--     rt_is_acc <- calcAccuracy(hpi_obj = rt_hpi, -->
-<!--                               test_type = 'rt', -->
-<!--                               test_method = 'insample') -->
-
-<!--    class(rt_is_acc) -->
-<!--    attr(rt_is_acc, 'test_method') -->
-
-<!-- ``` -->
-
-<!-- The smoothed index (if present) can be analyzed by setting **smooth = TRUE** -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--     rts_is_acc <- calcAccuracy(hpi_obj = rt_hpi, -->
-<!--                                test_type = 'rt', -->
-<!--                                test_method = 'insample', -->
-<!--                                smooth = TRUE) -->
-
-<!--    class(rts_is_acc) -->
-<!--    attr(rts_is_acc, 'test_method') -->
-
-<!-- ``` -->
-
-<!-- As with the other analytical functions, the results of the error calculations can be added to the **hpi_obj** by returning them in place (**in_place == TRUE**).  A name (**"default = 'accuracy'"**") may also be given. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--     # Returns an error object in place -->
-<!--     hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                             test_type = 'rt', -->
-<!--                             test_method = 'insample', -->
-<!--                             pred_df = sales_rtdf, -->
-<!--                             in_place = TRUE, -->
-<!--                             in_place_name = 'is_accuracy') -->
-
-<!--     # Check results -->
-<!--     class(hed_hpi) -->
-<!--     names(hed_hpi) -->
-<!--     class(hed_hpi$is_accuracy) -->
-
-<!--     # Returns an error object in place -->
-<!--     hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                             test_type = 'rt', -->
-<!--                             test_method = 'insample', -->
-<!--                             smooth = TRUE, -->
-<!--                             pred_df = rt_hpi$data, -->
-<!--                             in_place = TRUE, -->
-<!--                             in_place_name = 'smooth_is_accuracy') -->
-
-<!--     # Check results -->
-<!--     class(hed_hpi) -->
-<!--     names(hed_hpi) -->
-<!--     class(hed_hpi$smooth_is_accuracy) -->
-
-
-<!-- ``` -->
-
-<!-- To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample. -->
-
-<!-- Two addition arguments are availabile here: 1) **"k"** - the number of folds to make (default = 10); and 2) **"seed"** a value to the control the random sampling (default = 1). -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi, -->
-<!--                              test_type = 'rt', -->
-<!--                              test_method = 'kfold', -->
-<!--                              k = 10, -->
-<!--                              seed = 123) -->
-<!--    class(rt_kf_accr) -->
-<!--    attr(rt_kf_accr, 'test_method') -->
-
-<!-- ``` -->
-
-<!-- We can do this with smoothed indexes. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--   rts_kf_accr <- calcAccuracy(hpi_obj = rt_hpi, -->
-<!--                               test_type = 'rt', -->
-<!--                               test_method = 'kfold', -->
-<!--                               k = 10, -->
-<!--                               seed = 123, -->
-<!--                               smooth = TRUE) -->
-<!--    class(rts_kf_accr) -->
-<!--    attr(rts_kf_accr, 'test_method') -->
-
-<!-- ``` -->
-
-<!-- We can also return these in place. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE} -->
-
-<!--     # Returns an error object in place -->
-<!--     hed_hpi <- calcAccuracy(hpi_obj = hed_hpi, -->
-<!--                             test_type = 'rt', -->
-<!--                             test_method = 'kfold', -->
-<!--                             k = 10, -->
-<!--                             seed = 1, -->
-<!--                             pred_df = rt_hpi$data, -->
-<!--                             in_place = TRUE, -->
-<!--                             in_place_name = 'kf_accuracy') -->
-
-<!--     # Check results -->
-<!--     class(hed_hpi) -->
-<!--     names(hed_hpi) -->
-<!--     class(hed_hpi$index$kf_accuracy) -->
-
-<!-- ``` -->
-
-<!-- A plotting method (`plot.indexaccuracy()`) shows a number of diagnostics about the accuracy analysis. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add **"return_plot = TRUE"** to the argument list. -->
-
-<!-- ```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.width=7, fig.height=5.5} -->
-
-<!--  plot(hed_hpi$index$kf_accuracy) -->
-<!--  plot_obj <- plot(hed_hpi$index$kf_accuracy, return_plot = TRUE) -->
-<!--  class(plot_obj) -->
-
-<!-- ```   -->
+```{r create_heddata}
+  sales_hhdf <- hedCreateTrans(trans_df = ex_sales,
+                               prop_id = 'pinx',
+                               trans_id = 'sale_id',
+                               price = 'sale_price',
+                               date= 'sale_date',
+                               periodicity = 'monthly')
+
+```
+
+Next, we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The `log_dep` argument will control whether or not the dependent variable (`dep_var`) is converted into log format (as is common in hedonic price studies).
+
+```{r hedmodel_1}
+  hed_model <- hpiModel(hpi_df = sales_hhdf,
+                        estimator = 'base',
+                        dep_var = 'price',
+                        ind_var = c('tot_sf', 'beds', 'baths'),
+                        log_dep = TRUE)
+
+```
+
+If you'd like more control over the model specification -- such as using interactions or categorical variables -- you can, instead, provide a fully formed model specification in the `hed_spec` argument.
+
+```{r hedmodel_2}
+  model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf')
+  
+  hed_model <- hpiModel(hpi_df = sales_hhdf,
+                        estimator = 'base',
+                        hed_spec = model_spec,
+                        log_dep = TRUE)
+
+```
+
+In addition to the base estimator (OLS) there are robust regression (`estimator = "robust"`) and weighted least squares (`estimator = "weighted"`) options.
+
+```{r hedmodel_rob}
+  hed_model_rob <- hpiModel(hpi_df = sales_hhdf,
+                            estimator = 'robust',
+                            dep_var = 'price',
+                            ind_var = c('tot_sf', 'beds', 'baths'),
+                            log_dep = TRUE)
+
+```
+
+Do note that the weighted option requires a vectors of weights.
+
+```{r hedmodel_wgt}
+  hed_model_wgt <- hpiModel(hpi_df = sales_hhdf,
+                            estimator = 'weighted',
+                            dep_var = 'price',
+                            ind_var = c('tot_sf', 'beds', 'baths'),
+                            log_dep = FALSE,
+                            weights = runif(nrow(sales_hhdf), 0, 1))
+
+```
+
+The output from `hpiModel()` can be converted to an index with the `modelToIndex()` function.
+
+```{r hed_to_index}
+  hed_index <- modelToIndex(model_obj = hed_model)
+
+```
+
+And, again, this can be plotted to shown the index.
+
+```{r plot_hedindex, fig.width=7, fig.height=2.5}
+  plot(hed_index)
+
+```
+
+The `hedIndex()` wrapper function will perform all of the above hedonic modeling tasks, and then condense the results into an unified object of class `hpi`.
+
+There are three 'levels of entry' with the wrapper function.
+
+1. You can give it a raw `data.frame` with your transactions and it will A) Add the periods; B) Create a hedonic sales object; and 3) Model the data and create the index.  Under this approach `trans_df` is passed a raw `data.frame` along with the following arguments, some of which are optional (will revert to default if not given) and some of which are required (mostly field names and the model specification):
+
+   * `periodicity` (optional: default = 'annual')
+   * `min_date` (optional: default = minimum of data)
+   * `max_date` (optional: default = maximum of data)
+   * `adj_type` (opt: default = 'move')
+   * `date` (required)
+   * `price` (required)
+   * `trans_id` (required)
+   * `prop_id` (required)
+   * `dep_var` (required, unless `hed_spec` supplied)
+   * `ind_var` (required, unless `hed_spec` supplied)
+   * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
+   * `estimator` (optional: default = 'base')
+   * `log_dep` (optional: TRUE)
+   * `trim_model` (optional: FALSE)
+   * `max_period` (optional: maximum of data)
+   * `smooth` (optional: default = FALSE)
+   * `smooth_order` (optional, default = 3)
+
+```{r hed_1}
+  hed_1 <- hedIndex(trans_df = ex_sales,
+                    periodicity = 'monthly',
+                    min_date = '2010-06-01',
+                    max_date = '2015-11-30',
+                    adj_type = 'clip',
+                    date = 'sale_date',
+                    price = 'sale_price',
+                    trans_id = 'sale_id',
+                    prop_id = 'pinx',
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = TRUE,
+                    max_period = 48,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    smooth = FALSE)
+
+```
+
+2. You can provide an `hpidata` object (one that has been through the `dateToPeriod()` function).  In this case, the following arguments are valid:
+
+   * `date` (required)
+   * `price` (required)
+   * `trans_id` (required)
+   * `prop_id` (required)
+   * `dep_var` (required, unless `hed_spec` supplied)
+   * `ind_var` (required, unless `hed_spec` supplied)
+   * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
+   * `estimator` (optional: default = 'base')
+   * `log_dep` (optional: TRUE)
+   * `trim_model` (optional: FALSE)
+   * `max_period` (optional: maximum of data)
+   * `smooth` (optional: default = FALSE)
+   * `smooth_order` (optional, default = 3)
+
+```{r create_hed2_data}
+  sales_hdf <- dateToPeriod(trans_df = ex_sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly',
+                           min_date = '2010-02-01',
+                           max_date = '2015-11-30',
+                           adj_type = 'move')
+```
+
+```{r create_hed2}
+  hed_2 <- hedIndex(trans_df = sales_hdf,
+                    date = 'sale_date',
+                    price = 'sale_price',
+                    trans_id = 'sale_id',
+                    prop_id = 'pinx',
+                    estimator = 'base',
+                    log_dep = FALSE,
+                    trim_model = FALSE,
+                    max_period = 56,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    smooth = TRUE)
+
+```
+
+3. Finally, you can provide it an `heddata` object (one that has been through the `hedCreateTrans()` function).  Only the following arguments can be given in this case.
+
+   * `dep_var` (required, unless `hed_spec` supplied)
+   * `ind_var` (required, unless `hed_spec` supplied)
+   * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
+   * `estimator` (optional: default = 'base')
+   * `log_dep` (optional: TRUE)
+   * `trim_model` (optional: FALSE)
+   * `max_period` (optional: maximum of data)
+   * `smooth` (optional: default = FALSE)
+   * `smooth_order` (optional, default = 3)
+
+```{r hed3_create_sales}
+  sales_hhdf <- hedCreateTrans(trans_df = sales_hdf,
+                               prop_id = 'pinx',
+                               trans_id = 'sale_id',
+                               price = 'sale_price')
+
+```
+
+```{r hed3}
+  hed_3 <- hedIndex(trans_df = sales_hhdf,
+                    estimator = 'weighted',
+                    log_dep = TRUE,
+                    trim_model = FALSE,
+                    max_period = 80,
+                    dep_var = 'price',
+                    ind_var = c('tot_sf', 'beds', 'baths'),
+                    weights = runif(nrow(sales_hhdf), 0, 1),
+                    smooth = TRUE,
+                    smooth_order = 5)
+
+```
+
+Again, we can plot with a simple `plot()` call.
+
+```{r plot_hed3, fig.width=7, fig.height=2.5}
+  plot(hed_3, smooth=TRUE)
+
+```
+
+### Analyzing an index
+
+Before we start analyzing our indexes, we'll create two example `hpi` objects, one using a repeat sales model and one with a hedonic price model.
+
+```{r example_hpis}
+  rt_hpi <- rtIndex(trans_df = sales_rtdf,
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = FALSE,
+                    max_period = 84,
+                    smooth = TRUE)
+
+  hed_hpi <- hedIndex(trans_df = sales_hhdf,
+                      estimator = 'weighted',
+                      log_dep = TRUE,
+                      trim_model = FALSE,
+                      max_period = 84,
+                      dep_var = 'price',
+                      ind_var = c('tot_sf', 'beds', 'baths'),
+                      weights = runif(nrow(sales_hhdf), 0, 1),
+                      smooth = TRUE)
+
+```
+
+#### Volatility
+
+One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The `window` over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (`roll`) as well as the summarized average volality(`mean`) and median (`median`) are returned by the function.
+
+```{r index_vol1}
+  index_vol <- calcVolatility(index = hed_hpi$index$value,
+                              window = 3)
+  names(index_vol)
+
+```
+
+Plotting an `indexVolatility` object shows the rolling volatility, the mean (dashed line) and the median (dotted) volatility on the top panel.
+
+```{r plot_vol, fig.width=7, fig.height=3.5}
+  plot(index_vol)
+
+```
+
+A number of differently classed objects can be passed to the `index` argument in the `calcVolatility()` function.  These include the extracted `ts` object from an `hpiindex` object (as done above), the raw `hpiindex` object itself (from `modelToIndex()`), or an `hpi` object from one of the wrappers (`rtIndex()` or `hedIndex()`)
+
+```{r indexvol_hpiindex}
+ # hpinindex object
+ index_vol <- calcVolatility(index = hed_hpi$index,
+                             window = 3)
+
+ # hpi object
+ index_vol <- calcVolatility(index = hed_hpi,
+                             window = 3)
+
+```
+
+If you want to calculate the volatility of the smoothed index, you need to pass the smoothed index directly or change the `smooth` argument to TRUE (default is false) when passing an `hpiindex` or `hpi` object to `calcVolatility()`. Note, you must make sure that a 'smoothed' index exists in the `hpi` or `hpindex` object first. 
+
+```{r indexvol_smooth}
+  # Direct passing
+  sindex_vol <- calcVolatility(index = hed_hpi$index$smooth,
+                               window = 3)
+
+  # While passing 'hpi' or 'hpiindex'
+  sindex_vol <- calcVolatility(index = hed_hpi$index,
+                               window = 3,
+                               smooth = TRUE)
+
+```
+
+The `calcVolatility()` function can also place the volatility metrics directly into the `hpiindex` object by setting `in_place = TRUE`. If passed an `hpiindex` object, the results will be stored in the `hpiindex` object which is returned.  If passed an `hpi` object, the results will be stored in the `hpiindex` object within the `hpi` object which is returned. 
+
+```{r indexvol_inplace}
+   # Add it to the 'hpiindex' object
+   hed_hpi$index <- calcVolatility(index = hed_hpi$index,
+                                   window = 3,
+                                   in_place = TRUE)
+
+   # Add it to the full 'hpi' object (to the hpiindex object)
+   hed_hpi <- calcVolatility(index = hed_hpi,
+                             window = 3,
+                             in_place = TRUE)
+
+```
+
+A volatility analysis of a smoothed index will place it under the **volatility_smooth** name.
+
+```{r indexvol_inplace_smooth}
+   hed_hpi <- calcVolatility(index = hed_hpi,
+                             window = 3,
+                             in_place = TRUE,
+                             smooth = TRUE)
+   names(hed_hpi$index)
+
+```
+
+If you want to add it to the `hpiindex` object under a different name -- say if you are comparing volatilities of different windows -- you can use the `in_place_name` argument to give it a different name than the defaults ('volatility' and 'volatility_smoothed')
+
+```{r indexvol_rename}
+   hed_index <- calcVolatility(index = hed_hpi$index,
+                               window = 3,
+                               in_place = TRUE,
+                               in_place_name = 'vol_3')
+   names(hed_index)
+
+```
+
+A note on renaming and in place addition.  All of the analytical objects that are added -- volatility and other below -- can be renamed to allow for multiple analyses with different parameter.  Smoothed indexes, however, cannot be renamed and must be stored under the name 'smooth' because all of the analytical process depend on identifying this named slot.  
+
+#### Fitting Accuracy (Index)
+
+Next, we can test the accuracy of an index.  In this case, we will define accuracy as the ability to properly estimate the second transaction price of a repeat transaction pair (a property that sells twice).^[Note that a second method using hedonic pricing models is being developed.]  To start, we'll do this in-sample, ignoring any issues of overfitting.
+
+The `calcAccuracy()` function requires a full `hpi` object as its main argument.  `test_type` defines the manner of testing accuracy; at the moment the only working options is *"rt"* which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  `test_method` sets the manner in which the test is employed, *"insample"* or *"kfold"*.  If the `hpi_obj` does not match the `test_type` (in all cases *"rt"* for now), then you must supply an `rtdata` object to in the `pred_df` argument.
+
+The `calcAccuracy()` function returns a data.frame comparing the actual (repeat) transaction price to the one predicted by the index.  A `"test_method"` attribute indicates the type of accuracy test performed.
+
+```{r rt_is_acc}
+   rt_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
+                              test_type = 'rt',
+                              test_method = 'insample')
+   attr(rt_is_accr, 'test_method')
+
+```
+
+The smoothed index (if present) can be analyzed by setting **smooth = TRUE**
+
+```{r rt_is_accr_smooth}
+    rts_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
+                                test_type = 'rt',
+                                test_method = 'insample',
+                                smooth = TRUE)
+
+```
+
+As with the other analytical functions, the results of the accuracy calculations can be added to the `hpi_obj` by returning them in place (`in_place == TRUE`).  A name (*"default = 'accuracy'"*") may also be given.
+
+```{r rt_is_acc_inplace}
+    # Returns an accuracy object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'insample',
+                            pred_df = sales_rtdf,
+                            in_place = TRUE,
+                            in_place_name = 'is_accuracy')
+    names(hed_hpi)
+
+    # Returns a smooth accuracy object in place
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'insample',
+                            smooth = TRUE,
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'smooth_is_accuracy')
+
+```
+
+To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
+
+Two addition arguments are availabile here: 1) `k` - the number of folds to make (default = 10); and 2) `seed` a value to the control the random sampling (default = 1).
+
+```{r kf_accr}
+  rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
+                             test_type = 'rt',
+                             test_method = 'kfold',
+                             k = 10,
+                             seed = 123)
+
+```
+
+We can do this with smoothed indexes.
+
+```{r kf_accr_smooth}
+  rt_kf_accr_s <- calcAccuracy(hpi_obj = rt_hpi,
+                               test_type = 'rt',
+                               test_method = 'kfold',
+                               k = 10,
+                               seed = 123,
+                               smooth = TRUE)
+
+```
+
+We can also return these in place.
+
+```{r kf_accr_inplace}
+    hed_hpi <- calcAccuracy(hpi_obj = hed_hpi,
+                            test_type = 'rt',
+                            test_method = 'kfold',
+                            k = 10,
+                            seed = 1,
+                            pred_df = rt_hpi$data,
+                            in_place = TRUE,
+                            in_place_name = 'kf_accuracy')
+
+```
+
+A plotting method (`plot.hpiaccuracy()`) shows a number of diagnostics about the accuracy analysis. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add `return_plot = TRUE` to the argument list.
+
+```{r plot_accr}
+  plot(hed_hpi$index$kf_accuracy)
+
+```
 
 <!-- ### Index Series -->
 
