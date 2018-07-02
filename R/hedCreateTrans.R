@@ -11,16 +11,16 @@
 #' Only necessary if not passing a `hpidata` object
 #' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `hed` object
-#' @section Further Details:
-#' aaa
 #' @examples
-#' ## With a raw data.frame
-#' hed_sales <- hedCreateTrans(trans_df = seattle_sales,
-#'                             prop_id = 'pinx',
-#'                             trans_id = 'uniq_id',
-#'                             price = 'sale_price',
-#'                             date = 'sale_date',
-#'                             periodicity = 'monthly')
+#' # Load example data
+#' data(ex_sales)
+#'
+#' ex_heddata <- hedCreateTrans(trans_df = ex_sales,
+#'                              prop_id = 'pinx',
+#'                              trans_id = 'sale_id',
+#'                              price = 'sale_price',
+#'                              date = 'sale_date',
+#'                              periodicity = 'monthly')
 #' @export
 
 hedCreateTrans <- function(trans_df,

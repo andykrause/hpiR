@@ -1,16 +1,28 @@
 #' @title hpiModel
 #' @description Estimate the model for any method of house price index.  Generic method.
-#' @usage Lorem Ipsum...
+#' @usage hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' a <- 1
+#' # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
+#'                        estimator = 'base',
+#'                        log_dep = TRUE)
 #' @export
 
 hpiModel <- function(hpi_df,
@@ -36,20 +48,23 @@ hpiModel <- function(hpi_df,
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' sea_sales <- dateToPeriod(trans_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
-#' rep_sales <- rtCreateTrans(trans_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            trans_id = 'uniq_id',
-#'                            price = 'sale_price')
-#' rt_model <- hpiModel(hpi_df = rep_sales,
-#'                      estimator = 'base',
-#'                      log_dep = TRUE)
+#' # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
+#'                        estimator = 'base',
+#'                        log_dep = TRUE)
 #' @export
 
 hpiModel.rtdata <- function(hpi_df,
@@ -136,20 +151,25 @@ hpiModel.rtdata <- function(hpi_df,
 #' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' sea_sales <- dateToPeriod(sales_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
-#' rep_sales <- rsCreateSales(sales_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            sale_id = 'uniq_id',
-#'                            price = 'sale_price')
-#' rs_model <- hpiModel(hpi_df = rep_sales,
-#'                      estimator = 'base',
-#'                      log_dep = TRUE)
+#' # Load Data
+#'  data(ex_heddata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_heddata,
+#'                        estimator = 'base',
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        log_dep = TRUE)
 #' @export
 
 hpiModel.heddata <- function(hpi_df,

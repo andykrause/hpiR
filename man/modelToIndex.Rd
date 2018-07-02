@@ -14,16 +14,21 @@ modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 \item{...}{Additional arguments}
 }
 \value{
-rs model object
+`hpiindex` object containing:
+\item{name: vector of period names}
+\item{numeric: vector of period in numeric form}
+\item{period: vector of period numbers}
+\item{value: `ts` object of the index values}
+\item{imputed: vector of binary values indicating imputation}
 }
 \description{
 Converts model results into a house price index
 }
-\section{Further Details}{
-
-}
-
 \examples{
-hpi_index <- modelToIndex(hpi_model,
+# Load Data
+data(ex_hpimodel)
+
+# Create Index
+hpi_index <- modelToIndex(ex_hpimodel,
                           max_period=84)
 }

@@ -24,25 +24,27 @@ Lorem Ipsum...
 \item{...}{Additional Arguments}
 }
 \value{
-hpimodel object
+hpimodel object consisting of:
+\item{estimator}
+\item{coefficients}
+\item{model_obj: class `rtmodel` or `hedmodel`}
+\item{mod_spec}
+\item{log_dep}
+\item{base_price}
+\item{periods: `data.frame` of periods}
+\item{approach: type of model used}
 }
 \description{
 Estimate the model for any method of house price index.  Generic method.
 }
-\section{Further Details}{
-
-Lorem Ipsum...
-}
-
 \examples{
-sea_sales <- dateToPeriod(sales_df = seattle_sales,
-                          date = 'sale_date',
-                          periodicity = 'month')
-rep_sales <- rsCreateSales(sales_df = sea_sales,
-                           prop_id = 'pinx',
-                           sale_id = 'uniq_id',
-                           price = 'sale_price')
-rs_model <- hpiModel(hpi_df = rep_sales,
-                     estimator = 'base',
-                     log_dep = TRUE)
+# Load Data
+ data(ex_heddata)
+
+ # Create model object
+ hpi_model <- hpiModel(hpi_df = ex_heddata,
+                       estimator = 'base',
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       log_dep = TRUE)
 }

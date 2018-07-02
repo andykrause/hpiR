@@ -2,19 +2,61 @@
 #' @description Creates a house price (rent) index from a set of transactions using the
 #' hedonic price method
 #' @param trans_df data.frame of transactions
-#' @param date Field contain the transaction date
-#' @param price Field contain the transaction price
-#' @param trans_id Field containing the unique transaction identifier
-#' @param prop_id Field containing the property identifier
-#' @param estimator default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'
-#' @param log_dep default = TRUE, Should the dependent variable (price) be logged?
 #' @param periodicity default = 'month', Periodicity of time to estimate index at
 #' @param dep_var default = NULL, dependent variable in hedonic model
 #' @param ind_var default = NULL, independent variables in the hedonic model
 #' @param hed_spec default = NULL, Full hedonic model specification
 #' @param ... Additional Arguments
-#' @return hpi object
+#' @return `hpi`` object.  S3 list with:
+#' \item{data: `hpidata` object}
+#' \item{model: `hpimodel` object}
+#' \item{index: `hpiindex` object}
 #' @section Further Details:
+#' Additional argument need to provide necessary argument for create `hpidata` objects if
+#' the `trans_df` object is not of that class.
+#' @examples
+#' # Load data
+#' data(ex_sales)
+#' data(ex_hpidata)
+#' data(ex_heddata)
+#'
+#' # Create index: with full `heddata` object
+#'  hed_index <- hedIndex(trans_df = ex_heddata,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = FALSE)
+#'
+#' # Create index: with `hpidata` object
+#'  hed_index <- hedIndex(trans_df = ex_hpidata,
+#'                        date = 'sale_date',
+#'                        price = 'sale_price',
+#'                        trans_id = 'sale_id',
+#'                        prop_id = 'pinx',
+#'                        estimator = 'base',
+#'                        log_dep = FALSE,
+#'                        trim_model = FALSE,
+#'                        max_period = 56,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = TRUE)
+#'
+#' # Crete index with raw transaction data
+#'  hed_index <- hedIndex(trans_df = ex_sales,
+#'                        periodicity = 'monthly',
+#'                        min_date = '2010-06-01',
+#'                        max_date = '2015-11-30',
+#'                        adj_type = 'clip',
+#'                        date = 'sale_date',
+#'                        price = 'sale_price',
+#'                        trans_id = 'sale_id',
+#'                        prop_id = 'pinx',
+#'                        estimator = 'robust',
+#'                        log_dep = TRUE,
+#'                        trim_model = TRUE,
+#'                        max_period = 48,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = FALSE)
 #' @export
 
 hedIndex <- function(trans_df,
