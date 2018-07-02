@@ -4,7 +4,7 @@
 #' @param pred_df Set of sales against which to test predictions
 #' @param index Index (of class) to be tested for accuracy
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
@@ -12,10 +12,14 @@
 #' @section Further Details:
 #' In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
 #' @examples
-#' \dontrun{
-#' index_error <- calcInSampleError(pred_df = rt_index$data,
-#'                                  index = rt_index$index$index)
-#'}
+#' # Load example data
+#'   data(ex_rtdata)
+#'   data(ex_hpiindex)
+#'
+#' # Calculate accuracy
+#'   in_accr <- calcInSampleError(pred_df = ex_rtdata,
+#'                                index = ex_hpiindex$value)
+#'
 #'@export
 
 calcInSampleError <- function(pred_df,

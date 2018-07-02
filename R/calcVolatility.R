@@ -5,6 +5,7 @@
 #' @param in_place default = FALSE; Adds volatility metric to the `hpiindex` object
 #' (may be within an `hpi` object)
 #' @param in_place_name default = 'vol'; Name of volatility object in `hpiindex` object
+#' @param smooth default = FALSE; Calculate on the smoothed index?
 #' @param ... Additional arguments
 #' @return an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
 #' \item{roll: volatility at each rolling point}
@@ -14,10 +15,12 @@
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 #' @examples
-#' \dontrun{
-#' index_vol <- calcVolatility(index = hpi_index,
-#'                             window = 3)
-#' }
+#' # Load data
+#'   data(ex_hpiindex)
+#'
+#' # Calculate Volatility
+#'   index_vol <- calcVolatility(index = ex_hpiindex,
+#'                               window = 3)
 #' @export
 
 calcVolatility <- function(index,
@@ -114,7 +117,7 @@ calcVolatility <- function(index,
 
 #' @title calcSeriesVolatility
 #' @description Calculates volatility over a series of indexes
-#' @usage Lorem Ipsum...
+#' @usage calcSeriesVolatility(series_obj, window, smooth)
 #' @param series_obj Series object to be calculted
 #' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
@@ -122,6 +125,13 @@ calcVolatility <- function(index,
 #' @return `serieshpi` object
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
+#' @examples
+#' # Load Data
+#'   data(ex_serieshpi)
+#'
+#' # Calculate series volatility
+#'   series_vol <- calcSeriesVolatility(series_obj = ex_serieshpi,
+#'                                      window= 3)
 #' @export
 
 calcSeriesVolatility <- function(series_obj,

@@ -2,14 +2,14 @@
 #' @description Estimate index Accuracy using one of a variety of approaches
 #' @usage calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in_place_name, ...)
 #' @param hpi_obj Object of class 'hpi'
-#' @param test_method default = 'insample'; also 'kfold' or 'forecast'
+#' @param test_method default = 'insample'; also 'kfold'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
 #' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
-#' @param series_name default = 'series'; name of the object in hpi_obj containing the series
+#' @param smooth default = FALSE; calculated on the smoothed index(es)
 #' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
-#' @param in_place_name default = 'acc'; Name for returning in place
+#' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `indexaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
@@ -18,13 +18,14 @@
 #' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
 #' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
 #' (This approach is not ready yet).
-#' `series_name` only needs to be supplied when running a test_method of type "forecast"
 #'@examples
-#'\dontrun{
-#' index_error <- calcAccuracy(hpi_obj = rt_hpi,
-#'                             test_type = 'rt',
-#'                             test_method = 'insample')
-#'}
+#'# Load Example `hpi` object
+#'data(ex_hpi)
+#'
+#'# Calculate insample accuracy
+#'hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
+#'                         test_type = 'rt',
+#'                         test_method = 'insample')
 #' @export
 
 calcAccuracy <- function(hpi_obj,
@@ -105,7 +106,6 @@ calcAccuracy <- function(hpi_obj,
   }
 
   # Return results
-
   if (in_place){
 
     hpi_obj$index[[in_place_name]] <- accr_obj
@@ -118,15 +118,31 @@ calcAccuracy <- function(hpi_obj,
 
 #' @title calcSeriesAccuracy
 #' @description Calculates accuracy over a series of indexes
-#' @usage Lorem Ipsum...
-#' @param series_obj Series object to be calculted
+#' @usage calcSeriesAccuracy(series_obj, test_method = 'kfold', test_type = 'rt')
+#' @param series_obj Serieshpi object to be analyzed
 #' @param test_method default = 'insample'; also 'kfold' or 'forecast'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
-#' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param pred_df default = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param smooth default = FALSE; Analyze the smoothed indexes
+#' @param summarize default = FALSe; When multiple accuracy measurements for single observation
+#' take the mean of them all.
+#' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
+#' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
-#' @return `serieshpi` object
+#' @return `seriesaccuracy` object (unless calculated 'in_place')
 #' @section Further Details:
-#' Leaving order blank default to a moving average with order 3.
+#' Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results will have more than
+#' one accuracy estimate per observations.  Setting `summarize = TRUE` will take the mean accuracy
+#' for each observation across all indexes.
+#' @examples
+#'   # Load Example `serieshpi`` object
+#'   data(ex_serieshpi)
+#'
+#'   # Calculate insample accuracy
+#'   hpi_series_accr <- calcSeriesAccuracy(series_obj = ex_serieshpi,
+#'                                         test_type = 'rt',
+#'                                         test_method = 'insample')
+
 #' @export
 
 calcSeriesAccuracy <- function(series_obj,
@@ -136,6 +152,7 @@ calcSeriesAccuracy <- function(series_obj,
                                smooth = FALSE,
                                summarize = FALSE,
                                in_place = FALSE,
+                               in_place_name = 'accuracy',
                                ...){
 
   # Bad series_obj
@@ -217,9 +234,10 @@ calcSeriesAccuracy <- function(series_obj,
 
     # Add to series object
     if (!smooth){
-      series_obj$accuracy <- accr_df
+      series_obj[[in_place_name]] <- accr_df
     } else {
-      series_obj$accuracy_smooth <- accr_df
+      if (in_place_name == 'accuracy') in_place_name <- 'accuracy_smooth'
+      series_obj[[in_place_name]] <- accr_df
     }
 
   # If it is a forecast method
@@ -236,9 +254,10 @@ calcSeriesAccuracy <- function(series_obj,
 
    # Add to object
    if (!smooth){
-     series_obj[['accuracy']] <- accr_df
+     series_obj[[in_place_name]] <- accr_df
    } else {
-     series_obj[['accuracy_smooth']] <- accr_df
+     if (in_place_name == 'accuracy') in_place_name <- 'accuracy_smooth'
+     series_obj[[in_place_name]] <- accr_df
    }
 
   }

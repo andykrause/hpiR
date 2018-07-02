@@ -17,3 +17,11 @@ Adjusted date field
 \description{
 Checks and converts date arguments into proper format
 }
+\examples{
+# Load Data
+  data(ex_sales)
+
+# Check date
+  checkDate(x_date = ex_sales$sale_date,
+            name = 'sale date')
+}

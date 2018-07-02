@@ -4,27 +4,47 @@
 \alias{calcSeriesAccuracy}
 \title{calcSeriesAccuracy}
 \usage{
-Lorem Ipsum...
+calcSeriesAccuracy(series_obj, test_method = 'kfold', test_type = 'rt')
 }
 \arguments{
-\item{series_obj}{Series object to be calculted}
+\item{series_obj}{Serieshpi object to be analyzed}
 
 \item{test_method}{default = 'insample'; also 'kfold' or 'forecast'}
 
 \item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
-\item{pred_df}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
+\item{pred_df}{default = NULL; Extra data if the test_type doesn't match data in hpi_obj}
+
+\item{smooth}{default = FALSE; Analyze the smoothed indexes}
+
+\item{summarize}{default = FALSe; When multiple accuracy measurements for single observation
+take the mean of them all.}
+
+\item{in_place}{default = FALSE; Should the result be returned into an existing `hpi` object}
+
+\item{in_place_name}{default = 'accuracy'; Name for returning in place}
 
 \item{...}{Additional Arguments}
 }
 \value{
-`serieshpi` object
+`seriesaccuracy` object (unless calculated 'in_place')
 }
 \description{
 Calculates accuracy over a series of indexes
 }
 \section{Further Details}{
 
-Leaving order blank default to a moving average with order 3.
+Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results will have more than
+one accuracy estimate per observations.  Setting `summarize = TRUE` will take the mean accuracy
+for each observation across all indexes.
 }
 
+\examples{
+  # Load Example `serieshpi`` object
+  data(ex_serieshpi)
+
+  # Calculate insample accuracy
+  hpi_series_accr <- calcSeriesAccuracy(series_obj = ex_serieshpi,
+                                        test_type = 'rt',
+                                        test_method = 'insample')
+}

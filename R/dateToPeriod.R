@@ -1,19 +1,29 @@
 #' @title dateToPeriod
-#' @description Convert dates into time periods for use in sale-resale models
+#' @description Convert dates into time periods for use in repeat transaction models
 #' @param trans_df data.frame of raw transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
-#' @return data frame with three new fields:
+#' @param min_date default = NULL; optional minimum date to use
+#' @param max_date default = NULL; optional maximum date to use
+#' @param adj_type default = 'move'; how to handle min and max dates within the range of transactions.  'move'
+#' min and/or max date or 'clip' the data
+#' @return original data frame (`trans_df` object) with two new fields:
 #' trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
-#' date_value: float value of year and periodicty in numeric form (primarily for plotting)
-#' date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
+#' trans_date: properly formated transaction date
 #' @section Further Details:
-#' trans_period conat from the minimum transaction date provided.  As such the period counts
+#' "trans_period" counts from the minimum transaction date provided.  As such the period counts
 #' are relative, not absolute
 #' Additionally, this function modifies the data.frame that it is given and return that same
 #' data.frame that it is given and returns that data.frame with the new fields attached.
-#' It does so because this function is not intended as a stand-alone function but rather
-#' one to be called by the ***CreateSales set of functions with hpiR
+#' @examples
+#' # Load data
+#'   data(ex_sales)
+#'
+#' # Convert to period df
+#'   hpi_data <- dateToPeriod(trans_df = ex_sales,
+#'                            date = 'sale_date',
+#'                            periodicity = 'monthly')
+#'
 #' @export
 
 dateToPeriod <- function(trans_df,
@@ -215,6 +225,13 @@ dateToPeriod <- function(trans_df,
 #' @param x_date Date string or vector
 #' @param name Name of argument to return in error/warning message
 #' @return Adjusted date field
+#' @examples
+#' # Load Data
+#'   data(ex_sales)
+#'
+#' # Check date
+#'   checkDate(x_date = ex_sales$sale_date,
+#'             name = 'sale date')
 #' @export
 
 checkDate <- function(x_date,

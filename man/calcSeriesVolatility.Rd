@@ -4,7 +4,7 @@
 \alias{calcSeriesVolatility}
 \title{calcSeriesVolatility}
 \usage{
-Lorem Ipsum...
+calcSeriesVolatility(series_obj, window, smooth)
 }
 \arguments{
 \item{series_obj}{Series object to be calculted}
@@ -26,3 +26,11 @@ Calculates volatility over a series of indexes
 Leaving order blank default to a moving average with order 3.
 }
 
+\examples{
+# Load Data
+  data(ex_serieshpi)
+
+# Calculate series volatility
+  series_vol <- calcSeriesVolatility(series_obj = ex_serieshpi,
+                                     window= 3)
+}

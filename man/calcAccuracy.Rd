@@ -9,22 +9,22 @@ calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{test_method}{default = 'insample'; also 'kfold' or 'forecast'}
+\item{test_method}{default = 'insample'; also 'kfold'}
 
 \item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
 \item{pred_df}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
 
+\item{smooth}{default = FALSE; calculated on the smoothed index(es)}
+
 \item{in_place}{default = FALSE; Should the result be returned into an existing `hpi` object}
 
-\item{in_place_name}{default = 'acc'; Name for returning in place}
+\item{in_place_name}{default = 'accuracy'; Name for returning in place}
 
 \item{...}{Additional Arguments}
-
-\item{series_name}{default = 'series'; name of the object in hpi_obj containing the series}
 }
 \value{
-object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+object of class `indexaccuracy` inheriting from class `data.frame` containing the following fields:
 \item{prop_id}
 \item{pred_price}
 \item{pred_error}
@@ -38,13 +38,14 @@ Estimate index Accuracy using one of a variety of approaches
 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
 FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
 (This approach is not ready yet).
-`series_name` only needs to be supplied when running a test_method of type "forecast"
 }
 
 \examples{
-\dontrun{
-index_error <- calcAccuracy(hpi_obj = rt_hpi,
-                            test_type = 'rt',
-                            test_method = 'insample')
-}
+# Load Example `hpi` object
+data(ex_hpi)
+
+# Calculate insample accuracy
+hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
+                        test_type = 'rt',
+                        test_method = 'insample')
 }

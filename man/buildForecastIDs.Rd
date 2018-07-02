@@ -11,6 +11,8 @@ buildForecastIDs(time_cut, hpi_df, ...)
 
 \item{hpi_df}{Data to be converted to training or scoring}
 
+\item{forecast_length}{default = 1; Lenght of forecasting to do}
+
 \item{train}{Default=TRUE; Create training data?  FALSE = Scoring data}
 
 \item{...}{Additional Arguments}
@@ -25,10 +27,17 @@ Create training or scoring data for the forecast error calculations
 \section{Further Details}{
 
 This function is rarely (if ever) used directly.  Most often called by `calcForecastError()`
+
+It is a generic method that dispatches on the `hpi_df` object.
 }
 
 \examples{
-\dontrun{
-buildForecastIDs(time_cut, hpi_df, ...)
-}
+# Load example data
+  data(ex_rtdata)
+
+# Create ids
+  fc_ids <- buildForecastIDs(time_cut = 27,
+                             hpi_df = ex_rtdata,
+                             forecast_length = 2,
+                             train = TRUE)
 }

@@ -15,10 +15,12 @@ calcKFoldError(hpi_obj, pred_df, k, seed)
 
 \item{seed}{default=1; Random seed generator to control the folding process}
 
+\item{smooth}{default = FALSE; Calculate on the smoothed index}
+
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 \item{prop_id}
 \item{pred_price}
 \item{pred_error}
@@ -28,10 +30,15 @@ object of class `indexerrors` inheriting from class `data.frame` containing the 
 Estimate out-of-sample index errors using a KFold process
 }
 \examples{
-\dontrun{
-index_error <- calcKFoldError(hpi_obj = rt_index,
-                              pred_df = rt_index$data,
-                              k = 10,
-                              seed = 10)
-}
+# Load data
+  data(ex_hpi)
+  data(ex_rtdata)
+
+# Calc Accuracy
+  kf_accr <- calcKFoldError(hpi_obj = ex_hpi,
+                            pred_df = ex_rtdata,
+                            k = 10,
+                            seed = 123,
+                            smooth = FALSE)
+
 }

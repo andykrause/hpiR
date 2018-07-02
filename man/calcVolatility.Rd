@@ -17,6 +17,8 @@ calcVolatility(index, window = 3, in_place = FALSE,
 
 \item{in_place_name}{default = 'vol'; Name of volatility object in `hpiindex` object}
 
+\item{smooth}{default = FALSE; Calculate on the smoothed index?}
+
 \item{...}{Additional arguments}
 }
 \value{
@@ -35,8 +37,10 @@ extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 }
 
 \examples{
-\dontrun{
-index_vol <- calcVolatility(index = hpi_index,
-                            window = 3)
-}
+# Load data
+  data(ex_hpiindex)
+
+# Calculate Volatility
+  index_vol <- calcVolatility(index = ex_hpiindex,
+                              window = 3)
 }

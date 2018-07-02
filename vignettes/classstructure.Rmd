@@ -628,7 +628,7 @@ Finally, `seriesaccuracy` objects can be saved to a plot of class `plotaccuracy`
   devtools::use_data(ex_hpiaccuracy, overwrite=TRUE)  
   devtools::use_data(ex_plotaccuracy, overwrite=TRUE)  
   
-  devtools::use_data(ex_hpiseries, overwrite=TRUE)
+  devtools::use_data(ex_serieshpi, overwrite=TRUE)
   devtools::use_data(ex_plotseries, overwrite=TRUE)
   
   devtools::use_data(ex_seriesaccuracy, overwrite=TRUE)

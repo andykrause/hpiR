@@ -10,12 +10,15 @@
 #' `train_peried` Represents the shortest index that you will create. For certain approaches
 #' , such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.
 #'
-#' If 'max_period' is left NULL, then it will forecast up to the end of the data
+#' If `max_period`` is left NULL, then it will forecast up to the end of the data
 #' @examples
-#'\dontrun{
-#' hpi_series <- createSereis(hpi_obj = hpi_obj,
-#'                            train_period = 12)
-#' }
+#' # Load Data
+#'   data(ex_hpi)
+#'
+#'  # Create Series (Suppressing messages do to small sample size of this example)
+#'   suppressMessages(
+#'     hpi_series <- createSeries(hpi_obj = ex_hpi,
+#'                                train_period = 12))
 #' @export
 
 createSeries <- function(hpi_obj,

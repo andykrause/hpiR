@@ -9,7 +9,7 @@ createKFoldData(score_ids, full_data, pred_df)
 \arguments{
 \item{score_ids}{Vector of row ids to be included in scoring data}
 
-\item{full_data}{Complete dataset (class `hpi_df``) of this model type (rt or hed)}
+\item{full_data}{Complete dataset (class `hpidata``) of this model type (rt or hed)}
 
 \item{pred_df}{Data to be used for prediction}
 }
@@ -27,9 +27,17 @@ Called from calcKFoldError
 }
 
 \examples{
-\dontrun{
-kfold_df <- createKFoldData(score_ids = kfold_df$score,
-                            full_data = hpi_obj$data,
-                            pred_df = hpi_obj$pred_data)
-}
+ # Load Data
+ data(ex_rtdata)
+
+ # Create folds
+ k_folds <- caret::createFolds(y=1:nrow(ex_rtdata),
+                               k=10,
+                               list=TRUE,
+                               returnTrain=FALSE)
+
+ # Create data from folds
+ kfold_data <- createKFoldData(score_ids = k_folds[[1]],
+                               full_data = ex_rtdata,
+                               pred_df = ex_rtdata)
 }

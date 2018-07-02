@@ -3,24 +3,31 @@
 #' @usage hed_error <- calcForecastError(is_obj = hed_series, pred_df = rt_data)
 #' @param is_obj Object of class 'hpiseries'
 #' @param pred_df Set of sales to be used for predicitive quality of index
-#' @param return_forecasts Default = FALSE; return the forecasted indexes
+#' @param return_forecasts default = FALSE; return the forecasted indexes
+#' @param forecast_length default = 1; Length of period(s) in time to forecast
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
 #' \item{pred_period}
 #' @section Further Details:
 #' If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
-#' in the 'forecasts` attribute of the `indexerrors` object. (attr(error_obj, 'forecasts')
+#' in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')
 #'
 #' For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
 #' inheriting from `hpidata`
+#'
 #'@examples
-#'\dontrun{
-#' index_error <- calcForecastError(is_obj = hed_index$series,
-#'                                  pred_df = rt_index$data)
-#'}
+#'# Load example series
+#'  data(ex_serieshpi)
+#'
+#'# Load prediction data
+#'  data(ex_rtdata)
+#'
+#'# Calculate forecast accuracty
+#'  fc_accr <- calcForecastError(is_obj = ex_serieshpi,
+#'                               pred_df = ex_rtdata)
 #' @export
 
 calcForecastError <- function(is_obj,
@@ -106,16 +113,24 @@ calcForecastError <- function(is_obj,
 #' @usage buildForecastIDs(time_cut, hpi_df, ...)
 #' @param time_cut Period after which to cut off data
 #' @param hpi_df Data to be converted to training or scoring
+#' @param forecast_length default = 1; Lenght of forecasting to do
 #' @param train Default=TRUE; Create training data?  FALSE = Scoring data
 #' @param ... Additional Arguments
 #' @return vector of row_ids indicating inclusion in the forecasting data as either the training
 #' set (train = TRUE) or the scoring set (train = FALSE)
 #' @section Further Details:
 #' This function is rarely (if ever) used directly.  Most often called by `calcForecastError()`
+#'
+#' It is a generic method that dispatches on the `hpi_df` object.
 #' @examples
-#'\dontrun{
-#' buildForecastIDs(time_cut, hpi_df, ...)
-#'}
+#' # Load example data
+#'   data(ex_rtdata)
+#'
+#' # Create ids
+#'   fc_ids <- buildForecastIDs(time_cut = 27,
+#'                              hpi_df = ex_rtdata,
+#'                              forecast_length = 2,
+#'                              train = TRUE)
 #' @export
 
 buildForecastIDs <- function(time_cut,
@@ -149,6 +164,11 @@ buildForecastIDs.heddata <- function(time_cut,
                                      hpi_df,
                                      forecast_length = 1,
                                      train=TRUE){
+
+  # Extract data if given a full 'hpi' object
+  if ('hpi' %in% class(hpi_df)){
+    hpi_df <- hpi_df$data
+  }
 
   if(train){
     time_ids <- which(hpi_df$trans_period < time_cut)

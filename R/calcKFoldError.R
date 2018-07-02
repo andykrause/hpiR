@@ -5,19 +5,25 @@
 #' @param pred_df Data.frame of sales to be used for assessing predictive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
 #' @param seed default=1; Random seed generator to control the folding process
+#' @param smooth default = FALSE; Calculate on the smoothed index
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
 #' \item{pred_period}
 #' @examples
-#' \dontrun{
-#' index_error <- calcKFoldError(hpi_obj = rt_index,
-#'                               pred_df = rt_index$data,
-#'                               k = 10,
-#'                               seed = 10)
-#' }
+#' # Load data
+#'   data(ex_hpi)
+#'   data(ex_rtdata)
+#'
+#' # Calc Accuracy
+#'   kf_accr <- calcKFoldError(hpi_obj = ex_hpi,
+#'                             pred_df = ex_rtdata,
+#'                             k = 10,
+#'                             seed = 123,
+#'                             smooth = FALSE)
+#'
 #' @export
 
 calcKFoldError <- function(hpi_obj,
@@ -116,7 +122,7 @@ calcKFoldError <- function(hpi_obj,
 #' @description Create the datasets for the kfold error testing (Generic Method)
 #' @usage createKFoldData(score_ids, full_data, pred_df)
 #' @param score_ids Vector of row ids to be included in scoring data
-#' @param full_data Complete dataset (class `hpi_df``) of this model type (rt or hed)
+#' @param full_data Complete dataset (class `hpidata``) of this model type (rt or hed)
 #' @param pred_df Data to be used for prediction
 #' @return list
 #' \item{train} Training data.frame
@@ -124,11 +130,19 @@ calcKFoldError <- function(hpi_obj,
 #' @section Further Details:
 #' Called from calcKFoldError
 #' @examples
-#'\dontrun{
-#' kfold_df <- createKFoldData(score_ids = kfold_df$score,
-#'                             full_data = hpi_obj$data,
-#'                             pred_df = hpi_obj$pred_data)
-#' }
+#'  # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create folds
+#'  k_folds <- caret::createFolds(y=1:nrow(ex_rtdata),
+#'                                k=10,
+#'                                list=TRUE,
+#'                                returnTrain=FALSE)
+#'
+#'  # Create data from folds
+#'  kfold_data <- createKFoldData(score_ids = k_folds[[1]],
+#'                                full_data = ex_rtdata,
+#'                                pred_df = ex_rtdata)
 #' @export
 
 createKFoldData <- function(score_ids,
@@ -153,17 +167,12 @@ createKFoldData.rtdata <- function(score_ids,
 #' @description Makes specific selections of scoring data (Generic Method)
 #' @usage matchKFold(train_df, pred_df)
 #' @param train_df Data.frame of training data
-#' @param pred_df Data.frame (class `hpi_df``) to be used for prediction
+#' @param pred_df Data.frame (class `hpidata``) to be used for prediction
 #' @return list
 #' \item{train} Training data
 #' \item{score} Scoring data
 #' @section Further Details:
-#' Called from createKFoldData
-#' @examples
-#' \dontrun{
-#' kfold_df$score <- matchKFold(train_df = kfold_df$train,
-#'                              pred_df = hpi_obj$pred_data)
-#' }
+#' Helper function called from createKFoldData
 #' @export
 
 matchKFold <- function(train_df,

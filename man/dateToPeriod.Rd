@@ -13,23 +13,37 @@ dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
 \item{date}{name of field containing the date of the sale in Date or POSIXt format}
 
 \item{periodicity}{type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)}
+
+\item{min_date}{default = NULL; optional minimum date to use}
+
+\item{max_date}{default = NULL; optional maximum date to use}
+
+\item{adj_type}{default = 'move'; how to handle min and max dates within the range of transactions.  'move'
+min and/or max date or 'clip' the data}
 }
 \value{
-data frame with three new fields:
+original data frame (`trans_df` object) with two new fields:
 trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
-date_value: float value of year and periodicty in numeric form (primarily for plotting)
-date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
+trans_date: properly formated transaction date
 }
 \description{
-Convert dates into time periods for use in sale-resale models
+Convert dates into time periods for use in repeat transaction models
 }
 \section{Further Details}{
 
-trans_period conat from the minimum transaction date provided.  As such the period counts
+"trans_period" counts from the minimum transaction date provided.  As such the period counts
 are relative, not absolute
 Additionally, this function modifies the data.frame that it is given and return that same
 data.frame that it is given and returns that data.frame with the new fields attached.
-It does so because this function is not intended as a stand-alone function but rather
-one to be called by the ***CreateSales set of functions with hpiR
 }
 
+\examples{
+# Load data
+  data(ex_sales)
+
+# Convert to period df
+  hpi_data <- dateToPeriod(trans_df = ex_sales,
+                           date = 'sale_date',
+                           periodicity = 'monthly')
+
+}

@@ -11,12 +11,14 @@ hed_error <- calcForecastError(is_obj = hed_series, pred_df = rt_data)
 
 \item{pred_df}{Set of sales to be used for predicitive quality of index}
 
-\item{return_forecasts}{Default = FALSE; return the forecasted indexes}
+\item{return_forecasts}{default = FALSE; return the forecasted indexes}
+
+\item{forecast_length}{default = 1; Length of period(s) in time to forecast}
 
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 \item{prop_id}
 \item{pred_price}
 \item{pred_error}
@@ -28,15 +30,20 @@ Estimate out-of-sample index errors using a forecast method
 \section{Further Details}{
 
 If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
-in the 'forecasts` attribute of the `indexerrors` object. (attr(error_obj, 'forecasts')
+in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')
 
 For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
 inheriting from `hpidata`
 }
 
 \examples{
-\dontrun{
-index_error <- calcForecastError(is_obj = hed_index$series,
-                                 pred_df = rt_index$data)
-}
+# Load example series
+ data(ex_serieshpi)
+
+# Load prediction data
+ data(ex_rtdata)
+
+# Calculate forecast accuracty
+ fc_accr <- calcForecastError(is_obj = ex_serieshpi,
+                              pred_df = ex_rtdata)
 }
