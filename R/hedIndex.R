@@ -2,19 +2,61 @@
 #' @description Creates a house price (rent) index from a set of transactions using the
 #' hedonic price method
 #' @param trans_df data.frame of transactions
-#' @param date Field contain the transaction date
-#' @param price Field contain the transaction price
-#' @param trans_id Field containing the unique transaction identifier
-#' @param prop_id Field containing the property identifier
-#' @param estimator default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'
-#' @param log_dep default = TRUE, Should the dependent variable (price) be logged?
 #' @param periodicity default = 'month', Periodicity of time to estimate index at
 #' @param dep_var default = NULL, dependent variable in hedonic model
 #' @param ind_var default = NULL, independent variables in the hedonic model
 #' @param hed_spec default = NULL, Full hedonic model specification
 #' @param ... Additional Arguments
-#' @return hpi object
+#' @return `hpi`` object.  S3 list with:
+#' \item{data: `hpidata` object}
+#' \item{model: `hpimodel` object}
+#' \item{index: `hpiindex` object}
 #' @section Further Details:
+#' Additional argument need to provide necessary argument for create `hpidata` objects if
+#' the `trans_df` object is not of that class.
+#' @examples
+#' # Load data
+#' data(ex_sales)
+#' data(ex_hpidata)
+#' data(ex_heddata)
+#'
+#' # Create index: with full `heddata` object
+#'  hed_index <- hedIndex(trans_df = ex_heddata,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = FALSE)
+#'
+#' # Create index: with `hpidata` object
+#'  hed_index <- hedIndex(trans_df = ex_hpidata,
+#'                        date = 'sale_date',
+#'                        price = 'sale_price',
+#'                        trans_id = 'sale_id',
+#'                        prop_id = 'pinx',
+#'                        estimator = 'base',
+#'                        log_dep = FALSE,
+#'                        trim_model = FALSE,
+#'                        max_period = 56,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = TRUE)
+#'
+#' # Crete index with raw transaction data
+#'  hed_index <- hedIndex(trans_df = ex_sales,
+#'                        periodicity = 'monthly',
+#'                        min_date = '2010-06-01',
+#'                        max_date = '2015-11-30',
+#'                        adj_type = 'clip',
+#'                        date = 'sale_date',
+#'                        price = 'sale_price',
+#'                        trans_id = 'sale_id',
+#'                        prop_id = 'pinx',
+#'                        estimator = 'robust',
+#'                        log_dep = TRUE,
+#'                        trim_model = TRUE,
+#'                        max_period = 48,
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        smooth = FALSE)
 #' @export
 
 hedIndex <- function(trans_df,
@@ -25,13 +67,13 @@ hedIndex <- function(trans_df,
 ){
 
   # Check if trans_df is an hed_df object
-  if ('hed' %in% class(trans_df)){
+  if ('heddata' %in% class(trans_df)){
 
     hed_trans <- trans_df
 
   } else {
 
-    if (!'hpi_df' %in% class(trans_df)){
+    if (!'hpidata' %in% class(trans_df)){
 
       if (is.null(list(...)$date) ||
           (!any(class(trans_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
@@ -46,17 +88,17 @@ hedIndex <- function(trans_df,
     } # Ends if(!trans_df...)
 
     if (is.null(list(...)$trans_id)){
-      message('When not supplying an "hpi_df" object a valid',
+      message('When not supplying an "hpidata" object a valid',
               '"trans_id" argument must be supplied')
       stop()
     }
     if (is.null(list(...)$prop_id)){
-      message('When not supplying an "hpi_df" object a ',
+      message('When not supplying an "hpidata" object a ',
               '"prop_id" argument must be supplied')
       stop()
     }
     if (is.null(list(...)$price)){
-      message('When not supplying an "hpi_df" object a ',
+      message('When not supplying an "hpidata" object a ',
               '"price" argument must be supplied')
       stop()
     }
@@ -64,9 +106,9 @@ hedIndex <- function(trans_df,
     # Create Tranactions object
     hed_trans <- hedCreateTrans(trans_df = trans_df,
                                ...)
-  } # Ends if/else ('hed' %in% ...)
+  } # Ends if/else ('heddata' %in% ...)
 
-  if (!'hed' %in% class(hed_trans)){
+  if (!'heddata' %in% class(hed_trans)){
     message('Converting sales data to hedonic sales object failed')
     stop()
   }
@@ -107,6 +149,24 @@ hedIndex <- function(trans_df,
   if(class(hed_index) != 'hpiindex'){
     message('Converting model results to index failed')
     stop()
+  }
+
+  if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
+
+    if (!'smooth_order' %in% names(list(...))){
+      smooth_order  <- 3
+    } else {
+      smooth_order <- list(...)$smooth_order
+    }
+
+    hed_index <- smoothIndex(index_obj = hed_index,
+                             order = smooth_order,
+                             in_place = TRUE,
+                             ...)
+    if (!'indexsmooth' %in% class(hed_index$smooth)){
+      message('Smoothing index failed')
+      stop()
+    }
   }
 
   # Return Values

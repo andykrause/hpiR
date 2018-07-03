@@ -1,16 +1,28 @@
 #' @title hpiModel
 #' @description Estimate the model for any method of house price index.  Generic method.
-#' @usage Lorem Ipsum...
+#' @usage hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' a <- 1
+#' # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
+#'                        estimator = 'base',
+#'                        log_dep = TRUE)
 #' @export
 
 hpiModel <- function(hpi_df,
@@ -19,16 +31,16 @@ hpiModel <- function(hpi_df,
                      trim_model=TRUE,
                      ...){
 
-  if (!'hpi_df' %in% class(hpi_df)){
-    message('"hpi_df" object must be of class "hpi_df"')
+  if (!'hpidata' %in% class(hpi_df)){
+    message('"hpi_df" object must be of class "hpidata"')
     stop()
   }
 
-  UseMethod("hpiModel")
+  UseMethod("hpiModel", hpi_df)
 
 }
 
-#' @title hpiModel.rt
+#' @title hpiModel.rtdata
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
@@ -36,27 +48,30 @@ hpiModel <- function(hpi_df,
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' sea_sales <- dateToPeriod(trans_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
-#' rep_sales <- rtCreateTrans(trans_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            trans_id = 'uniq_id',
-#'                            price = 'sale_price')
-#' rt_model <- hpiModel(hpi_df = rep_sales,
-#'                      estimator = 'base',
-#'                      log_dep = TRUE)
+#' # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
+#'                        estimator = 'base',
+#'                        log_dep = TRUE)
 #' @export
 
-hpiModel.rt <- function(hpi_df,
-                        estimator='base',
-                        log_dep=TRUE,
-                        trim_model=TRUE,
-                        ...){
+hpiModel.rtdata <- function(hpi_df,
+                            estimator='base',
+                            log_dep=TRUE,
+                            trim_model=TRUE,
+                            ...){
 
   # Create time matrix
   time_matrix <- rtTimeMatrix(hpi_df)
@@ -96,7 +111,7 @@ hpiModel.rt <- function(hpi_df,
                     ...)
 
   # Check for successful model estimation
-  if (class(rt_mod) != 'rtmod'){
+  if (class(rt_mod) != 'rtmodel'){
     message('Model estimator was unsuccessful')
     stop()
   }
@@ -125,7 +140,7 @@ hpiModel.rt <- function(hpi_df,
             class='hpimodel')
 }
 
-#' @title hpiModel.hed
+#' @title hpiModel.heddata
 #' @description Estimate the model for any method of house price index.  Generic method.
 #' @usage Lorem Ipsum...
 #' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
@@ -136,30 +151,35 @@ hpiModel.rt <- function(hpi_df,
 #' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
-#' @return hpimodel object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return hpimodel object consisting of:
+#' \item{estimator}
+#' \item{coefficients}
+#' \item{model_obj: class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}
+#' \item{log_dep}
+#' \item{base_price}
+#' \item{periods: `data.frame` of periods}
+#' \item{approach: type of model used}
 #' @examples
-#' sea_sales <- dateToPeriod(sales_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
-#' rep_sales <- rsCreateSales(sales_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            sale_id = 'uniq_id',
-#'                            price = 'sale_price')
-#' rs_model <- hpiModel(hpi_df = rep_sales,
-#'                      estimator = 'base',
-#'                      log_dep = TRUE)
+#' # Load Data
+#'  data(ex_heddata)
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = ex_heddata,
+#'                        estimator = 'base',
+#'                        dep_var = 'price',
+#'                        ind_var = c('tot_sf', 'beds', 'baths'),
+#'                        log_dep = TRUE)
 #' @export
 
-hpiModel.hed <- function(hpi_df,
-                         estimator='base',
-                         log_dep=TRUE,
-                         hed_spec=NULL,
-                         dep_var=NULL,
-                         ind_var=NULL,
-                         trim_model=TRUE,
-                         ...){
+hpiModel.heddata <- function(hpi_df,
+                             estimator='base',
+                             log_dep=TRUE,
+                             hed_spec=NULL,
+                             dep_var=NULL,
+                             ind_var=NULL,
+                             trim_model=TRUE,
+                             ...){
 
   # Create specification
   if (!is.null(hed_spec)){
@@ -167,7 +187,7 @@ hpiModel.hed <- function(hpi_df,
       message('"hed_spec" argument must be of class "formula"')
       stop()
     } else {
-      hed_spec <- update(hed_spec, ~ . +as.factor(date_period))
+      hed_spec <- update(hed_spec, ~ . +as.factor(trans_period))
     }
   } else {
 
@@ -180,11 +200,11 @@ hpiModel.hed <- function(hpi_df,
       dep_var <- paste0('log(', dep_var, ')')
     }
     hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
-                           '+ as.factor(date_period)'))
+                           '+ as.factor(trans_period)'))
   }
 
   # Extract base period mean price
-  base_price <- mean(hpi_df$price[hpi_df$date_period == min(hpi_df$date_period)])
+  base_price <- mean(hpi_df$price[hpi_df$trans_period == min(hpi_df$trans_period)])
 
   ## Estimate Model
 
@@ -217,7 +237,7 @@ hpiModel.hed <- function(hpi_df,
                        ...)
 
   # Check for successful model estimation
-  if(class(hed_mod) != 'hedmod'){
+  if(class(hed_mod) != 'hedmodel'){
 
     message('Model estimator was unsuccessful')
     stop()
@@ -227,12 +247,12 @@ hpiModel.hed <- function(hpi_df,
    if (trim_model) hed_mod$qr <- NULL
 
   # If successful create list of results
-  base_period <- min(hpi_df$date_period)
+  base_period <- min(hpi_df$trans_period)
 
   # Period names
-  p_names <- grep('date_period', names(hed_mod$coefficients))
+  p_names <- grep('trans_period', names(hed_mod$coefficients))
   periods <- c(base_period,
-               as.numeric(gsub('[as.factor(date_period)]', '',
+               as.numeric(gsub('[as.factor(trans_period)]', '',
                                names(hed_mod$coefficients)[p_names])))
 
   # Coefficients

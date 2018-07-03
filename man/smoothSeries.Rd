@@ -4,17 +4,17 @@
 \alias{smoothSeries}
 \title{smoothSeries}
 \usage{
-Lorem Ipsum...
+smoothSeries(series_obj, order, ...)
 }
 \arguments{
+\item{series_obj}{Series to be smoothed}
+
 \item{order}{Number of nearby period to smooth with}
 
 \item{...}{Additional Arguments}
-
-\item{series}{Series to be smoothed}
 }
 \value{
-a list of objects ts and 'smooth_index` object with smoothed index
+a `serieshpi` object with a smoothed index in each `hpiindex` object
 }
 \description{
 Smooths a series of indexex
@@ -25,5 +25,10 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-a <- 1
+# Load Data
+data(ex_serieshpi)
+
+# Smooth indexes
+sm_series <- smoothSeries(series_obj = ex_serieshpi,
+                          order = 5)
 }

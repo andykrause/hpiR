@@ -1,19 +1,29 @@
 #' @title dateToPeriod
-#' @description Convert dates into time periods for use in sale-resale models
-#' @param trans_df data.frame of raw sales transactions
+#' @description Convert dates into time periods for use in repeat transaction models
+#' @param trans_df data.frame of raw transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
-#' @return data frame with three new fields:
-#' date_period: integer value counting from the minimum sale date in the periodicity selected. Base value is 1. Primarily for modeling
-#' date_value: float value of year and periodicty in numeric form (primarily for plotting)
-#' date_name: text value of the period in the format, "Year-Period". (primarily for labeling)
+#' @param min_date default = NULL; optional minimum date to use
+#' @param max_date default = NULL; optional maximum date to use
+#' @param adj_type default = 'move'; how to handle min and max dates within the range of transactions.  'move'
+#' min and/or max date or 'clip' the data
+#' @return original data frame (`trans_df` object) with two new fields:
+#' trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
+#' trans_date: properly formated transaction date
 #' @section Further Details:
-#' date_period conat from the minimum sale date provided.  As such the period counts
+#' "trans_period" counts from the minimum transaction date provided.  As such the period counts
 #' are relative, not absolute
 #' Additionally, this function modifies the data.frame that it is given and return that same
 #' data.frame that it is given and returns that data.frame with the new fields attached.
-#' It does so because this function is not intended as a stand-alone function but rather
-#' one to be called by the ***CreateSales set of functions with hpiR
+#' @examples
+#' # Load data
+#'   data(ex_sales)
+#'
+#' # Convert to period df
+#'   hpi_data <- dateToPeriod(trans_df = ex_sales,
+#'                            date = 'sale_date',
+#'                            periodicity = 'monthly')
+#'
 #' @export
 
 dateToPeriod <- function(trans_df,
@@ -26,7 +36,7 @@ dateToPeriod <- function(trans_df,
 
   # Check for data.frame in trans_df
   if (!'data.frame' %in% class(trans_df)){
-    message('"trans_df" must be a data.frame (or inherit from one)')
+    message('"trans_df" must be a "data.frame" (or inherit from one)')
     stop()
   }
 
@@ -41,7 +51,7 @@ dateToPeriod <- function(trans_df,
   periodicity <- tolower(periodicity)
   if (!periodicity %in% c('weekly', 'monthly', 'quarterly', 'annual', 'yearly',
                           'w', 'm', 'q', 'a', 'y')){
-    message('"Periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
+    message('"periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
     stop()
   } else {
     if (periodicity == 'yearly') periodicity <- 'annual'
@@ -64,7 +74,7 @@ dateToPeriod <- function(trans_df,
   } else {
     if (min_date > min(trans_date)){
       if (adj_type == 'move'){
-        message('Supplied min_date" is greater than minimum of transactions. ',
+        message('Supplied "min_date" is greater than minimum of transactions. ',
                 'Adjusting.\n')
         min_date <- min(trans_date)
       }
@@ -98,12 +108,15 @@ dateToPeriod <- function(trans_df,
   # Make date span
   date_span <- seq(min_date, max_date, 1)
 
+  # Set standardized data field
+  trans_df$trans_date <- trans_date
+
   # Create inital annual indicator
   year_period <- (lubridate::year(trans_date) - lubridate::year(min_date))
 
   # if Annual Periodicity
   if (periodicity == 'annual'){
-    trans_df$date_period <- year_period + 1
+    trans_df$trans_period <- year_period + 1
     period_table <- data.frame(names = unique(lubridate::year(date_span)),
                                values = unique(lubridate::year(date_span)),
                                periods = unique(lubridate::year(date_span)),
@@ -118,7 +131,7 @@ dateToPeriod <- function(trans_df,
                         lubridate::month(min_date)))
 
     if (periodicity == 'monthly'){
-      trans_df$date_period <- month_period + 1
+      trans_df$trans_period <- month_period + 1
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-',
                               lubridate::month(date_span, label = TRUE))),
@@ -135,7 +148,7 @@ dateToPeriod <- function(trans_df,
       min_qtr <- lubridate::quarter(min_date, with_year=TRUE)
       trans_qtr <- lubridate::quarter(trans_date, with_year=TRUE)
       all_qtr <- as.numeric(as.factor(c(min_qtr, trans_qtr)))
-      trans_df$date_period <- all_qtr[-1]
+      trans_df$trans_period <- all_qtr[-1]
       period_table <- data.frame(
         name = unique(paste0(lubridate::year(date_span), '-Q',
                               lubridate::quarter(date_span))),
@@ -160,14 +173,14 @@ dateToPeriod <- function(trans_df,
       min_date <- gsub('12-30', '12-29', min_date)
       max_date <- gsub('12-30', '12-29', max_date)
       message('Treating all Dec 31st and Dec 30th (in leap years) dates as Dec 29th ',
-              'to avoid 53 week issues')
+              'to avoid 53rd week issues')
     }
 
     # Create Week period
     week_period <- (52 * (year_period) +
                     (lubridate::week(trans_date) -
                       lubridate::week(min_date)))
-    trans_df$date_period <- week_period + 1
+    trans_df$trans_period <- week_period + 1
 
     # Create period table
     name <- unique(paste0(lubridate::year(date_span), '-W',
@@ -185,7 +198,7 @@ dateToPeriod <- function(trans_df,
   }
 
   # Check for missing periods %
-  nbr_periods <- length(unique(trans_df$date_period))
+  nbr_periods <- length(unique(trans_df$trans_period))
   if (nbr_periods < nrow(period_table)){
     message("Your choice of periodicity resulted in ",
             nrow(period_table) - nbr_periods, " empty periods out of ",
@@ -197,7 +210,7 @@ dateToPeriod <- function(trans_df,
   }
 
   # Add attribute information
-  attr(trans_df, 'class') <- c('hpi_df', attr(trans_df, 'class'))
+  attr(trans_df, 'class') <- c('hpidata', attr(trans_df, 'class'))
   attr(trans_df, 'periodicity') <- periodicity
   attr(trans_df, 'min_date') <- min_date
   attr(trans_df, 'max_date') <- max_date
@@ -205,14 +218,20 @@ dateToPeriod <- function(trans_df,
 
   # Return values
   trans_df
-
 }
 
 #' @title checkDate
 #' @description Checks and converts date arguments into proper format
-#' @param x_date Date string
+#' @param x_date Date string or vector
 #' @param name Name of argument to return in error/warning message
 #' @return Adjusted date field
+#' @examples
+#' # Load Data
+#'   data(ex_sales)
+#'
+#' # Check date
+#'   checkDate(x_date = ex_sales$sale_date,
+#'             name = 'sale date')
 #' @export
 
 checkDate <- function(x_date,
@@ -244,5 +263,4 @@ checkDate <- function(x_date,
 
   # Return
   x_date
-
 }

@@ -4,7 +4,7 @@
 #' @param pred_df Set of sales against which to test predictions
 #' @param index Index (of class) to be tested for accuracy
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
@@ -12,10 +12,14 @@
 #' @section Further Details:
 #' In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
 #' @examples
-#' \dontrun{
-#' index_error <- calcInSampleError(pred_df = rt_index$data,
-#'                                  index = rt_index$index$index)
-#'}
+#' # Load example data
+#'   data(ex_rtdata)
+#'   data(ex_hpiindex)
+#'
+#' # Calculate accuracy
+#'   in_accr <- calcInSampleError(pred_df = ex_rtdata,
+#'                                index = ex_hpiindex$value)
+#'
 #'@export
 
 calcInSampleError <- function(pred_df,
@@ -28,9 +32,9 @@ calcInSampleError <- function(pred_df,
   }
 
   if (!any('data.frame' %in% class(pred_df)) ||
-        !any(class(pred_df) %in% c('rt', 'hed'))){
+        !any(class(pred_df) %in% c('rtdata', 'heddata'))){
     message('"pred_df" argument must be a data.frame with additional class of ',
-            ' "rt" or "hed"')
+            ' "rtdata" or "heddata"')
     stop()
   }
 
@@ -38,12 +42,12 @@ calcInSampleError <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.rt
+#' @title calcInSampleError.rtdata
 #' @export
 
-calcInSampleError.rt <- function(pred_df,
-                                 index,
-                                 ...){
+calcInSampleError.rtdata <- function(pred_df,
+                                     index,
+                                     ...){
 
   # Calculate the index adjustment to apply
   adj <- index[pred_df$period_2] / index[pred_df$period_1]
@@ -62,7 +66,7 @@ calcInSampleError.rt <- function(pred_df,
                          stringsAsFactors=FALSE)
 
   # Add classes
-  class(error_df) <- c('indexerrors', 'data.frame')
+  class(error_df) <- c('hpiaccuracy', 'data.frame')
 
   # Add attribute
   attr(error_df, 'test_method') <- 'insample'
@@ -72,12 +76,12 @@ calcInSampleError.rt <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.rt
+#' @title calcInSampleError.heddata
 #' @export
 
-calcInSampleError.hed <- function(pred_df,
-                                  index,
-                                  ...){
+calcInSampleError.heddata <- function(pred_df,
+                                      index,
+                                      ...){
 
   # Future method
 

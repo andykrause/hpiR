@@ -4,26 +4,27 @@
 \alias{plot.hpiindex}
 \title{plot.hpiindex}
 \usage{
-Lorem Ipsum...
+plot(hpiindex_obj, show_imputed, smooth, ...)
 }
 \arguments{
-\item{index_obj}{Object of class hpiindex}
+\item{index_obj}{Object of class `hpiindex``}
 
-\item{show_imputed}{Highlight the imputed points}
+\item{show_imputed}{defautl = FALSE; highlight the imputed points}
+
+\item{smooth}{default = FALSE; plot the smoothed index}
 
 \item{...}{Additional Arguments}
 }
 \value{
-ggplot object
+`plotindex` object inheriting from a ggplot object
 }
 \description{
 Simple Plot of an hpiindex object
 }
-\section{Further Details}{
-
-Lorem Ipsum...
-}
-
 \examples{
-a <- 1
+# Load data
+ data(ex_hpiindex)
+
+# Make Plot
+ plot(ex_hpiindex)
 }

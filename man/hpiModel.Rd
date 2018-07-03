@@ -4,7 +4,7 @@
 \alias{hpiModel}
 \title{hpiModel}
 \usage{
-Lorem Ipsum...
+hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
@@ -18,16 +18,25 @@ Lorem Ipsum...
 \item{...}{Additional Arguments}
 }
 \value{
-hpimodel object
+hpimodel object consisting of:
+\item{estimator}
+\item{coefficients}
+\item{model_obj: class `rtmodel` or `hedmodel`}
+\item{mod_spec}
+\item{log_dep}
+\item{base_price}
+\item{periods: `data.frame` of periods}
+\item{approach: type of model used}
 }
 \description{
 Estimate the model for any method of house price index.  Generic method.
 }
-\section{Further Details}{
-
-Lorem Ipsum...
-}
-
 \examples{
-a <- 1
+# Load Data
+ data(ex_rtdata)
+
+ # Create model object
+ hpi_model <- hpiModel(hpi_df = ex_rtdata,
+                       estimator = 'base',
+                       log_dep = TRUE)
 }

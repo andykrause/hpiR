@@ -1,36 +1,62 @@
 #' @title rtIndex
 #' @description Creates a house price index from a set of ttransactions using the
 #' repeat transactions method
-#' @param trans_df data.frame of transactions.  Can be a 'hpi_df' or an 'rt' object.
-#' @param date Field contain the transaction date
-#' @param price Field contain the transaction price
-#' @param trans_id Field containing the unique transaction identifier
-#' @param prop_id Field containing the property identifier
-#' @param estimator default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'
-#' @param log_dep default = TRUE, Should the dependent variable (price) be logged?
-#' @param periodicity default = 'monthly', Periodicity of time to estimate index at
+#' @param trans_df data.frame of transactions.  Can be a 'hpidata' or an 'rtdata' object.
 #' @param ... Additional Arguments
-#' @return hpi object
+#' @return `hpi`` object.  S3 list with:
+#' \item{data: `hpidata` object}
+#' \item{model: `hpimodel` object}
+#' \item{index: `hpiindex` object}
 #' @section Further Details:
+#' Additional argument need to provide necessary argument for create `hpidata` objects if
+#' the `trans_df` object is not of that class.
 #' @examples
-#' sea_rt_index <- rtIndex(trans_df = seattle_sales,
-#'                         date = 'sale_date',
-#'                         price = 'sale_price',
-#'                         trans_id = 'uniq_id',
-#'                         prop_id = 'pinx')
+#' # Load data
+#' data(ex_sales)
+#' data(ex_hpidata)
+#' data(ex_rtdata)
+#'
+#' # Create index: with full `rtdata` object
+#'  rt_index <- rtIndex(trans_df = ex_rtdata,
+#'                      smooth = FALSE)
+#'
+#' # Create index: with `hpidata` object
+#'  rt_index <- rtIndex(trans_df = ex_hpidata,
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'base',
+#'                      smooth = TRUE)
+#'
+#' # Crete index with raw transaction data
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
 #' @export
 
 rtIndex <- function(trans_df,
                     ...){
 
   # Check if trans_df is an rt_df object
-  if ('rt' %in% class(trans_df)){
+  if ('rtdata' %in% class(trans_df)){
 
     rt_trans <- trans_df
 
   } else {
 
-    if (!'hpi_df' %in% class(trans_df)){
+    if (!'hpidata' %in% class(trans_df)){
 
       if (is.null(list(...)$date) ||
            (!any(class(trans_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
@@ -66,9 +92,9 @@ rtIndex <- function(trans_df,
                               # prop_id = prop_id,
                               # price = price,
                               ...)
-  } # Ends if/else ('rt' %in% ...)
+  } # Ends if/else ('rtdata' %in% ...)
 
-  if (!'rt' %in% class(rt_trans)){
+  if (!'rtdata' %in% class(rt_trans)){
     message('Converting transactions data to repeat transaction object failed')
     stop()
   }
@@ -89,6 +115,24 @@ rtIndex <- function(trans_df,
   if (class(rt_index) != 'hpiindex'){
     message('Converting model results to index failed')
     stop()
+  }
+
+  if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
+
+    if (!'smooth_order' %in% names(list(...))){
+      smooth_order  <- 3
+    } else {
+      smooth_order <- list(...)$smooth_order
+    }
+
+    rt_index <- smoothIndex(index_obj = rt_index,
+                            order = smooth_order,
+                            in_place = TRUE,
+                            ...)
+    if (!'indexsmooth' %in% class(rt_index$smooth)){
+      message('Smoothing index failed')
+      stop()
+    }
   }
 
   # Return Values

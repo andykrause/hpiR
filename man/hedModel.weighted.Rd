@@ -6,22 +6,8 @@
 \usage{
 \method{hedModel}{weighted}(estimator, hed_df, hed_spec, ...)
 }
-\arguments{
-\item{estimator}{Type of model to estimates (base, robust, weighted)}
-
-\item{hed_df}{Repeat sales dataset from hedCreateSales()}
-
-\item{hed_spec}{Model specfication}
-
-\item{...}{Additional arguments}
-}
-\value{
-hed model object
-}
-\description{
-Estimate hedonic model (method based on estimator class). Generic method.
-}
 \section{Further Details}{
 
+See `?hedModel` for more information
 }
 

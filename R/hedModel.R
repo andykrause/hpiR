@@ -1,20 +1,24 @@
 #' @title hedModel
 #' @description Estimate repeat sales model (method based on estimator class). Generic method.
 #' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from rsCreateSales()
-#' @param hed_spec Time matrix object from rsTimeMatrix()
+#' @param hed_df Repeat sales dataset from rtCreateSales()
+#' @param hed_spec Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price betwen the two sales
 #' @param ... Additional arguments
-#' @return rs model object
+#' @return `hedmodel` object: model object of the estimator (ex.: `lm`)
 #' @section Further Details:
+#' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
+#'
+#' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
+#' # Load Data
+#' data(ex_heddata)
+#'
+#' # Estimate Model
+#' hed_model <- hedModel(estimator = structure('base', class = 'base'),
+#'                       hed_df = ex_heddata,
+#'                       hed_spec = as.formula(log(price) ~ baths + tot_sf))
 #' @export
-
-## Generic Method
 
 hedModel <- function(estimator,
                      hed_df,
@@ -24,7 +28,7 @@ hedModel <- function(estimator,
   ## Check for proper classes
 
   # hed_df object
-  if (!'hed' %in% class(hed_df)){
+  if (!'heddata' %in% class(hed_df)){
     message('\nIncorrect class for "hed_df" object.  Must be of class "hed"')
     stop()
   }
@@ -43,26 +47,14 @@ hedModel <- function(estimator,
 
   # Check for
 
-  UseMethod("hedModel")
+  UseMethod("hedModel", estimator)
 
 }
 
 #' @title hedModel.base
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from rsCreateSales()
-#' @param hed_spec twen the two sales
-#' @param ... Additional arguments
-#' @return rs model object
 #' @section Further Details:
-#' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
+#' See `?hedModel` for more information
 #' @export
-
-## For Base Estimator
 
 hedModel.base <- function(estimator,
                           hed_df,
@@ -74,7 +66,7 @@ hedModel.base <- function(estimator,
                   data=hed_df)
 
   # Add class
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   # Return
   hed_model
@@ -82,21 +74,9 @@ hedModel.base <- function(estimator,
 }
 
 #' @title hedModel.robust
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from rsCreateSales()
-#' @param hed_spec Difference in price betwen the two sales
-#' @param ... Additional arguments
-#' @return hed model object
 #' @section Further Details:
-#' @examples
-#' rs_model <- rsModel(estimator = 'base',
-#'                     rs_df = rs_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff)
+#' See `?hedModel` for more information
 #' @export
-#'
-## For Robust Estimator
 
 hedModel.robust <- function(estimator,
                             hed_df,
@@ -104,7 +84,7 @@ hedModel.robust <- function(estimator,
                             ...){
 
   # Determine 'sparseness' of the data
-  time_size <- median(table(hed_df$date_period))
+  time_size <- median(table(hed_df$trans_period))
 
   # Use different robust packages based on sparseness
   if(time_size > 5){
@@ -113,20 +93,15 @@ hedModel.robust <- function(estimator,
     hed_model <- robustbase::lmrob(hed_spec, data=hed_df, setting="KS2014")
   }
 
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   hed_model
 
 }
 
 #' @title hedModel.weighted
-#' @description Estimate hedonic model (method based on estimator class). Generic method.
-#' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from hedCreateSales()
-#' @param hed_spec Model specfication
-#' @param ... Additional arguments
-#' @return hed model object
 #' @section Further Details:
+#' See `?hedModel` for more information
 #' @export
 
 hedModel.weighted <- function(estimator,
@@ -150,7 +125,7 @@ hedModel.weighted <- function(estimator,
   hed_model <- lm(as.formula(hed_spec), data=hed_df, weights=wgts)
 
   # Add class
-  class(hed_model) <- 'hedmod'
+  class(hed_model) <- 'hedmodel'
 
   # Return
   hed_model

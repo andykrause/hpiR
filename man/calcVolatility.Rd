@@ -4,18 +4,20 @@
 \alias{calcVolatility}
 \title{calcVolatility}
 \usage{
-calcVolatility(index, window, in_place = FALSE,
-  in_place_name = "volatility", ...)
+calcVolatility(index, window = 3, in_place = FALSE,
+  in_place_name = "volatility", smooth = FALSE, ...)
 }
 \arguments{
 \item{index}{An object of class `hpiindex`}
 
-\item{window}{Rolling periods over which to calculate the volatility}
+\item{window}{default = 3; Rolling periods over which to calculate the volatility}
 
 \item{in_place}{default = FALSE; Adds volatility metric to the `hpiindex` object
 (may be within an `hpi` object)}
 
 \item{in_place_name}{default = 'vol'; Name of volatility object in `hpiindex` object}
+
+\item{smooth}{default = FALSE; Calculate on the smoothed index?}
 
 \item{...}{Additional arguments}
 }
@@ -35,8 +37,10 @@ extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 }
 
 \examples{
-\dontrun{
-index_vol <- calcVolatility(index = hpi_index,
-                            window = 3)
-}
+# Load data
+  data(ex_hpiindex)
+
+# Calculate Volatility
+  index_vol <- calcVolatility(index = ex_hpiindex,
+                              window = 3)
 }

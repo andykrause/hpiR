@@ -1,26 +1,25 @@
 #' @title rtTimeMatrix
 #' @description Create a time matrix for a repeat transaction regression model
-#' @param rt_df object of class `rt`: repeat transaction data.frame created by rtCreateTrans()
+#' @usage rtTimeMatrix(rtdata)
+#' @param rt_df object of class `rtdata`: repeat transaction data.frame created by rtCreateTrans()
 #' @return matrix to be used on the right hand side of a repeat sales regression model
 #' @section Further Details:
 #' Time periods are calculated from the data provided.
 #' @examples
-#' rep_sales <- rtCreateTrans(trans_df = seattle_sales,
-#'                            prop_id = 'pinx',
-#'                            sale_id = 'uniq_id',
-#'                            date = 'sale_date',
-#'                            price = 'sale_price',
-#'                            periodicity = 'qtr')
-#' rt_matrix <- rtTimeMatrix(rep_sales)
+#' # Load Data
+#' data(ex_rtdata)
+#'
+#' # Create Matrix
+#' rt_matrix <- rtTimeMatrix(ex_rtdata)
 #' @export
 
 rtTimeMatrix <- function(rt_df
                          ){
 
   # Check for proper class
-  if(class(rt_df)[1] != 'rt'){
-    message('The rt_df object you have supplied is not of class rt. You can create ',
-            'an rt object with the rtCreateTrans() function.')
+  if (!"rtdata" %in% class(rt_df)){
+    message('The rt_df object you have supplied is not of class "rtdata". You can create ',
+            'an rtdata object with the rtCreateTrans() function.')
     stop()
   }
 

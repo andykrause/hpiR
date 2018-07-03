@@ -3,10 +3,18 @@
 #' @param model_obj Model results object
 #' @param max_period Maximum number of periods that should have been estimated.
 #' @param ... Additional arguments
-#' @return rs model object
-#' @section Further Details:
+#' @return `hpiindex` object containing:
+#' \item{name: vector of period names}
+#' \item{numeric: vector of period in numeric form}
+#' \item{period: vector of period numbers}
+#' \item{value: `ts` object of the index values}
+#' \item{imputed: vector of binary values indicating imputation}
 #' @examples
-#' hpi_index <- modelToIndex(hpi_model,
+#' # Load Data
+#' data(ex_hpimodel)
+#'
+#' # Create Index
+#' hpi_index <- modelToIndex(ex_hpimodel,
 #'                           max_period=84)
 #' @export
 
@@ -26,12 +34,6 @@ modelToIndex <- function(model_obj,
   if (!any(class(max_period) %in% c('integer', 'numeric'))){
     message('"max_period" argument must be numeric/integer')
     stop()
-  }
-
-  if (max_period > max(model_obj$coefficients$time)){
-    message('"max_period" cannot be greater than maximum period in the estimated model.',
-            ' Setting to maximum of estimated model')
-    max_period <- max(model_obj$coefficients$time)
   }
 
   ## Deal with imputations
@@ -63,7 +65,7 @@ modelToIndex <- function(model_obj,
     if (length(coef_df$coefficient) %in% which(na_coef)){
       message('Warning: You are extrapolating ending periods')
       not_na <- which(!na_coef)
-      end_imp <- which(na_coef[(max(not_na) + 1):length(coef_df$coefficient)])
+      end_imp <- (max(not_na) + 1):length(coef_df$coefficient)
       end_coef <- imputeTS::na.locf(coef_df$coefficient, "locf", 'keep')
       coef_df$coefficient[end_imp] <- end_coef[end_imp]
     }
@@ -85,14 +87,14 @@ modelToIndex <- function(model_obj,
 
   # Convert to a time series (ts) object
   index <- ts(data=index_value,
-              start=min(coef_df$time),
+              start=min(coef_df$time, na.rm=TRUE),
               end=max_period)
 
   # Set as classed list and return
   structure(list(name = model_obj$periods$name[1:max_period],
                  numeric = model_obj$periods$numeric[1:max_period],
                  period = model_obj$periods$period[1:max_period],
-                 index = index,
+                 value = index,
                  imputed = is_imputed[1:max_period]),
             class = 'hpiindex')
 }

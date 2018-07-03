@@ -4,29 +4,26 @@
 #' @param hpi_obj Object of class 'hpi'
 #' @param train_period Number of periods to use as purely training before creating indexes
 #' @param max_period default=NULL; Maximum number of periods to create the index up to
-#' @param name_prefix default=NULL; Prefix to add before last time period if naming indexes
-#' @param in_place Add to existing hpi object?
-#' @param in_place_name default = 'series'; Give it a different name than the default
 #' @param ... Additional Arguments
 #' @return An `hpiseries` object -- a list of `hpiindex` objects.
 #' @section Further Details:
 #' `train_peried` Represents the shortest index that you will create. For certain approaches
 #' , such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.
 #'
-#' If 'max_period' is left NULL, then it will forecast up to the end of the data
+#' If `max_period`` is left NULL, then it will forecast up to the end of the data
 #' @examples
-#'\dontrun{
-#' hpi_series <- createSereis(hpi_obj = hpi_obj,
-#'                            train_period = 12)
-#' }
+#' # Load Data
+#'   data(ex_hpi)
+#'
+#'  # Create Series (Suppressing messages do to small sample size of this example)
+#'   suppressMessages(
+#'     hpi_series <- createSeries(hpi_obj = ex_hpi,
+#'                                train_period = 12))
 #' @export
 
 createSeries <- function(hpi_obj,
                          train_period,
                          max_period=NULL,
-                         name_prefix=NULL,
-                         in_place = FALSE,
-                         in_place_name = 'series',
                          ...){
 
   # Check for proper class
@@ -60,8 +57,8 @@ createSeries <- function(hpi_obj,
     stop()
   }
 
-  # Trim by time
-  time_range <- train_period:max_period
+  # Trim by time (The +1 ensures that the buildForecastIds function works properly)
+  time_range <- (train_period:max_period) + 1
 
   ## Set up data
 
@@ -71,30 +68,25 @@ createSeries <- function(hpi_obj,
                         train = TRUE,
                         .f = buildForecastIDs)
 
-  # Run models
-  is_models <- purrr::map(.x=is_data,
-                          y=hpi_obj$data,
-                          hed_spec=hpi_obj$model$mod_spec,
-                          log_dep = hpi_obj$model$log_dep,
-                          .f=function(x, y, hed_spec, log_dep, ...){
-                            hpiModel(hpi_df=y[x, ],
-                                     hed_spec=hed_spec,
-                                    log_dep=log_dep)
-                             })
-
-  # Convert models to indexes
-  is_series <- purrr::map(.x=is_models,
-                          .f=modelToIndex)
-
-  # Name
-  if (!is.null(name_prefix)) names(is_series) <- paste0(name_prefix, time_range)
-
-  if (in_place){
-    hpi_obj[[in_place_name]] <-  structure(is_series, class='hpiseries')
-    return(hpi_obj)
-  }
+  # Run models, indexes and combine into hpi objects
+  is_hpis <- purrr::map2(.x=is_data,
+                         .y=as.list(time_range),
+                         z=hpi_obj$data,
+                         hed_spec=hpi_obj$model$mod_spec,
+                         log_dep = hpi_obj$model$log_dep,
+                         .f=function(x, y, z, hed_spec, log_dep, ...){
+                             mod <- hpiModel(hpi_df=z[x, ],
+                                             hed_spec=hed_spec,
+                                             log_dep=log_dep,
+                                             ...)
+                             ind <- modelToIndex(mod, max_period=y-1, ...)
+                             structure(list(model = mod,
+                                            index = ind),
+                                       class = 'hpi')
+                          })
 
   # Return Values
-  structure(is_series, class='hpiseries')
-
+  structure(list(data = hpi_obj$data,
+                 hpis = is_hpis),
+            class='serieshpi')
 }

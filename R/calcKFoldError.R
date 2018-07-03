@@ -5,25 +5,32 @@
 #' @param pred_df Data.frame of sales to be used for assessing predictive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
 #' @param seed default=1; Random seed generator to control the folding process
+#' @param smooth default = FALSE; Calculate on the smoothed index
 #' @param ... Additional Arguments
-#' @return object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 #' \item{prop_id}
 #' \item{pred_price}
 #' \item{pred_error}
 #' \item{pred_period}
 #' @examples
-#' \dontrun{
-#' index_error <- calcKFoldError(hpi_obj = rt_index,
-#'                               pred_df = rt_index$data,
-#'                               k = 10,
-#'                               seed = 10)
-#' }
+#' # Load data
+#'   data(ex_hpi)
+#'   data(ex_rtdata)
+#'
+#' # Calc Accuracy
+#'   kf_accr <- calcKFoldError(hpi_obj = ex_hpi,
+#'                             pred_df = ex_rtdata,
+#'                             k = 10,
+#'                             seed = 123,
+#'                             smooth = FALSE)
+#'
 #' @export
 
 calcKFoldError <- function(hpi_obj,
                            pred_df,
                            k=10,
                            seed=1,
+                           smooth = FALSE,
                            ...){
 
   if (!'hpi' %in% class(hpi_obj)){
@@ -32,9 +39,9 @@ calcKFoldError <- function(hpi_obj,
   }
 
   if (!any('data.frame' %in% class(pred_df)) ||
-      !any(class(pred_df) %in% c('rt', 'hed'))){
+      !any(class(pred_df) %in% c('rtdata', 'heddata'))){
     message('"pred_df" argument must be a data.frame with additional class of ',
-            ' "rt" or "hed"')
+            ' "rtdata" or "heddata"')
     stop()
   }
 
@@ -78,7 +85,21 @@ calcKFoldError <- function(hpi_obj,
 
   # Create K indexes (just extract index)
   k_index <- purrr::map(.x=k_model,
-                        .f=function(x) modelToIndex(x)$index)
+                        .f=modelToIndex)
+
+  # Deal with smoothing
+  if (!smooth){
+    k_index <- purrr::map(.x = k_index,
+                          .f = function(x) x$value)
+  } else {
+    smooth_order <- 3
+    if ('smooth_order' %in% names(list(...))){
+      smooth_order <- list(...)$smooth_order
+    }
+    k_index <- purrr::map(.x = k_index,
+                          .f = smoothIndex,
+                          order=smooth_order)
+  }
 
   # Iterate through score and calc errors
   k_error <- purrr::map2(.x=k_score,
@@ -86,14 +107,14 @@ calcKFoldError <- function(hpi_obj,
                          .f=calcInSampleError)
 
   # Bind results together and return
-  error_df <- dplyr::bind_rows(k_error) %>%
+  accr_df <- dplyr::bind_rows(k_error) %>%
     dplyr::filter(!is.na(prop_id))
 
-  class(error_df) <- unique(c('indexerrors', class(error_df)))
-  attr(error_df, 'test_method') <- 'kfold'
+  class(accr_df) <- unique(c('hpiaccuracy', class(accr_df)))
+  attr(accr_df, 'test_method') <- 'kfold'
 
   # Return Values
-  error_df
+  accr_df
 
 }
 
@@ -101,7 +122,7 @@ calcKFoldError <- function(hpi_obj,
 #' @description Create the datasets for the kfold error testing (Generic Method)
 #' @usage createKFoldData(score_ids, full_data, pred_df)
 #' @param score_ids Vector of row ids to be included in scoring data
-#' @param full_data Complete dataset (class `hpi_df``) of this model type (rt or hed)
+#' @param full_data Complete dataset (class `hpidata``) of this model type (rt or hed)
 #' @param pred_df Data to be used for prediction
 #' @return list
 #' \item{train} Training data.frame
@@ -109,11 +130,19 @@ calcKFoldError <- function(hpi_obj,
 #' @section Further Details:
 #' Called from calcKFoldError
 #' @examples
-#'\dontrun{
-#' kfold_df <- createKFoldData(score_ids = kfold_df$score,
-#'                             full_data = hpi_obj$data,
-#'                             pred_df = hpi_obj$pred_data)
-#' }
+#'  # Load Data
+#'  data(ex_rtdata)
+#'
+#'  # Create folds
+#'  k_folds <- caret::createFolds(y=1:nrow(ex_rtdata),
+#'                                k=10,
+#'                                list=TRUE,
+#'                                returnTrain=FALSE)
+#'
+#'  # Create data from folds
+#'  kfold_data <- createKFoldData(score_ids = k_folds[[1]],
+#'                                full_data = ex_rtdata,
+#'                                pred_df = ex_rtdata)
 #' @export
 
 createKFoldData <- function(score_ids,
@@ -123,9 +152,9 @@ createKFoldData <- function(score_ids,
 }
 
 #' @export
-createKFoldData.rt <- function(score_ids,
-                               full_data,
-                               pred_df){
+createKFoldData.rtdata <- function(score_ids,
+                                   full_data,
+                                   pred_df){
 
   train_df <- full_data[-score_ids, ]
   score_df <- matchKFold(train_df,
@@ -138,17 +167,12 @@ createKFoldData.rt <- function(score_ids,
 #' @description Makes specific selections of scoring data (Generic Method)
 #' @usage matchKFold(train_df, pred_df)
 #' @param train_df Data.frame of training data
-#' @param pred_df Data.frame (class `hpi_df``) to be used for prediction
+#' @param pred_df Data.frame (class `hpidata``) to be used for prediction
 #' @return list
 #' \item{train} Training data
 #' \item{score} Scoring data
 #' @section Further Details:
-#' Called from createKFoldData
-#' @examples
-#' \dontrun{
-#' kfold_df$score <- matchKFold(train_df = kfold_df$train,
-#'                              pred_df = hpi_obj$pred_data)
-#' }
+#' Helper function called from createKFoldData
 #' @export
 
 matchKFold <- function(train_df,
@@ -159,8 +183,8 @@ matchKFold <- function(train_df,
 }
 
 #' @export
-matchKFold.rt <- function(train_df,
-                          pred_df){
+matchKFold.rtdata <- function(train_df,
+                              pred_df){
 
   score_df <- pred_df[!paste0(pred_df$trans_id1, "_", pred_df$trans_id2) %in%
                           paste0(train_df$trans_id1, "_", train_df$trans_id2), ]
@@ -169,8 +193,8 @@ matchKFold.rt <- function(train_df,
 }
 
 #' @export
-matchKFold.hed <- function(train_df,
-                           pred_df){
+matchKFold.heddata <- function(train_df,
+                               pred_df){
 
   # Choose every other one
   x1 <- which(!pred_df$trans_id1 %in% train_df$trans_id)[c(T,F)]

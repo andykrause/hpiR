@@ -6,28 +6,8 @@
 \usage{
 \method{hedModel}{robust}(estimator, hed_df, hed_spec, ...)
 }
-\arguments{
-\item{estimator}{Type of model to estimates (base, robust, weighted)}
-
-\item{hed_df}{Repeat sales dataset from rsCreateSales()}
-
-\item{hed_spec}{Difference in price betwen the two sales}
-
-\item{...}{Additional arguments}
-}
-\value{
-hed model object
-}
-\description{
-Estimate repeat sales model (method based on estimator class). Generic method.
-}
 \section{Further Details}{
 
+See `?hedModel` for more information
 }
 
-\examples{
-rs_model <- rsModel(estimator = 'base',
-                    rs_df = rs_sales,
-                    time_matrix = time_matrix,
-                    price_diff = price_diff)
-}

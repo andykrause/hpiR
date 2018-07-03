@@ -17,22 +17,13 @@ hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 
 \item{...}{Additional Arguments}
 
-\item{date}{Field contain the transaction date}
-
-\item{price}{Field contain the transaction price}
-
-\item{trans_id}{Field containing the unique transaction identifier}
-
-\item{prop_id}{Field containing the property identifier}
-
-\item{estimator}{default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'}
-
-\item{log_dep}{default = TRUE, Should the dependent variable (price) be logged?}
-
 \item{periodicity}{default = 'month', Periodicity of time to estimate index at}
 }
 \value{
-hpi object
+`hpi`` object.  S3 list with:
+\item{data: `hpidata` object}
+\item{model: `hpimodel` object}
+\item{index: `hpiindex` object}
 }
 \description{
 Creates a house price (rent) index from a set of transactions using the
@@ -40,5 +31,51 @@ hedonic price method
 }
 \section{Further Details}{
 
+Additional argument need to provide necessary argument for create `hpidata` objects if
+the `trans_df` object is not of that class.
 }
 
+\examples{
+# Load data
+data(ex_sales)
+data(ex_hpidata)
+data(ex_heddata)
+
+# Create index: with full `heddata` object
+ hed_index <- hedIndex(trans_df = ex_heddata,
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       smooth = FALSE)
+
+# Create index: with `hpidata` object
+ hed_index <- hedIndex(trans_df = ex_hpidata,
+                       date = 'sale_date',
+                       price = 'sale_price',
+                       trans_id = 'sale_id',
+                       prop_id = 'pinx',
+                       estimator = 'base',
+                       log_dep = FALSE,
+                       trim_model = FALSE,
+                       max_period = 56,
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       smooth = TRUE)
+
+# Crete index with raw transaction data
+ hed_index <- hedIndex(trans_df = ex_sales,
+                       periodicity = 'monthly',
+                       min_date = '2010-06-01',
+                       max_date = '2015-11-30',
+                       adj_type = 'clip',
+                       date = 'sale_date',
+                       price = 'sale_price',
+                       trans_id = 'sale_id',
+                       prop_id = 'pinx',
+                       estimator = 'robust',
+                       log_dep = TRUE,
+                       trim_model = TRUE,
+                       max_period = 48,
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       smooth = FALSE)
+}

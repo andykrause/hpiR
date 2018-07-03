@@ -8,7 +8,7 @@ rtCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
   periodicity = NULL, seq_only = FALSE, ...)
 }
 \arguments{
-\item{trans_df}{transactions in either a data.frame or a `hpi_df`` class from
+\item{trans_df}{transactions in either a data.frame or a `hpidata`` class from
 dateToPeriod() function}
 
 \item{prop_id}{field contain the unique property identification}
@@ -18,17 +18,17 @@ dateToPeriod() function}
 \item{price}{field containing the transaction price}
 
 \item{date}{default=NULL, field containing the date of the sale.
-Only necessary if not passing an `hpi_df` object}
+Only necessary if not passing an `hpidata` object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
-Only necessary if not passing a `hpi_df` object}
+Only necessary if not passing a `hpidata` object}
 
 \item{seq_only}{default=FALSE, indicating whether to only include sequential repeat observations
 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.}
 }
 \value{
 data.frame of repeat transactions. Note that a full data.frame of the possible
-periods, their values and names can be found in the attributes to the returned `rt` object
+periods, their values and names can be found in the attributes to the returned `rtdata` object
 }
 \description{
 Create repeat sale pairs from a data frame of sale transactions
@@ -38,27 +38,26 @@ Create repeat sale pairs from a data frame of sale transactions
 Properties with greater than two tranactions during the period will make pairwise matches
 among all sales.  Any property transacting twice in the same period will remove the lower
 priced of the two transactions.
-If passing a raw data.frame (not a `hpi_df`` object) the "date" field should refer to
+If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 a field containing a vector of class POSIXt or Date.
 }
 
 \examples{
-## With a raw data.frame
-rep_sales <- rtCreateTrans(trans_df = seattle_sales,
-                           prop_id = 'pinx',
-                           trans_id = 'uniq_id',
-                           price = 'sale_price',
-                           date = 'sale_date',
-                           periodicity = 'month')
+## Load data
+data(ex_sales)
+data(ex_hpidata)
 
-## When pre-calculating the time periods
-sea_sales <- dateToPeriod(trans_df = seattle_sales,
-                          date = 'sale_date',
-                          periodicity = 'month')
+# With an `hpidata` object
+ rt_data <- rtCreateTrans(trans_df = ex_hpidata,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price')
 
-rep_sales <- rtCreateTrans(trans_df = sea_sales,
-                           prop_id = 'pinx',
-                           trans_id = 'uniq_id',
-                           price = 'sale_price')
-
+ # With a raw transaction data.frame
+ rt_data <- rtCreateTrans(trans_df = ex_sales,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price',
+                          periodicity = 'monthly',
+                          date = 'sale_date')
 }

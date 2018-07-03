@@ -14,7 +14,7 @@ calcInSampleError(pred_df, index)
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `indexerrors` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
 \item{prop_id}
 \item{pred_price}
 \item{pred_error}
@@ -29,8 +29,12 @@ In addition to being a stand-alone function, it is also used by `calcForecastErr
 }
 
 \examples{
-\dontrun{
-index_error <- calcInSampleError(pred_df = rt_index$data,
-                                 index = rt_index$index$index)
-}
+# Load example data
+  data(ex_rtdata)
+  data(ex_hpiindex)
+
+# Calculate accuracy
+  in_accr <- calcInSampleError(pred_df = ex_rtdata,
+                               index = ex_hpiindex$value)
+
 }

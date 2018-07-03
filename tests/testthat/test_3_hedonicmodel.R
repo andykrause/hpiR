@@ -25,7 +25,8 @@ context('hedCreateTrans()')
     expect_is(hed_df <- hedCreateTrans(trans_df=sales_df,
                                        prop_id='pinx',
                                        trans_id='sale_id',
-                                       price='sale_price'), 'hed')
+                                       price='sale_price'),
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
   })
 
@@ -37,7 +38,8 @@ context('hedCreateTrans()')
                                        trans_id='sale_id',
                                        price='sale_price',
                                        date='sale_date',
-                                       periodicity='monthly'), 'hed')
+                                       periodicity='monthly'),
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
     assign('hed_df', hed_df, .GlobalEnv)
   })
@@ -53,7 +55,7 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        min_date = as.Date('2012-03-21')),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
 
     # Min date with adj
@@ -64,7 +66,8 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        min_date = as.Date('2012-03-21'),
-                                       adj_type='clip'), 'hed')
+                                       adj_type='clip'),
+              'heddata')
     expect_true(nrow(hed_df) == 33922)
 
     # Max with move
@@ -75,7 +78,7 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly',
                                        max_date = as.Date('2015-03-21')),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 43074)
 
     # Max with clip
@@ -87,7 +90,7 @@ context('hedCreateTrans()')
                                        periodicity='monthly',
                                        max_date = as.Date('2014-03-21'),
                                        adj_type='clip'),
-              'hed')
+              'heddata')
     expect_true(nrow(hed_df) == 21536)
 
   })
@@ -148,9 +151,9 @@ context('hedCreateTrans()')
 
   })
 
-## hpiModel.hed up to hedModel ------------------------------------------------------
+## hpiModel.heddata up to hedModel ------------------------------------------------------
 
-context('hpiModel.hed(): before hedModel()')
+context('hpiModel.heddata(): before hedModel()')
 
   # Create hed data
   hed_df <- hedCreateTrans(trans_df=sales,
@@ -355,14 +358,14 @@ context('hedModel()')
                                     estimator=structure('base', class='base'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Robust works but gives warning
     expect_is(hed_model <- hedModel(hed_df = hed_df200,
                                     estimator=structure('robust', class='robust'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Weighted works
     expect_is(hed_model <- hedModel(hed_df = hed_df200,
@@ -370,7 +373,7 @@ context('hedModel()')
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf')),
                                     weights = runif(nrow(hed_df200), 0, 1)),
-              'hedmod')
+              'hedmodel')
 
     ## Check severe sparseness
 
@@ -382,14 +385,14 @@ context('hedModel()')
                                     estimator=structure('base', class='base'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Robust works but gives warning
     expect_is(hed_model <- hedModel(hed_df = hed_df20,
                                     estimator=structure('robust', class='robust'),
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf'))),
-              'hedmod')
+              'hedmodel')
 
     # Weighted works
     expect_is(hed_model <- hedModel(hed_df = hed_df20,
@@ -397,15 +400,15 @@ context('hedModel()')
                                     hed_spec = as.formula(paste0('log(price) ~ ',
                                                                  'as.factor(baths) + tot_sf')),
                                     weights = runif(nrow(hed_df20), 0, 1)),
-              'hedmod')
+              'hedmodel')
 
   })
 
-### hpiModel.hed after hedModel --------------------------------------------------------
+### hpiModel.heddata after hedModel --------------------------------------------------------
 
-context('hpiModel.hed()')
+context('hpiModel.heddata()')
 
-  test_that('hpiModel.hed works in both trim_model cases', {
+  test_that('hpiModel.heddata works in both trim_model cases', {
 
     # Base
     expect_is(hed_model <- hpiModel(hpi_df = hed_df,
@@ -464,7 +467,7 @@ context('hpiModel.hed()')
 
   })
 
-  test_that('hpiModel.hed outputs are correct', {
+  test_that('hpiModel.heddata outputs are correct', {
 
     # Run a model of each estimator type
     hed_model_base <- hpiModel(hpi_df = hed_df,
@@ -503,9 +506,9 @@ context('hpiModel.hed()')
     expect_true(hed_model_wgt$coefficients$coefficient[1] == 0)
 
     # Modelobj
-    expect_is(hed_model_base$model_obj, 'hedmod')
-    expect_is(hed_model_robust$model_obj, 'hedmod')
-    expect_is(hed_model_wgt$model_obj, 'hedmod')
+    expect_is(hed_model_base$model_obj, 'hedmodel')
+    expect_is(hed_model_robust$model_obj, 'hedmodel')
+    expect_is(hed_model_wgt$model_obj, 'hedmodel')
 
     # Model spec
     expect_true(is.null(hed_model_base$model_spec))
@@ -532,7 +535,7 @@ context('hpiModel.hed()')
   })
 
 
-### Test modelToIndex() (HED) --------------------------------------------------------------------
+### modelToIndex() (HED) --------------------------------------------------------------------
 
   context('modelToIndex(): hed')
 
@@ -603,23 +606,23 @@ context('hpiModel.hed()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     # Interpolate interior values
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     # Extrapolate end periods
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -636,23 +639,23 @@ context('hpiModel.hed()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     # Impute interior values
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     # Extrapolate an end value
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -668,21 +671,21 @@ context('hpiModel.hed()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
@@ -699,24 +702,76 @@ context('hpiModel.hed()')
     model_ex <- model_base
     model_ex$coefficients$coefficient[2] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(!is.na(modelToIndex(model_ex)$index[2]))
-    expect_true(modelToIndex(model_ex)$index[2] == 100)
+    expect_true(!is.na(modelToIndex(model_ex)$value[2]))
+    expect_true(modelToIndex(model_ex)$value[2] == 100)
     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[3:5] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[3:5])))
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
 
     model_ex <- model_base
     model_ex$coefficients$coefficient[81:84] <- NA_real_
     expect_is(modelToIndex(model_ex), 'hpiindex')
-    expect_true(all(!is.na(modelToIndex(model_ex)$index[81:84])))
-    expect_true(modelToIndex(model_ex)$index[80] ==
-                  modelToIndex(model_ex)$index[84])
+    expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
+    expect_true(modelToIndex(model_ex)$value[80] ==
+                  modelToIndex(model_ex)$value[84])
 
   })
 
+  ### smoothIndex()  -------------------------------------------------------------
+
+  context('smoothIndex()')
+
+  model_base <- hpiModel(hpi_df = hed_df,
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         trim_model=TRUE,
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths'))
+
+  index_base <- modelToIndex(model_obj = model_base)
+
+  test_that('smoothing Function works with a variety of inputs',{
+
+    # Hpi Index object
+    expect_is(index_smooth <- smoothIndex(index_obj = index_base,
+                                          order = 4),
+              'indexsmooth')
+
+  })
+
+  test_that('Errors are given when index is bad',{
+
+    # Non-sensical index
+    expect_error(index_smooth <- smoothIndex(index_obj = 'abc',
+                                             order = 3))
+
+    # Negative Order
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = -3))
+
+    # Char Window
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = 'x'))
+
+    # NA Window
+    expect_error(index_smooth <- smoothIndex(index_obj = index_base,
+                                             order = NA_integer_))
+
+  })
+
+  test_that('Returning in place works',{
+
+    # Add it to the Full HPI Object (to the hpiindex object)
+    expect_is(index_base <- smoothIndex(index = index_base,
+                                        order = 3,
+                                        in_place = TRUE),
+              'hpiindex')
+    expect_true('smooth' %in% names(index_base))
+
+  })
 
 ### hedIndex() wrapper ---------------------------------------------------------------
 
@@ -829,7 +884,7 @@ context('hedindex() wrapper')
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths'),
                           max_period = 80)
-    expect_true(length(m2i_index$index$index) == 80)
+    expect_true(length(m2i_index$index$value) == 80)
 
   })
 
@@ -915,6 +970,38 @@ context('hedindex() wrapper')
                           max_period = 'a',
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
+  })
+
+  test_that("Smoothing in_place for 'hpi' object works",{
+
+    # Full case
+    full_1 <- hedIndex(trans_df = sales,
+                       date = 'sale_date',
+                       price = 'sale_price',
+                       trans_id = 'sale_id',
+                       prop_id = 'pinx',
+                       estimator = 'base',
+                       periodicity = 'monthly',
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       smooth = TRUE)
+
+    # In wrapper smoothing worked
+    expect_is(full_1$index$smooth, 'indexsmooth')
+
+    # Full HPI Object
+    expect_is(index_smooth <- smoothIndex(index_obj = full_1,
+                                          order = 6),
+              'indexsmooth')
+
+    # Add it to the Full HPI Object (to the hpiindex object) with new name
+    expect_is(full_1s <- smoothIndex(index = full_1,
+                                     order = 3,
+                                     in_place = TRUE),
+              'hpi')
+    expect_is(full_1s$index$smooth, 'ts')
+    expect_is(full_1s$index$smooth, 'indexsmooth')
+
   })
 
 #*****************************************************************************************

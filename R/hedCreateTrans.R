@@ -6,21 +6,21 @@
 #' @param trans_id field containing the unique transaction identification
 #' @param price field containing the transaction price
 #' @param date default=NULL, field containing the date of the transaction.
-#' Only necessary if not passing an `hpi_df` object
+#' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
-#' Only necessary if not passing a `hpi_df` object
+#' Only necessary if not passing a `hpidata` object
 #' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `hed` object
-#' @section Further Details:
-#' aaa
 #' @examples
-#' ## With a raw data.frame
-#' hed_sales <- hedCreateTrans(trans_df = seattle_sales,
-#'                             prop_id = 'pinx',
-#'                             trans_id = 'uniq_id',
-#'                             price = 'sale_price',
-#'                             date = 'sale_date',
-#'                             periodicity = 'monthly')
+#' # Load example data
+#' data(ex_sales)
+#'
+#' ex_heddata <- hedCreateTrans(trans_df = ex_sales,
+#'                              prop_id = 'pinx',
+#'                              trans_id = 'sale_id',
+#'                              price = 'sale_price',
+#'                              date = 'sale_date',
+#'                              periodicity = 'monthly')
 #' @export
 
 hedCreateTrans <- function(trans_df,
@@ -32,7 +32,7 @@ hedCreateTrans <- function(trans_df,
                            ...){
 
   # Calculate the necessary date field
-  if (!'hpi_df' %in% class(trans_df)){
+  if (!'hpidata' %in% class(trans_df)){
     if (is.null(date)){
       message('You must provide the name of a field with date of transaction (date=)')
       stop()
@@ -69,10 +69,10 @@ hedCreateTrans <- function(trans_df,
                    'trans_id' = trans_id,
                    'price' = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, date_period, desc(price)) %>%
+    dplyr::arrange(prop_id, trans_period, desc(price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', date_period)))
+    dplyr::filter(!duplicated(paste0(prop_id, '_', trans_period)))
 
   # Add period table
   attr(hed_df, 'period_table') <- attr(trans_df, 'period_table')
@@ -82,7 +82,7 @@ hedCreateTrans <- function(trans_df,
     message('No Hedonic Sales Created\n')
     return(NULL)
   } else {
-    class(hed_df) <- c('hed', 'hpi_df', class(hed_df))
+    class(hed_df) <- c('heddata', 'hpidata', class(hed_df))
   }
 
   # Return _df

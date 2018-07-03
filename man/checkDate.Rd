@@ -7,7 +7,7 @@
 checkDate(x_date, name)
 }
 \arguments{
-\item{x_date}{Date string}
+\item{x_date}{Date string or vector}
 
 \item{name}{Name of argument to return in error/warning message}
 }
@@ -16,4 +16,12 @@ Adjusted date field
 }
 \description{
 Checks and converts date arguments into proper format
+}
+\examples{
+# Load Data
+  data(ex_sales)
+
+# Check date
+  checkDate(x_date = ex_sales$sale_date,
+            name = 'sale date')
 }

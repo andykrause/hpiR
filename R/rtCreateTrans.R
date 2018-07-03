@@ -1,43 +1,42 @@
 #' @title rtCreateTrans
 #' @description Create repeat sale pairs from a data frame of sale transactions
-#' @param trans_df transactions in either a data.frame or a `hpi_df`` class from
+#' @param trans_df transactions in either a data.frame or a `hpidata`` class from
 #' dateToPeriod() function
 #' @param prop_id field contain the unique property identification
 #' @param trans_id field containing the unique transaction identification
 #' @param price field containing the transaction price
 #' @param date default=NULL, field containing the date of the sale.
-#' Only necessary if not passing an `hpi_df` object
+#' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
-#' Only necessary if not passing a `hpi_df` object
+#' Only necessary if not passing a `hpidata` object
 #' @param seq_only default=FALSE, indicating whether to only include sequential repeat observations
 #' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
 #' @return data.frame of repeat transactions. Note that a full data.frame of the possible
-#' periods, their values and names can be found in the attributes to the returned `rt` object
+#' periods, their values and names can be found in the attributes to the returned `rtdata` object
 #' @section Further Details:
 #' Properties with greater than two tranactions during the period will make pairwise matches
 #' among all sales.  Any property transacting twice in the same period will remove the lower
 #' priced of the two transactions.
-#' If passing a raw data.frame (not a `hpi_df`` object) the "date" field should refer to
+#' If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 #' a field containing a vector of class POSIXt or Date.
 #' @examples
-#' ## With a raw data.frame
-#' rep_sales <- rtCreateTrans(trans_df = seattle_sales,
-#'                            prop_id = 'pinx',
-#'                            trans_id = 'uniq_id',
-#'                            price = 'sale_price',
-#'                            date = 'sale_date',
-#'                            periodicity = 'month')
+#' ## Load data
+#' data(ex_sales)
+#' data(ex_hpidata)
 #'
-#' ## When pre-calculating the time periods
-#' sea_sales <- dateToPeriod(trans_df = seattle_sales,
-#'                           date = 'sale_date',
-#'                           periodicity = 'month')
+#' # With an `hpidata` object
+#'  rt_data <- rtCreateTrans(trans_df = ex_hpidata,
+#'                           prop_id = 'pinx',
+#'                           trans_id = 'sale_id',
+#'                           price = 'sale_price')
 #'
-#' rep_sales <- rtCreateTrans(trans_df = sea_sales,
-#'                            prop_id = 'pinx',
-#'                            trans_id = 'uniq_id',
-#'                            price = 'sale_price')
-#'
+#'  # With a raw transaction data.frame
+#'  rt_data <- rtCreateTrans(trans_df = ex_sales,
+#'                           prop_id = 'pinx',
+#'                           trans_id = 'sale_id',
+#'                           price = 'sale_price',
+#'                           periodicity = 'monthly',
+#'                           date = 'sale_date')
 #' @export
 
 rtCreateTrans <- function(trans_df,
@@ -50,7 +49,7 @@ rtCreateTrans <- function(trans_df,
                           ...){
 
   # Crate the sales_df if not provided
-  if (!'hpi_df' %in% class(trans_df)){
+  if (!'hpidata' %in% class(trans_df)){
     if (is.null(date)){
       message('You must provide the name of a field with date of transaction (date=)')
       stop()
@@ -86,13 +85,13 @@ rtCreateTrans <- function(trans_df,
     # Select fields and rename
     dplyr::select(prop_id = prop_id,
                   trans_id = trans_id,
-                  date_period,
+                  trans_period,
                   price = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, date_period, desc(price)) %>%
+    dplyr::arrange(prop_id, trans_period, desc(price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', date_period)))
+    dplyr::filter(!duplicated(paste0(prop_id, '_', trans_period)))
 
   ## Make count of occurances for each property and keep those with 2 or more sales
 
@@ -121,7 +120,7 @@ rtCreateTrans <- function(trans_df,
     # Extract original sales and arrange by id, then time
     x_df <- trans_df %>%
       dplyr::filter(prop_id %in% rt2$prop_id) %>%
-      dplyr::arrange(prop_id, date_period)
+      dplyr::arrange(prop_id, trans_period)
 
     # Separate into first and second sale
     id_1 <- !duplicated(x_df$prop_id)
@@ -129,8 +128,8 @@ rtCreateTrans <- function(trans_df,
 
     # Create data.frame of repeat sales
     d2 <- data.frame(prop_id=x_df$prop_id[id_1],
-                     period_1=x_df$date_period[id_1],
-                     period_2=x_df$date_period[id_2],
+                     period_1=x_df$trans_period[id_1],
+                     period_2=x_df$trans_period[id_2],
                      price_1=x_df$price[id_1],
                      price_2=x_df$price[id_2],
                      trans_id1=x_df$trans_id[id_1],
@@ -161,8 +160,8 @@ rtCreateTrans <- function(trans_df,
       dplyr::select(prop_id, trans_id1='1', trans_id2='2') %>%
 
       # Add time and price
-      dplyr::mutate(period_1 = x_df$date_period[match(trans_id1, x_df$trans_id)]) %>%
-      dplyr::mutate(period_2 = x_df$date_period[match(trans_id2, x_df$trans_id)]) %>%
+      dplyr::mutate(period_1 = x_df$trans_period[match(trans_id1, x_df$trans_id)]) %>%
+      dplyr::mutate(period_2 = x_df$trans_period[match(trans_id2, x_df$trans_id)]) %>%
       dplyr::mutate(price_1 = x_df$price[match(trans_id1, x_df$trans_id)]) %>%
       dplyr::mutate(price_2 = x_df$price[match(trans_id2, x_df$trans_id)])
 
@@ -199,7 +198,7 @@ rtCreateTrans <- function(trans_df,
     message('No Repeat Transactions Created\n')
     return(NULL)
   } else {
-    class(rt_df) <- c('rt', 'hpi_df', class(rt_df))
+    class(rt_df) <- c('rtdata', 'hpidata', class(rt_df))
   }
 
   # Add period table attribute

@@ -18,10 +18,10 @@ trans_df class from dateToPeriod() function}
 \item{price}{field containing the transaction price}
 
 \item{date}{default=NULL, field containing the date of the transaction.
-Only necessary if not passing an `hpi_df` object}
+Only necessary if not passing an `hpidata` object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
-Only necessary if not passing a `hpi_df` object}
+Only necessary if not passing a `hpidata` object}
 }
 \value{
 data.frame of transactions with standardized period field. Note that a full data.frame of the possible
@@ -30,17 +30,14 @@ periods, their values and names can be found in the attributes to the returned `
 \description{
 Create a hedonic model ready data.frame of transactions
 }
-\section{Further Details}{
-
-aaa
-}
-
 \examples{
-## With a raw data.frame
-hed_sales <- hedCreateTrans(trans_df = seattle_sales,
-                            prop_id = 'pinx',
-                            trans_id = 'uniq_id',
-                            price = 'sale_price',
-                            date = 'sale_date',
-                            periodicity = 'monthly')
+# Load example data
+data(ex_sales)
+
+ex_heddata <- hedCreateTrans(trans_df = ex_sales,
+                             prop_id = 'pinx',
+                             trans_id = 'sale_id',
+                             price = 'sale_price',
+                             date = 'sale_date',
+                             periodicity = 'monthly')
 }
