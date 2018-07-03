@@ -10,23 +10,12 @@ rtIndex(trans_df, ...)
 \item{trans_df}{data.frame of transactions.  Can be a 'hpidata' or an 'rtdata' object.}
 
 \item{...}{Additional Arguments}
-
-\item{date}{Field contain the transaction date}
-
-\item{price}{Field contain the transaction price}
-
-\item{trans_id}{Field containing the unique transaction identifier}
-
-\item{prop_id}{Field containing the property identifier}
-
-\item{estimator}{default = 'base', Type of estimator to use.  'base', 'robust' or 'weighted'}
-
-\item{log_dep}{default = TRUE, Should the dependent variable (price) be logged?}
-
-\item{periodicity}{default = 'monthly', Periodicity of time to estimate index at}
 }
 \value{
-hpi object
+`hpi`` object.  S3 list with:
+\item{data: `hpidata` object}
+\item{model: `hpimodel` object}
+\item{index: `hpiindex` object}
 }
 \description{
 Creates a house price index from a set of ttransactions using the
@@ -34,12 +23,42 @@ repeat transactions method
 }
 \section{Further Details}{
 
+Additional argument need to provide necessary argument for create `hpidata` objects if
+the `trans_df` object is not of that class.
 }
 
 \examples{
-sea_rt_index <- rtIndex(trans_df = seattle_sales,
-                        date = 'sale_date',
-                        price = 'sale_price',
-                        trans_id = 'uniq_id',
-                        prop_id = 'pinx')
+# Load data
+data(ex_sales)
+data(ex_hpidata)
+data(ex_rtdata)
+
+# Create index: with full `rtdata` object
+ rt_index <- rtIndex(trans_df = ex_rtdata,
+                     smooth = FALSE)
+
+# Create index: with `hpidata` object
+ rt_index <- rtIndex(trans_df = ex_hpidata,
+                     date = 'sale_date',
+                     price = 'sale_price',
+                     trans_id = 'sale_id',
+                     prop_id = 'pinx',
+                     estimator = 'base',
+                     smooth = TRUE)
+
+# Crete index with raw transaction data
+ rt_index <- rtIndex(trans_df = ex_sales,
+                     periodicity = 'monthly',
+                     min_date = '2010-06-01',
+                     max_date = '2015-11-30',
+                     adj_type = 'clip',
+                     date = 'sale_date',
+                     price = 'sale_price',
+                     trans_id = 'sale_id',
+                     prop_id = 'pinx',
+                     estimator = 'robust',
+                     log_dep = TRUE,
+                     trim_model = TRUE,
+                     max_period = 48,
+                     smooth = FALSE)
 }

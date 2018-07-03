@@ -4,5 +4,18 @@
 \alias{plot.seriesrevision}
 \title{plot.seriesrevision}
 \usage{
-plot.seriesrevision(rev_obj, measure = "median", ...)
+plot(rev_obj)
+}
+\arguments{
+\item{rev_obj}{Object of class `seriesrevision`}
+}
+\value{
+`plotrevision` object inheriting from a ggplot object
+}
+\examples{
+# Load data
+ data(ex_seriesrevision)
+
+# Make Plot
+ plot(ex_seriesrevision)
 }

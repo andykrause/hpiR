@@ -4,5 +4,18 @@
 \alias{plot.serieshpi}
 \title{plot.serieshpi}
 \usage{
-plot.serieshpi(series_obj, smooth = FALSE)
+plot(series_obj)
+}
+\arguments{
+\item{series_obj}{Object of class `serieshpi``}
+}
+\value{
+`plotseries` object inheriting from a ggplot object
+}
+\examples{
+# Load data
+ data(ex_serieshpi)
+
+# Make Plot
+ plot(ex_serieshpi)
 }

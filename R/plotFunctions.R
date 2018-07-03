@@ -1,14 +1,17 @@
 #' @title plot.hpiindex
 #' @description Simple Plot of an hpiindex object
-#' @usage Lorem Ipsum...
-#' @param index_obj Object of class hpiindex
-#' @param show_imputed Highlight the imputed points
+#' @usage plot(hpiindex_obj, show_imputed, smooth, ...)
+#' @param index_obj Object of class `hpiindex``
+#' @param show_imputed defautl = FALSE; highlight the imputed points
+#' @param smooth default = FALSE; plot the smoothed index
 #' @param ... Additional Arguments
-#' @return ggplot object
-#' @section Further Details:
-#' Lorem Ipsum...
+#' @return `plotindex` object inheriting from a ggplot object
 #' @examples
-#' a <- 1
+#' # Load data
+#'  data(ex_hpiindex)
+#'
+#' # Make Plot
+#'  plot(ex_hpiindex)
 #' @export
 
 plot.hpiindex <- function(index_obj,
@@ -68,15 +71,19 @@ plot.hpiindex <- function(index_obj,
 
 #' @title plot.hpi
 #' @description Simple Plot of an HPI object
-#' @usage Lorem Ipsum...
+#' @usage plot(hpi_obj, show-impute)
 #' @param hpi_obj Object of class HPI
-#' @param show_imputed Highlight the imputed points
 #' @param ... Additional Arguments
-#' @return ggplot object
+#' @return `plotindex` object inheriting from a ggplot object
 #' @section Further Details:
-#' Lorem Ipsum...
+#' Additional argument can include those argument for `plot.hpindex``
 #' @examples
-#' a <- 1
+#' # Load Data
+#' data(ex_hpi)
+#'
+#' # Plot data
+#' plot(ex_hpi)
+#' plot(ex_hpi, smooth = TRUE)
 #' @export
 
 plot.hpi <- function(hpi_obj,
@@ -86,10 +93,17 @@ plot.hpi <- function(hpi_obj,
 
 }
 
-#' @title plot.hpiblend
-#' @export
-
 #' @title plot.indexvolatility
+#' @description Simple Plot of an indexvolatility object
+#' @usage plot(vol_obj)
+#' @param vol_obj Object of class `indexvolatility``
+#' @return `plotvolatility` object inheriting from a ggplot object
+#' @examples
+#' # Load data
+#'  data(ex_indexvolatility)
+#'
+#' # Make Plot
+#'  plot(ex_indexvolatility)
 #' @export
 
 plot.indexvolatility <- function(vol_obj){
@@ -114,36 +128,48 @@ plot.indexvolatility <- function(vol_obj){
 }
 
 #' @title plot.hpiaccuracy
+#' @description Simple Plot of an hpiaccuracy object
+#' @usage plot(accr_obj, return_plot, do_plot)
+#' @param accr_obj Object of class `hpiaccuracy``
+#' @param return_plot default = FALSE; Return the plot to the function call
+#' @param do_plot default = FALSE; Execute plotting to terminal/console
+#' @return `plotaccuracy` object inheriting from a ggplot object
+#' @examples
+#' # Load data
+#'  data(ex_hpiaccuracy)
+#'
+#' # Make Plot
+#'  plot(ex_hpiaccuracy)
 #' @export
 
-plot.hpiaccuracy <- function(error_obj,
+plot.hpiaccuracy <- function(accr_obj,
                              return_plot = FALSE,
                              do_plot=TRUE){
 
   # Get period count
-  p_cnt <- length(unique(error_obj$pred_period))
+  p_cnt <- length(unique(accr_obj$pred_period))
 
   # Make the absolute box plot
-  bar_abs <- ggplot(error_obj, aes(x=as.factor(pred_period),
+  bar_abs <- ggplot(accr_obj, aes(x=as.factor(pred_period),
                                    y=abs(pred_error)), alpha=.5) +
     geom_boxplot(fill='lightblue') +
-    coord_cartesian(ylim=c(0, quantile(abs(error_obj$pred_error),.99))) +
+    coord_cartesian(ylim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
     ylab('Absolute Error') +
     xlab('Time Period')
 
   # Make the magnitude box plot
-  bar_mag <- ggplot(error_obj, aes(x=as.factor(pred_period),
+  bar_mag <- ggplot(accr_obj, aes(x=as.factor(pred_period),
                                    y=pred_error), alpha=.5) +
     geom_boxplot(fill='salmon') +
-    coord_cartesian(ylim=c(quantile(error_obj$pred_error, .01),
-                           quantile(error_obj$pred_error, .99))) +
+    coord_cartesian(ylim=c(quantile(accr_obj$pred_error, .01),
+                           quantile(accr_obj$pred_error, .99))) +
     ylab('Error') +
     xlab('Time Period')
 
   # Adjust axis if too many periods
   if (p_cnt > 12){
-    breaks <- seq(from=min(error_obj$pred_period),
-                  to=max(error_obj$pred_period),
+    breaks <- seq(from=min(accr_obj$pred_period),
+                  to=max(accr_obj$pred_period),
                   length.out=12)
     bar_abs <- bar_abs +
       scale_x_discrete(breaks=breaks)
@@ -153,17 +179,17 @@ plot.hpiaccuracy <- function(error_obj,
   }
 
   # Make absolute density plot
-  dens_abs <- ggplot(error_obj, aes(x=abs(pred_error)), alpha=.5) +
+  dens_abs <- ggplot(accr_obj, aes(x=abs(pred_error)), alpha=.5) +
     geom_density(fill='lightblue') +
-    coord_cartesian(xlim=c(0, quantile(abs(error_obj$pred_error),.99))) +
+    coord_cartesian(xlim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
     xlab('Absolute Error') +
     ylab('Density of Error')
 
   # Make magnitude density plot
-  dens_mag <- ggplot(error_obj, aes(x=pred_error), alpha=.5) +
+  dens_mag <- ggplot(accr_obj, aes(x=pred_error), alpha=.5) +
     geom_density(fill='salmon') +
-    coord_cartesian(xlim=c(quantile(error_obj$pred_error, .01),
-                           quantile(error_obj$pred_error, .99))) +
+    coord_cartesian(xlim=c(quantile(accr_obj$pred_error, .01),
+                           quantile(accr_obj$pred_error, .99))) +
     xlab('Error') +
     ylab('Density of Error')
 
@@ -182,7 +208,20 @@ plot.hpiaccuracy <- function(error_obj,
 }
 
 #' @title plot.seriesaccuracy
+#' @description Simple Plot of an seriesaccuracy object
+#' @usage plot(accr_obj, return_plot, ...)
+#' @param accr_obj Object of class `hpiaccuracy``
+#' @param return_plot default = FALSE; Return the plot to the function call
+#' @param ... Additional argument (passed to `plot.hpiaccuracy()``)
+#' @return `plotaccuracy` object inheriting from a ggplot object
+#' @examples
+#' # Load data
+#'  data(ex_seriesaccuracy)
+#'
+#' # Make Plot
+#'  plot(ex_seriesaccuracy)
 #' @export
+
 plot.seriesaccuracy <- function(accr_obj,
                                 return_plot = FALSE,
                                 ...){
@@ -193,6 +232,15 @@ plot.seriesaccuracy <- function(accr_obj,
 }
 
 #' @title plot.serieshpi
+#' @usage plot(series_obj)
+#' @param series_obj Object of class `serieshpi``
+#' @return `plotseries` object inheriting from a ggplot object
+#' @examples
+#' # Load data
+#'  data(ex_serieshpi)
+#'
+#' # Make Plot
+#'  plot(ex_serieshpi)
 #' @export
 
 plot.serieshpi<- function(series_obj,
@@ -251,6 +299,15 @@ plot.serieshpi<- function(series_obj,
 }
 
 #' @title plot.seriesrevision
+#' @usage plot(rev_obj)
+#' @param rev_obj Object of class `seriesrevision`
+#' @return `plotrevision` object inheriting from a ggplot object
+#' @examples
+#' # Load data
+#'  data(ex_seriesrevision)
+#'
+#' # Make Plot
+#'  plot(ex_seriesrevision)
 #' @export
 
 plot.seriesrevision <- function(rev_obj,

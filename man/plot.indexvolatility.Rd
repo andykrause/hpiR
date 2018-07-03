@@ -2,7 +2,23 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.indexvolatility}
 \alias{plot.indexvolatility}
-\title{plot.hpiblend}
+\title{plot.indexvolatility}
 \usage{
-plot.indexvolatility(vol_obj)
+plot(vol_obj)
+}
+\arguments{
+\item{vol_obj}{Object of class `indexvolatility``}
+}
+\value{
+`plotvolatility` object inheriting from a ggplot object
+}
+\description{
+Simple Plot of an indexvolatility object
+}
+\examples{
+# Load data
+ data(ex_indexvolatility)
+
+# Make Plot
+ plot(ex_indexvolatility)
 }

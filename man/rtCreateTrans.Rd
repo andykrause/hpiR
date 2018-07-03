@@ -28,7 +28,7 @@ Only necessary if not passing a `hpidata` object}
 }
 \value{
 data.frame of repeat transactions. Note that a full data.frame of the possible
-periods, their values and names can be found in the attributes to the returned `rt` object
+periods, their values and names can be found in the attributes to the returned `rtdata` object
 }
 \description{
 Create repeat sale pairs from a data frame of sale transactions
@@ -43,22 +43,21 @@ a field containing a vector of class POSIXt or Date.
 }
 
 \examples{
-## With a raw data.frame
-rep_sales <- rtCreateTrans(trans_df = seattle_sales,
-                           prop_id = 'pinx',
-                           trans_id = 'uniq_id',
-                           price = 'sale_price',
-                           date = 'sale_date',
-                           periodicity = 'month')
+## Load data
+data(ex_sales)
+data(ex_hpidata)
 
-## When pre-calculating the time periods
-sea_sales <- dateToPeriod(trans_df = seattle_sales,
-                          date = 'sale_date',
-                          periodicity = 'month')
+# With an `hpidata` object
+ rt_data <- rtCreateTrans(trans_df = ex_hpidata,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price')
 
-rep_sales <- rtCreateTrans(trans_df = sea_sales,
-                           prop_id = 'pinx',
-                           trans_id = 'uniq_id',
-                           price = 'sale_price')
-
+ # With a raw transaction data.frame
+ rt_data <- rtCreateTrans(trans_df = ex_sales,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price',
+                          periodicity = 'monthly',
+                          date = 'sale_date')
 }

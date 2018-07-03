@@ -4,5 +4,25 @@
 \alias{plot.seriesaccuracy}
 \title{plot.seriesaccuracy}
 \usage{
-plot.seriesaccuracy(accr_obj, return_plot = FALSE, ...)
+plot(accr_obj, return_plot, ...)
+}
+\arguments{
+\item{accr_obj}{Object of class `hpiaccuracy``}
+
+\item{return_plot}{default = FALSE; Return the plot to the function call}
+
+\item{...}{Additional argument (passed to `plot.hpiaccuracy()``)}
+}
+\value{
+`plotaccuracy` object inheriting from a ggplot object
+}
+\description{
+Simple Plot of an seriesaccuracy object
+}
+\examples{
+# Load data
+ data(ex_seriesaccuracy)
+
+# Make Plot
+ plot(ex_seriesaccuracy)
 }

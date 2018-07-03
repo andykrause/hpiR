@@ -4,5 +4,25 @@
 \alias{plot.hpiaccuracy}
 \title{plot.hpiaccuracy}
 \usage{
-plot.hpiaccuracy(error_obj, return_plot = FALSE, do_plot = TRUE)
+plot(accr_obj, return_plot, do_plot)
+}
+\arguments{
+\item{accr_obj}{Object of class `hpiaccuracy``}
+
+\item{return_plot}{default = FALSE; Return the plot to the function call}
+
+\item{do_plot}{default = FALSE; Execute plotting to terminal/console}
+}
+\value{
+`plotaccuracy` object inheriting from a ggplot object
+}
+\description{
+Simple Plot of an hpiaccuracy object
+}
+\examples{
+# Load data
+ data(ex_hpiaccuracy)
+
+# Make Plot
+ plot(ex_hpiaccuracy)
 }
