@@ -4,7 +4,7 @@
 \alias{rtModel}
 \title{rtModel}
 \usage{
-rtModel(rt_df, time_matrix, price_diff, estimator, ...)
+rtModel(rt_df, price_diff, time_matrix, estimator, ...)
 }
 \arguments{
 \item{rt_df}{Repeat transactions dataset from rtCreateTrans()}
@@ -18,7 +18,7 @@ rtModel(rt_df, time_matrix, price_diff, estimator, ...)
 \item{...}{Additional arguments}
 }
 \value{
-`rtmod` object
+`rtmodel` object
 }
 \description{
 Estimate repeat transactions model (method based on estimator class). Generic method.
@@ -28,8 +28,16 @@ Estimate repeat transactions model (method based on estimator class). Generic me
 }
 
 \examples{
-rt_model <- rtModel(rt_df = rt_sales,
-                    time_matrix = time_matrix,
-                    price_diff = price_diff,
-                    estimator = structure('base', class='base'))
+ # Load Data
+ data(ex_rtdata)
+ data(ex_timematrix)
+
+ # Calc price differences
+ price_diff <- ex_rtdata$price_2 - ex_rtdata$price_1
+
+ # Calculate model
+ rt_model <- rtModel(rt_df = ex_rtdata,
+                     price_diff = price_diff,
+                     time_matrix = ex_timematrix,
+                     estimator = structure('base', class='base'))
 }

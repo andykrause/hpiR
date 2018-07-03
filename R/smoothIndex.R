@@ -1,16 +1,26 @@
 #' @title smoothIndex
 #' @description Smooths an index
-#' @usage Lorem Ipsum...
+#' @usage smoothIndex(index_obj, order, in_place, ...)
 #' @param index Index to be smoothed
 #' @param order Number of nearby period to smooth with, multiple means multiple iterations
-#' @param in_place default = FALSE; adds volatility metric to the `hpiindex` object
-#' @param in_place_name default = 'vol'; name of volatility object in `hpiindex` object
+#' @param in_place default = FALSE; adds smoothed index to the `hpiindex` object
 #' @param ... Additional Arguments
-#' @return a ts and 'smooth_index` object with smoothed index
+#' @return a `ts`` and 'smooth_index` object with smoothed index
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
-#' a <- 1
+#' # Load Data
+#' data(ex_hpiindex)
+#'
+#' # Create Smooth index
+#' sm_index <- smoothIndex(index_obj = ex_hpiindex,
+#'                         order = 3,
+#'                         in_place = FALSE)
+#'
+#' # Create Smooth index (in place)
+#' sm_index <- smoothIndex(index_obj = ex_hpiindex,
+#'                         order = 3,
+#'                         in_place = TRUE)
 #' @export
 
 smoothIndex <- function(index_obj,
@@ -85,15 +95,20 @@ smoothIndex <- function(index_obj,
 
 #' @title smoothSeries
 #' @description Smooths a series of indexex
-#' @usage Lorem Ipsum...
-#' @param series Series to be smoothed
+#' @usage smoothSeries(series_obj, order, ...)
+#' @param series_obj Series to be smoothed
 #' @param order Number of nearby period to smooth with
 #' @param ... Additional Arguments
-#' @return a list of objects ts and 'smooth_index` object with smoothed index
+#' @return a `serieshpi` object with a smoothed index in each `hpiindex` object
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
-#' a <- 1
+#' # Load Data
+#' data(ex_serieshpi)
+#'
+#' # Smooth indexes
+#' sm_series <- smoothSeries(series_obj = ex_serieshpi,
+#'                           order = 5)
 #' @export
 
 smoothSeries <- function(series_obj,

@@ -4,21 +4,19 @@
 \alias{smoothIndex}
 \title{smoothIndex}
 \usage{
-Lorem Ipsum...
+smoothIndex(index_obj, order, in_place, ...)
 }
 \arguments{
 \item{order}{Number of nearby period to smooth with, multiple means multiple iterations}
 
-\item{in_place}{default = FALSE; adds volatility metric to the `hpiindex` object}
+\item{in_place}{default = FALSE; adds smoothed index to the `hpiindex` object}
 
 \item{...}{Additional Arguments}
 
 \item{index}{Index to be smoothed}
-
-\item{in_place_name}{default = 'vol'; name of volatility object in `hpiindex` object}
 }
 \value{
-a ts and 'smooth_index` object with smoothed index
+a `ts`` and 'smooth_index` object with smoothed index
 }
 \description{
 Smooths an index
@@ -29,5 +27,16 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-a <- 1
+# Load Data
+data(ex_hpiindex)
+
+# Create Smooth index
+sm_index <- smoothIndex(index_obj = ex_hpiindex,
+                        order = 3,
+                        in_place = FALSE)
+
+# Create Smooth index (in place)
+sm_index <- smoothIndex(index_obj = ex_hpiindex,
+                        order = 3,
+                        in_place = TRUE)
 }

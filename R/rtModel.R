@@ -1,20 +1,27 @@
 #' @title rtModel
 #' @description Estimate repeat transactions model (method based on estimator class). Generic method.
+#' @usage rtModel(rt_df, price_diff, time_matrix, estimator, ...)
 #' @param rt_df Repeat transactions dataset from rtCreateTrans()
 #' @param time_matrix Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price betwen the two transactions
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
 #' @param ... Additional arguments
-#' @return `rtmod` object
+#' @return `rtmodel` object
 #' @section Further Details:
 #' @examples
-#' rt_model <- rtModel(rt_df = rt_sales,
-#'                     time_matrix = time_matrix,
-#'                     price_diff = price_diff,
-#'                     estimator = structure('base', class='base'))
+#'  # Load Data
+#'  data(ex_rtdata)
+#'  data(ex_timematrix)
+#'
+#'  # Calc price differences
+#'  price_diff <- ex_rtdata$price_2 - ex_rtdata$price_1
+#'
+#'  # Calculate model
+#'  rt_model <- rtModel(rt_df = ex_rtdata,
+#'                      price_diff = price_diff,
+#'                      time_matrix = ex_timematrix,
+#'                      estimator = structure('base', class='base'))
 #' @export
-
-## Generic Method
 
 rtModel <- function(rt_df,
                     time_matrix,
@@ -60,7 +67,8 @@ rtModel <- function(rt_df,
 }
 
 #' @title rtModel.base
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
+#' @section Further Details:
+#' See `?rtModel` for more information
 #' @export
 
 rtModel.base <- function(rt_df,
@@ -81,7 +89,8 @@ rtModel.base <- function(rt_df,
 }
 
 #' @title rtModel.robust
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
+#' @section Further Details:
+#' See `?hedModel` for more information
 #' @export
 
 rtModel.robust <- function(rt_df,
@@ -109,7 +118,8 @@ rtModel.robust <- function(rt_df,
 }
 
 #' @title rtModel.weighted
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
+#' @section Further Details:
+#' See `?hedModel` for more information
 #' @export
 
 rtModel.weighted <- function(rt_df,

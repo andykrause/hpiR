@@ -18,18 +18,24 @@ hedModel(estimator, hed_df, hed_spec, ...)
 \item{price_diff}{Difference in price betwen the two sales}
 }
 \value{
-rs model object
+`hedmodel` object: model object of the estimator (ex.: `lm`)
 }
 \description{
 Estimate repeat sales model (method based on estimator class). Generic method.
 }
 \section{Further Details}{
 
+`estimator` argument must be in a class of 'base', 'weighted' or 'robust'
+
+This function is not generally called directly, but rather from `hpiModel()`
 }
 
 \examples{
-rs_model <- rsModel(estimator = 'base',
-                    rs_df = rs_sales,
-                    time_matrix = time_matrix,
-                    price_diff = price_diff)
+# Load Data
+data(ex_heddata)
+
+# Estimate Model
+hed_model <- hedModel(estimator = structure('base', class = 'base'),
+                      hed_df = ex_heddata,
+                      hed_spec = as.formula(log(price) ~ baths + tot_sf))
 }

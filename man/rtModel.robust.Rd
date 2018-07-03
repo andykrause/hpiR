@@ -6,6 +6,8 @@
 \usage{
 \method{rtModel}{robust}(rt_df, time_matrix, price_diff, estimator, ...)
 }
-\description{
-Estimate repeat sales model (method based on estimator class). Generic method.
+\section{Further Details}{
+
+See `?hedModel` for more information
 }
+
