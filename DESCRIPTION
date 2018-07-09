@@ -1,7 +1,7 @@
 Package: hpiR
 Type: Package
 Title: House Price Indexes in R
-Version: 0.1.0
+Version: 0.2.0
 Author: c(person('Andy', 'Krause', role=c('aut', 'cre'), 
     email=akrause@greenfieladadvisors.com))
 Maintainer: Andy Krause <andy@greenfieldadvisors.com>
