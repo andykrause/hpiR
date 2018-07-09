@@ -21,9 +21,11 @@ hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 }
 \value{
 `hpi`` object.  S3 list with:
-\item{data: `hpidata` object}
-\item{model: `hpimodel` object}
-\item{index: `hpiindex` object}
+\describe{
+\item{data}{`hpidata` object}
+\item{model}{`hpimodel` object}
+\item{index}{`hpiindex` object}
+}
 }
 \description{
 Creates a house price (rent) index from a set of transactions using the

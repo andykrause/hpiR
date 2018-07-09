@@ -8,9 +8,11 @@
 #' @param smooth default = FALSE; Calculate on the smoothed index?
 #' @param ... Additional arguments
 #' @return an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
-#' \item{roll: volatility at each rolling point}
-#' \item{mean: overall mean volatility}
-#' \item{median: overall median volatility}
+#' \describe{
+#' \item{roll}{ volatility at each rolling point}
+#' \item{mean}{overall mean volatility}
+#' \item{median}{overall median volatility}
+#' }
 #' @section Further Details:
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.

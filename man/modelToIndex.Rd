@@ -15,11 +15,11 @@ modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 }
 \value{
 `hpiindex` object containing:
-\item{name: vector of period names}
-\item{numeric: vector of period in numeric form}
-\item{period: vector of period numbers}
-\item{value: `ts` object of the index values}
-\item{imputed: vector of binary values indicating imputation}
+\item{name}{vector of period names}
+\item{numeric}{vector of period in numeric form}
+\item{period}{vector of period numbers}
+\item{value}{`ts` object of the index values}
+\item{imputed}{vector of binary values indicating imputation}
 }
 \description{
 Converts model results into a house price index

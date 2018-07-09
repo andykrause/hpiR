@@ -4,11 +4,11 @@
 #' @param max_period Maximum number of periods that should have been estimated.
 #' @param ... Additional arguments
 #' @return `hpiindex` object containing:
-#' \item{name: vector of period names}
-#' \item{numeric: vector of period in numeric form}
-#' \item{period: vector of period numbers}
-#' \item{value: `ts` object of the index values}
-#' \item{imputed: vector of binary values indicating imputation}
+#' \item{name}{vector of period names}
+#' \item{numeric}{vector of period in numeric form}
+#' \item{period}{vector of period numbers}
+#' \item{value}{`ts` object of the index values}
+#' \item{imputed}{vector of binary values indicating imputation}
 #' @examples
 #' # Load Data
 #' data(ex_hpimodel)

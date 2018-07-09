@@ -19,14 +19,16 @@ hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
 }
 \value{
 hpimodel object consisting of:
-\item{estimator}
-\item{coefficients}
-\item{model_obj: class `rtmodel` or `hedmodel`}
-\item{mod_spec}
-\item{log_dep}
-\item{base_price}
-\item{periods: `data.frame` of periods}
-\item{approach: type of model used}
+\describe{
+\item{estimator}{Type of estimator}
+\item{coefficients}{Data.frame of coeeficient}
+\item{model_obj}{class `rtmodel` or `hedmodel`}
+\item{mod_spec}{Full model specification}
+\item{log_dep}{Binary: is the dependent variable in logged format}
+\item{base_price}{Mean price in the base period}
+\item{periods}{`data.frame` of periods}
+\item{approach}{Type of model used}
+}
 }
 \description{
 Estimate the model for any method of house price index.  Generic method.

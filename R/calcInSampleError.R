@@ -5,10 +5,12 @@
 #' @param index Index (of class) to be tested for accuracy
 #' @param ... Additional Arguments
 #' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
-#' \item{prop_id}
-#' \item{pred_price}
-#' \item{pred_error}
-#' \item{pred_period}
+#' \describe{
+#' \item{prop_id}{Property Identification number}
+#' \item{pred_price}{Predicted price}
+#' \item{pred_error}{(Prediction - Actual) / Actual}
+#' \item{pred_period}{Period of the prediction}
+#' }
 #' @section Further Details:
 #' In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
 #' @examples

@@ -19,9 +19,11 @@ calcRevision(series_obj)
 }
 \value{
 list containing:
-\item{period: Data.frame containing the period number, mean and median for that period}
-\item{mean: Mean revision for all periods}
-\item{median: Median revision for all periods}
+\describe{
+\item{period}{Data.frame containing the period number, mean and median for that period}
+\item{mean}{Mean revision for all periods}
+\item{median}{Median revision for all periods}
+}
 }
 \description{
 Estimate revision figures for a series of indexes

@@ -7,9 +7,11 @@
 #' @param smooth default = FALSE; use smoothed indexes
 #' @param ... Additional Arguments
 #' @return list containing:
-#' \item{period: Data.frame containing the period number, mean and median for that period}
-#' \item{mean: Mean revision for all periods}
-#' \item{median: Median revision for all periods}
+#' \describe{
+#' \item{period}{Data.frame containing the period number, mean and median for that period}
+#' \item{mean}{Mean revision for all periods}
+#' \item{median}{Median revision for all periods}
+#' }
 #' @section Further Details:
 #' The revision object can be generate "in place" inside of the `serieshpi` object by setting `in_place` equal to TRUE.
 #' @examples

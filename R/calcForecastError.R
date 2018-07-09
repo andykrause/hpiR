@@ -7,10 +7,12 @@
 #' @param forecast_length default = 1; Length of period(s) in time to forecast
 #' @param ... Additional Arguments
 #' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
-#' \item{prop_id}
-#' \item{pred_price}
-#' \item{pred_error}
-#' \item{pred_period}
+#' \describe{
+#' \item{prop_id}{Property Identification number}
+#' \item{pred_price}{Predicted price}
+#' \item{pred_error}{(Prediction - Actual) / Actual}
+#' \item{pred_period}{Period of the prediction}
+#' }
 #' @section Further Details:
 #' If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
 #' in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')

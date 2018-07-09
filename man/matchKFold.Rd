@@ -13,8 +13,10 @@ matchKFold(train_df, pred_df)
 }
 \value{
 list
-\item{train} Training data
-\item{score} Scoring data
+\describe{
+\item{train}{Training data}
+\item{score}{Scoring data}
+}
 }
 \description{
 Makes specific selections of scoring data (Generic Method)

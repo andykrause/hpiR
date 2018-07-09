@@ -13,9 +13,11 @@ rtIndex(trans_df, ...)
 }
 \value{
 `hpi`` object.  S3 list with:
-\item{data: `hpidata` object}
-\item{model: `hpimodel` object}
-\item{index: `hpiindex` object}
+\describe{
+\item{data}{`hpidata` object}
+\item{model}{`hpimodel` object}
+\item{index}{`hpiindex` object}
+}
 }
 \description{
 Creates a house price index from a set of ttransactions using the

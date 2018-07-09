@@ -25,15 +25,16 @@ Depends:
     forecast,
     caret,
     gridExtra,
-    knitr
+    knitr,
+    MASS,
+    plyr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
     reshape2,
-URL: forthcoming (transition to github/andykrause/hpiR)
+URL: http://www.github/andykrause/hpiR
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown,
+Suggests: markdown,
     testthat
 VignetteBuilder: knitr

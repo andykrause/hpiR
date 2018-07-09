@@ -8,9 +8,11 @@
 #' @param hed_spec default = NULL, Full hedonic model specification
 #' @param ... Additional Arguments
 #' @return `hpi`` object.  S3 list with:
-#' \item{data: `hpidata` object}
-#' \item{model: `hpimodel` object}
-#' \item{index: `hpiindex` object}
+#' \describe{
+#' \item{data}{`hpidata` object}
+#' \item{model}{`hpimodel` object}
+#' \item{index}{`hpiindex` object}
+#' }
 #' @section Further Details:
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.

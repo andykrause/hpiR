@@ -15,8 +15,10 @@ createKFoldData(score_ids, full_data, pred_df)
 }
 \value{
 list
-\item{train} Training data.frame
-\item{score} Scoring data.frame
+\describe{
+\item{train}{Training data.frame}
+\item{score}{Scoring data.frame}
+}
 }
 \description{
 Create the datasets for the kfold error testing (Generic Method)

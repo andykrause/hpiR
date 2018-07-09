@@ -21,10 +21,12 @@ calcKFoldError(hpi_obj, pred_df, k, seed)
 }
 \value{
 object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
-\item{prop_id}
-\item{pred_price}
-\item{pred_error}
-\item{pred_period}
+\describe{
+\item{prop_id}{Property Identification number}
+\item{pred_price}{Predicted price}
+\item{pred_error}{(Prediction - Actual) / Actual}
+\item{pred_period}{Period of the prediction}
+}
 }
 \description{
 Estimate out-of-sample index errors using a KFold process

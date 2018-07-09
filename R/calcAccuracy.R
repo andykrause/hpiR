@@ -10,10 +10,12 @@
 #' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
 #' @return object of class `indexaccuracy` inheriting from class `data.frame` containing the following fields:
-#' \item{prop_id}
-#' \item{pred_price}
-#' \item{pred_error}
-#' \item{pred_period}
+#' \describe{
+#' \item{prop_id}{Property Identification number}
+#' \item{pred_price}{Predicted price}
+#' \item{pred_error}{(Prediction - Actual) / Actual}
+#' \item{pred_period}{Period of the prediction}
+#' }
 #' @section Further Details:
 #' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
 #' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
