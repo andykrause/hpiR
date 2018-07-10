@@ -26,7 +26,7 @@ plot.hpiindex <- function(index_obj,
                          stringsAsFactors=FALSE)
 
   ## Make the base plot object
-  gg_obj <- ggplot(hpi_data, aes(x=x, y=y)) +
+  gg_obj <- ggplot(hpi_data, aes_string(x="x", y="y")) +
     geom_line(size=1.1, color='gray40') +
     ylab("Index Value\n") +
     xlab('\nTime Period')
@@ -37,9 +37,9 @@ plot.hpiindex <- function(index_obj,
 
     gg_obj <- gg_obj +
       geom_point(data=hpi_data,
-                 aes(x=x, y=y,
-                     color=as.factor(imp),
-                     size=imp)) +
+                 aes_string(x="x", y="y",
+                     color="as.factor(imp)",
+                     size="imp")) +
       scale_color_manual(values=c('black', 'red')) +
       theme(legend.position="none")
   }
@@ -54,7 +54,7 @@ plot.hpiindex <- function(index_obj,
 
       gg_obj <- gg_obj +
         geom_line(data=sm_data,
-                  aes(x=x, y=y),
+                  aes_string(x="x", y="y"),
                   size=1.3,
                   linetype=1,
                   color='red')
@@ -115,7 +115,7 @@ plot.indexvolatility <- function(vol_obj){
                         stringsAsFactors=FALSE)
 
   # Plot base volatility
-  vol_plot <- ggplot(data_df, aes(x=time_period, y=volatility)) +
+  vol_plot <- ggplot(data_df, aes_string(x="time_period", y="volatility")) +
     geom_line(color='navy', size=2) +
     ylab('Volatility\n') +
     xlab('\nTime Period') +
@@ -150,16 +150,16 @@ plot.hpiaccuracy <- function(accr_obj,
   p_cnt <- length(unique(accr_obj$pred_period))
 
   # Make the absolute box plot
-  bar_abs <- ggplot(accr_obj, aes(x=as.factor(pred_period),
-                                   y=abs(pred_error)), alpha=.5) +
+  bar_abs <- ggplot(accr_obj, aes_string(x="as.factor(pred_period)",
+                                          y="abs(pred_error)"), alpha=.5) +
     geom_boxplot(fill='lightblue') +
     coord_cartesian(ylim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
     ylab('Absolute Error') +
     xlab('Time Period')
 
   # Make the magnitude box plot
-  bar_mag <- ggplot(accr_obj, aes(x=as.factor(pred_period),
-                                   y=pred_error), alpha=.5) +
+  bar_mag <- ggplot(accr_obj, aes_string(x="as.factor(pred_period)",
+                                         y="pred_error"), alpha=.5) +
     geom_boxplot(fill='salmon') +
     coord_cartesian(ylim=c(quantile(accr_obj$pred_error, .01),
                            quantile(accr_obj$pred_error, .99))) +
@@ -179,14 +179,14 @@ plot.hpiaccuracy <- function(accr_obj,
   }
 
   # Make absolute density plot
-  dens_abs <- ggplot(accr_obj, aes(x=abs(pred_error)), alpha=.5) +
+  dens_abs <- ggplot(accr_obj, aes(x="abs(pred_error)"), alpha=.5) +
     geom_density(fill='lightblue') +
     coord_cartesian(xlim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
     xlab('Absolute Error') +
     ylab('Density of Error')
 
   # Make magnitude density plot
-  dens_mag <- ggplot(accr_obj, aes(x=pred_error), alpha=.5) +
+  dens_mag <- ggplot(accr_obj, aes(x="pred_error"), alpha=.5) +
     geom_density(fill='salmon') +
     coord_cartesian(xlim=c(quantile(accr_obj$pred_error, .01),
                            quantile(accr_obj$pred_error, .99))) +
@@ -269,7 +269,7 @@ plot.serieshpi<- function(series_obj,
 
   # Plot canvas
   series_plot <- ggplot(blank_df,
-                        aes(x=time_period, y=value))
+                        aes_string(x="time_period", y="value"))
 
   # Plot each of the non-terminal indexes
   for(i in 1:length(indexes_.)){
@@ -278,7 +278,7 @@ plot.serieshpi<- function(series_obj,
                           y=as.numeric(indexes_.[[i]][[index_name]]),
                           stringsAsFactors=FALSE)
     series_plot <- series_plot + geom_line(data=data_df,
-                                           aes(x=x,y=y),
+                                           aes_string(x="x",y="y"),
                                            color='gray70')
   }
 
@@ -288,7 +288,7 @@ plot.serieshpi<- function(series_obj,
                         stringsAsFactors=FALSE)
 
   series_plot <- series_plot + geom_line(data=data_df,
-                                         aes(x=x,y=y),
+                                         aes_string(x="x",y="y"),
                                          color='red',
                                          size=2) +
     ylab('Index Value\n') +
@@ -329,9 +329,10 @@ plot.seriesrevision <- function(rev_obj,
 
   # Create Plot
   plot_data <- plot_data %>%
-    dplyr::mutate(col = ifelse(revision > 0, 1, 0))
+    dplyr::mutate(col = ifelse(.data$revision > 0, 1, 0))
 
-  rev_plot <- ggplot(plot_data, aes(x=period, y=revision, fill=as.factor(col),
+  rev_plot <- ggplot(plot_data, aes_string(x="period", y="revision",
+                                    fill="as.factor(col)",
                                     alpha=.5)) +
     geom_bar(stat='identity') +
     scale_fill_manual(values=c('red', 'blue')) +

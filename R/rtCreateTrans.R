@@ -88,10 +88,10 @@ rtCreateTrans <- function(trans_df,
                   trans_period,
                   price = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, trans_period, desc(price)) %>%
+    dplyr::arrange(prop_id, .data$trans_period, desc(price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', trans_period)))
+    dplyr::filter(!duplicated(paste0(prop_id, '_', .data$trans_period)))
 
   ## Make count of occurances for each property and keep those with 2 or more sales
 
@@ -119,8 +119,8 @@ rtCreateTrans <- function(trans_df,
 
     # Extract original sales and arrange by id, then time
     x_df <- trans_df %>%
-      dplyr::filter(prop_id %in% rt2$prop_id) %>%
-      dplyr::arrange(prop_id, trans_period)
+      dplyr::filter(., prop_id %in% rt2$prop_id) %>%
+      dplyr::arrange(., prop_id, .data$trans_period)
 
     # Separate into first and second sale
     id_1 <- !duplicated(x_df$prop_id)
@@ -138,7 +138,7 @@ rtCreateTrans <- function(trans_df,
 
     # Check for sf object, if so add geometry back on
     if ('sf' %in% class(x_df)){
-      d2 <- st_as_sf(d2, geometry=x_df$geometry[which(id_1)])
+      d2 <- sf::st_as_sf(d2, geometry=x_df$geometry[which(id_1)])
     }
 
   } else {
@@ -160,14 +160,14 @@ rtCreateTrans <- function(trans_df,
       dplyr::select(prop_id, trans_id1='1', trans_id2='2') %>%
 
       # Add time and price
-      dplyr::mutate(period_1 = x_df$trans_period[match(trans_id1, x_df$trans_id)]) %>%
-      dplyr::mutate(period_2 = x_df$trans_period[match(trans_id2, x_df$trans_id)]) %>%
-      dplyr::mutate(price_1 = x_df$price[match(trans_id1, x_df$trans_id)]) %>%
-      dplyr::mutate(price_2 = x_df$price[match(trans_id2, x_df$trans_id)])
+      dplyr::mutate(period_1 = x_df$trans_period[match(.data$trans_id1, x_df$trans_id)]) %>%
+      dplyr::mutate(period_2 = x_df$trans_period[match(.data$trans_id2, x_df$trans_id)]) %>%
+      dplyr::mutate(price_1 = x_df$price[match(.data$trans_id1, x_df$trans_id)]) %>%
+      dplyr::mutate(price_2 = x_df$price[match(.data$trans_id2, x_df$trans_id)])
 
     # Check for sf object, if so add geometry back on
     if ('sf' %in% class(x_df)){
-      d3 <- st_as_sf(d3, geometry=x_df$geometry[match(d3$prop_id,
+      d3 <- sf::st_as_sf(d3, geometry=x_df$geometry[match(d3$prop_id,
                                                       x_df$prop_id)])
     }
 
@@ -179,12 +179,12 @@ rtCreateTrans <- function(trans_df,
 
   # Combine and order
   rt_df <- rbind(d2, d3) %>%
-    dplyr::arrange(prop_id, period_1, period_2)
+    dplyr::arrange(prop_id, .data$period_1, .data$period_2)
 
   # Check for sequential only
   if (seq_only){
     rt_df <- rt_df %>%
-      dplyr::filter(!duplicated(trans_id1))
+      dplyr::filter(!duplicated(.data$trans_id1))
   }
 
   # Add Unique Id

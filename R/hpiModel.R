@@ -17,6 +17,7 @@
 #' \item{periods}{`data.frame` of periods}
 #' \item{approach}{Type of model used}
 #' }
+#' @importFrom stats as.formula
 #' @examples
 #' # Load Data
 #'  data(ex_rtdata)
@@ -149,11 +150,11 @@ hpiModel.rtdata <- function(hpi_df,
 #' @usage Lorem Ipsum...
 #' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
+#' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param hed_spec default=NULL; hedonic model specification
 #' @param dep_var default=NULL; dependent variable of the model
 #' @param ind_var default=NULL; independent variable(s) of the model
 #' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
-#' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param ... Additional Arguments
 #' @return hpimodel object consisting of:
 #' \describe{
@@ -181,10 +182,10 @@ hpiModel.rtdata <- function(hpi_df,
 hpiModel.heddata <- function(hpi_df,
                              estimator='base',
                              log_dep=TRUE,
+                             trim_model=TRUE,
                              hed_spec=NULL,
                              dep_var=NULL,
                              ind_var=NULL,
-                             trim_model=TRUE,
                              ...){
 
   # Create specification
@@ -205,7 +206,7 @@ hpiModel.heddata <- function(hpi_df,
     if(log_dep){
       dep_var <- paste0('log(', dep_var, ')')
     }
-    hed_spec <- as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
+    hed_spec <- stats::as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
                            '+ as.factor(trans_period)'))
   }
 

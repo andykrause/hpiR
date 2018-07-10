@@ -10,6 +10,10 @@
 #' @return original data frame (`trans_df` object) with two new fields:
 #' trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
 #' trans_date: properly formated transaction date
+#' @importFrom lubridate year
+#' @importFrom lubridate month
+#' @importFrom lubridate week
+#' @importFrom lubridate quarter
 #' @section Further Details:
 #' "trans_period" counts from the minimum transaction date provided.  As such the period counts
 #' are relative, not absolute
@@ -224,6 +228,7 @@ dateToPeriod <- function(trans_df,
 #' @description Checks and converts date arguments into proper format
 #' @param x_date Date string or vector
 #' @param name Name of argument to return in error/warning message
+#' @importFrom lubridate as_date
 #' @return Adjusted date field
 #' @examples
 #' # Load Data

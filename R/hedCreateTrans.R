@@ -9,6 +9,11 @@
 #' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
 #' Only necessary if not passing a `hpidata` object
+#' @importFrom dplyr rename
+#' @importFrom dplyr rename_
+#' @importFrom dplyr arrange
+#' @importFrom dplyr filter
+#' @importFrom dplyr desc
 #' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `hed` object
 #' @examples
@@ -69,10 +74,10 @@ hedCreateTrans <- function(trans_df,
                    'trans_id' = trans_id,
                    'price' = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, trans_period, desc(price)) %>%
+    dplyr::arrange(.data$prop_id, .data$trans_period, dplyr::desc(.data$price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', trans_period)))
+    dplyr::filter(!duplicated(paste0(prop_id, '_', .data$trans_period)))
 
   # Add period table
   attr(hed_df, 'period_table') <- attr(trans_df, 'period_table')

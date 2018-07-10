@@ -13,6 +13,8 @@
 #' \item{mean}{overall mean volatility}
 #' \item{median}{overall median volatility}
 #' }
+#' @importFrom zoo rollapply
+#' @importFrom stats median
 #' @section Further Details:
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
@@ -125,6 +127,7 @@ calcVolatility <- function(index,
 #' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
 #' @param ... Additional Arguments
 #' @return `serieshpi` object
+#' @importFrom purrr map
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples

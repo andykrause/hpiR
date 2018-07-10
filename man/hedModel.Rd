@@ -26,7 +26,6 @@ Estimate repeat sales model (method based on estimator class). Generic method.
 \section{Further Details}{
 
 `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
-
 This function is not generally called directly, but rather from `hpiModel()`
 }
 

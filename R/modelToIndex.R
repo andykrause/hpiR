@@ -9,6 +9,9 @@
 #' \item{period}{vector of period numbers}
 #' \item{value}{`ts` object of the index values}
 #' \item{imputed}{vector of binary values indicating imputation}
+#' @importFrom stats ts
+#' @importFrom imputeTS na.locf
+#' @importFrom imputeTS na.interpolation
 #' @examples
 #' # Load Data
 #' data(ex_hpimodel)
@@ -86,9 +89,9 @@ modelToIndex <- function(model_obj,
   }
 
   # Convert to a time series (ts) object
-  index <- ts(data=index_value,
-              start=min(coef_df$time, na.rm=TRUE),
-              end=max_period)
+  index <- stats::ts(data=index_value,
+                     start=min(coef_df$time, na.rm=TRUE),
+                     end=max_period)
 
   # Set as classed list and return
   structure(list(name = model_obj$periods$name[1:max_period],

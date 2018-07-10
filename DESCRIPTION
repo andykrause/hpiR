@@ -9,17 +9,17 @@ Description: Compute house price indexes using a variety of different methods an
     models common through the real estate literature.  Evaluate index 'goodness' based
     on accuracy, volatility and revision statistics.
 Depends:
-    R (>= 3.1.0),
+    R (>= 3.1.0)
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
     dplyr,
     magrittr,
     lubridate,
     robustbase,
     ggplot2,
-    stringi,
-    stats,
-    utils,
     sf,
-    zoo,
     imputeTS,
     purrr,
     forecast,
@@ -27,12 +27,9 @@ Depends:
     gridExtra,
     knitr,
     MASS,
-    plyr
-License: GPL-3
-Encoding: UTF-8
-LazyData: true
-Imports:
-    reshape2,
+    rlang,
+    plyr,
+    zoo
 URL: http://www.github/andykrause/hpiR
 RoxygenNote: 6.0.1
 Suggests: markdown,

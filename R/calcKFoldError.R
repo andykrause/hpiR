@@ -14,6 +14,11 @@
 #' \item{pred_error}{(Prediction - Actual) / Actual}
 #' \item{pred_period}{Period of the prediction}
 #' }
+#' @importFrom purrr map
+#' @importFrom purrr map2
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr filter
+#' @importFrom caret createFolds
 #' @examples
 #' # Load data
 #'   data(ex_hpi)
@@ -110,7 +115,7 @@ calcKFoldError <- function(hpi_obj,
 
   # Bind results together and return
   accr_df <- dplyr::bind_rows(k_error) %>%
-    dplyr::filter(!is.na(prop_id))
+    dplyr::filter(!is.na(.data$prop_id))
 
   class(accr_df) <- unique(c('hpiaccuracy', class(accr_df)))
   attr(accr_df, 'test_method') <- 'kfold'

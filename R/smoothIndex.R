@@ -6,6 +6,9 @@
 #' @param in_place default = FALSE; adds smoothed index to the `hpiindex` object
 #' @param ... Additional Arguments
 #' @return a `ts`` and 'smooth_index` object with smoothed index
+#' @importFrom forecast ma
+#' @importFrom forecast ets
+#'
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
@@ -100,6 +103,7 @@ smoothIndex <- function(index_obj,
 #' @param order Number of nearby period to smooth with
 #' @param ... Additional Arguments
 #' @return a `serieshpi` object with a smoothed index in each `hpiindex` object
+#' @importFrom purrr map
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples

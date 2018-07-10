@@ -82,6 +82,7 @@ Begin by loading the `hpiR` package. We'll assume that you've followed the instr
 
   suppressMessages(suppressWarnings(library(hpiR)))
   suppressMessages(suppressWarnings(library(knitr)))
+  suppressMessages(suppressWarnings(library(magrittr)))
 
 ```
 

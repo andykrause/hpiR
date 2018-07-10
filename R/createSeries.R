@@ -6,6 +6,8 @@
 #' @param max_period default=NULL; Maximum number of periods to create the index up to
 #' @param ... Additional Arguments
 #' @return An `hpiseries` object -- a list of `hpiindex` objects.
+#' @importFrom purrr map
+#' @importFrom purrr map2
 #' @section Further Details:
 #' `train_peried` Represents the shortest index that you will create. For certain approaches
 #' , such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.

@@ -12,6 +12,8 @@
 #' \item{mean}{Mean revision for all periods}
 #' \item{median}{Median revision for all periods}
 #' }
+#' @importFrom purrr map
+#' @importFrom purrr transpose
 #' @section Further Details:
 #' The revision object can be generate "in place" inside of the `serieshpi` object by setting `in_place` equal to TRUE.
 #' @examples

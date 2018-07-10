@@ -6,9 +6,14 @@
 #' @param price_diff Difference in price betwen the two sales
 #' @param ... Additional arguments
 #' @return `hedmodel` object: model object of the estimator (ex.: `lm`)
+#' @importFrom utils methods
+#' @importFrom stats median
+#' @importFrom stats lm
+#' @importFrom stats as.formula
+#' @importFrom MASS rlm
+#' @importFrom robustbase lmrob
 #' @section Further Details:
 #' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
-#'
 #' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
 #' # Load Data
@@ -34,7 +39,7 @@ hedModel <- function(estimator,
   }
 
   # Check that class is available
-  if (!paste0('hedModel.', class(estimator)) %in% methods(hedModel)){
+  if (!paste0('hedModel.', class(estimator)) %in% utils::methods(hedModel)){
     message('\nInvalid estimator type: "', class(estimator), '" method not available.')
     stop()
   }
@@ -62,8 +67,8 @@ hedModel.base <- function(estimator,
                           ...){
 
   # Estimate model
-  hed_model <- lm(hed_spec,
-                  data=hed_df)
+  hed_model <- stats::lm(hed_spec,
+                         data=hed_df)
 
   # Add class
   class(hed_model) <- 'hedmodel'
@@ -84,7 +89,7 @@ hedModel.robust <- function(estimator,
                             ...){
 
   # Determine 'sparseness' of the data
-  time_size <- median(table(hed_df$trans_period))
+  time_size <- stats::median(table(hed_df$trans_period))
 
   # Use different robust packages based on sparseness
   if(time_size > 5){
@@ -122,7 +127,7 @@ hedModel.weighted <- function(estimator,
   attr(hed_spec, '.Environment') <- environment()
 
   # Estimate model
-  hed_model <- lm(as.formula(hed_spec), data=hed_df, weights=wgts)
+  hed_model <- stats::lm(stats::as.formula(hed_spec), data=hed_df, weights=wgts)
 
   # Add class
   class(hed_model) <- 'hedmodel'

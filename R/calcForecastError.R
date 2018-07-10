@@ -13,6 +13,14 @@
 #' \item{pred_error}{(Prediction - Actual) / Actual}
 #' \item{pred_period}{Period of the prediction}
 #' }
+#' @importFrom purrr map
+#' @importFrom purrr map2
+#' @importFrom forecast forecast
+#' @importFrom forecast ets
+#' @importFrom stats ts
+#' @importFrom stats start
+#' @importFrom stats end
+#' @importFrom stats frequency
 #' @section Further Details:
 #' If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
 #' in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')
@@ -53,8 +61,8 @@ calcForecastError <- function(is_obj,
   }
 
   # Set start and end
-  start <- end(is_obj$hpis[[1]]$index$value)[1] + 1
-  end <- end(is_obj$hpis[[length(is_obj$hpis)]]$index$value)[1] + 1
+  start <- stats::end(is_obj$hpis[[1]]$index$value)[1] + 1
+  end <- stats::end(is_obj$hpis[[length(is_obj$hpis)]]$index$value)[1] + 1
   time_range <- start:end
 
   # Get data
@@ -80,10 +88,12 @@ calcForecastError <- function(is_obj,
 
   fc_forecasts <- purrr::map(.x=is_obj$hpis,
                              .f=function(x){
-                                 new_x <- forecast(ets(x$index[[index_name]],
+                                 new_x <- forecast::forecast(
+                                   forecast::ets(x$index[[index_name]],
                                                        model='ANN'), h=forecast_length)
-                                 ts(c(x$index[[index_name]], new_x$mean), start=start(x),
-                                                   frequency=frequency(x))
+                                 stats::ts(c(x$index[[index_name]], new_x$mean),
+                                           start=stats::start(x),
+                                           frequency=stats::frequency(x))
                               }
                            )
 
@@ -96,7 +106,7 @@ calcForecastError <- function(is_obj,
                                               index=y)
                             })
 
-  error_df <- bind_rows(fc_error)
+  error_df <- dplyr::bind_rows(fc_error)
   class(error_df) <- unique(c('seriesaccuracy', 'hpiaccuracy', class(error_df)))
   attr(error_df, 'test_method') <- 'forecast'
 

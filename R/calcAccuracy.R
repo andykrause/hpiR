@@ -16,6 +16,7 @@
 #' \item{pred_error}{(Prediction - Actual) / Actual}
 #' \item{pred_period}{Period of the prediction}
 #' }
+#' @importFrom dplyr filter
 #' @section Further Details:
 #' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
 #' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
@@ -82,7 +83,7 @@ calcAccuracy <- function(hpi_obj,
       message("Trimming prediction date down to period ", max(hpi_obj$index$period),
               " and before.")
       pred_df <- pred_df %>%
-        dplyr::filter(period_2 <= max(hpi_obj$index$period))
+        dplyr::filter(.data$period_2 <= max(hpi_obj$index$period))
       class(pred_df) <- c('rtdata', 'data.frame')
     }
   }
@@ -132,6 +133,11 @@ calcAccuracy <- function(hpi_obj,
 #' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
 #' @return `seriesaccuracy` object (unless calculated 'in_place')
+#' @importFrom purrr map
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarize
+#' @importFrom dplyr ungroup
 #' @section Further Details:
 #' Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results will have more than
 #' one accuracy estimate per observations.  Setting `summarize = TRUE` will take the mean accuracy
@@ -219,9 +225,9 @@ calcSeriesAccuracy <- function(series_obj,
     # If summarizing
     if (summarize){
       accr_df <- accr_df %>%
-        dplyr::group_by(prop_id, pred_period) %>%
-        dplyr::summarize(pred_price = mean(pred_price),
-                  pred_error = mean(pred_error),
+        dplyr::group_by(.data$prop_id, .data$pred_period) %>%
+        dplyr::summarize(pred_price = mean(.data$pred_price),
+                  pred_error = mean(.data$pred_error),
                   series = 0) %>%
         dplyr::ungroup()
     }

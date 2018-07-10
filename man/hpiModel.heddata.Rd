@@ -13,13 +13,13 @@ Lorem Ipsum...
 
 \item{log_dep}{default=TRUE; should the dependent variable (change in price) be logged?}
 
+\item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
+
 \item{hed_spec}{default=NULL; hedonic model specification}
 
 \item{dep_var}{default=NULL; dependent variable of the model}
 
 \item{ind_var}{default=NULL; independent variable(s) of the model}
-
-\item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
 
 \item{...}{Additional Arguments}
 }
