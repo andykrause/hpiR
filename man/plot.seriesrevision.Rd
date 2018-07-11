@@ -4,10 +4,10 @@
 \alias{plot.seriesrevision}
 \title{plot.seriesrevision}
 \usage{
-plot(rev_obj)
+plot(x)
 }
 \arguments{
-\item{rev_obj}{Object of class `seriesrevision`}
+\item{x}{Object to plot of class `seriesrevision`}
 }
 \value{
 `plotrevision` object inheriting from a ggplot object

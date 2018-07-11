@@ -14,6 +14,7 @@
 #' @importFrom dplyr arrange
 #' @importFrom dplyr filter
 #' @importFrom dplyr desc
+#' @importFrom magrittr %>%
 #' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `hed` object
 #' @examples
@@ -74,7 +75,7 @@ hedCreateTrans <- function(trans_df,
                    'trans_id' = trans_id,
                    'price' = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(.data$prop_id, .data$trans_period, dplyr::desc(.data$price)) %>%
+    dplyr::arrange(prop_id, .data$trans_period, dplyr::desc(price)) %>%
 
     # Remove any properties sold twice in same time period
     dplyr::filter(!duplicated(paste0(prop_id, '_', .data$trans_period)))

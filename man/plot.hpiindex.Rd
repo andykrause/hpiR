@@ -7,7 +7,7 @@
 plot(hpiindex_obj, show_imputed, smooth, ...)
 }
 \arguments{
-\item{index_obj}{Object of class `hpiindex``}
+\item{x}{Object to plot of class `hpiindex``}
 
 \item{show_imputed}{defautl = FALSE; highlight the imputed points}
 

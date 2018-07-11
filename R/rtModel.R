@@ -7,6 +7,13 @@
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
 #' @param ... Additional arguments
 #' @return `rtmodel` object
+#' @importFrom stats lm
+#' @importFrom stats fitted
+#' @importFrom stats residuals
+#' @importFrom stats median
+#' @importFrom MASS rlm
+#' @importFrom robustbase lmrob
+#' @importFrom utils methods
 #' @section Further Details:
 #' @examples
 #'  # Load Data
@@ -50,7 +57,7 @@ rtModel <- function(rt_df,
   }
 
   # Check that class is available
-  if (!paste0('rtModel.', class(estimator)) %in% methods(rtModel)){
+  if (!paste0('rtModel.', class(estimator)) %in% utils::methods(rtModel)){
     message('\nInvalid estimator type: "', class(estimator), '" method not available.')
     stop()
   }
@@ -67,6 +74,7 @@ rtModel <- function(rt_df,
 }
 
 #' @title rtModel.base
+#' @importFrom stats lm
 #' @section Further Details:
 #' See `?rtModel` for more information
 #' @export
@@ -78,7 +86,7 @@ rtModel.base <- function(rt_df,
                          ...){
 
   # Estimate the model
-  rt_model <- lm(price_diff ~ time_matrix + 0)
+  rt_model <- stats::lm(price_diff ~ time_matrix + 0)
 
   # Assign Class
   class(rt_model) <- 'rtmodel'
@@ -89,6 +97,9 @@ rtModel.base <- function(rt_df,
 }
 
 #' @title rtModel.robust
+#' @importFrom stats median
+#' @importFrom MASS rlm
+#' @importFrom robustbase lmrob
 #' @section Further Details:
 #' See `?hedModel` for more information
 #' @export
@@ -100,7 +111,7 @@ rtModel.robust <- function(rt_df,
                            ...){
 
   # Determine 'sparseness' of the data
-  time_size <- median(table(c(rt_df$period_1, rt_df$period_2)))
+  time_size <- stats::median(table(c(rt_df$period_1, rt_df$period_2)))
 
   # Use different robust packages based on sparseness
   if(time_size > 5){
@@ -118,6 +129,9 @@ rtModel.robust <- function(rt_df,
 }
 
 #' @title rtModel.weighted
+#' @importFrom stats lm
+#' @importFrom stats residuals
+#' @importFrom stats fitted
 #' @section Further Details:
 #' See `?hedModel` for more information
 #' @export
@@ -129,18 +143,18 @@ rtModel.weighted <- function(rt_df,
                              ...){
 
   # Run base model
-  lm_model <- lm(price_diff ~ time_matrix + 0)
+  lm_model <- stats::lm(price_diff ~ time_matrix + 0)
 
   # Estimate impact of time dif on errors
   rt_df$time_diff <- rt_df$period_2 - rt_df$period_1
-  err_fit <- lm((residuals(lm_model) ^ 2) ~ rt_df$time_diff)
+  err_fit <- stats::lm((stats::residuals(lm_model) ^ 2) ~ rt_df$time_diff)
 
   # Implement weights
-  wgts <- fitted(err_fit)
+  wgts <- stats::fitted(err_fit)
   wgts <- ifelse(wgts > 0, 1 / wgts, 0)
 
   # Re-run model
-  rt_model <- lm(price_diff ~ time_matrix + 0, weights=wgts)
+  rt_model <- stats::lm(price_diff ~ time_matrix + 0, weights=wgts)
 
   # Add Class
   class(rt_model) <- 'rtmodel'

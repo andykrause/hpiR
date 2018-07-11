@@ -4,10 +4,10 @@
 \alias{plot.hpiaccuracy}
 \title{plot.hpiaccuracy}
 \usage{
-plot(accr_obj, return_plot, do_plot)
+plot(x=accr_obj, return_plot, do_plot)
 }
 \arguments{
-\item{accr_obj}{Object of class `hpiaccuracy``}
+\item{x}{Object to plot of class `hpiaccuracy``}
 
 \item{return_plot}{default = FALSE; Return the plot to the function call}
 

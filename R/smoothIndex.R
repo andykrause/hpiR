@@ -8,7 +8,7 @@
 #' @return a `ts`` and 'smooth_index` object with smoothed index
 #' @importFrom forecast ma
 #' @importFrom forecast ets
-#'
+#' @importFrom forecast forecast
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
@@ -70,7 +70,8 @@ smoothIndex <- function(index_obj,
 
   # Fill in High end NAs with forecasted values (off of smoothed)
   na_high <- na_smooth[na_smooth >= length(s_index) / 2]
-  high_fc <- forecast(ets(s_index[1:(na_high[1] - 1)], model='ANN'), h=length(na_high))
+  high_fc <- forecast::forecast(forecast::ets(s_index[1:(na_high[1] - 1)],
+                                              model='ANN'), h=length(na_high))
   new_high <- (high_fc$mean + index_obj$value[na_high]) / 2
   s_index[na_high] <- new_high
 

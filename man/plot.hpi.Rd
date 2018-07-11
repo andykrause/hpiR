@@ -7,7 +7,7 @@
 plot(hpi_obj, show-impute)
 }
 \arguments{
-\item{hpi_obj}{Object of class HPI}
+\item{x}{Object to plot of class `hpi`}
 
 \item{...}{Additional Arguments}
 }

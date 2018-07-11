@@ -4,10 +4,10 @@
 \alias{plot.seriesaccuracy}
 \title{plot.seriesaccuracy}
 \usage{
-plot(accr_obj, return_plot, ...)
+plot(x, return_plot, ...)
 }
 \arguments{
-\item{accr_obj}{Object of class `hpiaccuracy``}
+\item{x}{Object of class `hpiaccuracy``}
 
 \item{return_plot}{default = FALSE; Return the plot to the function call}
 

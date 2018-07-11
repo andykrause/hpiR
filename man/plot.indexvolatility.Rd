@@ -4,10 +4,10 @@
 \alias{plot.indexvolatility}
 \title{plot.indexvolatility}
 \usage{
-plot(vol_obj)
+plot(x=vol_obj)
 }
 \arguments{
-\item{vol_obj}{Object of class `indexvolatility``}
+\item{x}{Object to plot of class `indexvolatility``}
 }
 \value{
 `plotvolatility` object inheriting from a ggplot object

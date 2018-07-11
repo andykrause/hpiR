@@ -17,6 +17,8 @@
 #' \item{pred_period}{Period of the prediction}
 #' }
 #' @importFrom dplyr filter
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @section Further Details:
 #' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
 #' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
@@ -83,7 +85,7 @@ calcAccuracy <- function(hpi_obj,
       message("Trimming prediction date down to period ", max(hpi_obj$index$period),
               " and before.")
       pred_df <- pred_df %>%
-        dplyr::filter(.data$period_2 <= max(hpi_obj$index$period))
+        dplyr::filter(., .data$period_2 <= max(hpi_obj$index$period))
       class(pred_df) <- c('rtdata', 'data.frame')
     }
   }
@@ -134,6 +136,8 @@ calcAccuracy <- function(hpi_obj,
 #' @param ... Additional Arguments
 #' @return `seriesaccuracy` object (unless calculated 'in_place')
 #' @importFrom purrr map
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarize
@@ -225,10 +229,10 @@ calcSeriesAccuracy <- function(series_obj,
     # If summarizing
     if (summarize){
       accr_df <- accr_df %>%
-        dplyr::group_by(.data$prop_id, .data$pred_period) %>%
-        dplyr::summarize(pred_price = mean(.data$pred_price),
-                  pred_error = mean(.data$pred_error),
-                  series = 0) %>%
+        dplyr::group_by(., .data$prop_id, .data$pred_period) %>%
+        dplyr::summarize(., pred_price = mean(.data$pred_price),
+                            pred_error = mean(.data$pred_error),
+                            series = 0) %>%
         dplyr::ungroup()
     }
 

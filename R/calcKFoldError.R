@@ -18,6 +18,7 @@
 #' @importFrom purrr map2
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr filter
+#' @importFrom magrittr %>%
 #' @importFrom caret createFolds
 #' @examples
 #' # Load data

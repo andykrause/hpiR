@@ -1,10 +1,11 @@
 #' @title plot.hpiindex
 #' @description Simple Plot of an hpiindex object
 #' @usage plot(hpiindex_obj, show_imputed, smooth, ...)
-#' @param index_obj Object of class `hpiindex``
+#' @param x Object to plot of class `hpiindex``
 #' @param show_imputed defautl = FALSE; highlight the imputed points
 #' @param smooth default = FALSE; plot the smoothed index
 #' @param ... Additional Arguments
+#' @import ggplot2
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
 #' # Load data
@@ -14,15 +15,15 @@
 #'  plot(ex_hpiindex)
 #' @export
 
-plot.hpiindex <- function(index_obj,
+plot.hpiindex <- function(x,
                           show_imputed=FALSE,
                           smooth=FALSE,
                           ...){
 
   ## Extract Data
-  hpi_data <- data.frame(x=index_obj$numeric,
-                         y=as.numeric(index_obj$value),
-                         imp=index_obj$imputed,
+  hpi_data <- data.frame(x=x$numeric,
+                         y=as.numeric(x$value),
+                         imp=x$imputed,
                          stringsAsFactors=FALSE)
 
   ## Make the base plot object
@@ -46,10 +47,10 @@ plot.hpiindex <- function(index_obj,
 
   if (smooth){
 
-    if ('smooth' %in% names(index_obj)){
+    if ('smooth' %in% names(x)){
 
-      sm_data <- data.frame(x=index_obj$numeric,
-                            y=as.numeric(index_obj$smooth),
+      sm_data <- data.frame(x=x$numeric,
+                            y=as.numeric(x$smooth),
                             stringsAsFactors=FALSE)
 
       gg_obj <- gg_obj +
@@ -72,9 +73,11 @@ plot.hpiindex <- function(index_obj,
 #' @title plot.hpi
 #' @description Simple Plot of an HPI object
 #' @usage plot(hpi_obj, show-impute)
-#' @param hpi_obj Object of class HPI
+#' @param x Object to plot of class `hpi`
 #' @param ... Additional Arguments
 #' @return `plotindex` object inheriting from a ggplot object
+#' @import ggplot2
+#' @importFrom graphics plot
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
 #' @examples
@@ -86,18 +89,19 @@ plot.hpiindex <- function(index_obj,
 #' plot(ex_hpi, smooth = TRUE)
 #' @export
 
-plot.hpi <- function(hpi_obj,
+plot.hpi <- function(x,
                      ...){
 
-  plot(hpi_obj$index, ...)
+  plot(x$index, ...)
 
 }
 
 #' @title plot.indexvolatility
 #' @description Simple Plot of an indexvolatility object
-#' @usage plot(vol_obj)
-#' @param vol_obj Object of class `indexvolatility``
+#' @usage plot(x=vol_obj)
+#' @param x Object to plot of class `indexvolatility``
 #' @return `plotvolatility` object inheriting from a ggplot object
+#' @import ggplot2
 #' @examples
 #' # Load data
 #'  data(ex_indexvolatility)
@@ -106,12 +110,12 @@ plot.hpi <- function(hpi_obj,
 #'  plot(ex_indexvolatility)
 #' @export
 
-plot.indexvolatility <- function(vol_obj){
+plot.indexvolatility <- function(x, ...){
 
   # Set up dimensions
-  data_df <- data.frame(time_period=1:length(attr(vol_obj, 'orig')),
-                        volatility = c(rep(NA_integer_, attr(vol_obj, 'window')),
-                                       as.numeric(vol_obj$roll)),
+  data_df <- data.frame(time_period=1:length(attr(x, 'orig')),
+                        volatility = c(rep(NA_integer_, attr(x, 'window')),
+                                       as.numeric(x$roll)),
                         stringsAsFactors=FALSE)
 
   # Plot base volatility
@@ -119,8 +123,8 @@ plot.indexvolatility <- function(vol_obj){
     geom_line(color='navy', size=2) +
     ylab('Volatility\n') +
     xlab('\nTime Period') +
-    geom_hline(yintercept = vol_obj$mean, size=1, linetype = 2, color='gray50') +
-    geom_hline(yintercept = vol_obj$median, size=1, linetype = 3, color='gray50' )
+    geom_hline(yintercept = x$mean, size=1, linetype = 2, color='gray50') +
+    geom_hline(yintercept = x$median, size=1, linetype = 3, color='gray50' )
 
   # Return Plot
   structure(vol_plot, class = c('plotvolatility', class(vol_plot)))
@@ -129,11 +133,15 @@ plot.indexvolatility <- function(vol_obj){
 
 #' @title plot.hpiaccuracy
 #' @description Simple Plot of an hpiaccuracy object
-#' @usage plot(accr_obj, return_plot, do_plot)
-#' @param accr_obj Object of class `hpiaccuracy``
+#' @usage plot(x=accr_obj, return_plot, do_plot)
+#' @param x Object to plot of class `hpiaccuracy``
 #' @param return_plot default = FALSE; Return the plot to the function call
 #' @param do_plot default = FALSE; Execute plotting to terminal/console
 #' @return `plotaccuracy` object inheriting from a ggplot object
+#' @import ggplot2
+#' @importFrom graphics plot
+#' @importFrom stats quantile
+#' @importFrom gridExtra grid.arrange
 #' @examples
 #' # Load data
 #'  data(ex_hpiaccuracy)
@@ -142,34 +150,35 @@ plot.indexvolatility <- function(vol_obj){
 #'  plot(ex_hpiaccuracy)
 #' @export
 
-plot.hpiaccuracy <- function(accr_obj,
+plot.hpiaccuracy <- function(x,
                              return_plot = FALSE,
-                             do_plot=TRUE){
+                             do_plot = TRUE,
+                             ...){
 
   # Get period count
-  p_cnt <- length(unique(accr_obj$pred_period))
+  p_cnt <- length(unique(x$pred_period))
 
   # Make the absolute box plot
-  bar_abs <- ggplot(accr_obj, aes_string(x="as.factor(pred_period)",
+  bar_abs <- ggplot(x, aes_string(x="as.factor(pred_period)",
                                           y="abs(pred_error)"), alpha=.5) +
     geom_boxplot(fill='lightblue') +
-    coord_cartesian(ylim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
+    coord_cartesian(ylim=c(0, quantile(abs(x$pred_error),.99))) +
     ylab('Absolute Error') +
     xlab('Time Period')
 
   # Make the magnitude box plot
-  bar_mag <- ggplot(accr_obj, aes_string(x="as.factor(pred_period)",
+  bar_mag <- ggplot(x, aes_string(x="as.factor(pred_period)",
                                          y="pred_error"), alpha=.5) +
     geom_boxplot(fill='salmon') +
-    coord_cartesian(ylim=c(quantile(accr_obj$pred_error, .01),
-                           quantile(accr_obj$pred_error, .99))) +
+    coord_cartesian(ylim=c(stats::quantile(x$pred_error, .01),
+                           stats::quantile(x$pred_error, .99))) +
     ylab('Error') +
     xlab('Time Period')
 
   # Adjust axis if too many periods
   if (p_cnt > 12){
-    breaks <- seq(from=min(accr_obj$pred_period),
-                  to=max(accr_obj$pred_period),
+    breaks <- seq(from=min(x$pred_period),
+                  to=max(x$pred_period),
                   length.out=12)
     bar_abs <- bar_abs +
       scale_x_discrete(breaks=breaks)
@@ -179,17 +188,17 @@ plot.hpiaccuracy <- function(accr_obj,
   }
 
   # Make absolute density plot
-  dens_abs <- ggplot(accr_obj, aes(x="abs(pred_error)"), alpha=.5) +
+  dens_abs <- ggplot(x, aes(x="abs(pred_error)"), alpha=.5) +
     geom_density(fill='lightblue') +
-    coord_cartesian(xlim=c(0, quantile(abs(accr_obj$pred_error),.99))) +
+    coord_cartesian(xlim=c(0, stats::quantile(abs(x$pred_error),.99))) +
     xlab('Absolute Error') +
     ylab('Density of Error')
 
   # Make magnitude density plot
-  dens_mag <- ggplot(accr_obj, aes(x="pred_error"), alpha=.5) +
+  dens_mag <- ggplot(x, aes(x="pred_error"), alpha=.5) +
     geom_density(fill='salmon') +
-    coord_cartesian(xlim=c(quantile(accr_obj$pred_error, .01),
-                           quantile(accr_obj$pred_error, .99))) +
+    coord_cartesian(xlim=c(stats::quantile(x$pred_error, .01),
+                           stats::quantile(x$pred_error, .99))) +
     xlab('Error') +
     ylab('Density of Error')
 
@@ -209,11 +218,13 @@ plot.hpiaccuracy <- function(accr_obj,
 
 #' @title plot.seriesaccuracy
 #' @description Simple Plot of an seriesaccuracy object
-#' @usage plot(accr_obj, return_plot, ...)
-#' @param accr_obj Object of class `hpiaccuracy``
+#' @usage plot(x, return_plot, ...)
+#' @param x Object of class `hpiaccuracy``
 #' @param return_plot default = FALSE; Return the plot to the function call
 #' @param ... Additional argument (passed to `plot.hpiaccuracy()``)
 #' @return `plotaccuracy` object inheriting from a ggplot object
+#' @import ggplot2
+#' @importFrom graphics plot
 #' @examples
 #' # Load data
 #'  data(ex_seriesaccuracy)
@@ -222,19 +233,21 @@ plot.hpiaccuracy <- function(accr_obj,
 #'  plot(ex_seriesaccuracy)
 #' @export
 
-plot.seriesaccuracy <- function(accr_obj,
+plot.seriesaccuracy <- function(x,
                                 return_plot = FALSE,
                                 ...){
 
-  class(accr_obj) <- c('hpiaccuracy', 'data.frame')
-  plot(accr_obj, return_plot=return_plot, do_plot=FALSE, ...)
+  class(x) <- c('hpiaccuracy', 'data.frame')
+  plot(x, return_plot=return_plot, do_plot=FALSE, ...)
 
 }
 
 #' @title plot.serieshpi
-#' @usage plot(series_obj)
-#' @param series_obj Object of class `serieshpi``
+#' @usage plot(x)
+#' @param x Object of class `serieshpi``
 #' @return `plotseries` object inheriting from a ggplot object
+#' @import ggplot2
+#' @importFrom purrr map
 #' @examples
 #' # Load data
 #'  data(ex_serieshpi)
@@ -243,11 +256,12 @@ plot.seriesaccuracy <- function(accr_obj,
 #'  plot(ex_serieshpi)
 #' @export
 
-plot.serieshpi<- function(series_obj,
-                          smooth = FALSE){
+plot.serieshpi<- function(x,
+                          smooth = FALSE,
+                          ...){
 
   # Extract the indexes
-  indexes_. <- purrr::map(.x=series_obj$hpis,
+  indexes_. <- purrr::map(.x=x$hpis,
                           .f = function(x) x$index)
 
   # Get the longest
@@ -299,9 +313,12 @@ plot.serieshpi<- function(series_obj,
 }
 
 #' @title plot.seriesrevision
-#' @usage plot(rev_obj)
-#' @param rev_obj Object of class `seriesrevision`
+#' @usage plot(x)
+#' @param x Object to plot of class `seriesrevision`
 #' @return `plotrevision` object inheriting from a ggplot object
+#' @import ggplot2
+#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate
 #' @examples
 #' # Load data
 #'  data(ex_seriesrevision)
@@ -310,20 +327,20 @@ plot.serieshpi<- function(series_obj,
 #'  plot(ex_seriesrevision)
 #' @export
 
-plot.seriesrevision <- function(rev_obj,
+plot.seriesrevision <- function(x,
                                 measure = 'median',
-                               ...){
+                                ...){
 
   # Make Data
-  plot_data <- rev_obj$period
+  plot_data <- x$period
 
   if (measure == 'median'){
     plot_data$revision <- plot_data$median
-    yint <- rev_obj$median
+    yint <- x$median
     y_lab <- 'Median Revision\n'
   } else {
     plot_data$revision <- plot_data$mean
-    yint <- rev_obj$mean
+    yint <- x$mean
     y_lab <- 'Mean Revision\n'
   }
 
@@ -331,9 +348,10 @@ plot.seriesrevision <- function(rev_obj,
   plot_data <- plot_data %>%
     dplyr::mutate(col = ifelse(.data$revision > 0, 1, 0))
 
-  rev_plot <- ggplot(plot_data, aes_string(x="period", y="revision",
-                                    fill="as.factor(col)",
-                                    alpha=.5)) +
+  rev_plot <- ggplot(plot_data, aes_string(x="period",
+                                           y="revision",
+                                           fill="as.factor(col)",
+                                           alpha=.5)) +
     geom_bar(stat='identity') +
     scale_fill_manual(values=c('red', 'blue')) +
     geom_hline(yintercept = yint, size=1, linetype = 2) +
@@ -345,5 +363,3 @@ plot.seriesrevision <- function(rev_obj,
   structure(rev_plot, class = c('plotrevision', class(rev_plot)))
 
 }
-
-

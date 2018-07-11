@@ -4,10 +4,10 @@
 \alias{plot.serieshpi}
 \title{plot.serieshpi}
 \usage{
-plot(series_obj)
+plot(x)
 }
 \arguments{
-\item{series_obj}{Object of class `serieshpi``}
+\item{x}{Object of class `serieshpi``}
 }
 \value{
 `plotseries` object inheriting from a ggplot object

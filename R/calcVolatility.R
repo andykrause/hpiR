@@ -15,6 +15,7 @@
 #' }
 #' @importFrom zoo rollapply
 #' @importFrom stats median
+#' @importFrom stats sd
 #' @section Further Details:
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
@@ -86,7 +87,7 @@ calcVolatility <- function(index,
   deltas <- (index[-1] - index[-length(index)]) / index[-length(index)]
 
   ## Calculate mean rolling sd
-  iv <- zoo::rollapply(deltas, window, sd)
+  iv <- zoo::rollapply(deltas, window, stats::sd)
 
   ## Create objec
   vol_obj <- structure(list(roll=iv,

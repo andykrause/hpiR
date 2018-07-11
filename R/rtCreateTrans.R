@@ -13,6 +13,19 @@
 #' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
 #' @return data.frame of repeat transactions. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `rtdata` object
+#' @importFrom dplyr mutate
+#' @importFrom dplyr filter
+#' @importFrom dplyr arrange
+#' @importFrom dplyr select
+#' @importFrom dplyr group_by
+#' @importFrom dplyr desc
+#' @importFrom dplyr summarize
+#' @importFrom dplyr n
+#' @importFrom utils combn
+#' @importFrom sf st_as_sf
+#' @importFrom plyr ddply
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #' @section Further Details:
 #' Properties with greater than two tranactions during the period will make pairwise matches
 #' among all sales.  Any property transacting twice in the same period will remove the lower
@@ -83,25 +96,25 @@ rtCreateTrans <- function(trans_df,
   # Prepare input data
   trans_df <- trans_df %>%
     # Select fields and rename
-    dplyr::select(prop_id = prop_id,
-                  trans_id = trans_id,
-                  trans_period,
-                  price = price) %>%
+    dplyr::select(., prop_id = prop_id,
+                     trans_id = trans_id,
+                     trans_period = trans_period,
+                     price = price) %>%
     # Order by id, then time, then desc by price
-    dplyr::arrange(prop_id, .data$trans_period, desc(price)) %>%
+    dplyr::arrange(., prop_id, .data$trans_period, dplyr::desc(price)) %>%
 
     # Remove any properties sold twice in same time period
-    dplyr::filter(!duplicated(paste0(prop_id, '_', .data$trans_period)))
+    dplyr::filter(., !duplicated(paste0(prop_id, '_', .data$trans_period)))
 
   ## Make count of occurances for each property and keep those with 2 or more sales
 
   rt_df <- trans_df %>%
     # Group by property
-    dplyr::group_by(prop_id) %>%
+    dplyr::group_by(., .data$prop_id) %>%
     # Count number of sales
-    dplyr::summarize(count=n()) %>%
+    dplyr::summarize(., count=n()) %>%
     # Remove solo sales
-    dplyr::filter(count > 1)
+    dplyr::filter(., .data$count > 1)
 
   if (nrow(rt_df) == 0){
     message('No repeat sales found')
@@ -110,8 +123,8 @@ rtCreateTrans <- function(trans_df,
 
   ## Split into 2 sales and greater than two sales per property
 
-  rt2 <- rt_df %>% dplyr::filter(count == 2)
-  rt3 <- rt_df %>% dplyr::filter(count > 2)
+  rt2 <- rt_df %>% dplyr::filter(., .data$count == 2)
+  rt3 <- rt_df %>% dplyr::filter(., .data$count > 2)
 
   ## Create Repeat Sales for properties with exactly 2 sales
 
@@ -155,7 +168,7 @@ rtCreateTrans <- function(trans_df,
     d3 <- x_df %>%
       # Create a data.frame of combination of repeat sales
       plyr::ddply(.variables=c('prop_id'),
-                  .fun=function(x) (t(combn(x$trans_id, m=2)))) %>%
+                  .fun=function(x) (t(utils::combn(x$trans_id, m=2)))) %>%
       # Rename fields
       dplyr::select(prop_id, trans_id1='1', trans_id2='2') %>%
 

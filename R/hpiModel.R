@@ -18,6 +18,7 @@
 #' \item{approach}{Type of model used}
 #' }
 #' @importFrom stats as.formula
+#' @importFrom stats update
 #' @examples
 #' # Load Data
 #'  data(ex_rtdata)
@@ -167,6 +168,7 @@ hpiModel.rtdata <- function(hpi_df,
 #' \item{periods}{`data.frame` of periods}
 #' \item{approach}{Type of model used}
 #' }
+#' @importFrom stats update
 #' @examples
 #' # Load Data
 #'  data(ex_heddata)
@@ -194,7 +196,7 @@ hpiModel.heddata <- function(hpi_df,
       message('"hed_spec" argument must be of class "formula"')
       stop()
     } else {
-      hed_spec <- update(hed_spec, ~ . +as.factor(trans_period))
+      hed_spec <- stats::update(hed_spec, ~ . +as.factor(trans_period))
     }
   } else {
 

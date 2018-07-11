@@ -57,6 +57,7 @@ hedModel <- function(estimator,
 }
 
 #' @title hedModel.base
+#' @importFrom stats lm
 #' @section Further Details:
 #' See `?hedModel` for more information
 #' @export
@@ -79,6 +80,9 @@ hedModel.base <- function(estimator,
 }
 
 #' @title hedModel.robust
+#' @importFrom stats median
+#' @importFrom MASS rlm
+#' @importFrom robustbase lmrob
 #' @section Further Details:
 #' See `?hedModel` for more information
 #' @export
@@ -105,6 +109,8 @@ hedModel.robust <- function(estimator,
 }
 
 #' @title hedModel.weighted
+#' @importFrom stats lm
+#' @importFrom stats as.formula
 #' @section Further Details:
 #' See `?hedModel` for more information
 #' @export
