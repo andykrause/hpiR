@@ -2,7 +2,7 @@
 % Please edit documentation in R/calcVolatility.R
 \name{calcVolatility}
 \alias{calcVolatility}
-\title{calcVolatility}
+\title{Calculate index volatility}
 \usage{
 calcVolatility(index, window = 3, in_place = FALSE,
   in_place_name = "volatility", smooth = FALSE, ...)
@@ -30,7 +30,7 @@ an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
 }
 }
 \description{
-Calculate index volatility
+Create estimate of index volatility given a window
 }
 \section{Further Details}{
 

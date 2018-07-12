@@ -1,7 +1,10 @@
-#' @title rtTimeMatrix
-#' @description Create a time matrix for a repeat transaction regression model
-#' @usage rtTimeMatrix(rtdata)
-#' @param rt_df object of class `rtdata`: repeat transaction data.frame created by rtCreateTrans()
+#'
+#' Create model matrix for repeat transaction approach
+#'
+#' Generates the array necessary to estimate a repeat transactions model
+#'
+#' @param rt_df object of class `rtdata`: repeat transaction data.frame created by
+#' rtCreateTrans()
 #' @return matrix to be used on the right hand side of a repeat sales regression model
 #' @section Further Details:
 #' Time periods are calculated from the data provided.

@@ -2,24 +2,25 @@
 % Please edit documentation in R/smoothIndex.R
 \name{smoothIndex}
 \alias{smoothIndex}
-\title{smoothIndex}
+\title{Smooth an index}
 \usage{
-smoothIndex(index_obj, order, in_place, ...)
+smoothIndex(index_obj, order = 3, in_place = FALSE, ...)
 }
 \arguments{
-\item{order}{Number of nearby period to smooth with, multiple means multiple iterations}
+\item{index_obj}{Index to be smoothed}
+
+\item{order}{default = 3; Number of nearby period to smooth with, multiple means
+multiple iterations}
 
 \item{in_place}{default = FALSE; adds smoothed index to the `hpiindex` object}
 
 \item{...}{Additional Arguments}
-
-\item{index}{Index to be smoothed}
 }
 \value{
 a `ts`` and 'smooth_index` object with smoothed index
 }
 \description{
-Smooths an index
+Smoothes an existing hpiindex object
 }
 \section{Further Details}{
 

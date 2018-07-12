@@ -1,11 +1,14 @@
-#' @title plot.hpiindex
-#' @description Simple Plot of an hpiindex object
-#' @usage plot(hpiindex_obj, show_imputed, smooth, ...)
+#'
+#' Plot method for `hpiindex` object
+#'
+#' Specific plotting method for hpiindex objects
+#'
 #' @param x Object to plot of class `hpiindex``
 #' @param show_imputed defautl = FALSE; highlight the imputed points
 #' @param smooth default = FALSE; plot the smoothed index
 #' @param ... Additional Arguments
 #' @import ggplot2
+#' @method plot hpiindex
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
 #' # Load data
@@ -70,13 +73,15 @@ plot.hpiindex <- function(x,
 
 }
 
-#' @title plot.hpi
-#' @description Simple Plot of an HPI object
-#' @usage plot(hpi_obj, show-impute)
+#'
+#' Plot method for `hpi` object
+#'
+#' Specific plotting method for hpi objects
+#'
+#' @method plot hpi
 #' @param x Object to plot of class `hpi`
 #' @param ... Additional Arguments
 #' @return `plotindex` object inheriting from a ggplot object
-#' @import ggplot2
 #' @importFrom graphics plot
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
@@ -96,10 +101,14 @@ plot.hpi <- function(x,
 
 }
 
-#' @title plot.indexvolatility
-#' @description Simple Plot of an indexvolatility object
-#' @usage plot(x=vol_obj)
+#'
+#' Plot method for `indexvolatility` object
+#'
+#' Specific plotting method for indexvolatility objects
+#'
+#' @method plot indexvolatility
 #' @param x Object to plot of class `indexvolatility``
+#' @param ... Additional Arguments
 #' @return `plotvolatility` object inheriting from a ggplot object
 #' @import ggplot2
 #' @examples
@@ -131,15 +140,18 @@ plot.indexvolatility <- function(x, ...){
 
 }
 
-#' @title plot.hpiaccuracy
-#' @description Simple Plot of an hpiaccuracy object
-#' @usage plot(x=accr_obj, return_plot, do_plot)
+#'
+#' Plot method for `hpiaccuracy` object
+#'
+#' Specific plotting method for hpiaccuracy objects
+#'
+#' @method plot hpiaccuracy
 #' @param x Object to plot of class `hpiaccuracy``
 #' @param return_plot default = FALSE; Return the plot to the function call
 #' @param do_plot default = FALSE; Execute plotting to terminal/console
+#' @param ... Additional Arguments
 #' @return `plotaccuracy` object inheriting from a ggplot object
 #' @import ggplot2
-#' @importFrom graphics plot
 #' @importFrom stats quantile
 #' @importFrom gridExtra grid.arrange
 #' @examples
@@ -216,9 +228,12 @@ plot.hpiaccuracy <- function(x,
 
 }
 
-#' @title plot.seriesaccuracy
-#' @description Simple Plot of an seriesaccuracy object
-#' @usage plot(x, return_plot, ...)
+#'
+#' Plot method for `seriesaccuracy` object
+#'
+#' Specific plotting method for seriesaccuracy objects
+#'
+#' @method plot seriesaccuracy
 #' @param x Object of class `hpiaccuracy``
 #' @param return_plot default = FALSE; Return the plot to the function call
 #' @param ... Additional argument (passed to `plot.hpiaccuracy()``)
@@ -242,9 +257,15 @@ plot.seriesaccuracy <- function(x,
 
 }
 
-#' @title plot.serieshpi
-#' @usage plot(x)
-#' @param x Object of class `serieshpi``
+#'
+#' Plot method for `serieshpi` object
+#'
+#' Specific plotting method for serieshpi objects
+#'
+#' @method plot serieshpi
+#' @param x Object of class `serieshpi`
+#' @param smooth default = FALSE; plot the smoothed object
+#' @param ... Additional Arguments`
 #' @return `plotseries` object inheriting from a ggplot object
 #' @import ggplot2
 #' @importFrom purrr map
@@ -312,9 +333,15 @@ plot.serieshpi<- function(x,
 
 }
 
-#' @title plot.seriesrevision
-#' @usage plot(x)
+#'
+#' Plot method for `seriesrevision` object
+#'
+#' Specific plotting method for seriesrevision objects
+#'
+#' @method plot seriesrevision
 #' @param x Object to plot of class `seriesrevision`
+#' @param measure default = 'median'; Metric to plot ('median' or 'mean')
+#' @param ... Additional Arguments
 #' @return `plotrevision` object inheriting from a ggplot object
 #' @import ggplot2
 #' @importFrom magrittr %>%

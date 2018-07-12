@@ -2,7 +2,7 @@
 % Please edit documentation in R/hedCreateTrans.R
 \name{hedCreateTrans}
 \alias{hedCreateTrans}
-\title{hedCreateTrans}
+\title{Create data for `hed` approach}
 \usage{
 hedCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
   periodicity = NULL, ...)
@@ -22,13 +22,16 @@ Only necessary if not passing an `hpidata` object}
 
 \item{periodicity}{default=NULL, field containing the desired periodicity of analysis.
 Only necessary if not passing a `hpidata` object}
+
+\item{...}{Additional arguments}
 }
 \value{
-data.frame of transactions with standardized period field. Note that a full data.frame of the possible
-periods, their values and names can be found in the attributes to the returned `hed` object
+data.frame of transactions with standardized period field. Note that a full
+data.frame of the possible periods, their values and names can be found in the
+attributes to the returned `hed` object
 }
 \description{
-Create a hedonic model ready data.frame of transactions
+Generate standardized data for the `hed` modeling approach
 }
 \examples{
 # Load example data

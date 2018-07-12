@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelToIndex.R
 \name{modelToIndex}
 \alias{modelToIndex}
-\title{modelToIndex}
+\title{Convert model results into a house price index}
 \usage{
 modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 }
@@ -22,7 +22,7 @@ modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 \item{imputed}{vector of binary values indicating imputation}
 }
 \description{
-Converts model results into a house price index
+Converts model results to standardized index objects
 }
 \examples{
 # Load Data

@@ -2,7 +2,7 @@
 % Please edit documentation in R/dateToPeriod.R
 \name{dateToPeriod}
 \alias{dateToPeriod}
-\title{dateToPeriod}
+\title{Convert dates to a relative period}
 \usage{
 dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
   max_date = NULL, adj_type = "move", ...)
@@ -18,23 +18,27 @@ dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
 
 \item{max_date}{default = NULL; optional maximum date to use}
 
-\item{adj_type}{default = 'move'; how to handle min and max dates within the range of transactions.  'move'
-min and/or max date or 'clip' the data}
+\item{adj_type}{default = 'move'; how to handle min and max dates within the range of
+transactions.  'move' min and/or max date or 'clip' the data}
+
+\item{...}{Additional arguments}
 }
 \value{
 original data frame (`trans_df` object) with two new fields:
-trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
-trans_date: properly formated transaction date
+trans_period: integer value counting from the minimum transaction date in the
+periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
+formated transaction date
 }
 \description{
-Convert dates into time periods for use in repeat transaction models
+Create a relative period variable from a date variable
 }
 \section{Further Details}{
 
-"trans_period" counts from the minimum transaction date provided.  As such the period counts
-are relative, not absolute
-Additionally, this function modifies the data.frame that it is given and return that same
-data.frame that it is given and returns that data.frame with the new fields attached.
+  "trans_period" counts from the minimum transaction date provided.  As such the period
+  counts are relative, not absolute
+
+  Additionally, this function modifies the data.frame that it is given and return that same
+  data.frame that it is given and returns that data.frame with the new fields attached.
 }
 
 \examples{

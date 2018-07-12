@@ -2,26 +2,24 @@
 % Please edit documentation in R/hedModel.R
 \name{hedModel}
 \alias{hedModel}
-\title{hedModel}
+\title{Estimate hedonic model for index creation}
 \usage{
 hedModel(estimator, hed_df, hed_spec, ...)
 }
 \arguments{
 \item{estimator}{Type of model to estimates (base, robust, weighted)}
 
-\item{hed_df}{Repeat sales dataset from rtCreateSales()}
+\item{hed_df}{Repeat sales dataset from hedCreateSales()}
 
-\item{hed_spec}{Time matrix object from rtTimeMatrix()}
+\item{hed_spec}{Model specification (`formula` object)}
 
 \item{...}{Additional arguments}
-
-\item{price_diff}{Difference in price betwen the two sales}
 }
 \value{
 `hedmodel` object: model object of the estimator (ex.: `lm`)
 }
 \description{
-Estimate repeat sales model (method based on estimator class). Generic method.
+Estimate coefficients for an index via the hedonic approach (generic method)
 }
 \section{Further Details}{
 

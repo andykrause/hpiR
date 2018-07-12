@@ -2,9 +2,23 @@
 % Please edit documentation in R/rtModel.R
 \name{rtModel.base}
 \alias{rtModel.base}
-\title{rtModel.base}
+\title{Repeat transaction model approach with base estimator}
 \usage{
 \method{rtModel}{base}(rt_df, time_matrix, price_diff, estimator, ...)
+}
+\arguments{
+\item{rt_df}{Repeat transactions dataset from rtCreateTrans()}
+
+\item{time_matrix}{Time matrix object from rtTimeMatrix()}
+
+\item{price_diff}{Difference in price betwen the two transactions}
+
+\item{estimator}{Type of model to estimates (base, robust, weighted).  Must be in that class.}
+
+\item{...}{Additional arguments}
+}
+\description{
+Use of base estimator in repeat transactions model approach
 }
 \section{Further Details}{
 

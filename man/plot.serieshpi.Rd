@@ -2,15 +2,22 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.serieshpi}
 \alias{plot.serieshpi}
-\title{plot.serieshpi}
+\title{Plot method for `serieshpi` object}
 \usage{
-plot(x)
+\method{plot}{serieshpi}(x, smooth = FALSE, ...)
 }
 \arguments{
-\item{x}{Object of class `serieshpi``}
+\item{x}{Object of class `serieshpi`}
+
+\item{smooth}{default = FALSE; plot the smoothed object}
+
+\item{...}{Additional Arguments`}
 }
 \value{
 `plotseries` object inheriting from a ggplot object
+}
+\description{
+Specific plotting method for serieshpi objects
 }
 \examples{
 # Load data

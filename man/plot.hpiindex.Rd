@@ -2,9 +2,9 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.hpiindex}
 \alias{plot.hpiindex}
-\title{plot.hpiindex}
+\title{Plot method for `hpiindex` object}
 \usage{
-plot(hpiindex_obj, show_imputed, smooth, ...)
+\method{plot}{hpiindex}(x, show_imputed = FALSE, smooth = FALSE, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `hpiindex``}
@@ -19,7 +19,7 @@ plot(hpiindex_obj, show_imputed, smooth, ...)
 `plotindex` object inheriting from a ggplot object
 }
 \description{
-Simple Plot of an hpiindex object
+Specific plotting method for hpiindex objects
 }
 \examples{
 # Load data

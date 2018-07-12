@@ -1,11 +1,12 @@
-#' @title hedIndex
-#' @description Creates a house price (rent) index from a set of transactions using the
-#' hedonic price method
+#'
+#' Create a full index object by hedonic approach
+#'
+#' Wrapper to create index object via entire hedonic approach
+#'
 #' @param trans_df data.frame of transactions
-#' @param periodicity default = 'month', Periodicity of time to estimate index at
-#' @param dep_var default = NULL, dependent variable in hedonic model
-#' @param ind_var default = NULL, independent variables in the hedonic model
-#' @param hed_spec default = NULL, Full hedonic model specification
+#' @param dep_var default = NULL; Dependent variable in hedonic model
+#' @param ind_var default = NULL; Independent variables in the hedonic model
+#' @param hed_spec default = NULL; Full hedonic model specification
 #' @param ... Additional Arguments
 #' @return `hpi`` object.  S3 list with:
 #' \describe{
@@ -62,9 +63,9 @@
 #' @export
 
 hedIndex <- function(trans_df,
-                     dep_var=NULL,
-                     ind_var=NULL,
-                     hed_spec=NULL,
+                     dep_var = NULL,
+                     ind_var = NULL,
+                     hed_spec = NULL,
                      ...
 ){
 

@@ -2,11 +2,26 @@
 % Please edit documentation in R/hedModel.R
 \name{hedModel.robust}
 \alias{hedModel.robust}
-\title{hedModel.robust}
+\title{Hedonic model approach with robust estimator}
 \usage{
 \method{hedModel}{robust}(estimator, hed_df, hed_spec, ...)
 }
+\arguments{
+\item{estimator}{Type of model to estimates (base, robust, weighted)}
+
+\item{hed_df}{Repeat sales dataset from hedCreateSales()}
+
+\item{hed_spec}{Model specification (`formula` object)}
+
+\item{...}{Additional arguments}
+}
+\description{
+Use of robust estimator in hedonic model approach
+}
 \section{Further Details}{
+
+See `?hedModel` for more information
+
 
 See `?hedModel` for more information
 }

@@ -1,5 +1,8 @@
-#' @title calcVolatility
-#' @description Calculate index volatility
+#'
+#' Calculate index volatility
+#'
+#' Create estimate of index volatility given a window
+#'
 #' @param index An object of class `hpiindex`
 #' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param in_place default = FALSE; Adds volatility metric to the `hpiindex` object
@@ -14,8 +17,7 @@
 #' \item{median}{overall median volatility}
 #' }
 #' @importFrom zoo rollapply
-#' @importFrom stats median
-#' @importFrom stats sd
+#' @importFrom stats median sd
 #' @section Further Details:
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
@@ -120,9 +122,11 @@ calcVolatility <- function(index,
 
 }
 
-#' @title calcSeriesVolatility
-#' @description Calculates volatility over a series of indexes
-#' @usage calcSeriesVolatility(series_obj, window, smooth)
+#'
+#' Calculate volatility of a series of indexes
+#'
+#' Calculates volatility over a (progressive) series of indexes
+#'
 #' @param series_obj Series object to be calculted
 #' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
@@ -183,4 +187,3 @@ calcSeriesVolatility <- function(series_obj,
   series_obj
 
 }
-

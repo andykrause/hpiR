@@ -2,9 +2,11 @@
 % Please edit documentation in R/calcAccuracy.R
 \name{calcAccuracy}
 \alias{calcAccuracy}
-\title{calcAccuracy}
+\title{Calculate the accuracy of an index}
 \usage{
-calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in_place_name, ...)
+calcAccuracy(hpi_obj, test_method = "insample", test_type = "rt",
+  pred_df = NULL, smooth = FALSE, in_place = FALSE,
+  in_place_name = "accuracy", ...)
 }
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
@@ -33,7 +35,7 @@ object of class `indexaccuracy` inheriting from class `data.frame` containing th
 }
 }
 \description{
-Estimate index Accuracy using one of a variety of approaches
+Estimate index accuracy using one of a variety of approaches
 }
 \section{Further Details}{
 

@@ -2,9 +2,9 @@
 % Please edit documentation in R/smoothIndex.R
 \name{smoothSeries}
 \alias{smoothSeries}
-\title{smoothSeries}
+\title{Smooth all indexes in a series}
 \usage{
-smoothSeries(series_obj, order, ...)
+smoothSeries(series_obj, order = 3, ...)
 }
 \arguments{
 \item{series_obj}{Series to be smoothed}
@@ -17,7 +17,7 @@ smoothSeries(series_obj, order, ...)
 a `serieshpi` object with a smoothed index in each `hpiindex` object
 }
 \description{
-Smooths a series of indexex
+Smoothes all indexes within a progressive series of indexes
 }
 \section{Further Details}{
 

@@ -2,9 +2,21 @@
 % Please edit documentation in R/hedModel.R
 \name{hedModel.base}
 \alias{hedModel.base}
-\title{hedModel.base}
+\title{Hedonic model approach with base estimator}
 \usage{
 \method{hedModel}{base}(estimator, hed_df, hed_spec, ...)
+}
+\arguments{
+\item{estimator}{Type of model to estimates (base, robust, weighted)}
+
+\item{hed_df}{Repeat sales dataset from hedCreateSales()}
+
+\item{hed_spec}{Model specification (`formula` object)}
+
+\item{...}{Additional arguments}
+}
+\description{
+Use of base estimator in hedonic model approach
 }
 \section{Further Details}{
 

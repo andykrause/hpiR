@@ -1,6 +1,6 @@
-#' @title calcAccuracy
-#' @description Estimate index Accuracy using one of a variety of approaches
-#' @usage calcAccuracy(hpi_obj, test_method, test_type, pred_df, series_name, in_place, in_place_name, ...)
+#' Calculate the accuracy of an index
+#'
+#' Estimate index accuracy using one of a variety of approaches
 #' @param hpi_obj Object of class 'hpi'
 #' @param test_method default = 'insample'; also 'kfold'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
@@ -121,9 +121,9 @@ calcAccuracy <- function(hpi_obj,
 
 }
 
-#' @title calcSeriesAccuracy
-#' @description Calculates accuracy over a series of indexes
-#' @usage calcSeriesAccuracy(series_obj, test_method = 'kfold', test_type = 'rt')
+#' Calculate the accuracy of a series of indexes
+#'
+#' Estimate the index accuracy for a (progressive) series of indexes
 #' @param series_obj Serieshpi object to be analyzed
 #' @param test_method default = 'insample'; also 'kfold' or 'forecast'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
@@ -276,5 +276,4 @@ calcSeriesAccuracy <- function(series_obj,
 
   # Return standard
   series_obj
-
 }

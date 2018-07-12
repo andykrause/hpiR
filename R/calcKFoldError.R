@@ -1,6 +1,7 @@
-#' @title calcKFoldError
-#' @description Estimate out-of-sample index errors using a KFold process
-#' @usage calcKFoldError(hpi_obj, pred_df, k, seed)
+#' Calculate index error with FKold (out of sample)
+#'
+#' Use a KFold (out of sample) approach to estimate index accuracy
+#'
 #' @param hpi_obj Hpi object of class 'hpi'
 #' @param pred_df Data.frame of sales to be used for assessing predictive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
@@ -126,9 +127,10 @@ calcKFoldError <- function(hpi_obj,
 
 }
 
-#' @title createKFoldData
-#' @description Create the datasets for the kfold error testing (Generic Method)
-#' @usage createKFoldData(score_ids, full_data, pred_df)
+#' Create data for KFold error test
+#'
+#' Generic method for creating KFold testing data
+#'
 #' @param score_ids Vector of row ids to be included in scoring data
 #' @param full_data Complete dataset (class `hpidata``) of this model type (rt or hed)
 #' @param pred_df Data to be used for prediction
@@ -161,7 +163,15 @@ createKFoldData <- function(score_ids,
   UseMethod("createKFoldData", pred_df)
 }
 
+
+#' Create data for KFold error test (rt approach)
+#'
+#' `rtdata` method for creating KFold testing data
+#'
+#' @method createKFoldData rtdata
+#' @inherit createKFoldData params
 #' @export
+
 createKFoldData.rtdata <- function(score_ids,
                                    full_data,
                                    pred_df){
@@ -173,9 +183,10 @@ createKFoldData.rtdata <- function(score_ids,
        score=score_df)
 }
 
-#' @title matchKFoldData
-#' @description Makes specific selections of scoring data (Generic Method)
-#' @usage matchKFold(train_df, pred_df)
+#' Helper function to make KFold data
+#'
+#' Function to help create KFold data based on approach (Generic Method)
+#'
 #' @param train_df Data.frame of training data
 #' @param pred_df Data.frame (class `hpidata``) to be used for prediction
 #' @return list
@@ -194,7 +205,14 @@ matchKFold <- function(train_df,
 
 }
 
+#' Helper function to make KFold data
+#'
+#' Function to help create KFold data based on rt approach
+#'
+#' @method matchKFold rtdata
+#' @inherit matchKFold params
 #' @export
+
 matchKFold.rtdata <- function(train_df,
                               pred_df){
 
@@ -204,7 +222,14 @@ matchKFold.rtdata <- function(train_df,
 
 }
 
+#' Helper function to make KFold data
+#'
+#' Function to help create KFold data based on hed approach
+#'
+#' @method matchKFold heddata
+#' @inherit matchKFold params
 #' @export
+
 matchKFold.heddata <- function(train_df,
                                pred_df){
 

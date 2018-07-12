@@ -2,9 +2,9 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.hpi}
 \alias{plot.hpi}
-\title{plot.hpi}
+\title{Plot method for `hpi` object}
 \usage{
-plot(hpi_obj, show-impute)
+\method{plot}{hpi}(x, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `hpi`}
@@ -15,7 +15,7 @@ plot(hpi_obj, show-impute)
 `plotindex` object inheriting from a ggplot object
 }
 \description{
-Simple Plot of an HPI object
+Specific plotting method for hpi objects
 }
 \section{Further Details}{
 

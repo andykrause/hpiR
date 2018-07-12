@@ -2,22 +2,20 @@
 % Please edit documentation in R/hedIndex.R
 \name{hedIndex}
 \alias{hedIndex}
-\title{hedIndex}
+\title{Create a full index object by hedonic approach}
 \usage{
 hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 }
 \arguments{
 \item{trans_df}{data.frame of transactions}
 
-\item{dep_var}{default = NULL, dependent variable in hedonic model}
+\item{dep_var}{default = NULL; Dependent variable in hedonic model}
 
-\item{ind_var}{default = NULL, independent variables in the hedonic model}
+\item{ind_var}{default = NULL; Independent variables in the hedonic model}
 
-\item{hed_spec}{default = NULL, Full hedonic model specification}
+\item{hed_spec}{default = NULL; Full hedonic model specification}
 
 \item{...}{Additional Arguments}
-
-\item{periodicity}{default = 'month', Periodicity of time to estimate index at}
 }
 \value{
 `hpi`` object.  S3 list with:
@@ -28,8 +26,7 @@ hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
 }
 }
 \description{
-Creates a house price (rent) index from a set of transactions using the
-hedonic price method
+Wrapper to create index object via entire hedonic approach
 }
 \section{Further Details}{
 

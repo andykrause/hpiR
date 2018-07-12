@@ -1,6 +1,8 @@
-#' @title rtIndex
-#' @description Creates a house price index from a set of ttransactions using the
-#' repeat transactions method
+#'
+#' Create a full index object by repeat transaction approach
+#'
+#' Wrapper to create index object via entire repeat transaction approach
+#'
 #' @param trans_df data.frame of transactions.  Can be a 'hpidata' or an 'rtdata' object.
 #' @param ... Additional Arguments
 #' @return `hpi`` object.  S3 list with:

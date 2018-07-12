@@ -1,6 +1,8 @@
-#' @title hpiModel
-#' @description Estimate the model for any method of house price index.  Generic method.
-#' @usage hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
+#'
+#' Wrapper to estimate model approaches (generic method)
+#'
+#' Generic method to estimate modeling approaches for indexes
+#'
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
@@ -44,9 +46,12 @@ hpiModel <- function(hpi_df,
 
 }
 
-#' @title hpiModel.rtdata
-#' @description Estimate the model for any method of house price index.  Generic method.
-#' @usage Lorem Ipsum...
+#'
+#' Specific method for hpi modeling (rt approach)
+#'
+#' Estimate hpi models with rt approach
+#'
+#' @method hpiModel rtdata
 #' @param hpi_df Dataset created by one of the *CreateTrans() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
@@ -146,16 +151,19 @@ hpiModel.rtdata <- function(hpi_df,
             class='hpimodel')
 }
 
-#' @title hpiModel.heddata
-#' @description Estimate the model for any method of house price index.  Generic method.
-#' @usage Lorem Ipsum...
+#'
+#' Specific method for hpi modeling (hed) approach)
+#'
+#' Estimate hpi models with hed approach
+#'
+#' @method hpiModel heddata
 #' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
+#' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
 #' @param hed_spec default=NULL; hedonic model specification
 #' @param dep_var default=NULL; dependent variable of the model
 #' @param ind_var default=NULL; independent variable(s) of the model
-#' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
 #' @param ... Additional Arguments
 #' @return hpimodel object consisting of:
 #' \describe{

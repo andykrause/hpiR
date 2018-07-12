@@ -2,9 +2,9 @@
 % Please edit documentation in R/calcKFoldError.R
 \name{calcKFoldError}
 \alias{calcKFoldError}
-\title{calcKFoldError}
+\title{Calculate index error with FKold (out of sample)}
 \usage{
-calcKFoldError(hpi_obj, pred_df, k, seed)
+calcKFoldError(hpi_obj, pred_df, k = 10, seed = 1, smooth = FALSE, ...)
 }
 \arguments{
 \item{hpi_obj}{Hpi object of class 'hpi'}
@@ -29,7 +29,7 @@ object of class `hpiaccuracy` inheriting from class `data.frame` containing the 
 }
 }
 \description{
-Estimate out-of-sample index errors using a KFold process
+Use a KFold (out of sample) approach to estimate index accuracy
 }
 \examples{
 # Load data

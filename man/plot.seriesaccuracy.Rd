@@ -2,9 +2,9 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.seriesaccuracy}
 \alias{plot.seriesaccuracy}
-\title{plot.seriesaccuracy}
+\title{Plot method for `seriesaccuracy` object}
 \usage{
-plot(x, return_plot, ...)
+\method{plot}{seriesaccuracy}(x, return_plot = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class `hpiaccuracy``}
@@ -17,7 +17,7 @@ plot(x, return_plot, ...)
 `plotaccuracy` object inheriting from a ggplot object
 }
 \description{
-Simple Plot of an seriesaccuracy object
+Specific plotting method for seriesaccuracy objects
 }
 \examples{
 # Load data

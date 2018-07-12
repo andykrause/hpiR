@@ -1,5 +1,8 @@
-#' @title rtCreateTrans
-#' @description Create repeat sale pairs from a data frame of sale transactions
+#'
+#' Create transaction data for rt approach
+#'
+#' Generate standardized object for rt estimate approach
+#'
 #' @param trans_df transactions in either a data.frame or a `hpidata`` class from
 #' dateToPeriod() function
 #' @param prop_id field contain the unique property identification
@@ -11,16 +14,10 @@
 #' Only necessary if not passing a `hpidata` object
 #' @param seq_only default=FALSE, indicating whether to only include sequential repeat observations
 #' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
+#' @param ... Additional arguments
 #' @return data.frame of repeat transactions. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `rtdata` object
-#' @importFrom dplyr mutate
-#' @importFrom dplyr filter
-#' @importFrom dplyr arrange
-#' @importFrom dplyr select
-#' @importFrom dplyr group_by
-#' @importFrom dplyr desc
-#' @importFrom dplyr summarize
-#' @importFrom dplyr n
+#' @importFrom dplyr mutate filter arrange select group_by desc summarize n
 #' @importFrom utils combn
 #' @importFrom sf st_as_sf
 #' @importFrom plyr ddply
@@ -60,6 +57,9 @@ rtCreateTrans <- function(trans_df,
                           periodicity = NULL,
                           seq_only = FALSE,
                           ...){
+
+  # Hack to pass R CMD Check
+  trans_period <- NULL
 
   # Crate the sales_df if not provided
   if (!'hpidata' %in% class(trans_df)){

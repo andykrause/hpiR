@@ -2,9 +2,9 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.hpiaccuracy}
 \alias{plot.hpiaccuracy}
-\title{plot.hpiaccuracy}
+\title{Plot method for `hpiaccuracy` object}
 \usage{
-plot(x=accr_obj, return_plot, do_plot)
+\method{plot}{hpiaccuracy}(x, return_plot = FALSE, do_plot = TRUE, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `hpiaccuracy``}
@@ -12,12 +12,14 @@ plot(x=accr_obj, return_plot, do_plot)
 \item{return_plot}{default = FALSE; Return the plot to the function call}
 
 \item{do_plot}{default = FALSE; Execute plotting to terminal/console}
+
+\item{...}{Additional Arguments}
 }
 \value{
 `plotaccuracy` object inheriting from a ggplot object
 }
 \description{
-Simple Plot of an hpiaccuracy object
+Specific plotting method for hpiaccuracy objects
 }
 \examples{
 # Load data

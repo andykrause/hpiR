@@ -2,9 +2,9 @@
 % Please edit documentation in R/calcInSampleError.R
 \name{calcInSampleError}
 \alias{calcInSampleError}
-\title{calcInSampleError}
+\title{Calculate index errors in sample}
 \usage{
-calcInSampleError(pred_df, index)
+calcInSampleError(pred_df, index, ...)
 }
 \arguments{
 \item{pred_df}{Set of sales against which to test predictions}
@@ -14,20 +14,22 @@ calcInSampleError(pred_df, index)
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame`
+containing the following fields:
 \describe{
-\item{prop_id}{Property Identification number}
-\item{pred_price}{Predicted price}
-\item{pred_error}{(Prediction - Actual) / Actual}
-\item{pred_period}{Period of the prediction}
+  \item{prop_id}{Property Identification number}
+  \item{pred_price}{Predicted price}
+  \item{pred_error}{(Prediction - Actual) / Actual}
+  \item{pred_period}{Period of the prediction}
 }
 }
 \description{
-Estimate the predictive error of an index via an in-sample approach. Generic method.
+Estimate the predictive error of an index via an in-sample approach.
 }
 \section{Further Details}{
 
-In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
+In addition to being a stand-alone function, it is also used by `calcForecastError`
+and `calcKFoldError``
 }
 
 \examples{

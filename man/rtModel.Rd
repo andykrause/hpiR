@@ -2,9 +2,9 @@
 % Please edit documentation in R/rtModel.R
 \name{rtModel}
 \alias{rtModel}
-\title{rtModel}
+\title{Estimate repeat transaction model for index creation}
 \usage{
-rtModel(rt_df, price_diff, time_matrix, estimator, ...)
+rtModel(rt_df, time_matrix, price_diff, estimator, ...)
 }
 \arguments{
 \item{rt_df}{Repeat transactions dataset from rtCreateTrans()}
@@ -21,10 +21,11 @@ rtModel(rt_df, price_diff, time_matrix, estimator, ...)
 `rtmodel` object
 }
 \description{
-Estimate repeat transactions model (method based on estimator class). Generic method.
+Estimate coefficients for an index via the repeat transaction approach (generic method)
 }
 \section{Further Details}{
 
+Three available specific methods: 'base', 'robust' and 'weighted'
 }
 
 \examples{

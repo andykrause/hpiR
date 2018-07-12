@@ -2,9 +2,10 @@
 % Please edit documentation in R/hpiModel.R
 \name{hpiModel.rtdata}
 \alias{hpiModel.rtdata}
-\title{hpiModel.rtdata}
+\title{Specific method for hpi modeling (rt approach)}
 \usage{
-Lorem Ipsum...
+\method{hpiModel}{rtdata}(hpi_df, estimator = "base", log_dep = TRUE,
+  trim_model = TRUE, ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
@@ -31,7 +32,7 @@ hpimodel object consisting of:
 }
 }
 \description{
-Estimate the model for any method of house price index.  Generic method.
+Estimate hpi models with rt approach
 }
 \examples{
 # Load Data

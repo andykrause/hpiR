@@ -1,14 +1,15 @@
-#' @title smoothIndex
-#' @description Smooths an index
-#' @usage smoothIndex(index_obj, order, in_place, ...)
-#' @param index Index to be smoothed
-#' @param order Number of nearby period to smooth with, multiple means multiple iterations
+#'
+#' Smooth an index
+#'
+#' Smoothes an existing hpiindex object
+#'
+#' @param index_obj Index to be smoothed
+#' @param order default = 3; Number of nearby period to smooth with, multiple means
+#' multiple iterations
 #' @param in_place default = FALSE; adds smoothed index to the `hpiindex` object
 #' @param ... Additional Arguments
 #' @return a `ts`` and 'smooth_index` object with smoothed index
-#' @importFrom forecast ma
-#' @importFrom forecast ets
-#' @importFrom forecast forecast
+#' @importFrom forecast ma ets forecast
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
@@ -97,9 +98,11 @@ smoothIndex <- function(index_obj,
 
 }
 
-#' @title smoothSeries
-#' @description Smooths a series of indexex
-#' @usage smoothSeries(series_obj, order, ...)
+#'
+#' Smooth all indexes in a series
+#'
+#' Smoothes all indexes within a progressive series of indexes
+#'
 #' @param series_obj Series to be smoothed
 #' @param order Number of nearby period to smooth with
 #' @param ... Additional Arguments
@@ -143,4 +146,3 @@ smoothSeries <- function(series_obj,
   series_obj
 
 }
-

@@ -2,9 +2,10 @@
 % Please edit documentation in R/calcRevision.R
 \name{calcRevision}
 \alias{calcRevision}
-\title{calcRevision}
+\title{Calculate revision values of an index}
 \usage{
-calcRevision(series_obj)
+calcRevision(series_obj, in_place = FALSE, in_place_name = "rev",
+  smooth = FALSE, ...)
 }
 \arguments{
 \item{series_obj}{A list of progressively longer indexes (a 'serieshpi' object from createSeries())}
@@ -26,7 +27,7 @@ list containing:
 }
 }
 \description{
-Estimate revision figures for a series of indexes
+Create estimates of the revision statistics for a house price index
 }
 \section{Further Details}{
 

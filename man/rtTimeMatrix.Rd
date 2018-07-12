@@ -2,18 +2,19 @@
 % Please edit documentation in R/rtTimeMatrix.R
 \name{rtTimeMatrix}
 \alias{rtTimeMatrix}
-\title{rtTimeMatrix}
+\title{Create model matrix for repeat transaction approach}
 \usage{
-rtTimeMatrix(rtdata)
+rtTimeMatrix(rt_df)
 }
 \arguments{
-\item{rt_df}{object of class `rtdata`: repeat transaction data.frame created by rtCreateTrans()}
+\item{rt_df}{object of class `rtdata`: repeat transaction data.frame created by
+rtCreateTrans()}
 }
 \value{
 matrix to be used on the right hand side of a repeat sales regression model
 }
 \description{
-Create a time matrix for a repeat transaction regression model
+Generates the array necessary to estimate a repeat transactions model
 }
 \section{Further Details}{
 

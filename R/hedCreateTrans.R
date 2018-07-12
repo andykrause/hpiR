@@ -1,5 +1,8 @@
-#' @title hedCreateTrans
-#' @description Create a hedonic model ready data.frame of transactions
+#'
+#' Create data for `hed` approach
+#'
+#' Generate standardized data for the `hed` modeling approach
+#'
 #' @param trans_df sales transaction in either a data.frame or a
 #' trans_df class from dateToPeriod() function
 #' @param prop_id field contain the unique property identification
@@ -9,14 +12,12 @@
 #' Only necessary if not passing an `hpidata` object
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
 #' Only necessary if not passing a `hpidata` object
-#' @importFrom dplyr rename
-#' @importFrom dplyr rename_
-#' @importFrom dplyr arrange
-#' @importFrom dplyr filter
-#' @importFrom dplyr desc
+#' @param ... Additional arguments
+#' @importFrom dplyr rename rename_ arrange filter desc
 #' @importFrom magrittr %>%
-#' @return data.frame of transactions with standardized period field. Note that a full data.frame of the possible
-#' periods, their values and names can be found in the attributes to the returned `hed` object
+#' @return data.frame of transactions with standardized period field. Note that a full
+#' data.frame of the possible periods, their values and names can be found in the
+#' attributes to the returned `hed` object
 #' @examples
 #' # Load example data
 #' data(ex_sales)

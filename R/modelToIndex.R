@@ -1,5 +1,8 @@
-#' @title modelToIndex
-#' @description Converts model results into a house price index
+#'
+#' Convert model results into a house price index
+#'
+#' Converts model results to standardized index objects
+#'
 #' @param model_obj Model results object
 #' @param max_period Maximum number of periods that should have been estimated.
 #' @param ... Additional arguments
@@ -20,8 +23,6 @@
 #' hpi_index <- modelToIndex(ex_hpimodel,
 #'                           max_period=84)
 #' @export
-
-### Convert model estimates into zpiindex object -----------------------------------------
 
 modelToIndex <- function(model_obj,
                          max_period=max(model_obj$coefficients$time),

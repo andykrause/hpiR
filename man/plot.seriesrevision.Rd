@@ -2,15 +2,22 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.seriesrevision}
 \alias{plot.seriesrevision}
-\title{plot.seriesrevision}
+\title{Plot method for `seriesrevision` object}
 \usage{
-plot(x)
+\method{plot}{seriesrevision}(x, measure = "median", ...)
 }
 \arguments{
 \item{x}{Object to plot of class `seriesrevision`}
+
+\item{measure}{default = 'median'; Metric to plot ('median' or 'mean')}
+
+\item{...}{Additional Arguments}
 }
 \value{
 `plotrevision` object inheriting from a ggplot object
+}
+\description{
+Specific plotting method for seriesrevision objects
 }
 \examples{
 # Load data

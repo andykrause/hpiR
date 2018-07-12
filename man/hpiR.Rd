@@ -4,10 +4,8 @@
 \name{hpiR}
 \alias{hpiR}
 \alias{hpiR-package}
-\title{hpiR}
+\title{hpiR: A package for house price indexes}
 \description{
-House Price Indexes in R
-}
-\details{
-Package summary
+House Price Indexes in R: A set of tools to create house price indexes and analyze
+their various performance metrics.
 }

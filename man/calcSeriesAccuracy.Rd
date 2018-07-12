@@ -2,9 +2,11 @@
 % Please edit documentation in R/calcAccuracy.R
 \name{calcSeriesAccuracy}
 \alias{calcSeriesAccuracy}
-\title{calcSeriesAccuracy}
+\title{Calculate the accuracy of a series of indexes}
 \usage{
-calcSeriesAccuracy(series_obj, test_method = 'kfold', test_type = 'rt')
+calcSeriesAccuracy(series_obj, test_method = "insample", test_type = "rt",
+  pred_df = NULL, smooth = FALSE, summarize = FALSE, in_place = FALSE,
+  in_place_name = "accuracy", ...)
 }
 \arguments{
 \item{series_obj}{Serieshpi object to be analyzed}
@@ -30,7 +32,7 @@ take the mean of them all.}
 `seriesaccuracy` object (unless calculated 'in_place')
 }
 \description{
-Calculates accuracy over a series of indexes
+Estimate the index accuracy for a (progressive) series of indexes
 }
 \section{Further Details}{
 

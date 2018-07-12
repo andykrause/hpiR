@@ -1,20 +1,20 @@
-#' @title rtModel
-#' @description Estimate repeat transactions model (method based on estimator class). Generic method.
-#' @usage rtModel(rt_df, price_diff, time_matrix, estimator, ...)
+#'
+#' Estimate repeat transaction model for index creation
+#'
+#' Estimate coefficients for an index via the repeat transaction approach (generic method)
+#'
 #' @param rt_df Repeat transactions dataset from rtCreateTrans()
 #' @param time_matrix Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price betwen the two transactions
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
 #' @param ... Additional arguments
 #' @return `rtmodel` object
-#' @importFrom stats lm
-#' @importFrom stats fitted
-#' @importFrom stats residuals
-#' @importFrom stats median
+#' @importFrom stats lm fitted residuals median
 #' @importFrom MASS rlm
 #' @importFrom robustbase lmrob
 #' @importFrom utils methods
 #' @section Further Details:
+#' Three available specific methods: 'base', 'robust' and 'weighted'
 #' @examples
 #'  # Load Data
 #'  data(ex_rtdata)
@@ -73,10 +73,16 @@ rtModel <- function(rt_df,
 
 }
 
-#' @title rtModel.base
-#' @importFrom stats lm
+#'
+#' Repeat transaction model approach with base estimator
+#'
+#' Use of base estimator in repeat transactions model approach
+#'
 #' @section Further Details:
 #' See `?rtModel` for more information
+#' @inherit rtModel params
+#' @method rtModel base
+#' @importFrom stats lm
 #' @export
 
 rtModel.base <- function(rt_df,
@@ -96,12 +102,18 @@ rtModel.base <- function(rt_df,
 
 }
 
-#' @title rtModel.robust
+#'
+#' Repeat transaction model approach with robust estimator
+#'
+#' Use of robust estimator in repeat transactions model approach
+#'
+#' @section Further Details:
+#' See `?rtModel` for more information
+#' @inherit rtModel params
+#' @method rtModel robust
 #' @importFrom stats median
 #' @importFrom MASS rlm
 #' @importFrom robustbase lmrob
-#' @section Further Details:
-#' See `?hedModel` for more information
 #' @export
 
 rtModel.robust <- function(rt_df,
@@ -128,12 +140,16 @@ rtModel.robust <- function(rt_df,
 
 }
 
-#' @title rtModel.weighted
-#' @importFrom stats lm
-#' @importFrom stats residuals
-#' @importFrom stats fitted
+#'
+#' Repeat transaction model approach with weighted estimator
+#'
+#' Use of weighted estimator in repeat transactions model approach
+#'
 #' @section Further Details:
-#' See `?hedModel` for more information
+#' See `?rtModel` for more information
+#' @inherit rtModel params
+#' @method rtModel weighted
+#' @importFrom stats lm residuals fitted
 #' @export
 
 rtModel.weighted <- function(rt_df,

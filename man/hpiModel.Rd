@@ -2,9 +2,10 @@
 % Please edit documentation in R/hpiModel.R
 \name{hpiModel}
 \alias{hpiModel}
-\title{hpiModel}
+\title{Wrapper to estimate model approaches (generic method)}
 \usage{
-hpiModel(hpi_df, estimator, log_dep, trim_model, ...)
+hpiModel(hpi_df, estimator = "base", log_dep = TRUE, trim_model = TRUE,
+  ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
@@ -31,7 +32,7 @@ hpimodel object consisting of:
 }
 }
 \description{
-Estimate the model for any method of house price index.  Generic method.
+Generic method to estimate modeling approaches for indexes
 }
 \examples{
 # Load Data

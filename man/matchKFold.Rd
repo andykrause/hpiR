@@ -2,7 +2,7 @@
 % Please edit documentation in R/calcKFoldError.R
 \name{matchKFold}
 \alias{matchKFold}
-\title{matchKFoldData}
+\title{Helper function to make KFold data}
 \usage{
 matchKFold(train_df, pred_df)
 }
@@ -19,7 +19,7 @@ list
 }
 }
 \description{
-Makes specific selections of scoring data (Generic Method)
+Function to help create KFold data based on approach (Generic Method)
 }
 \section{Further Details}{
 

@@ -2,9 +2,10 @@
 % Please edit documentation in R/calcForecastError.R
 \name{calcForecastError}
 \alias{calcForecastError}
-\title{calcForecastError}
+\title{Calculate the forecast accuracy of series of indexes}
 \usage{
-hed_error <- calcForecastError(is_obj = hed_series, pred_df = rt_data)
+calcForecastError(is_obj, pred_df, return_forecasts = FALSE,
+  forecast_length = 1, ...)
 }
 \arguments{
 \item{is_obj}{Object of class 'hpiseries'}
@@ -27,7 +28,7 @@ object of class `hpiaccuracy` inheriting from class `data.frame` containing the 
 }
 }
 \description{
-Estimate out-of-sample index errors using a forecast method
+Estimate the index accuracy with forecasting for a (progressive) series of indexes
 }
 \section{Further Details}{
 

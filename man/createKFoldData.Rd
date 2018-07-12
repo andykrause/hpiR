@@ -2,7 +2,7 @@
 % Please edit documentation in R/calcKFoldError.R
 \name{createKFoldData}
 \alias{createKFoldData}
-\title{createKFoldData}
+\title{Create data for KFold error test}
 \usage{
 createKFoldData(score_ids, full_data, pred_df)
 }
@@ -21,7 +21,7 @@ list
 }
 }
 \description{
-Create the datasets for the kfold error testing (Generic Method)
+Generic method for creating KFold testing data
 }
 \section{Further Details}{
 

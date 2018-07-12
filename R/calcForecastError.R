@@ -1,6 +1,6 @@
-#' @title calcForecastError
-#' @description Estimate out-of-sample index errors using a forecast method
-#' @usage hed_error <- calcForecastError(is_obj = hed_series, pred_df = rt_data)
+#' Calculate the forecast accuracy of series of indexes
+#'
+#' Estimate the index accuracy with forecasting for a (progressive) series of indexes
 #' @param is_obj Object of class 'hpiseries'
 #' @param pred_df Set of sales to be used for predicitive quality of index
 #' @param return_forecasts default = FALSE; return the forecasted indexes
@@ -120,9 +120,10 @@ calcForecastError <- function(is_obj,
 
 }
 
-#' @title buildForecastIDs
-#' @description Create training or scoring data for the forecast error calculations
-#' @usage buildForecastIDs(time_cut, hpi_df, ...)
+#' Create the row IDs for forecast accuracy
+#'
+#' Generate a vector of row IDs for use in forecast accuracy tests
+#'
 #' @param time_cut Period after which to cut off data
 #' @param hpi_df Data to be converted to training or scoring
 #' @param forecast_length default = 1; Lenght of forecasting to do
@@ -148,7 +149,7 @@ calcForecastError <- function(is_obj,
 buildForecastIDs <- function(time_cut,
                              hpi_df,
                              forecast_length = 1,
-                             train=TRUE){
+                             train = TRUE){
 
   if (!'data.frame' %in% class(hpi_df)){
     message('"hpi_df" argument must be a data.frame')
@@ -171,11 +172,18 @@ buildForecastIDs <- function(time_cut,
 
 }
 
+#' Create the row IDs for forecast accuracy (hed approach)
+#'
+#' Generate a vector of row IDs for use in forecast accuracy tests (hed approach)
+#'
+#' @method buildForecastIDs heddata
+#' @inherit buildForecastIDs params
 #' @export
+
 buildForecastIDs.heddata <- function(time_cut,
                                      hpi_df,
                                      forecast_length = 1,
-                                     train=TRUE){
+                                     train = TRUE){
 
   # Extract data if given a full 'hpi' object
   if ('hpi' %in% class(hpi_df)){
@@ -191,7 +199,14 @@ buildForecastIDs.heddata <- function(time_cut,
   time_ids
 }
 
+#' Create the row IDs for forecast accuracy (rt approach)
+#'
+#' Generate a vector of row IDs for use in forecast accuracy tests (rt approach)
+#'
+#' @method buildForecastIDs rtdata
+#' @inherit buildForecastIDs params
 #' @export
+
 buildForecastIDs.rtdata <- function(time_cut,
                                     hpi_df,
                                     forecast_length = 1,

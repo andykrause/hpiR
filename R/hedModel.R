@@ -1,15 +1,15 @@
-#' @title hedModel
-#' @description Estimate repeat sales model (method based on estimator class). Generic method.
+#'
+#' Estimate hedonic model for index creation
+#'
+#' Estimate coefficients for an index via the hedonic approach (generic method)
+#'
 #' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from rtCreateSales()
-#' @param hed_spec Time matrix object from rtTimeMatrix()
-#' @param price_diff Difference in price betwen the two sales
+#' @param hed_df Repeat sales dataset from hedCreateSales()
+#' @param hed_spec Model specification (`formula` object)
 #' @param ... Additional arguments
 #' @return `hedmodel` object: model object of the estimator (ex.: `lm`)
 #' @importFrom utils methods
-#' @importFrom stats median
-#' @importFrom stats lm
-#' @importFrom stats as.formula
+#' @importFrom stats median lm as.formula
 #' @importFrom MASS rlm
 #' @importFrom robustbase lmrob
 #' @section Further Details:
@@ -56,10 +56,16 @@ hedModel <- function(estimator,
 
 }
 
-#' @title hedModel.base
-#' @importFrom stats lm
+#'
+#' Hedonic model approach with base estimator
+#'
+#' Use of base estimator in hedonic model approach
+#'
 #' @section Further Details:
 #' See `?hedModel` for more information
+#' @inherit hedModel params
+#' @method hedModel base
+#' @importFrom stats lm
 #' @export
 
 hedModel.base <- function(estimator,
@@ -79,7 +85,15 @@ hedModel.base <- function(estimator,
 
 }
 
-#' @title hedModel.robust
+#'
+#' Hedonic model approach with robust estimator
+#'
+#' Use of robust estimator in hedonic model approach
+#'
+#' @section Further Details:
+#' See `?hedModel` for more information
+#' @inherit hedModel params
+#' @method hedModel robust
 #' @importFrom stats median
 #' @importFrom MASS rlm
 #' @importFrom robustbase lmrob
@@ -108,11 +122,16 @@ hedModel.robust <- function(estimator,
 
 }
 
-#' @title hedModel.weighted
-#' @importFrom stats lm
-#' @importFrom stats as.formula
+#'
+#' Hedonic model approach with weighted estimator
+#'
+#' Use of weighted estimator in hedonic model approach
+#'
 #' @section Further Details:
 #' See `?hedModel` for more information
+#' @inherit hedModel params
+#' @method hedModel weighted
+#' @importFrom stats lm as.formula
 #' @export
 
 hedModel.weighted <- function(estimator,

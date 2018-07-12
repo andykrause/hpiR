@@ -1,24 +1,27 @@
-#' @title dateToPeriod
-#' @description Convert dates into time periods for use in repeat transaction models
+#'
+#' Convert dates to a relative period
+#'
+#' Create a relative period variable from a date variable
+#'
 #' @param trans_df data.frame of raw transactions
 #' @param date name of field containing the date of the sale in Date or POSIXt format
 #' @param periodicity type of periodicity to use ('yearly', 'quarterly', 'monthly' or 'weekly)
 #' @param min_date default = NULL; optional minimum date to use
 #' @param max_date default = NULL; optional maximum date to use
-#' @param adj_type default = 'move'; how to handle min and max dates within the range of transactions.  'move'
-#' min and/or max date or 'clip' the data
+#' @param adj_type default = 'move'; how to handle min and max dates within the range of
+#' transactions.  'move' min and/or max date or 'clip' the data
+#' @param ... Additional arguments
 #' @return original data frame (`trans_df` object) with two new fields:
-#' trans_period: integer value counting from the minimum transaction date in the periodicity selected. Base value is 1. Primarily for modeling
-#' trans_date: properly formated transaction date
-#' @importFrom lubridate year
-#' @importFrom lubridate month
-#' @importFrom lubridate week
-#' @importFrom lubridate quarter
+#' trans_period: integer value counting from the minimum transaction date in the
+#' periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
+#' formated transaction date
+#' @importFrom lubridate year month week quarter
 #' @section Further Details:
-#' "trans_period" counts from the minimum transaction date provided.  As such the period counts
-#' are relative, not absolute
-#' Additionally, this function modifies the data.frame that it is given and return that same
-#' data.frame that it is given and returns that data.frame with the new fields attached.
+#'   "trans_period" counts from the minimum transaction date provided.  As such the period
+#'   counts are relative, not absolute
+#'
+#'   Additionally, this function modifies the data.frame that it is given and return that same
+#'   data.frame that it is given and returns that data.frame with the new fields attached.
 #' @examples
 #' # Load data
 #'   data(ex_sales)
@@ -224,8 +227,11 @@ dateToPeriod <- function(trans_df,
   trans_df
 }
 
-#' @title checkDate
-#' @description Checks and converts date arguments into proper format
+#'
+#' Validate the date argument
+#'
+#' Internal function to validate (or convert) the provided date field
+#'
 #' @param x_date Date string or vector
 #' @param name Name of argument to return in error/warning message
 #' @importFrom lubridate as_date

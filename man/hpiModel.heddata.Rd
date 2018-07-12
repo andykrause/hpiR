@@ -2,9 +2,11 @@
 % Please edit documentation in R/hpiModel.R
 \name{hpiModel.heddata}
 \alias{hpiModel.heddata}
-\title{hpiModel.heddata}
+\title{Specific method for hpi modeling (hed) approach)}
 \usage{
-Lorem Ipsum...
+\method{hpiModel}{heddata}(hpi_df, estimator = "base", log_dep = TRUE,
+  trim_model = TRUE, hed_spec = NULL, dep_var = NULL, ind_var = NULL,
+  ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateSales() function in this package.}
@@ -37,7 +39,7 @@ hpimodel object consisting of:
 }
 }
 \description{
-Estimate the model for any method of house price index.  Generic method.
+Estimate hpi models with hed approach
 }
 \examples{
 # Load Data

@@ -2,9 +2,9 @@
 % Please edit documentation in R/calcForecastError.R
 \name{buildForecastIDs}
 \alias{buildForecastIDs}
-\title{buildForecastIDs}
+\title{Create the row IDs for forecast accuracy}
 \usage{
-buildForecastIDs(time_cut, hpi_df, ...)
+buildForecastIDs(time_cut, hpi_df, forecast_length = 1, train = TRUE)
 }
 \arguments{
 \item{time_cut}{Period after which to cut off data}
@@ -22,7 +22,7 @@ vector of row_ids indicating inclusion in the forecasting data as either the tra
 set (train = TRUE) or the scoring set (train = FALSE)
 }
 \description{
-Create training or scoring data for the forecast error calculations
+Generate a vector of row IDs for use in forecast accuracy tests
 }
 \section{Further Details}{
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/rtIndex.R
 \name{rtIndex}
 \alias{rtIndex}
-\title{rtIndex}
+\title{Create a full index object by repeat transaction approach}
 \usage{
 rtIndex(trans_df, ...)
 }
@@ -20,8 +20,7 @@ rtIndex(trans_df, ...)
 }
 }
 \description{
-Creates a house price index from a set of ttransactions using the
-repeat transactions method
+Wrapper to create index object via entire repeat transaction approach
 }
 \section{Further Details}{
 

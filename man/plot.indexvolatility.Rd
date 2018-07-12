@@ -2,18 +2,20 @@
 % Please edit documentation in R/plotFunctions.R
 \name{plot.indexvolatility}
 \alias{plot.indexvolatility}
-\title{plot.indexvolatility}
+\title{Plot method for `indexvolatility` object}
 \usage{
-plot(x=vol_obj)
+\method{plot}{indexvolatility}(x, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `indexvolatility``}
+
+\item{...}{Additional Arguments}
 }
 \value{
 `plotvolatility` object inheriting from a ggplot object
 }
 \description{
-Simple Plot of an indexvolatility object
+Specific plotting method for indexvolatility objects
 }
 \examples{
 # Load data

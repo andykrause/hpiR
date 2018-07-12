@@ -2,12 +2,26 @@
 % Please edit documentation in R/rtModel.R
 \name{rtModel.weighted}
 \alias{rtModel.weighted}
-\title{rtModel.weighted}
+\title{Repeat transaction model approach with weighted estimator}
 \usage{
 \method{rtModel}{weighted}(rt_df, time_matrix, price_diff, estimator, ...)
 }
+\arguments{
+\item{rt_df}{Repeat transactions dataset from rtCreateTrans()}
+
+\item{time_matrix}{Time matrix object from rtTimeMatrix()}
+
+\item{price_diff}{Difference in price betwen the two transactions}
+
+\item{estimator}{Type of model to estimates (base, robust, weighted).  Must be in that class.}
+
+\item{...}{Additional arguments}
+}
+\description{
+Use of weighted estimator in repeat transactions model approach
+}
 \section{Further Details}{
 
-See `?hedModel` for more information
+See `?rtModel` for more information
 }
 

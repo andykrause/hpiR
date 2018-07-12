@@ -1,6 +1,7 @@
-#' @title calcRevision
-#' @description Estimate revision figures for a series of indexes
-#' @usage calcRevision(series_obj)
+#' Calculate revision values of an index
+#'
+#' Create estimates of the revision statistics for a house price index
+#'
 #' @param series_obj A list of progressively longer indexes (a 'serieshpi' object from createSeries())
 #' @param in_place default = FALSE; Calculating in place (adding to hpi)
 #' @param in_place_name default = 'rev'; name of revision object in_place

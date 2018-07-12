@@ -2,7 +2,7 @@
 % Please edit documentation in R/rtCreateTrans.R
 \name{rtCreateTrans}
 \alias{rtCreateTrans}
-\title{rtCreateTrans}
+\title{Create transaction data for rt approach}
 \usage{
 rtCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
   periodicity = NULL, seq_only = FALSE, ...)
@@ -25,13 +25,15 @@ Only necessary if not passing a `hpidata` object}
 
 \item{seq_only}{default=FALSE, indicating whether to only include sequential repeat observations
 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.}
+
+\item{...}{Additional arguments}
 }
 \value{
 data.frame of repeat transactions. Note that a full data.frame of the possible
 periods, their values and names can be found in the attributes to the returned `rtdata` object
 }
 \description{
-Create repeat sale pairs from a data frame of sale transactions
+Generate standardized object for rt estimate approach
 }
 \section{Further Details}{
 

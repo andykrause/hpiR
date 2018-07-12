@@ -1,13 +1,14 @@
-#' @title createSeries
-#' @description Calculates a series of indexes, each one period longer than the previous
-#' @usage createSeries(hpi_obj, train_period = 12)
+#'
+#' Create a series of indexes
+#'
+#' Generate a series of progressive indexes
+#'
 #' @param hpi_obj Object of class 'hpi'
-#' @param train_period Number of periods to use as purely training before creating indexes
+#' @param train_period default = 12; Number of periods to use as purely training before creating indexes
 #' @param max_period default=NULL; Maximum number of periods to create the index up to
 #' @param ... Additional Arguments
 #' @return An `hpiseries` object -- a list of `hpiindex` objects.
-#' @importFrom purrr map
-#' @importFrom purrr map2
+#' @importFrom purrr map map2
 #' @section Further Details:
 #' `train_peried` Represents the shortest index that you will create. For certain approaches
 #' , such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.
@@ -24,8 +25,8 @@
 #' @export
 
 createSeries <- function(hpi_obj,
-                         train_period,
-                         max_period=NULL,
+                         train_period = 12,
+                         max_period = NULL,
                          ...){
 
   # Check for proper class

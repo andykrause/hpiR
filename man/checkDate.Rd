@@ -2,7 +2,7 @@
 % Please edit documentation in R/dateToPeriod.R
 \name{checkDate}
 \alias{checkDate}
-\title{checkDate}
+\title{Validate the date argument}
 \usage{
 checkDate(x_date, name)
 }
@@ -15,7 +15,7 @@ checkDate(x_date, name)
 Adjusted date field
 }
 \description{
-Checks and converts date arguments into proper format
+Internal function to validate (or convert) the provided date field
 }
 \examples{
 # Load Data

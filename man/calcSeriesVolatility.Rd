@@ -2,9 +2,9 @@
 % Please edit documentation in R/calcVolatility.R
 \name{calcSeriesVolatility}
 \alias{calcSeriesVolatility}
-\title{calcSeriesVolatility}
+\title{Calculate volatility of a series of indexes}
 \usage{
-calcSeriesVolatility(series_obj, window, smooth)
+calcSeriesVolatility(series_obj, window = 3, smooth = FALSE, ...)
 }
 \arguments{
 \item{series_obj}{Series object to be calculted}
@@ -19,7 +19,7 @@ calcSeriesVolatility(series_obj, window, smooth)
 `serieshpi` object
 }
 \description{
-Calculates volatility over a series of indexes
+Calculates volatility over a (progressive) series of indexes
 }
 \section{Further Details}{
 

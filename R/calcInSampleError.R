@@ -1,18 +1,20 @@
-#' @title calcInSampleError
-#' @description Estimate the predictive error of an index via an in-sample approach. Generic method.
-#' @usage calcInSampleError(pred_df, index)
+#' Calculate index errors in sample
+#'
+#' Estimate the predictive error of an index via an in-sample approach.
 #' @param pred_df Set of sales against which to test predictions
 #' @param index Index (of class) to be tested for accuracy
 #' @param ... Additional Arguments
-#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame`
+#' containing the following fields:
 #' \describe{
-#' \item{prop_id}{Property Identification number}
-#' \item{pred_price}{Predicted price}
-#' \item{pred_error}{(Prediction - Actual) / Actual}
-#' \item{pred_period}{Period of the prediction}
+#'   \item{prop_id}{Property Identification number}
+#'   \item{pred_price}{Predicted price}
+#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{pred_period}{Period of the prediction}
 #' }
 #' @section Further Details:
-#' In addition to being a stand-alone function, it is also used by `calcForecastError` and `calcKFoldError``
+#' In addition to being a stand-alone function, it is also used by `calcForecastError`
+#' and `calcKFoldError``
 #' @examples
 #' # Load example data
 #'   data(ex_rtdata)
@@ -44,7 +46,12 @@ calcInSampleError <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.rtdata
+#' Calculate index errors in sample (rt approach)
+#'
+#' Estimate the predictive error of an index via an in-sample approach (rt approach)
+#'
+#' @method calcInSampleError rtdata
+#' @inherit calcInSampleError params
 #' @export
 
 calcInSampleError.rtdata <- function(pred_df,
@@ -78,7 +85,12 @@ calcInSampleError.rtdata <- function(pred_df,
 
 }
 
-#' @title calcInSampleError.heddata
+#' Calculate index errors in sample (hed approach)
+#'
+#' Estimate the predictive error of an index via an in-sample approach (hed approach)
+#'
+#' @method calcInSampleError heddata
+#' @inherit calcInSampleError params
 #' @export
 
 calcInSampleError.heddata <- function(pred_df,

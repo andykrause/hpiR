@@ -2,14 +2,14 @@
 % Please edit documentation in R/createSeries.R
 \name{createSeries}
 \alias{createSeries}
-\title{createSeries}
+\title{Create a series of indexes}
 \usage{
-createSeries(hpi_obj, train_period = 12)
+createSeries(hpi_obj, train_period = 12, max_period = NULL, ...)
 }
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{train_period}{Number of periods to use as purely training before creating indexes}
+\item{train_period}{default = 12; Number of periods to use as purely training before creating indexes}
 
 \item{max_period}{default=NULL; Maximum number of periods to create the index up to}
 
@@ -19,7 +19,7 @@ createSeries(hpi_obj, train_period = 12)
 An `hpiseries` object -- a list of `hpiindex` objects.
 }
 \description{
-Calculates a series of indexes, each one period longer than the previous
+Generate a series of progressive indexes
 }
 \section{Further Details}{
 
