@@ -19,7 +19,6 @@
 #' periods, their values and names can be found in the attributes to the returned `rtdata` object
 #' @importFrom dplyr mutate filter arrange select group_by desc summarize n
 #' @importFrom utils combn
-#' @importFrom sf st_as_sf
 #' @importFrom plyr ddply
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
@@ -149,11 +148,6 @@ rtCreateTrans <- function(trans_df,
                      trans_id2=x_df$trans_id[id_2],
                      stringsAsFactors = FALSE)
 
-    # Check for sf object, if so add geometry back on
-    if ('sf' %in% class(x_df)){
-      d2 <- sf::st_as_sf(d2, geometry=x_df$geometry[which(id_1)])
-    }
-
   } else {
     d2 <- NULL
   }
@@ -177,12 +171,6 @@ rtCreateTrans <- function(trans_df,
       dplyr::mutate(period_2 = x_df$trans_period[match(.data$trans_id2, x_df$trans_id)]) %>%
       dplyr::mutate(price_1 = x_df$price[match(.data$trans_id1, x_df$trans_id)]) %>%
       dplyr::mutate(price_2 = x_df$price[match(.data$trans_id2, x_df$trans_id)])
-
-    # Check for sf object, if so add geometry back on
-    if ('sf' %in% class(x_df)){
-      d3 <- sf::st_as_sf(d3, geometry=x_df$geometry[match(d3$prop_id,
-                                                      x_df$prop_id)])
-    }
 
   } else {
     d3 <- NULL

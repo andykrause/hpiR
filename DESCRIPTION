@@ -19,7 +19,6 @@ Imports:
     lubridate,
     robustbase,
     ggplot2,
-    sf,
     imputeTS,
     purrr,
     forecast,
@@ -30,7 +29,7 @@ Imports:
     rlang,
     plyr,
     zoo
-URL: http://www.github/andykrause/hpiR
+URL: https://www.github.com/andykrause/hpiR
 RoxygenNote: 6.0.1
 Suggests: markdown,
     testthat
