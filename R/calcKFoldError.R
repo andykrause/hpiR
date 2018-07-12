@@ -8,17 +8,16 @@
 #' @param seed default=1; Random seed generator to control the folding process
 #' @param smooth default = FALSE; Calculate on the smoothed index
 #' @param ... Additional Arguments
-#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the
+#' following fields:
 #' \describe{
-#' \item{prop_id}{Property Identification number}
-#' \item{pred_price}{Predicted price}
-#' \item{pred_error}{(Prediction - Actual) / Actual}
-#' \item{pred_period}{Period of the prediction}
+#'   \item{prop_id}{Property Identification number}
+#'   \item{pred_price}{Predicted price}
+#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{pred_period}{Period of the prediction}
 #' }
-#' @importFrom purrr map
-#' @importFrom purrr map2
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr filter
+#' @importFrom purrr map map2
+#' @importFrom dplyr bind_rows filter
 #' @importFrom magrittr %>%
 #' @importFrom caret createFolds
 #' @examples
@@ -37,8 +36,8 @@
 
 calcKFoldError <- function(hpi_obj,
                            pred_df,
-                           k=10,
-                           seed=1,
+                           k = 10,
+                           seed = 1,
                            smooth = FALSE,
                            ...){
 
@@ -134,13 +133,13 @@ calcKFoldError <- function(hpi_obj,
 #' @param score_ids Vector of row ids to be included in scoring data
 #' @param full_data Complete dataset (class `hpidata``) of this model type (rt or hed)
 #' @param pred_df Data to be used for prediction
-#' @return list
+#' @return list of length 2 containing:
 #' \describe{
-#' \item{train}{Training data.frame}
-#' \item{score}{Scoring data.frame}
+#'   \item{train}{Training data.frame}
+#'   \item{score}{Scoring data.frame}
 #' }
 #' @section Further Details:
-#' Called from calcKFoldError
+#' Called from `calcKFoldError()``
 #' @examples
 #'  # Load Data
 #'  data(ex_rtdata)

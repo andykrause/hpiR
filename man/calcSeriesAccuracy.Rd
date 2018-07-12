@@ -11,7 +11,7 @@ calcSeriesAccuracy(series_obj, test_method = "insample", test_type = "rt",
 \arguments{
 \item{series_obj}{Serieshpi object to be analyzed}
 
-\item{test_method}{default = 'insample'; also 'kfold' or 'forecast'}
+\item{test_method}{default = 'insample'; Also 'kfold' or 'forecast'}
 
 \item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
@@ -36,12 +36,13 @@ Estimate the index accuracy for a (progressive) series of indexes
 }
 \section{Further Details}{
 
-Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results will have more than
-one accuracy estimate per observations.  Setting `summarize = TRUE` will take the mean accuracy
-for each observation across all indexes.
+Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results
+will have more than one accuracy estimate per observations.  Setting `summarize = TRUE`
+will take the mean accuracy for each observation across all indexes.
 }
 
 \examples{
+
   # Load Example `serieshpi`` object
   data(ex_serieshpi)
 

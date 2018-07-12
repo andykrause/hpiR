@@ -11,22 +11,23 @@ createSeries(hpi_obj, train_period = 12, max_period = NULL, ...)
 
 \item{train_period}{default = 12; Number of periods to use as purely training before creating indexes}
 
-\item{max_period}{default=NULL; Maximum number of periods to create the index up to}
+\item{max_period}{default = NULL; Maximum number of periods to create the index up to}
 
 \item{...}{Additional Arguments}
 }
 \value{
-An `hpiseries` object -- a list of `hpiindex` objects.
+An `serieshpi` object -- a list of `hpi` objects.
 }
 \description{
 Generate a series of progressive indexes
 }
 \section{Further Details}{
 
-`train_peried` Represents the shortest index that you will create. For certain approaches
-, such as a repeat transaction model, indexes shorter than 10 will likely be highly unstable.
+`train_period` Represents the shortest index that you will create. For certain
+approaches, such as a repeat transaction model, indexes shorter than 10 will likely
+be highly unstable.
 
-If `max_period`` is left NULL, then it will forecast up to the end of the data
+If `max_period`` is left NULL, then it will forecast up to the end of the data.
 }
 
 \examples{

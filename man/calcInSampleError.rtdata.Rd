@@ -9,7 +9,7 @@
 \arguments{
 \item{pred_df}{Set of sales against which to test predictions}
 
-\item{index}{Index (of class) to be tested for accuracy}
+\item{index}{Index (of class `ts`) to be tested for accuracy}
 
 \item{...}{Additional Arguments}
 }

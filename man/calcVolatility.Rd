@@ -24,9 +24,9 @@ calcVolatility(index, window = 3, in_place = FALSE,
 \value{
 an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
 \describe{
-\item{roll}{ volatility at each rolling point}
-\item{mean}{overall mean volatility}
-\item{median}{overall median volatility}
+  \item{roll}{ volatility at each rolling point}
+  \item{mean}{overall mean volatility}
+  \item{median}{overall median volatility}
 }
 }
 \description{

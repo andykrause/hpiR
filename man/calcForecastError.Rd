@@ -19,12 +19,14 @@ calcForecastError(is_obj, pred_df, return_forecasts = FALSE,
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame` containing
+the following fields:
 \describe{
-\item{prop_id}{Property Identification number}
-\item{pred_price}{Predicted price}
-\item{pred_error}{(Prediction - Actual) / Actual}
-\item{pred_period}{Period of the prediction}
+  \item{prop_id}{Property Identification number}
+  \item{pred_price}{Predicted price}
+  \item{pred_error}{(Prediction - Actual) / Actual}
+  \item{pred_period}{Period of the prediction}
+  \item{series}{Series position from which the prediction was generated}
 }
 }
 \description{
@@ -32,8 +34,9 @@ Estimate the index accuracy with forecasting for a (progressive) series of index
 }
 \section{Further Details}{
 
-If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
-in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')
+If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be
+returned in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj,
+'forecasts')
 
 For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
 inheriting from `hpidata`

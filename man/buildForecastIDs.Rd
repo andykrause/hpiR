@@ -18,15 +18,16 @@ buildForecastIDs(time_cut, hpi_df, forecast_length = 1, train = TRUE)
 \item{...}{Additional Arguments}
 }
 \value{
-vector of row_ids indicating inclusion in the forecasting data as either the training
-set (train = TRUE) or the scoring set (train = FALSE)
+vector of row_ids indicating inclusion in the forecasting data as either the
+training set (train = TRUE) or the scoring set (train = FALSE)
 }
 \description{
 Generate a vector of row IDs for use in forecast accuracy tests
 }
 \section{Further Details}{
 
-This function is rarely (if ever) used directly.  Most often called by `calcForecastError()`
+This function is rarely (if ever) used directly.  Most often called by
+`calcForecastError()`
 
 It is a generic method that dispatches on the `hpi_df` object.
 }

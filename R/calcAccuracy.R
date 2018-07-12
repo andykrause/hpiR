@@ -1,36 +1,40 @@
 #' Calculate the accuracy of an index
 #'
 #' Estimate index accuracy using one of a variety of approaches
+#'
 #' @param hpi_obj Object of class 'hpi'
-#' @param test_method default = 'insample'; also 'kfold'
+#' @param test_method default = 'insample'; Also 'kfold'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
-#' @param pred_df = NULL; Extra data if the test_type doesn't match data in hpi_obj
+#' @param pred_df default = NULL; Extra data if the test_type doesn't match data in hpi_obj
 #' @param smooth default = FALSE; calculated on the smoothed index(es)
 #' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
 #' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
-#' @return object of class `indexaccuracy` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `indexaccuracy` inheriting from class `data.frame` containing
+#' the following fields:
 #' \describe{
-#' \item{prop_id}{Property Identification number}
-#' \item{pred_price}{Predicted price}
-#' \item{pred_error}{(Prediction - Actual) / Actual}
-#' \item{pred_period}{Period of the prediction}
+#'   \item{prop_id}{Property Identification number}
+#'   \item{pred_price}{Predicted price}
+#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{pred_period}{Period of the prediction}
 #' }
 #' @importFrom dplyr filter
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @section Further Details:
-#' 'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
-#' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
+#' 'rt' test type tests the ability of the index to correctly predict the second value in
+#' a repeat transaction pair
+#' FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that
+#' doesn't account for time.
 #' (This approach is not ready yet).
 #'@examples
 #'# Load Example `hpi` object
-#'data(ex_hpi)
+#'  data(ex_hpi)
 #'
 #'# Calculate insample accuracy
-#'hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
-#'                         test_type = 'rt',
-#'                         test_method = 'insample')
+#'  hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
+#'                           test_type = 'rt',
+#'                           test_method = 'insample')
 #' @export
 
 calcAccuracy <- function(hpi_obj,
@@ -124,8 +128,9 @@ calcAccuracy <- function(hpi_obj,
 #' Calculate the accuracy of a series of indexes
 #'
 #' Estimate the index accuracy for a (progressive) series of indexes
+#'
 #' @param series_obj Serieshpi object to be analyzed
-#' @param test_method default = 'insample'; also 'kfold' or 'forecast'
+#' @param test_method default = 'insample'; Also 'kfold' or 'forecast'
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
 #' @param pred_df default = NULL; Extra data if the test_type doesn't match data in hpi_obj
 #' @param smooth default = FALSE; Analyze the smoothed indexes
@@ -138,15 +143,13 @@ calcAccuracy <- function(hpi_obj,
 #' @importFrom purrr map
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
-#' @importFrom dplyr ungroup
+#' @importFrom dplyr bind_rows group_by summarize ungroup
 #' @section Further Details:
-#' Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results will have more than
-#' one accuracy estimate per observations.  Setting `summarize = TRUE` will take the mean accuracy
-#' for each observation across all indexes.
+#' Unless using `test_method = "forecast"`` with a "forecast_length" of 1, the results
+#' will have more than one accuracy estimate per observations.  Setting `summarize = TRUE`
+#' will take the mean accuracy for each observation across all indexes.
 #' @examples
+#'
 #'   # Load Example `serieshpi`` object
 #'   data(ex_serieshpi)
 #'

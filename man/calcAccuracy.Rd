@@ -11,11 +11,11 @@ calcAccuracy(hpi_obj, test_method = "insample", test_type = "rt",
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}
 
-\item{test_method}{default = 'insample'; also 'kfold'}
+\item{test_method}{default = 'insample'; Also 'kfold'}
 
 \item{test_type}{default = 'rt'; Type of data to use for test.  See details.}
 
-\item{pred_df}{= NULL; Extra data if the test_type doesn't match data in hpi_obj}
+\item{pred_df}{default = NULL; Extra data if the test_type doesn't match data in hpi_obj}
 
 \item{smooth}{default = FALSE; calculated on the smoothed index(es)}
 
@@ -26,12 +26,13 @@ calcAccuracy(hpi_obj, test_method = "insample", test_type = "rt",
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `indexaccuracy` inheriting from class `data.frame` containing the following fields:
+object of class `indexaccuracy` inheriting from class `data.frame` containing
+the following fields:
 \describe{
-\item{prop_id}{Property Identification number}
-\item{pred_price}{Predicted price}
-\item{pred_error}{(Prediction - Actual) / Actual}
-\item{pred_period}{Period of the prediction}
+  \item{prop_id}{Property Identification number}
+  \item{pred_price}{Predicted price}
+  \item{pred_error}{(Prediction - Actual) / Actual}
+  \item{pred_period}{Period of the prediction}
 }
 }
 \description{
@@ -39,17 +40,19 @@ Estimate index accuracy using one of a variety of approaches
 }
 \section{Further Details}{
 
-'rt' test type tests the ability of the index to correctly predict the second value in a sale-resale pair
-FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that doesn't account for time.
+'rt' test type tests the ability of the index to correctly predict the second value in
+a repeat transaction pair
+FUTURE: 'hed' test type tests the ability of the index to improve an OLS model that
+doesn't account for time.
 (This approach is not ready yet).
 }
 
 \examples{
 # Load Example `hpi` object
-data(ex_hpi)
+ data(ex_hpi)
 
 # Calculate insample accuracy
-hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
-                        test_type = 'rt',
-                        test_method = 'insample')
+ hpi_accr <- calcAccuracy(hpi_obj = ex_hpi,
+                          test_type = 'rt',
+                          test_method = 'insample')
 }

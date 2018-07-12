@@ -1,8 +1,9 @@
 #' Calculate index errors in sample
 #'
 #' Estimate the predictive error of an index via an in-sample approach.
+#'
 #' @param pred_df Set of sales against which to test predictions
-#' @param index Index (of class) to be tested for accuracy
+#' @param index Index (of class `ts`) to be tested for accuracy
 #' @param ... Additional Arguments
 #' @return object of class `hpiaccuracy` inheriting from class `data.frame`
 #' containing the following fields:

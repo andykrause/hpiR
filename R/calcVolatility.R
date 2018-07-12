@@ -12,9 +12,9 @@
 #' @param ... Additional arguments
 #' @return an `indexvolatility` (S3) object, the 'index' slot of which is a `ts` object
 #' \describe{
-#' \item{roll}{ volatility at each rolling point}
-#' \item{mean}{overall mean volatility}
-#' \item{median}{overall median volatility}
+#'   \item{roll}{ volatility at each rolling point}
+#'   \item{mean}{overall mean volatility}
+#'   \item{median}{overall median volatility}
 #' }
 #' @importFrom zoo rollapply
 #' @importFrom stats median sd
@@ -92,10 +92,10 @@ calcVolatility <- function(index,
   iv <- zoo::rollapply(deltas, window, stats::sd)
 
   ## Create objec
-  vol_obj <- structure(list(roll=iv,
-                            mean=mean(iv),
-                            median=median(iv)),
-                       class='indexvolatility')
+  vol_obj <- structure(list(roll = iv,
+                            mean = mean(iv),
+                            median = stats::median(iv)),
+                       class = 'indexvolatility')
   attr(vol_obj, 'orig') <- index
   attr(vol_obj, 'window') <- window
 

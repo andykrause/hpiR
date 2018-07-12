@@ -14,10 +14,10 @@ createKFoldData(score_ids, full_data, pred_df)
 \item{pred_df}{Data to be used for prediction}
 }
 \value{
-list
+list of length 2 containing:
 \describe{
-\item{train}{Training data.frame}
-\item{score}{Scoring data.frame}
+  \item{train}{Training data.frame}
+  \item{score}{Scoring data.frame}
 }
 }
 \description{
@@ -25,7 +25,7 @@ Generic method for creating KFold testing data
 }
 \section{Further Details}{
 
-Called from calcKFoldError
+Called from `calcKFoldError()``
 }
 
 \examples{

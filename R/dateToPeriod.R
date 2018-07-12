@@ -35,10 +35,10 @@
 
 dateToPeriod <- function(trans_df,
                          date,
-                         periodicity=NULL,
-                         min_date=NULL,
-                         max_date=NULL,
-                         adj_type='move',
+                         periodicity = NULL,
+                         min_date = NULL,
+                         max_date = NULL,
+                         adj_type = 'move',
                          ...){
 
   # Check for data.frame in trans_df

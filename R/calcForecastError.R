@@ -1,29 +1,28 @@
 #' Calculate the forecast accuracy of series of indexes
 #'
 #' Estimate the index accuracy with forecasting for a (progressive) series of indexes
+#'
 #' @param is_obj Object of class 'hpiseries'
 #' @param pred_df Set of sales to be used for predicitive quality of index
 #' @param return_forecasts default = FALSE; return the forecasted indexes
 #' @param forecast_length default = 1; Length of period(s) in time to forecast
 #' @param ... Additional Arguments
-#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing
+#' the following fields:
 #' \describe{
-#' \item{prop_id}{Property Identification number}
-#' \item{pred_price}{Predicted price}
-#' \item{pred_error}{(Prediction - Actual) / Actual}
-#' \item{pred_period}{Period of the prediction}
+#'   \item{prop_id}{Property Identification number}
+#'   \item{pred_price}{Predicted price}
+#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{pred_period}{Period of the prediction}
+#'   \item{series}{Series position from which the prediction was generated}
 #' }
-#' @importFrom purrr map
-#' @importFrom purrr map2
-#' @importFrom forecast forecast
-#' @importFrom forecast ets
-#' @importFrom stats ts
-#' @importFrom stats start
-#' @importFrom stats end
-#' @importFrom stats frequency
+#' @importFrom purrr map map2
+#' @importFrom forecast forecast ets
+#' @importFrom stats ts start end frequency
 #' @section Further Details:
-#' If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be returned
-#' in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj, 'forecasts')
+#' If you set `return_forecasts` = TRUE, the forecasted indexes for each period will be
+#' returned in the `forecasts` attribute of the `hpiaccuracy` object. (attr(accr_obj,
+#' 'forecasts')
 #'
 #' For now, the `pred_df` object must be a set of repeat transactions with the class `rt`,
 #' inheriting from `hpidata`
@@ -129,10 +128,11 @@ calcForecastError <- function(is_obj,
 #' @param forecast_length default = 1; Lenght of forecasting to do
 #' @param train Default=TRUE; Create training data?  FALSE = Scoring data
 #' @param ... Additional Arguments
-#' @return vector of row_ids indicating inclusion in the forecasting data as either the training
-#' set (train = TRUE) or the scoring set (train = FALSE)
+#' @return vector of row_ids indicating inclusion in the forecasting data as either the
+#' training set (train = TRUE) or the scoring set (train = FALSE)
 #' @section Further Details:
-#' This function is rarely (if ever) used directly.  Most often called by `calcForecastError()`
+#' This function is rarely (if ever) used directly.  Most often called by
+#' `calcForecastError()`
 #'
 #' It is a generic method that dispatches on the `hpi_df` object.
 #' @examples
@@ -225,4 +225,3 @@ buildForecastIDs.rtdata <- function(time_cut,
   }
   time_ids
 }
-

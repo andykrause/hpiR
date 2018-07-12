@@ -2,21 +2,22 @@
 #'
 #' Create estimates of the revision statistics for a house price index
 #'
-#' @param series_obj A list of progressively longer indexes (a 'serieshpi' object from createSeries())
+#' @param series_obj A list of progressively longer indexes (a `serieshpi`` object from
+#' `createSeries()``)
 #' @param in_place default = FALSE; Calculating in place (adding to hpi)
-#' @param in_place_name default = 'rev'; name of revision object in_place
-#' @param smooth default = FALSE; use smoothed indexes
+#' @param in_place_name default = 'rev'; Name of revision object in_place
+#' @param smooth default = FALSE; Use smoothed indexes
 #' @param ... Additional Arguments
-#' @return list containing:
+#' @return list of length 3 containing:
 #' \describe{
-#' \item{period}{Data.frame containing the period number, mean and median for that period}
-#' \item{mean}{Mean revision for all periods}
-#' \item{median}{Median revision for all periods}
+#'   \item{period}{Data.frame containing the period number, mean and median for that period}
+#'   \item{mean}{Mean revision for all periods}
+#'   \item{median}{Median revision for all periods}
 #' }
-#' @importFrom purrr map
-#' @importFrom purrr transpose
+#' @importFrom purrr map transpose
 #' @section Further Details:
-#' The revision object can be generate "in place" inside of the `serieshpi` object by setting `in_place` equal to TRUE.
+#' The revision object can be generate "in place" inside of the `serieshpi` object by
+#' setting `in_place` equal to TRUE.
 #' @examples
 #'# Load data
 #'  data(ex_serieshpi)

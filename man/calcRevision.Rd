@@ -8,22 +8,23 @@ calcRevision(series_obj, in_place = FALSE, in_place_name = "rev",
   smooth = FALSE, ...)
 }
 \arguments{
-\item{series_obj}{A list of progressively longer indexes (a 'serieshpi' object from createSeries())}
+\item{series_obj}{A list of progressively longer indexes (a `serieshpi`` object from
+`createSeries()``)}
 
 \item{in_place}{default = FALSE; Calculating in place (adding to hpi)}
 
-\item{in_place_name}{default = 'rev'; name of revision object in_place}
+\item{in_place_name}{default = 'rev'; Name of revision object in_place}
 
-\item{smooth}{default = FALSE; use smoothed indexes}
+\item{smooth}{default = FALSE; Use smoothed indexes}
 
 \item{...}{Additional Arguments}
 }
 \value{
-list containing:
+list of length 3 containing:
 \describe{
-\item{period}{Data.frame containing the period number, mean and median for that period}
-\item{mean}{Mean revision for all periods}
-\item{median}{Median revision for all periods}
+  \item{period}{Data.frame containing the period number, mean and median for that period}
+  \item{mean}{Mean revision for all periods}
+  \item{median}{Median revision for all periods}
 }
 }
 \description{
@@ -31,7 +32,8 @@ Create estimates of the revision statistics for a house price index
 }
 \section{Further Details}{
 
-The revision object can be generate "in place" inside of the `serieshpi` object by setting `in_place` equal to TRUE.
+The revision object can be generate "in place" inside of the `serieshpi` object by
+setting `in_place` equal to TRUE.
 }
 
 \examples{

@@ -20,12 +20,13 @@ calcKFoldError(hpi_obj, pred_df, k = 10, seed = 1, smooth = FALSE, ...)
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `hpiaccuracy` inheriting from class `data.frame` containing the following fields:
+object of class `hpiaccuracy` inheriting from class `data.frame` containing the
+following fields:
 \describe{
-\item{prop_id}{Property Identification number}
-\item{pred_price}{Predicted price}
-\item{pred_error}{(Prediction - Actual) / Actual}
-\item{pred_period}{Period of the prediction}
+  \item{prop_id}{Property Identification number}
+  \item{pred_price}{Predicted price}
+  \item{pred_error}{(Prediction - Actual) / Actual}
+  \item{pred_period}{Period of the prediction}
 }
 }
 \description{
