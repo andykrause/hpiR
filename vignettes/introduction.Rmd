@@ -17,7 +17,7 @@ editor_options:
 
 ### Introduction
 
-This vignette provides an introduction to using the `hpiR` package for estimating house price indexes. At the current time, this package (version 0.1.0) offers two methods to estimate house price indexes -- repeat transactions and hedonic price models. Future versions will incorporate additional methodological options.  More information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR)
+This vignette provides an introduction to using the `hpiR` package for estimating house price indexes. At the current time, this package (version 0.2.0) offers two approaches to estimate house price indexes -- repeat transactions and hedonic price models. Future versions will incorporate additional methodological options.  More information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR)
 
 A detailed explanation of the class and method structure employed in this package can be found in the **Classes in hpiR** vignette in this package, or at: [https://github.com/andykrause/hpiR/blob/master/vignettes/classstructure.Rmd](https://github.com/andykrause/hpiR/blob/master/vignettes/classstructure.Rmd)
 
@@ -26,22 +26,21 @@ A detailed explanation of the class and method structure employed in this packag
 A bit of terminology:
 
 * **Index**: a time-series of values estimating tracking the movement of prices over time with a base period value of 100
+* **Series**: progression of increasing longer indexes  
 * **Model**: statistical or other type of mathematical equation or algorithm used to generate the raw coefficient (or other) estimates that are converted into the scaled (base = 100) index values
 * **Accuracy**: ability of an index to represent the actual market movements
 * **Volatility**: measure of the period to period movement in index values
-* **Series**: progression of increasing longer indexes  
+* **Smooth**: reduce volatility with a rolling average or similar smoothing process
 * **Revision**: amount that the index value for a specific period moves over the course of a **series**
 
-In general, this vignette takes the following path through the functionality provided by `hpir` as this is imagined to most closely approximate a real-world application of the package to real estate market data.  
+In general, this vignette takes the following path through the functionality provided by `hpiR` as this is imagined to most closely approximate a real-world application of the package to real estate market data.  
 
 1. **Data preparation**
 2. **Modeling**
 3. **Index creation**
-4. **Analysis**
-    * Index-level
+4. **Analysis: Index-level**
 5. **Series creation**
-6. **Analysis**
-    * Series-level
+6. **Analysis: Series-level**
 
 ### Load Package
 
@@ -72,9 +71,16 @@ The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` comma
 
 ```
 
-All potential models, indexes and series that can be created with `hpir` require the transaction date to be converted to a numeric and relative time period.  Relative, here, means relative to the base period which is assumed to be the first period in the transaction data.  
+All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data.  
 
-The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The available periodicity options are *"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*, with *"yearly"* as the default.  In addition to the transaction data (`trans_df`) and the period type selection (`periodicity`), the `dateToPeriod()` function also requires an input telling it which field in the data contains the transaction date (`date`).
+The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The available periodicity options are:
+
+* *"yearly"*
+* *"quarterly"*
+* *"monthly"* 
+* *"weekly"*
+
+with *"yearly"* as the default.  In addition to the transaction data (`trans_df`) and the period type selection (`periodicity`), the `dateToPeriod()` function also requires an input telling it which field in the data contains the transaction date (`date`).
 
 ```{r create_hpidata_obj}
   sales_hdf <- dateToPeriod(trans_df = ex_sales,
@@ -83,7 +89,7 @@ The `dateToPeriod()` function will convert R date fields into relative time peri
 
 ```
 
-The default specification of `dateToPeriod()` will use the minimum and maximum dates in the data provided to it as the lower and upper time boundaries for the modeling and index creation that follow.  You can, however, set custom dates using the `min_date` and `max_date` argument.  For example, let's assume that we want to estimate an index that covers the entire transaction period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. You see a warning telling you that there are empty periods -- periods in which there are no transactions.  
+The default specification of `dateToPeriod()` will use the minimum and maximum dates in the data provided to it as the lower and upper time boundaries for the modeling and index creation that follow.  You can, however, set custom dates using the `min_date` and `max_date` arguments.  For example, let's assume that we want to estimate an index that covers the entire transaction period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. You see a warning telling you that there are empty periods -- periods in which there are no transactions.  
 
 ```{r expand_time}
   sales_hdf <- dateToPeriod(trans_df = ex_sales,
@@ -105,7 +111,7 @@ If the dates that are provided as alternative minimums and maximums are within t
 
 ```
 
-Alternatively, you can use the `min_date` and `max_date` arguments to clip your dataset to a particular time frame by setting `adj_type = "clip"`. The default,  `adj_type = "move"`, simply moves it to the minimum or maximum in the data as shown above. The clipping functionality allows you to create an index for a subset of the time period covered by your data.  
+Alternatively, you can use the `min_date` and `max_date` arguments to "clip"" your dataset to a particular time frame by setting `adj_type = "clip"`. The default,  `adj_type = "move"`, simply moves it to the minimum or maximum in the data as shown above. The clipping functionality allows you to create an index for a subset of the time period covered by your data.  
 
 ```{r adj_clip}
   sales_hdf_clip <- dateToPeriod(trans_df = ex_sales,
@@ -121,11 +127,10 @@ For the sake of the remainder of this analysis, let's allow the defaults to set 
 
 We now have a dataset that includes two new, standardized fields (`trans_date` and `trans_period`) indicating the date of transaction and the period of each transaction relative to the first transaction in the data (at a monthly periodicity), respectively. Note that these standardized fields are required for the processes that follow.
 
-Additional information on the full extend of the periods as well as their numeric and date values can be found in the `"period_table"` attribute of the `sales_hdf` object or accessed by:
+Additional information on the full extent of the periods as well as their numeric and date values can be found in the `"period_table"` attribute of the `sales_hdf` object or accessed by:
 
 ```{r period_table_attr}
   head(attr(sales_hdf, 'period_table'))
-
 
 ```
 
@@ -133,11 +138,11 @@ Finally, information on the minimum date, maximum date and the periodicity can a
 
 ### Repeat Transactions (Sales) Model
 
-Let's start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular methods to create a house price index. 
+Let's start by creating an index using a repeat-transactions model (often referred to as a repeat-sales or a sale-resale model), one of the most popular approaches to create a house price index. 
 
 #### Data Prep
 
-First, we use the `rtCreateTrans()` function to convert the transaction data (the `hpidata` object) into a data.frame of repeat transactions (properties that have transacted multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field, a unique transaction id field and a field denoting the transaction price.  
+First, we use the `rtCreateTrans()` function to convert the transaction data (the `hpidata` object) into a `data.frame` of repeat transactions (properties that have transacted multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field, a unique transaction id field and a field denoting the transaction price.  
 
 ```{r create_rtdata}
   sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
@@ -155,7 +160,7 @@ This function creates a `data.frame` with eight fields: the property id, the tim
 
 ```
 
-In the event of more than two transactions, all pairs of transactions are created by default -- sales 1 to 2, 1 to 3 and 2 to 3. If you'd like to only use sequential transactions as pairs -- sales 1 to 2 and 2 to 3, for example -- you can set `seq_only = TRUE` (default is FALSE).
+In the event of more than two transactions of the same property, all pairs of transactions are created by default -- sales 1 to 2, 1 to 3 and 2 to 3. If you'd like to only use sequential transactions as pairs -- sales 1 to 2 and 2 to 3, for example -- you can set `seq_only = TRUE` (default is FALSE).
 
 ```{r seq_only_true}
   sales_rtdf_so <- rtCreateTrans(trans_df = sales_hdf,
@@ -174,9 +179,9 @@ In the event of more than two transactions, all pairs of transactions are create
 
 #### Modeling
 
-Next, we use this data to estimate a repeat transactions model.  In this simple example we will use the *"base"* estimator (a simple OLS) with a logged dependent variable (`log_dep = TRUE`).  Models may also be estimated via a robust regression model (`estimator = "robust"`) or a weighted OLS model (`estimator = "weighted"`) as originally suggested by Case and Shiller (1987)`
+Next, we use the `rtdata` object to estimate a repeat transactions model.  In this simple example we will use the *"base"* estimator (a simple OLS) with a logged dependent variable (`log_dep = TRUE`).  Models may also be estimated via a robust regression model (`estimator = "robust"`) or a weighted OLS model (`estimator = "weighted"`) as originally suggested by Case and Shiller (1987).
 
-The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argumet. Tn this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
+The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argumet. In this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
 
 ```{r create_rtmodel}
   rt_model <- hpiModel(hpi_df = sales_rtdf,
@@ -201,7 +206,7 @@ The objects created by regression models can be rather large, so by default the 
 
 #### Index Creation
 
-We can then convert model results into an index with the `modelToIndex()` function.  The output of this function is an objet of class `hpiindex`, which has a time-series object (class `ts`) with an index value (base = 100) for each of the time periods estimated. Note that no smoothing is done at this time.
+We can then convert model results into an index with the `modelToIndex()` function.  The output of this function is an objet of class `hpiindex`, which has a time-series object (\$value slot, class `ts`) with an index value (base = 100) for each of the time periods estimated. Note that no smoothing is done at this time.
 
 ```{r create_rtindex}
   rt_index <- modelToIndex(model_obj = rt_model)
@@ -224,7 +229,7 @@ A simple plot (with the `plot.hpiindex()` method) shows the results of this esti
 
 ```
 
-In situations where there are empty periods in the modeling results (there was no or not enough data to estimate a value for a particular period), the `modelToIndex()` will impute (using the `imputeTS` package) the missing periods. For missing periods at the start of the index or before the first non-100 period, all periods are given a value of 100.  For missing internal periods (those with estimated periods both before and after) a stine interpolation is used and for those missing at the end a 'last observation carried forward' (LOCF) approach is used.  The `imputed` slot in the `hpiindex` object will indicate which periods have been imputed.
+In situations where there are empty periods in the modeling results (there was no or not enough data to estimate a value for a particular period), the `modelToIndex()` will impute (using the `imputeTS` package) the missing periods. For missing periods at the start of the index or before the first non-100 period, all periods are given a value of 100.  For missing internal periods (those with estimated periods both before and after) a 'stine' interpolation is used and for those missing at the end a 'last observation carried forward' (LOCF) approach is used.  The `\$imputed` slot in the `hpiindex` object will indicate which periods have been imputed.
 
 ```{r imputation_example}
   rt_model_imp <- rt_full
@@ -259,7 +264,7 @@ As we see from the plots of the indexes above, considerable volatility from one 
 
 ```
 
-The `smoothIndex()` function can be done `in_place` such that the smoothed indexes are added to the larger `hpiindex` object.
+The `smoothIndex()` function can be done **'in_place'** such that the smoothed indexes are added to the larger `hpiindex` object.
 
 ```{r rtindex_inplace}
    rt_index <- smoothIndex(index_obj = rt_index,
@@ -278,11 +283,11 @@ The **in_place** smoothing can be plotted by adding `smooth=TRUE` to the plot ca
 
 #### Data to Index Wrapper
 
-A wrapper function, `rtIndex()`, will do all of the above taking it from a raw data.frame of transaction data through to the repeat transaction index creation and storing all results in a unified object of class `hpi`.
+A wrapper function, `rtIndex()`, will do all of the above taking it from a raw `data.frame` of transaction data through to the repeat transaction index creation and storing all results in a unified object of class `hpi`.
 
 There are three 'levels of entry' with the wrapper function.
 
-1. You can give it a raw `data.frame` with your transactions and it will A) Add the periods; B) Calculate the repeat transactions; and 3) Model the data and create the index.  Under this approach `trans_df` is passed a raw `data.frame` along with the following arguments, some of which are optional (will revert to default if not given) and some of which are required (mostly field names):
+1. You can give it a raw `data.frame` with your transactions and it will A) Add the periods; B) Calculate the repeat transactions; and C) Model the data and create the index.  Under this approach `trans_df` is passed a raw `data.frame` along with the following arguments, some of which are optional (will revert to default if not given) and some of which are required (mostly field names):
 
    * `periodicity` (optional: default = 'annual')
    * `min_date` (optional: default = minimum of data)
@@ -294,9 +299,9 @@ There are three 'levels of entry' with the wrapper function.
    * `prop_id` (required)
    * `seq_only` (optional: default = FALSE)
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of index length)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -327,9 +332,9 @@ There are three 'levels of entry' with the wrapper function.
    * `prop_id` (required)
    * `seq_only` (optional: default = FALSE)
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of index length)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -359,9 +364,9 @@ There are three 'levels of entry' with the wrapper function.
 3. Finally, you can provide it an `rtdata` object (one that has been through the `rtCreateTrans()` function).  Only the following arguments are meaningful in this case.
 
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of index length)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -395,7 +400,7 @@ A plot method exists to cleanly plot `hpi` objects.
 
 Another option for developing a house price index is to use a hedonic price model.  Similar to the repeat transaction model presented above, this process can be done stepwise or through a single wrapper function (`hedIndex()`).  We'll start with individual steps.
 
-First, we create a set of hedonic model ready data with the `hedCreateTrans()` function.  Here we provide the raw transactions, along with field names for the property id, the transaction ids, the price and date.  A periodicity (*"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*) is also required.  Note that this function uses the `dateToPeriod()` discussed above and creates an object of class **heddata** inheriting from **data.frame**.
+First, we create a set of hedonic model ready data with the `hedCreateTrans()` function.  Here we provide the raw transactions, along with field names for the property id, the transaction ids, the price and date.  A periodicity (*"yearly"*, *"quarterly"*, *"monthly"* or *"weekly"*) is also required.  Note that this function uses the `dateToPeriod()` discussed above and creates an object of class `heddata` inheriting from `hpidata` and `data.frame`.
 
 ```{r create_heddata}
   sales_hhdf <- hedCreateTrans(trans_df = ex_sales,
@@ -485,9 +490,9 @@ There are three 'levels of entry' with the wrapper function.
    * `ind_var` (required, unless `hed_spec` supplied)
    * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of data)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -521,9 +526,9 @@ There are three 'levels of entry' with the wrapper function.
    * `ind_var` (required, unless `hed_spec` supplied)
    * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of data)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -558,9 +563,9 @@ There are three 'levels of entry' with the wrapper function.
    * `ind_var` (required, unless `hed_spec` supplied)
    * `hed_spec` (required, unless `dep_var` and `ind_var` supplied)
    * `estimator` (optional: default = 'base')
-   * `log_dep` (optional: TRUE)
-   * `trim_model` (optional: FALSE)
-   * `max_period` (optional: maximum of data)
+   * `log_dep` (optional: default = TRUE)
+   * `trim_model` (optional: default = FALSE)
+   * `max_period` (optional: default = maximum of data)
    * `smooth` (optional: default = FALSE)
    * `smooth_order` (optional, default = 3)
 
@@ -619,7 +624,7 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
 
 #### Volatility
 
-One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The `window` over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (`roll`) as well as the summarized average volality(`mean`) and median (`median`) are returned by the function.
+One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The `window` over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (`\$roll`) as well as the summarized average volality(`\$mean`) and median (`\$median`) are returned by the function.
 
 ```{r index_vol1}
   index_vol <- calcVolatility(index = hed_hpi$index$value,
@@ -628,7 +633,7 @@ One thing we can check for an index is its volatility.  We can get the a rolling
 
 ```
 
-Plotting an `indexVolatility` object shows the rolling volatility, the mean (dashed line) and the median (dotted) volatility on the top panel.
+Plotting an `indexvolatility` object shows the rolling volatility, the mean (dashed line) and the median (dotted) volatility on the top panel.
 
 ```{r plot_vol, fig.width=7, fig.height=3.5}
   plot(index_vol)
@@ -677,7 +682,7 @@ The `calcVolatility()` function can also place the volatility metrics directly i
 
 ```
 
-A volatility analysis of a smoothed index will place it under the **volatility_smooth** name.
+A volatility analysis of a smoothed index will place it under the **\$volatility_smooth** name.
 
 ```{r indexvol_inplace_smooth}
    hed_hpi <- calcVolatility(index = hed_hpi,
@@ -699,7 +704,7 @@ If you want to add it to the `hpiindex` object under a different name -- say if 
 
 ```
 
-A note on renaming and in place addition.  All of the analytical objects that are added -- volatility and other below -- can be renamed to allow for multiple analyses with different parameter.  Smoothed indexes, however, cannot be renamed and must be stored under the name 'smooth' because all of the analytical process depend on identifying this named slot.  
+A note on renaming and in place addition.  All of the analytical objects that are added -- volatility and other below -- can be renamed to allow for multiple analyses with different parameters.  Smoothed indexes, however, cannot be renamed and must be stored under the name 'smooth' because all of the analytical process depend on identifying this named slot.  
 
 #### Fitting Accuracy (Index)
 
@@ -707,7 +712,7 @@ Next, we can test the accuracy of an index.  In this case, we will define accura
 
 The `calcAccuracy()` function requires a full `hpi` object as its main argument.  `test_type` defines the manner of testing accuracy; at the moment the only working options is *"rt"* which uses repeat transactions to judge the accuracy of an index.  (Additional types to come).  `test_method` sets the manner in which the test is employed, *"insample"* or *"kfold"*.  If the `hpi_obj` does not match the `test_type` (in all cases *"rt"* for now), then you must supply an `rtdata` object to in the `pred_df` argument.
 
-The `calcAccuracy()` function returns a data.frame comparing the actual (repeat) transaction price to the one predicted by the index.  A `"test_method"` attribute indicates the type of accuracy test performed.
+The `calcAccuracy()` function returns a `data.frame` comparing the actual (repeat) transaction price to the one predicted by the index.  A `"test_method"` attribute indicates the type of accuracy test performed.
 
 ```{r rt_is_acc}
    rt_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
@@ -717,7 +722,7 @@ The `calcAccuracy()` function returns a data.frame comparing the actual (repeat)
 
 ```
 
-The smoothed index (if present) can be analyzed by setting **smooth = TRUE**
+The smoothed index (if present) can be analyzed by setting `smooth = TRUE`
 
 ```{r rt_is_accr_smooth}
     rts_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
@@ -750,9 +755,9 @@ As with the other analytical functions, the results of the accuracy calculations
 
 ```
 
-To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a k-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
+To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a K-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
 
-Two addition arguments are availabile here: 1) `k` - the number of folds to make (default = 10); and 2) `seed` a value to the control the random sampling (default = 1).
+Two additional arguments are availabile here: 1) `k` - the number of folds to make (default = 10); and 2) `seed` a value to the control the random sampling (default = 1).
 
 ```{r kf_accr}
   rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
@@ -791,22 +796,22 @@ We can also return these in place.
 
 A plotting method (`plot.hpiaccuracy()`) shows a number of diagnostics about the accuracy analysis. Because the plotting object here contains multiple plot objects, if you wish to save this plot to a named object, you need to add `return_plot = TRUE` to the argument list.
 
-```{r plot_accr}
+```{r plot_accr, fig.keep = 'first', fig.width=7, fig.height=3}
   plot(hed_hpi$index$kf_accuracy)
 
 ```
 
 ### Index Series
 
-Two other aspects or metrics of house price indexes are revision and forecast accuracy.   Forecast accuracy refers to how well an index forecasts capture future market movements. Revision refers to how much original index values change over time as new data is accumulated (new transactions occur). Both concepts are described more fully below.  To calculate either of these metrics requires a series of indexes.
+Two other aspects or metrics of house price indexes are revision and forecast accuracy.   Forecast accuracy refers to how well an index forecast captures future market movements. Revision refers to how much original index values change over time as new data is accumulated (new transactions occur). Both concepts are described more fully below.  To calculate either of these metrics requires a series of indexes.
 
 A series of indexes is a collection of progressively longer indexes that are estimated over time, or estimated sequentially such that the knowledge of the future is withheld from the model.  For example, imagine we have, as the example below does, 84 months (periods) of data.  Since we are using a statistical modeling approach, let's assume that we need at least 12 period of data (training period) to fit a model.  We begin by creating an index for periods 1 through 12, assuming that we only have data from periods 1 through 12.  Then we do 1 through 13, assuming we only have data from periods 1 through 13; on up to period 84.  This represents an index series. The indexes in the series are identified by the number of the last period that they are estimating, index 12, index 13, etc.
 
 The `createSeries()` function will create these series.  The `hpi_obj` argument must be a full `hpi` object (created with one of the index wrappers). `train_period` sets how many periods to use for initial training (length of the shortest period). The `max_period` argument (default is the entire length of existing index) will control the end period to estimate a series up to (defaults to the original length of the index in the `hpi` object.).
 
-The `createSeries()` function will return an object of class `hpiseries` (data plus a series of `hpiindex` objects).
+The `createSeries()` function will return an object of class `serieshpi` (data plus a series of `hpi` objects).
 
-```{r create_series, warning=FALSE, comments=FALSE}
+```{r create_series, warning=FALSE, comments=FALSE, message=FALSE}
    rt_series <- createSeries(hpi_obj = rt_hpi,
                              train_period = 24,
                              max_period = 30)
@@ -849,7 +854,7 @@ A wrapper function, `calcSeriesAccuracy()` will calculate accuracy for all `hpii
 
 ```
 
-These calculations can occur "in place" and a series object will be returned by the function.  Note that running this function on kfold method may be computationally intense depending on your data size and index length. Unlike index accuracy calculations which are saved in the `hpiindex` object, series accuracy calculations are saved in the `serieshpi` object when done "in place". 
+These calculations can occur "in place" and a series object will be returned by the function.  Note that running this function on the "kfold" method may be computationally intense depending on your data size and index length. Unlike index accuracy calculations which are saved in the `hpiindex` object, series accuracy calculations are saved in the `serieshpi` object when done "in place". 
 
 ```{r series_acc_smooth_inplace}
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -874,9 +879,9 @@ One thing to note about series accuracy is that the training data will be evalua
 
 #### Forecast Accuracy
 
-A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"
+A final way to estimate accuracy is with a forecast test.  In a forecast test, we use a series of indexes and continue to predict one period ahead and measure how well the predicted index does against repeated transactions in that period.  In highly volatile or cyclical markets this is the most representative method of the answering the question: "how well does this index represent the near future?"
 
-As above, it can be used on the raw index values or the smoothed ones (`smooth = TRUE`).  Unlike the insample and kfold accuracy tests (which are saved in the `hpiindex` objects) the forecast accuracy tests are saved in the `serieshpi` object.
+As above, it can be used on the raw index values or the smoothed ones (`smooth = TRUE`). The forecast accuracy tests are saved in the `serieshpi` object.
 
 ```{r fct_accr}
   rt_series <- calcSeriesAccuracy(series_obj = rt_series,
@@ -887,18 +892,18 @@ As above, it can be used on the raw index values or the smoothed ones (`smooth =
 
 ```
 
-We can plot the `seriesaccuracy` objects, which look identical to `hpiaccuracy` objects.
+We can plot the `seriesaccuracy` objects, which look nearly identical to `hpiaccuracy` objects.
 
-```{r eval=TRUE, messages=FALSE, echo=TRUE}
+```{r eval=TRUE, messages=FALSE, echo=TRUE, fig.keep = 'first', fig.width=7, fig.height=3}
   plot(rt_series$accuracy_smooth)
 
 ```
 
 #### Revision
 
-As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the final index.
+As can be the case with house price indexes, the estimated index values move considerably as new data (transactions) are accumulated over time. We can measure the amount of this change, or 'revision' over time as a useful metric or property of the series or of the final index.
 
-Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) that the latter periods are and, as such, are likely to be less volatile.
+Within the literature on house price indexes there is no standard or agreed upon metric to summarize revision.  Here we do it two ways.  First, at the period level where we calculate the average revision (change from period to period) for each period in the series of indexes.  Obviously, the earlier period have a larger sample size (though they do have more time to be influenced by future transactions) than the latter periods are and, as such, are likely to be less volatile.
 
 The second calculation simply averages all revisions across all periods to provide a single value of the average and median revision for the index series.
 
@@ -921,3 +926,5 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
   plot(rt_rev, measure='median')
 
 ```
+
+More information on the class structures of the object created above can be found in the "Classes in hpiR" vignette in this package. 
