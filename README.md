@@ -1,5 +1,7 @@
 ## hpiR: House Price Indexes in R 
 
+[![Travis-CI Build Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR)
+
 &nbsp;
 
 ### Overview
