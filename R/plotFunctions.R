@@ -153,6 +153,7 @@ plot.indexvolatility <- function(x, ...){
 #' @return `plotaccuracy` object inheriting from a ggplot object
 #' @import ggplot2
 #' @importFrom stats quantile
+#' @importFrom graphics plot
 #' @importFrom gridExtra grid.arrange
 #' @examples
 #' # Load data
@@ -200,14 +201,14 @@ plot.hpiaccuracy <- function(x,
   }
 
   # Make absolute density plot
-  dens_abs <- ggplot(x, aes(x="abs(pred_error)"), alpha=.5) +
+  dens_abs <- ggplot(x, aes_string(x="abs(pred_error)"), alpha=.5) +
     geom_density(fill='lightblue') +
     coord_cartesian(xlim=c(0, stats::quantile(abs(x$pred_error),.99))) +
     xlab('Absolute Error') +
     ylab('Density of Error')
 
   # Make magnitude density plot
-  dens_mag <- ggplot(x, aes(x="pred_error"), alpha=.5) +
+  dens_mag <- ggplot(x, aes_string(x="pred_error"), alpha=.5) +
     geom_density(fill='salmon') +
     coord_cartesian(xlim=c(stats::quantile(x$pred_error, .01),
                            stats::quantile(x$pred_error, .99))) +
