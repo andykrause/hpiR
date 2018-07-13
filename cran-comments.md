@@ -1,24 +1,25 @@
 ## Test environments
-* local OS X install, R 3.1.2
-* ubuntu 12.04 (on travis-ci), R 3.1.2
-* win-builder (devel and release)
+* ubuntu 14.04.5 (on travis-ci), R 3.5.0
+* win-builder (release)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
 There was 1 NOTE:
 
-* checking dependencies in R code ... NOTE
-  Namespace in Imports field not imported from: 'R6'
+* checking installed package size ... NOTE
+  installed size is  9.2Mb
+  sub-directories of 1Mb or more:
+    data   8.6Mb
+    
+The 'data' sub-directory is large because the example data is a set of real estate sales
+transactions.  House price indexes generally require fairly large datasets to create stable
+estimates. The 'data' sub-directory also includes examples of all classes of objects used 
+in this package (~6.5mb) of data.  This could be removed if necessary. 
 
-  R6 is a build-time dependency.
+This is my first submission. 
 
 ## Downstream dependencies
-I have also run R CMD check on downstream dependencies of httr 
-(https://github.com/wch/checkresults/blob/master/httr/r-release). 
-All packages that I could install passed except:
+This is the first version of this package and there are no known downstream dependencies. 
 
-* Ecoengine: this appears to be a failure related to config on 
-  that machine. I couldn't reproduce it locally, and it doesn't 
-  seem to be related to changes in httr (the same problem exists 
-  with httr 0.4).
+
