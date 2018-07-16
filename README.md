@@ -53,9 +53,4 @@ This is a basic example which shows you how to solve a common problem:
                  log_dep = TRUE,
                  trim_model = TRUE,
                  smooth = TRUE)
-  
-  # Plot
-  plot(hpi, smooth = TRUE)
 ```
-
-![](README-example-1.png)
