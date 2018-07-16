@@ -5,7 +5,9 @@
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
-There was 1 NOTE:
+There were 2 NOTES:
+
+* New submission
 
 * checking installed package size ... NOTE
   installed size is  9.2Mb

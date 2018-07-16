@@ -12,7 +12,7 @@
 
 \item{hpi_df}{Data to be converted to training or scoring}
 
-\item{forecast_length}{default = 1; Lenght of forecasting to do}
+\item{forecast_length}{default = 1; Length of forecasting to do}
 
 \item{train}{Default=TRUE; Create training data?  FALSE = Scoring data}
 }
