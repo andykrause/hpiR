@@ -25,7 +25,7 @@
 #' @export
 
 modelToIndex <- function(model_obj,
-                         max_period=max(model_obj$coefficients$time),
+                         max_period = max(model_obj$coefficients$time),
                          ...){
 
   ## Check for proper class
@@ -90,9 +90,9 @@ modelToIndex <- function(model_obj,
   }
 
   # Convert to a time series (ts) object
-  index <- stats::ts(data=index_value,
-                     start=min(coef_df$time, na.rm=TRUE),
-                     end=max_period)
+  index <- stats::ts(data = index_value,
+                     start = min(coef_df$time, na.rm=TRUE),
+                     end = max_period)
 
   # Set as classed list and return
   structure(list(name = model_obj$periods$name[1:max_period],

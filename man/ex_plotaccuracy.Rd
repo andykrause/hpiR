@@ -6,7 +6,7 @@
 \title{Example `plotaccuracy` object}
 \format{ggplot object:}
 \source{
-plot.indexaccuracy()
+plot.hpiaccuracy()
 }
 \usage{
 data(ex_plotaccuracy)

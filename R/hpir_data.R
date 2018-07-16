@@ -292,7 +292,7 @@
 #'
 #' @docType data
 #' @usage data(ex_plotaccuracy)
-#' @source plot.indexaccuracy()
+#' @source plot.hpiaccuracy()
 #' @format ggplot object:
 
 "ex_plotaccuracy"

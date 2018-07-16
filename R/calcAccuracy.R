@@ -10,7 +10,7 @@
 #' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
 #' @param in_place_name default = 'accuracy'; Name for returning in place
 #' @param ... Additional Arguments
-#' @return object of class `indexaccuracy` inheriting from class `data.frame` containing
+#' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing
 #' the following fields:
 #' \describe{
 #'   \item{prop_id}{Property Identification number}

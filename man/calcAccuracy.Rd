@@ -26,7 +26,7 @@ calcAccuracy(hpi_obj, test_method = "insample", test_type = "rt",
 \item{...}{Additional Arguments}
 }
 \value{
-object of class `indexaccuracy` inheriting from class `data.frame` containing
+object of class `hpiaccuracy` inheriting from class `data.frame` containing
 the following fields:
 \describe{
   \item{prop_id}{Property Identification number}
