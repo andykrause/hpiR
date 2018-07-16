@@ -3,7 +3,7 @@
 #' Estimate the index accuracy with forecasting for a (progressive) series of indexes
 #'
 #' @param is_obj Object of class 'hpiseries'
-#' @param pred_df Set of sales to be used for predicitive quality of index
+#' @param pred_df Set of sales to be used for predictive quality of index
 #' @param return_forecasts default = FALSE; return the forecasted indexes
 #' @param forecast_length default = 1; Length of period(s) in time to forecast
 #' @param ... Additional Arguments

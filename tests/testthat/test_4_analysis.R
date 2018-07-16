@@ -61,7 +61,7 @@ context('calcVolatility()')
                                           window = 3),
               'indexvolatility')
 
-    # Hpi Index object
+    # HPI Index object
     expect_is(index_vol <- calcVolatility(index = hed_index$index,
                                           window = 3),
               'indexvolatility')
@@ -80,7 +80,7 @@ context('calcVolatility()')
                                           window = 3),
               'indexvolatility')
 
-    # Hpi Index object
+    # HPI Index object
     expect_is(index_vol <- calcVolatility(index = hed_index$index,
                                           window = 3,
                                           smooth = TRUE),
@@ -124,13 +124,13 @@ context('calcVolatility()')
                                                in_place = TRUE),
               'indexvolatility')
 
-    # Add it to the Hpi Index object
+    # Add it to the HPI Index object
     expect_is(hed_index$index <- calcVolatility(index = hed_index$index,
                                                 window = 3,
                                                 in_place = TRUE),
               'hpiindex')
 
-    # Add it to the Hpi Index object Smooth
+    # Add it to the HPI Index object Smooth
     expect_is(hed_index$index <- calcVolatility(index = hed_index$index,
                                                 window = 3,
                                                 in_place = TRUE,

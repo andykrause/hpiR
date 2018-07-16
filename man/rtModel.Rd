@@ -11,7 +11,7 @@ rtModel(rt_df, time_matrix, price_diff, estimator, ...)
 
 \item{time_matrix}{Time matrix object from rtTimeMatrix()}
 
-\item{price_diff}{Difference in price betwen the two transactions}
+\item{price_diff}{Difference in price between the two transactions}
 
 \item{estimator}{Type of model to estimates (base, robust, weighted).  Must be in that class.}
 

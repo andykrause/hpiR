@@ -10,7 +10,7 @@
 #' @format A \code{"data.frame"} with 43,313 rows and 16 variables
 #' \describe{
 #'   \item{pinx}{The unique property identifying code.  Original value is preceded by two '..'s to prevent the dropping of leading zeros}
-#'   \item{sale_id}{The unique transation identifying code.}
+#'   \item{sale_id}{The unique transaction identifying code.}
 #'   \item{sale_price}{Price of the home}
 #'   \item{sale_date}{Date of sale}
 #'   \item{use_type}{Property use type}
@@ -43,7 +43,7 @@
 #' \describe{
 #'   \item{pinx}{The unique property identifying code.  Original value is preceded by
 #'   two '..'s to prevent the dropping of leading zeros}
-#'   \item{sale_id}{The unique transation identifying code.}
+#'   \item{sale_id}{The unique transaction identifying code.}
 #'   \item{sale_price}{Price of the home}
 #'   \item{sale_date}{Date of sale}
 #'   \item{use_type}{Property use type}
@@ -75,7 +75,7 @@
 #' \describe{
 #'   \item{pinx}{The unique property identifying code.  Original value is preceded by
 #'   two '..'s to prevent the dropping of leading zeros}
-#'   \item{sale_id}{The unique transation identifying code.}
+#'   \item{sale_id}{The unique transaction identifying code.}
 #'   \item{sale_price}{Price of the home}
 #'   \item{sale_date}{Date of sale}
 #'   \item{use_type}{Property use type}
@@ -110,7 +110,7 @@
 #' \describe{
 #'   \item{prop_id}{The unique property identifying code.  Original value is preceded by
 #'   two '..'s to prevent the dropping of leading zeros}
-#'   \item{trans_id}{The unique transation identifying code.}
+#'   \item{trans_id}{The unique transaction identifying code.}
 #'   \item{price}{Price of the home}
 #'   \item{sale_date}{Date of sale}
 #'   \item{use_type}{Property use type}
@@ -171,7 +171,7 @@
 #'   \item{rank}{model rank, length 87}
 #'   \item{fitted.values}{Fitted values, length 5319}
 #'   \item{assign}{Vector of length 87}
-#'   \item{df.residual}{Residual degrees of freeedom, integer}
+#'   \item{df.residual}{Residual degrees of freedom, integer}
 #'   \item{contrasts}{list of contrasts}
 #'   \item{xlevels}{levels}
 #'   \item{call}{model call}
@@ -357,7 +357,7 @@
 #'   \item{rank}{model rank, length 87}
 #'   \item{fitted.values}{Fitted values, length 5319}
 #'   \item{assign}{Vector of length 87}
-#'   \item{df.residual}{Residual degrees of freeedom, integer}
+#'   \item{df.residual}{Residual degrees of freedom, integer}
 #'   \item{xlevels}{levels}
 #'   \item{call}{model call}
 #'   \item{terms}{formula terms of the model}

@@ -37,7 +37,7 @@ Generate standardized object for rt estimate approach
 }
 \section{Further Details}{
 
-Properties with greater than two tranactions during the period will make pairwise matches
+Properties with greater than two transactions during the period will make pairwise matches
 among all sales.  Any property transacting twice in the same period will remove the lower
 priced of the two transactions.
 If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to

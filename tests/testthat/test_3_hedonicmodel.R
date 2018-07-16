@@ -735,7 +735,7 @@ context('hpiModel.heddata()')
 
   test_that('smoothing Function works with a variety of inputs',{
 
-    # Hpi Index object
+    # HPI Index object
     expect_is(index_smooth <- smoothIndex(index_obj = index_base,
                                           order = 4),
               'indexsmooth')

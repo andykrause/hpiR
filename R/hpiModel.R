@@ -11,7 +11,7 @@
 #' @return hpimodel object consisting of:
 #' \describe{
 #' \item{estimator}{Type of estimator}
-#' \item{coefficients}{Data.frame of coeeficient}
+#' \item{coefficients}{Data.frame of coefficient}
 #' \item{model_obj}{class `rtmodel` or `hedmodel`}
 #' \item{mod_spec}{Full model specification}
 #' \item{log_dep}{Binary: is the dependent variable in logged format}
@@ -60,7 +60,7 @@ hpiModel <- function(hpi_df,
 #' @return hpimodel object consisting of:
 #' \describe{
 #' \item{estimator}{Type of estimator}
-#' \item{coefficients}{Data.frame of coeeficient}
+#' \item{coefficients}{Data.frame of coefficient}
 #' \item{model_obj}{class `rtmodel` or `hedmodel`}
 #' \item{mod_spec}{Full model specification}
 #' \item{log_dep}{Binary: is the dependent variable in logged format}
@@ -168,7 +168,7 @@ hpiModel.rtdata <- function(hpi_df,
 #' @return hpimodel object consisting of:
 #' \describe{
 #' \item{estimator}{Type of estimator}
-#' \item{coefficients}{Data.frame of coeeficient}
+#' \item{coefficients}{Data.frame of coefficient}
 #' \item{model_obj}{class `rtmodel` or `hedmodel`}
 #' \item{mod_spec}{Full model specification}
 #' \item{log_dep}{Binary: is the dependent variable in logged format}

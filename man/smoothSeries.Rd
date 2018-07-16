@@ -17,7 +17,7 @@ smoothSeries(series_obj, order = 3, ...)
 a `serieshpi` object with a smoothed index in each `hpiindex` object
 }
 \description{
-Smoothes all indexes within a progressive series of indexes
+Smooths all indexes within a progressive series of indexes
 }
 \section{Further Details}{
 

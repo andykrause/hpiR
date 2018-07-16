@@ -10,7 +10,7 @@ calcForecastError(is_obj, pred_df, return_forecasts = FALSE,
 \arguments{
 \item{is_obj}{Object of class 'hpiseries'}
 
-\item{pred_df}{Set of sales to be used for predicitive quality of index}
+\item{pred_df}{Set of sales to be used for predictive quality of index}
 
 \item{return_forecasts}{default = FALSE; return the forecasted indexes}
 

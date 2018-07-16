@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Object to plot of class `hpiindex``}
 
-\item{show_imputed}{defautl = FALSE; highlight the imputed points}
+\item{show_imputed}{default = FALSE; highlight the imputed points}
 
 \item{smooth}{default = FALSE; plot the smoothed index}
 

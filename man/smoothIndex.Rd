@@ -20,7 +20,7 @@ multiple iterations}
 a `ts`` and 'smooth_index` object with smoothed index
 }
 \description{
-Smoothes an existing hpiindex object
+Smooths an existing hpiindex object
 }
 \section{Further Details}{
 

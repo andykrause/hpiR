@@ -19,7 +19,7 @@ calcSeriesAccuracy(series_obj, test_method = "insample", test_type = "rt",
 
 \item{smooth}{default = FALSE; Analyze the smoothed indexes}
 
-\item{summarize}{default = FALSe; When multiple accuracy measurements for single observation
+\item{summarize}{default = FALSE; When multiple accuracy measurements for single observation
 take the mean of them all.}
 
 \item{in_place}{default = FALSE; Should the result be returned into an existing `hpi` object}

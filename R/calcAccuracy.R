@@ -134,7 +134,7 @@ calcAccuracy <- function(hpi_obj,
 #' @param test_type default = 'rt'; Type of data to use for test.  See details.
 #' @param pred_df default = NULL; Extra data if the test_type doesn't match data in hpi_obj
 #' @param smooth default = FALSE; Analyze the smoothed indexes
-#' @param summarize default = FALSe; When multiple accuracy measurements for single observation
+#' @param summarize default = FALSE; When multiple accuracy measurements for single observation
 #' take the mean of them all.
 #' @param in_place default = FALSE; Should the result be returned into an existing `hpi` object
 #' @param in_place_name default = 'accuracy'; Name for returning in place

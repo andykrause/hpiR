@@ -7,7 +7,7 @@
 calcKFoldError(hpi_obj, pred_df, k = 10, seed = 1, smooth = FALSE, ...)
 }
 \arguments{
-\item{hpi_obj}{Hpi object of class 'hpi'}
+\item{hpi_obj}{HPI object of class 'hpi'}
 
 \item{pred_df}{Data.frame of sales to be used for assessing predictive quality of index}
 

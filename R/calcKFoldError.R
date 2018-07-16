@@ -2,7 +2,7 @@
 #'
 #' Use a KFold (out of sample) approach to estimate index accuracy
 #'
-#' @param hpi_obj Hpi object of class 'hpi'
+#' @param hpi_obj HPI object of class 'hpi'
 #' @param pred_df Data.frame of sales to be used for assessing predictive quality of index
 #' @param k default=10; Number of folds to apply to holdout process
 #' @param seed default=1; Random seed generator to control the folding process

@@ -7,7 +7,7 @@
 calcSeriesVolatility(series_obj, window = 3, smooth = FALSE, ...)
 }
 \arguments{
-\item{series_obj}{Series object to be calculted}
+\item{series_obj}{Series object to be calculated}
 
 \item{window}{default = 3; Rolling periods over which to calculate the volatility}
 

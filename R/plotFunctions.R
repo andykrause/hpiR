@@ -4,7 +4,7 @@
 #' Specific plotting method for hpiindex objects
 #'
 #' @param x Object to plot of class `hpiindex``
-#' @param show_imputed defautl = FALSE; highlight the imputed points
+#' @param show_imputed default = FALSE; highlight the imputed points
 #' @param smooth default = FALSE; plot the smoothed index
 #' @param ... Additional Arguments
 #' @import ggplot2

@@ -8,7 +8,7 @@
 \describe{
   \item{pinx}{The unique property identifying code.  Original value is preceded by
   two '..'s to prevent the dropping of leading zeros}
-  \item{sale_id}{The unique transation identifying code.}
+  \item{sale_id}{The unique transaction identifying code.}
   \item{sale_price}{Price of the home}
   \item{sale_date}{Date of sale}
   \item{use_type}{Property use type}

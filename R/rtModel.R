@@ -5,7 +5,7 @@
 #'
 #' @param rt_df Repeat transactions dataset from rtCreateTrans()
 #' @param time_matrix Time matrix object from rtTimeMatrix()
-#' @param price_diff Difference in price betwen the two transactions
+#' @param price_diff Difference in price between the two transactions
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
 #' @param ... Additional arguments
 #' @return `rtmodel` object

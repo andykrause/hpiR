@@ -1,7 +1,7 @@
 #'
 #' Smooth an index
 #'
-#' Smoothes an existing hpiindex object
+#' Smooths an existing hpiindex object
 #'
 #' @param index_obj Index to be smoothed
 #' @param order default = 3; Number of nearby period to smooth with, multiple means
@@ -101,7 +101,7 @@ smoothIndex <- function(index_obj,
 #'
 #' Smooth all indexes in a series
 #'
-#' Smoothes all indexes within a progressive series of indexes
+#' Smooths all indexes within a progressive series of indexes
 #'
 #' @param series_obj Series to be smoothed
 #' @param order Number of nearby period to smooth with

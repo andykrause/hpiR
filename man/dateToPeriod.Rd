@@ -27,7 +27,7 @@ transactions.  'move' min and/or max date or 'clip' the data}
 original data frame (`trans_df` object) with two new fields:
 trans_period: integer value counting from the minimum transaction date in the
 periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
-formated transaction date
+formatted transaction date
 }
 \description{
 Create a relative period variable from a date variable

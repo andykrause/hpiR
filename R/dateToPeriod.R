@@ -14,7 +14,7 @@
 #' @return original data frame (`trans_df` object) with two new fields:
 #' trans_period: integer value counting from the minimum transaction date in the
 #' periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
-#' formated transaction date
+#' formatted transaction date
 #' @importFrom lubridate year month week quarter
 #' @section Further Details:
 #'   "trans_period" counts from the minimum transaction date provided.  As such the period

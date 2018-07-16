@@ -12,7 +12,7 @@
   \item{rank}{model rank, length 87}
   \item{fitted.values}{Fitted values, length 5319}
   \item{assign}{Vector of length 87}
-  \item{df.residual}{Residual degrees of freeedom, integer}
+  \item{df.residual}{Residual degrees of freedom, integer}
   \item{xlevels}{levels}
   \item{call}{model call}
   \item{terms}{formula terms of the model}

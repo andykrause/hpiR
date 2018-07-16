@@ -127,7 +127,7 @@ calcVolatility <- function(index,
 #'
 #' Calculates volatility over a (progressive) series of indexes
 #'
-#' @param series_obj Series object to be calculted
+#' @param series_obj Series object to be calculated
 #' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
 #' @param ... Additional Arguments
