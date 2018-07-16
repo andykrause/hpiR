@@ -1,15 +1,26 @@
+---
+output: github_document
+---
 
 [![Travis-CI Build Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR)
 
- 
+&nbsp;
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-hpiR
-====
 
-This package intends to simplify and standardize the creation of house price indexes in R. It also provides a framework for judging the 'quality' of a given index by testing for predictive accuracy, volatility and revision. By providing these metrics various index methods (and estimators) can be accurately compared against each other.
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
 
-While there are a (ever-increasing) variety of methods and models to use in house price index creation, this initial version (0.2.0) focuses on the two most common: repeat sales (transactions) and hedonic price. Base, robust and weighted estimators are provided when appropriate.
+# hpiR
+
+This package intends to simplify and standardize the creation of house price indexes in R.  It also provides a framework for judging the 'quality' of a given index by testing for predictive accuracy, volatility and revision.  By providing these metrics various index methods (and estimators) can be accurately compared against each other.  
+
+While there are a (ever-increasing) variety of methods and models to use in house price index creation, this initial version (0.2.0) focuses on the two most common: repeat sales (transactions) and hedonic price.  Base, robust and weighted estimators are provided when appropriate.  
 
 The package also includes a dataset of single family and townhome sales from the City of Seattle during 2010-2016 time period.
 
@@ -17,30 +28,27 @@ Please see the [vignette](https://github.com/andykrause/hpiR/blob/master/vignett
 
 Also, please log issues or pull requests on this [github page](http://www.github.com/andykrause/hpiR).
 
-Installation
-------------
+## Installation
 
 You can install hpiR from github with:
 
 **Install the released version from CRAN**
 
-``` r
+```{r, eval=FALSE}
   install.packages("hpiR")
 ```
 
 **Development version from GitHub:**
 
-``` r
+```{r, eval=FALSE}
   #install.packages("devtools")
   devtools::install_github("andykrause/hpiR")
 ```
-
-Example
--------
+## Example
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
+```{r example}
 
   library(hpiR)
 
@@ -56,6 +64,5 @@ This is a basic example which shows you how to solve a common problem:
   
   # Plot
   plot(hpi, smooth = TRUE)
+  
 ```
-
-![](README-example-1.png)
