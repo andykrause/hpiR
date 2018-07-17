@@ -34,12 +34,3 @@ hpimodel object consisting of:
 \description{
 Estimate hpi models with rt approach
 }
-\examples{
-# Load Data
- data(ex_rtdata)
-
- # Create model object
- hpi_model <- hpiModel(hpi_df = ex_rtdata,
-                       estimator = 'base',
-                       log_dep = TRUE)
-}

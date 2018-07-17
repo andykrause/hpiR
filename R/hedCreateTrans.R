@@ -19,15 +19,18 @@
 #' data.frame of the possible periods, their values and names can be found in the
 #' attributes to the returned `hed` object
 #' @examples
-#' # Load example data
-#' data(ex_sales)
 #'
-#' ex_heddata <- hedCreateTrans(trans_df = ex_sales,
-#'                              prop_id = 'pinx',
-#'                              trans_id = 'sale_id',
-#'                              price = 'sale_price',
-#'                              date = 'sale_date',
-#'                              periodicity = 'monthly')
+#'  # Load example data
+#'  data(ex_sales)
+#'
+#'  # Create Hed Data
+#'  ex_heddata <- hedCreateTrans(trans_df = ex_sales,
+#'                               prop_id = 'pinx',
+#'                               trans_id = 'sale_id',
+#'                               price = 'sale_price',
+#'                               date = 'sale_date',
+#'                               periodicity = 'monthly')
+#'
 #' @export
 
 hedCreateTrans <- function(trans_df,

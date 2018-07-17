@@ -22,13 +22,23 @@
 #' @importFrom stats as.formula
 #' @importFrom stats update
 #' @examples
-#' # Load Data
-#'  data(ex_rtdata)
+#'
+#'  # Load data
+#'  data(ex_sales)
+#'
+#'  # With a raw transaction data.frame
+#'  rt_data <- rtCreateTrans(trans_df = ex_sales,
+#'                           prop_id = 'pinx',
+#'                           trans_id = 'sale_id',
+#'                           price = 'sale_price',
+#'                           periodicity = 'monthly',
+#'                           date = 'sale_date')
 #'
 #'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
+#'  hpi_model <- hpiModel(hpi_df = rt_data,
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
+#'
 #' @export
 
 hpiModel <- function(hpi_df,
@@ -68,14 +78,6 @@ hpiModel <- function(hpi_df,
 #' \item{periods}{`data.frame` of periods}
 #' \item{approach}{Type of model used}
 #' }
-#' @examples
-#' # Load Data
-#'  data(ex_rtdata)
-#'
-#'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = ex_rtdata,
-#'                        estimator = 'base',
-#'                        log_dep = TRUE)
 #' @export
 
 hpiModel.rtdata <- function(hpi_df,
@@ -177,16 +179,6 @@ hpiModel.rtdata <- function(hpi_df,
 #' \item{approach}{Type of model used}
 #' }
 #' @importFrom stats update
-#' @examples
-#' # Load Data
-#'  data(ex_heddata)
-#'
-#'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = ex_heddata,
-#'                        estimator = 'base',
-#'                        dep_var = 'price',
-#'                        ind_var = c('tot_sf', 'beds', 'baths'),
-#'                        log_dep = TRUE)
 #' @export
 
 hpiModel.heddata <- function(hpi_df,

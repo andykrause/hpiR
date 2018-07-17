@@ -42,6 +42,7 @@ Create a relative period variable from a date variable
 }
 
 \examples{
+
 # Load data
   data(ex_sales)
 

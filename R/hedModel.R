@@ -16,13 +16,23 @@
 #' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
 #' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
-#' # Load Data
-#' data(ex_heddata)
 #'
-#' # Estimate Model
-#' hed_model <- hedModel(estimator = structure('base', class = 'base'),
-#'                       hed_df = ex_heddata,
-#'                       hed_spec = as.formula(log(price) ~ baths + tot_sf))
+#'  # Load example data
+#'  data(ex_sales)
+#'
+#'  # Create hedonic data
+#'  hed_data <- hedCreateTrans(trans_df = ex_sales,
+#'                            prop_id = 'pinx',
+#'                            trans_id = 'sale_id',
+#'                            price = 'sale_price',
+#'                            date = 'sale_date',
+#'                            periodicity = 'monthly')
+#'
+#'  # Estimate Model
+#'  hed_model <- hedModel(estimator = structure('base', class = 'base'),
+#'                        hed_df = hed_data,
+#'                        hed_spec = as.formula(log(price) ~ baths + tot_sf))
+#'
 #' @export
 
 hedModel <- function(estimator,

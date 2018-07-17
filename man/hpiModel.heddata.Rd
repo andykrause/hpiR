@@ -41,14 +41,3 @@ hpimodel object consisting of:
 \description{
 Estimate hpi models with hed approach
 }
-\examples{
-# Load Data
- data(ex_heddata)
-
- # Create model object
- hpi_model <- hpiModel(hpi_df = ex_heddata,
-                       estimator = 'base',
-                       dep_var = 'price',
-                       ind_var = c('tot_sf', 'beds', 'baths'),
-                       log_dep = TRUE)
-}

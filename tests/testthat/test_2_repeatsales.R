@@ -304,9 +304,9 @@ context('rtModel()')
 
   test_that('Performance with sparse data',{
 
-    ## Moderate Sparteness
+    ## Moderate Sparseness
 
-    # Create a sparte data set
+    # Create a sparse data set
     rt_df200 <- rt_df[1:200, ]
     time_matrix200 <- rtTimeMatrix(rt_df200)
     price_diff_l200 <- log(rt_df200$price_2) - log(rt_df200$price_1)

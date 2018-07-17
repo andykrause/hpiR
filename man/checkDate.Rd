@@ -18,10 +18,11 @@ Adjusted date field
 Internal function to validate (or convert) the provided date field
 }
 \examples{
-# Load Data
+
+ # Load Data
   data(ex_sales)
 
-# Check date
+ # Check date
   date_checked <- checkDate(x_date = ex_sales$sale_date,
                             name = 'sale date')
 }

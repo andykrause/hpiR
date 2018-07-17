@@ -17,7 +17,7 @@ editor_options:
 
 ## Introduction
 
-This vignette explains the various classes of objects and data used in the `hpiR` package. All example object found in this vignette (signified by the "ex_" prefix) are also contained in the package itself.  
+This vignette explains the various classes of objects and data used in the `hpiR` package. By executing the code in this vignette you can create examples of all classes of objects used in the `hpiR` package. 
 
 ## Class Structures
 
@@ -622,40 +622,3 @@ Finally, `seriesaccuracy` objects can be saved to a plot of class `plotaccuracy`
 ```
 
 For more information on using the above functions please see the **"Introduction"** Vignette also provided with this package.  
-
-```{r create_package_data_objects, echo=FALSE, eval=FALSE}
-  
-  # Code for saving objects to the package /data.  Not executed or shown. 
-
-  devtools::use_data(ex_sales, overwrite=TRUE)
-
-  devtools::use_data(ex_hpidata, overwrite=TRUE)
-  devtools::use_data(ex_rtdata, overwrite=TRUE)
-  devtools::use_data(ex_heddata, overwrite=TRUE)
-  
-  devtools::use_data(ex_hpimodel, overwrite=TRUE)
-  devtools::use_data(ex_timematrix, overwrite=TRUE)
-  devtools::use_data(ex_rtmodel, overwrite=TRUE)
-  devtools::use_data(ex_hedmodel, overwrite=TRUE)
-  
-  devtools::use_data(ex_hpiindex, overwrite=TRUE)
-  devtools::use_data(ex_smoothindex, overwrite=TRUE)
-  devtools::use_data(ex_plotindex, overwrite=TRUE)
-  
-  devtools::use_data(ex_hpi, overwrite=TRUE)
-  
-  devtools::use_data(ex_indexvolatility, overwrite=TRUE)
-  devtools::use_data(ex_plotvolatility, overwrite=TRUE)
-  
-  devtools::use_data(ex_hpiaccuracy, overwrite=TRUE)  
-  devtools::use_data(ex_plotaccuracy, overwrite=TRUE)  
-  
-  devtools::use_data(ex_serieshpi, overwrite=TRUE)
-  devtools::use_data(ex_plotseries, overwrite=TRUE)
-  
-  devtools::use_data(ex_seriesaccuracy, overwrite=TRUE)
-  
-  devtools::use_data(ex_seriesrevision, overwrite=TRUE)
-  devtools::use_data(ex_plotrevision, overwrite=TRUE)
-  
-```

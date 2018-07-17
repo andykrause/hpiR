@@ -29,15 +29,9 @@
 #' If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 #' a field containing a vector of class POSIXt or Date.
 #' @examples
-#' ## Load data
-#' data(ex_sales)
-#' data(ex_hpidata)
 #'
-#' # With an `hpidata` object
-#'  rt_data <- rtCreateTrans(trans_df = ex_hpidata,
-#'                           prop_id = 'pinx',
-#'                           trans_id = 'sale_id',
-#'                           price = 'sale_price')
+#'  # Load data
+#'  data(ex_sales)
 #'
 #'  # With a raw transaction data.frame
 #'  rt_data <- rtCreateTrans(trans_df = ex_sales,

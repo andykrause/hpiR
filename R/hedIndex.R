@@ -18,32 +18,11 @@
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.
 #' @examples
-#' # Load data
-#' data(ex_sales)
-#' data(ex_hpidata)
-#' data(ex_heddata)
 #'
-#' # Create index: with full `heddata` object
-#'  hed_index <- hedIndex(trans_df = ex_heddata,
-#'                        dep_var = 'price',
-#'                        ind_var = c('tot_sf', 'beds', 'baths'),
-#'                        smooth = FALSE)
+#'  # Load data
+#'  data(ex_sales)
 #'
-#' # Create index: with `hpidata` object
-#'  hed_index <- hedIndex(trans_df = ex_hpidata,
-#'                        date = 'sale_date',
-#'                        price = 'sale_price',
-#'                        trans_id = 'sale_id',
-#'                        prop_id = 'pinx',
-#'                        estimator = 'base',
-#'                        log_dep = FALSE,
-#'                        trim_model = FALSE,
-#'                        max_period = 56,
-#'                        dep_var = 'price',
-#'                        ind_var = c('tot_sf', 'beds', 'baths'),
-#'                        smooth = TRUE)
-#'
-#' # Crete index with raw transaction data
+#'  # Create index with raw transaction data
 #'  hed_index <- hedIndex(trans_df = ex_sales,
 #'                        periodicity = 'monthly',
 #'                        min_date = '2010-06-01',
@@ -60,6 +39,7 @@
 #'                        dep_var = 'price',
 #'                        ind_var = c('tot_sf', 'beds', 'baths'),
 #'                        smooth = FALSE)
+#'
 #' @export
 
 hedIndex <- function(trans_df,

@@ -35,11 +35,21 @@ hpimodel object consisting of:
 Generic method to estimate modeling approaches for indexes
 }
 \examples{
-# Load Data
- data(ex_rtdata)
+
+ # Load data
+ data(ex_sales)
+
+ # With a raw transaction data.frame
+ rt_data <- rtCreateTrans(trans_df = ex_sales,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price',
+                          periodicity = 'monthly',
+                          date = 'sale_date')
 
  # Create model object
- hpi_model <- hpiModel(hpi_df = ex_rtdata,
+ hpi_model <- hpiModel(hpi_df = rt_data,
                        estimator = 'base',
                        log_dep = TRUE)
+
 }

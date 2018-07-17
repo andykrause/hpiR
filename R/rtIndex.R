@@ -15,25 +15,11 @@
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.
 #' @examples
-#' # Load data
-#' data(ex_sales)
-#' data(ex_hpidata)
-#' data(ex_rtdata)
 #'
-#' # Create index: with full `rtdata` object
-#'  rt_index <- rtIndex(trans_df = ex_rtdata,
-#'                      smooth = FALSE)
+#'  # Load data
+#'  data(ex_sales)
 #'
-#' # Create index: with `hpidata` object
-#'  rt_index <- rtIndex(trans_df = ex_hpidata,
-#'                      date = 'sale_date',
-#'                      price = 'sale_price',
-#'                      trans_id = 'sale_id',
-#'                      prop_id = 'pinx',
-#'                      estimator = 'base',
-#'                      smooth = TRUE)
-#'
-#' # Crete index with raw transaction data
+#'  # Create index with raw transaction data
 #'  rt_index <- rtIndex(trans_df = ex_sales,
 #'                      periodicity = 'monthly',
 #'                      min_date = '2010-06-01',
@@ -48,6 +34,7 @@
 #'                      trim_model = TRUE,
 #'                      max_period = 48,
 #'                      smooth = FALSE)
+#'
 #' @export
 
 rtIndex <- function(trans_df,

@@ -33,12 +33,21 @@ It is a generic method that dispatches on the `hpi_df` object.
 }
 
 \examples{
-# Load example data
-  data(ex_rtdata)
+
+ data(ex_sales)
+
+ # Create RT data
+ rt_data <- rtCreateTrans(trans_df = ex_sales,
+                          prop_id = 'pinx',
+                          trans_id = 'sale_id',
+                          price = 'sale_price',
+                          periodicity = 'monthly',
+                          date = 'sale_date')
 
 # Create ids
   fc_ids <- buildForecastIDs(time_cut = 27,
-                             hpi_df = ex_rtdata,
+                             hpi_df = rt_data,
                              forecast_length = 2,
                              train = TRUE)
+
 }

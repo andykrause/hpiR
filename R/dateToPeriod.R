@@ -23,6 +23,7 @@
 #'   Additionally, this function modifies the data.frame that it is given and return that same
 #'   data.frame that it is given and returns that data.frame with the new fields attached.
 #' @examples
+#'
 #' # Load data
 #'   data(ex_sales)
 #'
@@ -237,10 +238,11 @@ dateToPeriod <- function(trans_df,
 #' @importFrom lubridate as_date
 #' @return Adjusted date field
 #' @examples
-#' # Load Data
+#'
+#'  # Load Data
 #'   data(ex_sales)
 #'
-#' # Check date
+#'  # Check date
 #'   date_checked <- checkDate(x_date = ex_sales$sale_date,
 #'                             name = 'sale date')
 #' @export

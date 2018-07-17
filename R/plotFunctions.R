@@ -11,11 +11,30 @@
 #' @method plot hpiindex
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
-#' # Load data
-#'  data(ex_hpiindex)
 #'
-#' # Make Plot
-#'  plot(ex_hpiindex)
+#'  # Load data
+#'  data(ex_sales)
+#'
+#'  # With a raw transaction data.frame
+#'  rt_data <- rtCreateTrans(trans_df = ex_sales,
+#'                           prop_id = 'pinx',
+#'                           trans_id = 'sale_id',
+#'                           price = 'sale_price',
+#'                           periodicity = 'monthly',
+#'                           date = 'sale_date')
+#'
+#'  # Create model object
+#'  hpi_model <- hpiModel(hpi_df = rt_data,
+#'                        estimator = 'base',
+#'                        log_dep = TRUE)
+#'
+#'  # Create Index
+#'  hpi_index <- modelToIndex(hpi_model,
+#'                            max_period = 84)
+#'
+#'  # Make Plot
+#'  plot(hpi_index)
+#'
 #' @export
 
 plot.hpiindex <- function(x,
@@ -86,12 +105,30 @@ plot.hpiindex <- function(x,
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
 #' @examples
-#' # Load Data
-#' data(ex_hpi)
 #'
-#' # Plot data
-#' plot(ex_hpi)
-#' plot(ex_hpi, smooth = TRUE)
+#'  # Load data
+#'  data(ex_sales)
+#'
+#'  # Create index with raw transaction data
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  # Plot data
+#'  plot(rt_index)
+#'  plot(rt_index, smooth = TRUE)
+#'
 #' @export
 
 plot.hpi <- function(x,
@@ -112,11 +149,33 @@ plot.hpi <- function(x,
 #' @return `plotvolatility` object inheriting from a ggplot object
 #' @import ggplot2
 #' @examples
-#' # Load data
-#'  data(ex_indexvolatility)
 #'
-#' # Make Plot
-#'  plot(ex_indexvolatility)
+#'  # Load Data
+#'  data(ex_sales)
+#'
+#'  # Create index with raw transaction data
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  # Calculate Volatility
+#'  index_vol <- calcVolatility(index = rt_index,
+#'                              window = 3)
+#'
+#'  # Make Plot
+#'  plot(index_vol)
+#'
 #' @export
 
 plot.indexvolatility <- function(x, ...){
@@ -156,11 +215,34 @@ plot.indexvolatility <- function(x, ...){
 #' @importFrom graphics plot
 #' @importFrom gridExtra grid.arrange
 #' @examples
-#' # Load data
-#'  data(ex_hpiaccuracy)
 #'
-#' # Make Plot
-#'  plot(ex_hpiaccuracy)
+#'  # Load Data
+#'  data(ex_sales)
+#'
+#'  # Create Index
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  # Calculate insample accuracy
+#'  hpi_accr <- calcAccuracy(hpi_obj = rt_index,
+#'                           test_type = 'rt',
+#'                           test_method = 'insample')
+#'
+#'  # Make Plot
+#'  plot(hpi_accr)
+#'
 #' @export
 
 plot.hpiaccuracy <- function(x,
@@ -242,11 +324,38 @@ plot.hpiaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom graphics plot
 #' @examples
-#' # Load data
-#'  data(ex_seriesaccuracy)
 #'
-#' # Make Plot
-#'  plot(ex_seriesaccuracy)
+#'  # Load data
+#'  data(ex_sales)
+#'
+#'  # Create index
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  #  Create Series (Suppressing messages do to small sample size of this example)
+#'  suppressMessages(
+#'     hpi_series <- createSeries(hpi_obj = rt_index,
+#'                                train_period = 12))
+#'
+#'  # Calculate insample accuracy
+#'  hpi_series_accr <- calcSeriesAccuracy(series_obj = hpi_series,
+#'                                        test_type = 'rt',
+#'                                        test_method = 'insample')
+#'  # Make Plot
+#'  plot(hpi_series_accr)
+#'
 #' @export
 
 plot.seriesaccuracy <- function(x,
@@ -271,11 +380,34 @@ plot.seriesaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom purrr map
 #' @examples
-#' # Load data
-#'  data(ex_serieshpi)
 #'
-#' # Make Plot
-#'  plot(ex_serieshpi)
+#'  # Load data
+#'  data(ex_sales)
+#'
+#'  # Create index
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  # Create Series (Suppressing messages do to small sample size of this example)
+#'  suppressMessages(
+#'    hpi_series <- createSeries(hpi_obj = rt_index,
+#'                               train_period = 12))
+#'
+#'  # Make Plot
+#'  plot(hpi_series)
+#'
 #' @export
 
 plot.serieshpi<- function(x,
@@ -348,11 +480,37 @@ plot.serieshpi<- function(x,
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate
 #' @examples
-#' # Load data
-#'  data(ex_seriesrevision)
 #'
-#' # Make Plot
-#'  plot(ex_seriesrevision)
+#'  # Load example sales
+#'  data(ex_sales)
+#'
+#'  # Create Index
+#'  rt_index <- rtIndex(trans_df = ex_sales,
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'robust',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      smooth = FALSE)
+#'
+#'  # Create Series (Suppressing messages do to small sample size of this example)
+#'  suppressMessages(
+#'    hpi_series <- createSeries(hpi_obj = rt_index,
+#'                               train_period = 12))
+#'
+#'  # Calculate revision
+#'  series_rev <-  calcRevision(series_obj = hpi_series)
+#'
+#'  # Make Plot
+#'  plot(series_rev)
+#'
 #' @export
 
 plot.seriesrevision <- function(x,
