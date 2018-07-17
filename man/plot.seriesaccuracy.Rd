@@ -20,7 +20,7 @@
 Specific plotting method for seriesaccuracy objects
 }
 \examples{
-
+\dontrun{
  # Load data
  data(ex_sales)
 
@@ -51,5 +51,5 @@ Specific plotting method for seriesaccuracy objects
                                        test_method = 'insample')
  # Make Plot
  plot(hpi_series_accr)
-
+}
 }

@@ -823,41 +823,20 @@ context('hedindex() wrapper')
     ## HED Create arguments
 
     # Min Date Model with Clip
-    mindate_index <- hedIndex(trans_df = sales,
-                              date='sale_date',
-                              price = 'sale_price',
-                              trans_id = 'sale_id',
-                              prop_id = 'pinx',
-                              estimator = 'robust',
-                              dep_var = 'price',
-                              ind_var = c('tot_sf', 'beds', 'baths'),
-                              min_date = as.Date('2011-01-01'),
-                              adj_type = 'clip')
-    expect_true(min(mindate_index$index$period) == 2011)
-
-    # Max Date Model with Adjust
-    maxdate_index <- hedIndex(trans_df = sales,
-                              date='sale_date',
-                              price = 'sale_price',
-                              trans_id = 'sale_id',
-                              prop_id = 'pinx',
-                              estimator = 'robust',
-                              dep_var = 'price',
-                              ind_var = c('tot_sf', 'beds', 'baths'),
-                              max_date = as.Date('2015-12-31'))
-    expect_true(max(maxdate_index$index$period) == 2016)
-
-    # Periodicity
-    per_index <- hedIndex(trans_df = sales,
-                          date='sale_date',
-                          price = 'sale_price',
-                          trans_id = 'sale_id',
-                          prop_id = 'pinx',
-                          estimator = 'robust',
-                          dep_var = 'price',
-                          ind_var = c('tot_sf', 'beds', 'baths'),
-                          periodicity = 'weekly')
-    expect_true(max(per_index$index$period) == 364)
+    addarg_index <- hedIndex(trans_df = sales,
+                             date='sale_date',
+                             price = 'sale_price',
+                             trans_id = 'sale_id',
+                             prop_id = 'pinx',
+                             estimator = 'robust',
+                             dep_var = 'price',
+                             ind_var = c('tot_sf', 'beds', 'baths'),
+                             min_date = as.Date('2011-01-01'),
+                             max_date = as.Date('2015-12-31'),
+                             periodicity = 'annual',
+                             adj_type = 'clip')
+   expect_is(addarg_index, 'hpi')
+   expect_true(min(addarg_index$index$period) == 2011)
 
     ## HPI Model
 

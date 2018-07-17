@@ -324,7 +324,7 @@ plot.hpiaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom graphics plot
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -355,7 +355,7 @@ plot.hpiaccuracy <- function(x,
 #'                                        test_method = 'insample')
 #'  # Make Plot
 #'  plot(hpi_series_accr)
-#'
+#'}
 #' @export
 
 plot.seriesaccuracy <- function(x,
@@ -380,7 +380,7 @@ plot.seriesaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom purrr map
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -407,7 +407,7 @@ plot.seriesaccuracy <- function(x,
 #'
 #'  # Make Plot
 #'  plot(hpi_series)
-#'
+#'}
 #' @export
 
 plot.serieshpi<- function(x,
@@ -480,7 +480,7 @@ plot.serieshpi<- function(x,
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate
 #' @examples
-#'
+#'\dontrun{
 #'  # Load example sales
 #'  data(ex_sales)
 #'
@@ -510,7 +510,7 @@ plot.serieshpi<- function(x,
 #'
 #'  # Make Plot
 #'  plot(series_rev)
-#'
+#'}
 #' @export
 
 plot.seriesrevision <- function(x,

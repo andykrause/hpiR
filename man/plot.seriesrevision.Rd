@@ -20,7 +20,7 @@
 Specific plotting method for seriesrevision objects
 }
 \examples{
-
+\dontrun{
  # Load example sales
  data(ex_sales)
 
@@ -50,5 +50,5 @@ Specific plotting method for seriesrevision objects
 
  # Make Plot
  plot(series_rev)
-
+}
 }
