@@ -22,7 +22,7 @@
 #' You may also provide an `hpi` object to this function.  If you do, it will
 #' extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 #' @examples
-#'
+#'\dontrun{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -45,7 +45,7 @@
 #'  # Calculate Volatility
 #'  index_vol <- calcVolatility(index = rt_index,
 #'                              window = 3)
-#'
+#'}
 #' @export
 
 calcVolatility <- function(index,
@@ -154,7 +154,7 @@ calcVolatility <- function(index,
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
-#'
+#'\dontrun{
 #   # Load example sales
 #'  data(ex_sales)
 #'
@@ -182,6 +182,7 @@ calcVolatility <- function(index,
 #'  # Calculate series volatility
 #'  series_vol <- calcSeriesVolatility(series_obj = hpi_series,
 #'                                     window= 3)
+#'}
 #' @export
 
 calcSeriesVolatility <- function(series_obj,

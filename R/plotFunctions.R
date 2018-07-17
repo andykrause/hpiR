@@ -11,7 +11,7 @@
 #' @method plot hpiindex
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -34,7 +34,7 @@
 #'
 #'  # Make Plot
 #'  plot(hpi_index)
-#'
+#'}
 #' @export
 
 plot.hpiindex <- function(x,
@@ -105,7 +105,7 @@ plot.hpiindex <- function(x,
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -128,7 +128,7 @@ plot.hpiindex <- function(x,
 #'  # Plot data
 #'  plot(rt_index)
 #'  plot(rt_index, smooth = TRUE)
-#'
+#'}
 #' @export
 
 plot.hpi <- function(x,
@@ -149,7 +149,7 @@ plot.hpi <- function(x,
 #' @return `plotvolatility` object inheriting from a ggplot object
 #' @import ggplot2
 #' @examples
-#'
+#'\dontrun{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -175,7 +175,7 @@ plot.hpi <- function(x,
 #'
 #'  # Make Plot
 #'  plot(index_vol)
-#'
+#'}
 #' @export
 
 plot.indexvolatility <- function(x, ...){
@@ -215,7 +215,7 @@ plot.indexvolatility <- function(x, ...){
 #' @importFrom graphics plot
 #' @importFrom gridExtra grid.arrange
 #' @examples
-#'
+#'\dontrun{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -242,7 +242,7 @@ plot.indexvolatility <- function(x, ...){
 #'
 #'  # Make Plot
 #'  plot(hpi_accr)
-#'
+#'}
 #' @export
 
 plot.hpiaccuracy <- function(x,

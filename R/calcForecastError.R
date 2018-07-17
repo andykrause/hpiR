@@ -28,7 +28,7 @@
 #' inheriting from `hpidata`
 #'
 #'@examples
-#'
+#'\dontrun{
 #'  # Load example sales
 #'  data(ex_sales)
 #'
@@ -67,7 +67,7 @@
 #'  # Calculate forecast accuracty
 #'  fc_accr <- calcForecastError(is_obj = hpi_series,
 #'                               pred_df = rt_data)
-#'
+#'}
 #' @export
 
 calcForecastError <- function(is_obj,
@@ -167,7 +167,7 @@ calcForecastError <- function(is_obj,
 #'
 #' It is a generic method that dispatches on the `hpi_df` object.
 #' @examples
-#'
+#'\dontrun{
 #   # Load example sales
 #'  data(ex_sales)
 #'
@@ -184,7 +184,7 @@ calcForecastError <- function(is_obj,
 #'                              hpi_df = rt_data,
 #'                              forecast_length = 2,
 #'                              train = TRUE)
-#'
+#'}
 #' @export
 
 buildForecastIDs <- function(time_cut,

@@ -18,7 +18,7 @@
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -39,7 +39,7 @@
 #'                        dep_var = 'price',
 #'                        ind_var = c('tot_sf', 'beds', 'baths'),
 #'                        smooth = FALSE)
-#'
+#'}
 #' @export
 
 hedIndex <- function(trans_df,

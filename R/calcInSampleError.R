@@ -17,7 +17,7 @@
 #' In addition to being a stand-alone function, it is also used by `calcForecastError`
 #' and `calcKFoldError``
 #' @examples
-#'
+#'\dontrun{
 #'  # Load example data
 #'  data(ex_sales)
 #'
@@ -40,7 +40,7 @@
 #'  # Calculate accuracy
 #'  in_accr <- calcInSampleError(pred_df = rt_index$data,
 #'                               index = rt_index$index$value)
-#'
+#'}
 #'@export
 
 calcInSampleError <- function(pred_df,

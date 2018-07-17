@@ -173,23 +173,22 @@ context('createSeries()')
              'serieshpi')
 
    expect_is(rt_series <- createSeries(hpi_obj = rt_index,
-                                       train_period = 24),
+                                       train_period = 24,
+                                       max_period = 50),
              'serieshpi')
+   expect_true(length(rt_series$hpis) == 27)
 
   })
-
-  test_that('Parameter arguments work',{
-
-    # Train Range and max period
-    expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
-                                                  train_period = 12,
-                                                  max_period = 50)$hpis) == 39)
-
-    # Max period is limited to lenght of 'hpi' object index
-    expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
-                                                  train_period = 12,
-                                                  max_period = 150)$hpis) == 73)
-  })
+#
+#   test_that('Parameter arguments work',{
+#
+#     # Train Range and max period
+#
+#     # Max period is limited to lenght of 'hpi' object index
+#     expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
+#                                                   train_period = 12,
+#                                                   max_period = 150)$hpis) == 73)
+#   })
 
   test_that('Bad arguments create errors',{
 
@@ -482,15 +481,15 @@ context('calcSeriesAccuracy()')
     #           'seriesaccuracy')
 
     # Smooth and in place
-    expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
-                                              test_method = 'kfold',
-                                              test_type = 'rt',
-                                              pred_df = rt_index$data,
-                                              smooth = TRUE,
-                                              in_place = TRUE),
-              'serieshpi')
-    expect_true('accuracy_smooth' %in% names(rt_series))
-    expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
+    # expect_is(rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+    #                                           test_method = 'kfold',
+    #                                           test_type = 'rt',
+    #                                           pred_df = rt_index$data,
+    #                                           smooth = TRUE,
+    #                                           in_place = TRUE),
+    #           'serieshpi')
+    # expect_true('accuracy_smooth' %in% names(rt_series))
+    # expect_is(rt_series$accuracy_smooth, 'seriesaccuracy')
 
     # Smooth when no smooth existing (ERROR)
     expect_error(hed_series <- calcSeriesAccuracy(series_obj = hed_series,

@@ -48,7 +48,7 @@ doesn't account for time.
 }
 
 \examples{
-
+\dontrun{
  # Load Data
  data(ex_sales)
 
@@ -72,5 +72,5 @@ doesn't account for time.
  hpi_accr <- calcAccuracy(hpi_obj = rt_index,
                           test_type = 'rt',
                           test_method = 'insample')
-
+}
 }

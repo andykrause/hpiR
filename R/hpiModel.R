@@ -22,7 +22,7 @@
 #' @importFrom stats as.formula
 #' @importFrom stats update
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -38,7 +38,7 @@
 #'  hpi_model <- hpiModel(hpi_df = rt_data,
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
-#'
+#'}
 #' @export
 
 hpiModel <- function(hpi_df,

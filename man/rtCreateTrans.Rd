@@ -45,7 +45,7 @@ a field containing a vector of class POSIXt or Date.
 }
 
 \examples{
-
+\dontrun{
  # Load data
  data(ex_sales)
 
@@ -56,4 +56,5 @@ a field containing a vector of class POSIXt or Date.
                           price = 'sale_price',
                           periodicity = 'monthly',
                           date = 'sale_date')
+}
 }

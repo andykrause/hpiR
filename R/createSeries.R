@@ -16,7 +16,7 @@
 #'
 #' If `max_period`` is left NULL, then it will forecast up to the end of the data.
 #' @examples
-#'
+#'\dontrun{
 #   # Load example sales
 #'  data(ex_sales)
 #'
@@ -40,7 +40,7 @@
 #'   suppressMessages(
 #'     hpi_series <- createSeries(hpi_obj = rt_index,
 #'                                train_period = 12))
-#'
+#'}
 #' @export
 
 createSeries <- function(hpi_obj,

@@ -33,7 +33,7 @@ and `calcKFoldError``
 }
 
 \examples{
-
+\dontrun{
  # Load example data
  data(ex_sales)
 
@@ -56,5 +56,5 @@ and `calcKFoldError``
  # Calculate accuracy
  in_accr <- calcInSampleError(pred_df = rt_index$data,
                               index = rt_index$index$value)
-
+}
 }

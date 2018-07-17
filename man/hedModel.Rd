@@ -28,7 +28,7 @@ This function is not generally called directly, but rather from `hpiModel()`
 }
 
 \examples{
-
+\dontrun{
  # Load example data
  data(ex_sales)
 
@@ -44,5 +44,5 @@ This function is not generally called directly, but rather from `hpiModel()`
  hed_model <- hedModel(estimator = structure('base', class = 'base'),
                        hed_df = hed_data,
                        hed_spec = as.formula(log(price) ~ baths + tot_sf))
-
+}
 }

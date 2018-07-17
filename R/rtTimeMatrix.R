@@ -9,7 +9,7 @@
 #' @section Further Details:
 #' Time periods are calculated from the data provided.
 #' @examples
-#'
+#'\dontrun{
 #'   # Load data
 #'   data(ex_sales)
 #'
@@ -22,7 +22,7 @@
 #'                            date = 'sale_date')
 #'  # Create Matrix
 #'  rt_matrix <- rtTimeMatrix(rt_data)
-#'
+#'}
 #' @export
 
 rtTimeMatrix <- function(rt_df

@@ -16,7 +16,7 @@
 #' @section Further Details:
 #' Three available specific methods: 'base', 'robust' and 'weighted'
 #' @examples
-#'
+#'\dontrun{
 #'   # Load data
 #'   data(ex_sales)
 #'
@@ -39,7 +39,7 @@
 #'                       price_diff = price_diff,
 #'                       time_matrix = rt_matrix,
 #'                       estimator = structure('base', class='base'))
-#'
+#'}
 #' @export
 
 rtModel <- function(rt_df,

@@ -29,7 +29,7 @@ Called from `calcKFoldError()``
 }
 
 \examples{
-
+\dontrun{
  # Load Data
  data(ex_sales)
 
@@ -50,5 +50,5 @@ Called from `calcKFoldError()``
  kfold_data <- createKFoldData(score_ids = k_folds[[1]],
                                full_data = rt_data,
                                pred_df = rt_data)
-
+}
 }

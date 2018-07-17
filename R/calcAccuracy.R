@@ -28,7 +28,7 @@
 #' doesn't account for time.
 #' (This approach is not ready yet).
 #'@examples
-#'
+#'\dontrun{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -52,7 +52,7 @@
 #'  hpi_accr <- calcAccuracy(hpi_obj = rt_index,
 #'                           test_type = 'rt',
 #'                           test_method = 'insample')
-#'
+#'}
 #' @export
 
 calcAccuracy <- function(hpi_obj,
@@ -167,7 +167,7 @@ calcAccuracy <- function(hpi_obj,
 #' will have more than one accuracy estimate per observations.  Setting `summarize = TRUE`
 #' will take the mean accuracy for each observation across all indexes.
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -196,7 +196,7 @@ calcAccuracy <- function(hpi_obj,
 #'   hpi_series_accr <- calcSeriesAccuracy(series_obj = hpi_series,
 #'                                         test_type = 'rt',
 #'                                         test_method = 'insample')
-
+#'}
 #' @export
 
 calcSeriesAccuracy <- function(series_obj,

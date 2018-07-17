@@ -22,7 +22,7 @@
 Specific plotting method for hpiindex objects
 }
 \examples{
-
+\dontrun{
  # Load data
  data(ex_sales)
 
@@ -45,5 +45,5 @@ Specific plotting method for hpiindex objects
 
  # Make Plot
  plot(hpi_index)
-
+}
 }

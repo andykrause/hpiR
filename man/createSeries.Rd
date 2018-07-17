@@ -31,7 +31,7 @@ If `max_period`` is left NULL, then it will forecast up to the end of the data.
 }
 
 \examples{
-
+\dontrun{
  data(ex_sales)
 
  # Create Index
@@ -54,5 +54,5 @@ If `max_period`` is left NULL, then it will forecast up to the end of the data.
   suppressMessages(
     hpi_series <- createSeries(hpi_obj = rt_index,
                                train_period = 12))
-
+}
 }

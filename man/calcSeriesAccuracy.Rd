@@ -42,7 +42,7 @@ will take the mean accuracy for each observation across all indexes.
 }
 
 \examples{
-
+\dontrun{
  # Load data
  data(ex_sales)
 
@@ -71,4 +71,5 @@ will take the mean accuracy for each observation across all indexes.
   hpi_series_accr <- calcSeriesAccuracy(series_obj = hpi_series,
                                         test_type = 'rt',
                                         test_method = 'insample')
+}
 }

@@ -19,7 +19,7 @@
 #' The revision object can be generate "in place" inside of the `serieshpi` object by
 #' setting `in_place` equal to TRUE.
 #' @examples
-#'
+#'\dontrun{
 #   # Load example sales
 #'  data(ex_sales)
 #'
@@ -46,7 +46,7 @@
 #'
 #'  # Calculate revision
 #'  series_rev <-  calcRevision(series_obj = hpi_series)
-#'
+#'}
 #' @export
 
 calcRevision <- function(series_obj,

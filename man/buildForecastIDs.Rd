@@ -33,7 +33,7 @@ It is a generic method that dispatches on the `hpi_df` object.
 }
 
 \examples{
-
+\dontrun{
  data(ex_sales)
 
  # Create RT data
@@ -49,5 +49,5 @@ It is a generic method that dispatches on the `hpi_df` object.
                              hpi_df = rt_data,
                              forecast_length = 2,
                              train = TRUE)
-
+}
 }

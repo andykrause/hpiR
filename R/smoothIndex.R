@@ -13,7 +13,7 @@
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -42,7 +42,7 @@
 #'  sm_index <- smoothIndex(index_obj = rt_index,
 #'                          order = 3,
 #'                          in_place = TRUE)
-#'
+#'}
 #' @export
 
 smoothIndex <- function(index_obj,
@@ -129,7 +129,7 @@ smoothIndex <- function(index_obj,
 #' @section Further Details:
 #' Leaving order blank default to a moving average with order 3.
 #' @examples
-#'
+#'\dontrun{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -156,6 +156,7 @@ smoothIndex <- function(index_obj,
 #'  # Smooth indexes
 #'  sm_series <- smoothSeries(series_obj = hpi_series,
 #'                            order = 5)
+#'}
 #' @export
 
 smoothSeries <- function(series_obj,
