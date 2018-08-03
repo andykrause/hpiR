@@ -35,7 +35,7 @@ hpimodel object consisting of:
 Generic method to estimate modeling approaches for indexes
 }
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

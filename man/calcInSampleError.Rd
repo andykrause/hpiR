@@ -33,7 +33,7 @@ and `calcKFoldError``
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load example data
  data(ex_sales)
 

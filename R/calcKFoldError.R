@@ -21,7 +21,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom caret createFolds
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -165,7 +165,7 @@ calcKFoldError <- function(hpi_obj,
 #' @section Further Details:
 #' Called from `calcKFoldError()``
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load Data
 #'  data(ex_sales)
 #'

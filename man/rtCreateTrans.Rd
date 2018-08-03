@@ -45,7 +45,7 @@ a field containing a vector of class POSIXt or Date.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

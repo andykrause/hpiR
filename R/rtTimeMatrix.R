@@ -9,7 +9,7 @@
 #' @section Further Details:
 #' Time periods are calculated from the data provided.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'   # Load data
 #'   data(ex_sales)
 #'

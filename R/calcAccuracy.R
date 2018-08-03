@@ -28,7 +28,7 @@
 #' doesn't account for time.
 #' (This approach is not ready yet).
 #'@examples
-#'\dontrun{
+#'\donttest{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -167,7 +167,7 @@ calcAccuracy <- function(hpi_obj,
 #' will have more than one accuracy estimate per observations.  Setting `summarize = TRUE`
 #' will take the mean accuracy for each observation across all indexes.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'

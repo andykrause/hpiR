@@ -11,7 +11,7 @@
 #' @method plot hpiindex
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -105,7 +105,7 @@ plot.hpiindex <- function(x,
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -149,7 +149,7 @@ plot.hpi <- function(x,
 #' @return `plotvolatility` object inheriting from a ggplot object
 #' @import ggplot2
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -215,7 +215,7 @@ plot.indexvolatility <- function(x, ...){
 #' @importFrom graphics plot
 #' @importFrom gridExtra grid.arrange
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -324,7 +324,7 @@ plot.hpiaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom graphics plot
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -380,7 +380,7 @@ plot.seriesaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom purrr map
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -480,7 +480,7 @@ plot.serieshpi<- function(x,
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load example sales
 #'  data(ex_sales)
 #'

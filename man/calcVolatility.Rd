@@ -39,7 +39,7 @@ extract the `hpiindex` object from the `index` slot in the `hpi` class object.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load Data
  data(ex_sales)
 

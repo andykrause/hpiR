@@ -37,7 +37,7 @@ setting `in_place` equal to TRUE.
 }
 
 \examples{
-\dontrun{
+\donttest{
  data(ex_sales)
 
  # Create Index

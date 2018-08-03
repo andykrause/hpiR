@@ -20,7 +20,7 @@
 Specific plotting method for seriesrevision objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load example sales
  data(ex_sales)
 

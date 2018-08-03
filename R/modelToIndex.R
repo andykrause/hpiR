@@ -16,7 +16,7 @@
 #' @importFrom imputeTS na.locf
 #' @importFrom imputeTS na.interpolation
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'

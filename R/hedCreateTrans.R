@@ -19,7 +19,7 @@
 #' data.frame of the possible periods, their values and names can be found in the
 #' attributes to the returned `hed` object
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load example data
 #'  data(ex_sales)
 #'

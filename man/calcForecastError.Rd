@@ -43,7 +43,7 @@ inheriting from `hpidata`
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load example sales
  data(ex_sales)
 

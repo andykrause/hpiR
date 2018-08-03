@@ -18,7 +18,7 @@
 Specific plotting method for indexvolatility objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load Data
  data(ex_sales)
 

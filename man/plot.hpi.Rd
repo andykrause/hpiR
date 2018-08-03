@@ -23,7 +23,7 @@ Additional argument can include those argument for `plot.hpindex``
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

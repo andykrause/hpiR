@@ -28,7 +28,7 @@
 #' inheriting from `hpidata`
 #'
 #'@examples
-#'\dontrun{
+#'\donttest{
 #'  # Load example sales
 #'  data(ex_sales)
 #'
@@ -167,7 +167,7 @@ calcForecastError <- function(is_obj,
 #'
 #' It is a generic method that dispatches on the `hpi_df` object.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #   # Load example sales
 #'  data(ex_sales)
 #'

@@ -42,7 +42,7 @@ will take the mean accuracy for each observation across all indexes.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

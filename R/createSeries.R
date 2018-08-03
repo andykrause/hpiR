@@ -16,7 +16,7 @@
 #'
 #' If `max_period`` is left NULL, then it will forecast up to the end of the data.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #   # Load example sales
 #'  data(ex_sales)
 #'

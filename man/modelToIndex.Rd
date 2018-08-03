@@ -25,7 +25,7 @@ modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
 Converts model results to standardized index objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

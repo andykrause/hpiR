@@ -29,7 +29,7 @@ Three available specific methods: 'base', 'robust' and 'weighted'
 }
 
 \examples{
-\dontrun{
+\donttest{
   # Load data
   data(ex_sales)
 

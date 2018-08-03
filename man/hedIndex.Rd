@@ -35,7 +35,7 @@ the `trans_df` object is not of that class.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

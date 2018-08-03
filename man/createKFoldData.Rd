@@ -29,7 +29,7 @@ Called from `calcKFoldError()``
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load Data
  data(ex_sales)
 

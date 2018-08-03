@@ -33,7 +33,7 @@ It is a generic method that dispatches on the `hpi_df` object.
 }
 
 \examples{
-\dontrun{
+\donttest{
  data(ex_sales)
 
  # Create RT data

@@ -22,7 +22,7 @@
 Specific plotting method for hpiaccuracy objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load Data
  data(ex_sales)
 

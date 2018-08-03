@@ -16,7 +16,7 @@
 #' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
 #' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load example data
 #'  data(ex_sales)
 #'

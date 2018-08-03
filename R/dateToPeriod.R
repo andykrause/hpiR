@@ -23,7 +23,7 @@
 #'   Additionally, this function modifies the data.frame that it is given and return that same
 #'   data.frame that it is given and returns that data.frame with the new fields attached.
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' # Load data
 #'   data(ex_sales)
 #'

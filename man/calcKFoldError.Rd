@@ -33,7 +33,7 @@ following fields:
 Use a KFold (out of sample) approach to estimate index accuracy
 }
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

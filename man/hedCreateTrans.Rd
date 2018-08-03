@@ -34,7 +34,7 @@ attributes to the returned `hed` object
 Generate standardized data for the `hed` modeling approach
 }
 \examples{
-\dontrun{
+\donttest{
  # Load example data
  data(ex_sales)
 

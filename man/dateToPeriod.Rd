@@ -42,7 +42,7 @@ Create a relative period variable from a date variable
 }
 
 \examples{
-\dontrun{
+\donttest{
 # Load data
   data(ex_sales)
 

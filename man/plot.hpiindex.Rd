@@ -22,7 +22,7 @@
 Specific plotting method for hpiindex objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

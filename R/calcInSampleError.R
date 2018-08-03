@@ -17,7 +17,7 @@
 #' In addition to being a stand-alone function, it is also used by `calcForecastError`
 #' and `calcKFoldError``
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load example data
 #'  data(ex_sales)
 #'

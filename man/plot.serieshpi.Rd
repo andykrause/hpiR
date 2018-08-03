@@ -20,7 +20,7 @@
 Specific plotting method for serieshpi objects
 }
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

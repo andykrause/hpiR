@@ -22,7 +22,7 @@
 #' @importFrom stats as.formula
 #' @importFrom stats update
 #' @examples
-#'\dontrun{
+#'\donttest{
 #'  # Load data
 #'  data(ex_sales)
 #'

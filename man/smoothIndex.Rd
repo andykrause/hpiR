@@ -28,7 +28,7 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load data
  data(ex_sales)
 

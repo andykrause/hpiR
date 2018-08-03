@@ -48,7 +48,7 @@ doesn't account for time.
 }
 
 \examples{
-\dontrun{
+\donttest{
  # Load Data
  data(ex_sales)
 
