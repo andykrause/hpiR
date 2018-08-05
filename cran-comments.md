@@ -2,7 +2,7 @@
 
 This is a resubmission.  In this version I have:
 
-* Added unit tests to .RBuildIgnore to reduce check time
+* Removed donttest{}s
 
 ## Test environments
 * ubuntu 14.04.5 (on travis-ci), R 3.5.0
