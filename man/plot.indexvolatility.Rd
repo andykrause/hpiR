@@ -18,7 +18,7 @@
 Specific plotting method for indexvolatility objects
 }
 \examples{
-\donttest{
+
  # Load Data
  data(ex_sales)
 
@@ -44,5 +44,5 @@ Specific plotting method for indexvolatility objects
 
  # Make Plot
  plot(index_vol)
-}
+
 }

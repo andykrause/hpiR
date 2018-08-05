@@ -23,7 +23,7 @@ Additional argument can include those argument for `plot.hpindex``
 }
 
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -46,5 +46,5 @@ Additional argument can include those argument for `plot.hpindex``
  # Plot data
  plot(rt_index)
  plot(rt_index, smooth = TRUE)
-}
+
 }

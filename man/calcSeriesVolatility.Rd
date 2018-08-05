@@ -27,7 +27,8 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-\donttest{
+
+# Load example sales
  data(ex_sales)
 
  # Create Index
@@ -54,5 +55,5 @@ Leaving order blank default to a moving average with order 3.
  # Calculate series volatility
  series_vol <- calcSeriesVolatility(series_obj = hpi_series,
                                     window= 3)
-}
+
 }

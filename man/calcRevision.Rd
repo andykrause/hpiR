@@ -37,7 +37,8 @@ setting `in_place` equal to TRUE.
 }
 
 \examples{
-\donttest{
+
+# Load example sales
  data(ex_sales)
 
  # Create Index
@@ -63,5 +64,5 @@ setting `in_place` equal to TRUE.
 
  # Calculate revision
  series_rev <-  calcRevision(series_obj = hpi_series)
-}
+
 }

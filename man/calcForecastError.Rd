@@ -43,7 +43,7 @@ inheriting from `hpidata`
 }
 
 \examples{
-\donttest{
+
  # Load example sales
  data(ex_sales)
 
@@ -82,5 +82,5 @@ inheriting from `hpidata`
  # Calculate forecast accuracty
  fc_accr <- calcForecastError(is_obj = hpi_series,
                               pred_df = rt_data)
-}
+
 }

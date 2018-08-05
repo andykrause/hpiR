@@ -22,7 +22,7 @@
 Specific plotting method for hpiaccuracy objects
 }
 \examples{
-\donttest{
+
  # Load Data
  data(ex_sales)
 
@@ -49,5 +49,5 @@ Specific plotting method for hpiaccuracy objects
 
  # Make Plot
  plot(hpi_accr)
-}
+
 }

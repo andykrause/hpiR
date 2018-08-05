@@ -29,7 +29,7 @@ the `trans_df` object is not of that class.
 }
 
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -48,5 +48,5 @@ the `trans_df` object is not of that class.
                      trim_model = TRUE,
                      max_period = 48,
                      smooth = FALSE)
-}
+
 }

@@ -23,7 +23,7 @@
 #'   Additionally, this function modifies the data.frame that it is given and return that same
 #'   data.frame that it is given and returns that data.frame with the new fields attached.
 #' @examples
-#'\donttest{
+#'
 #' # Load data
 #'   data(ex_sales)
 #'
@@ -31,7 +31,7 @@
 #'   hpi_data <- dateToPeriod(trans_df = ex_sales,
 #'                            date = 'sale_date',
 #'                            periodicity = 'monthly')
-#'}
+#'
 #' @export
 
 dateToPeriod <- function(trans_df,

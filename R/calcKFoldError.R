@@ -21,7 +21,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom caret createFolds
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -55,7 +55,7 @@
 #'                             k = 10,
 #'                             seed = 123,
 #'                             smooth = FALSE)
-#'}
+#'
 #' @export
 
 calcKFoldError <- function(hpi_obj,
@@ -165,7 +165,7 @@ calcKFoldError <- function(hpi_obj,
 #' @section Further Details:
 #' Called from `calcKFoldError()``
 #' @examples
-#'\donttest{
+#'
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -186,7 +186,7 @@ calcKFoldError <- function(hpi_obj,
 #'  kfold_data <- createKFoldData(score_ids = k_folds[[1]],
 #'                                full_data = rt_data,
 #'                                pred_df = rt_data)
-#'}
+#'
 #' @export
 
 createKFoldData <- function(score_ids,

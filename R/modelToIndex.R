@@ -16,7 +16,7 @@
 #' @importFrom imputeTS na.locf
 #' @importFrom imputeTS na.interpolation
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -36,7 +36,7 @@
 #'  # Create Index
 #'  hpi_index <- modelToIndex(hpi_model,
 #'                            max_period = 84)
-#'}
+#'
 #' @export
 
 modelToIndex <- function(model_obj,

@@ -20,7 +20,7 @@
 Specific plotting method for serieshpi objects
 }
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -47,5 +47,5 @@ Specific plotting method for serieshpi objects
 
  # Make Plot
  plot(hpi_series)
-}
+
 }

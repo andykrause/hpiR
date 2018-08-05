@@ -33,7 +33,7 @@ following fields:
 Use a KFold (out of sample) approach to estimate index accuracy
 }
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -67,5 +67,5 @@ Use a KFold (out of sample) approach to estimate index accuracy
                             k = 10,
                             seed = 123,
                             smooth = FALSE)
-}
+
 }

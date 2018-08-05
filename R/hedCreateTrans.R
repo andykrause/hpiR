@@ -19,7 +19,7 @@
 #' data.frame of the possible periods, their values and names can be found in the
 #' attributes to the returned `hed` object
 #' @examples
-#'\donttest{
+#'
 #'  # Load example data
 #'  data(ex_sales)
 #'
@@ -30,7 +30,7 @@
 #'                               price = 'sale_price',
 #'                               date = 'sale_date',
 #'                               periodicity = 'monthly')
-#'}
+#'
 #' @export
 
 hedCreateTrans <- function(trans_df,

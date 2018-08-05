@@ -35,7 +35,7 @@ hpimodel object consisting of:
 Generic method to estimate modeling approaches for indexes
 }
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -51,5 +51,5 @@ Generic method to estimate modeling approaches for indexes
  hpi_model <- hpiModel(hpi_df = rt_data,
                        estimator = 'base',
                        log_dep = TRUE)
-}
+
 }

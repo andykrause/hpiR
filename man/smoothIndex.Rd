@@ -28,7 +28,7 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-\donttest{
+
  # Load data
  data(ex_sales)
 
@@ -57,5 +57,5 @@ Leaving order blank default to a moving average with order 3.
  sm_index <- smoothIndex(index_obj = rt_index,
                          order = 3,
                          in_place = TRUE)
-}
+
 }

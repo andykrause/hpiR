@@ -42,7 +42,7 @@ Create a relative period variable from a date variable
 }
 
 \examples{
-\donttest{
+
 # Load data
   data(ex_sales)
 
@@ -50,5 +50,5 @@ Create a relative period variable from a date variable
   hpi_data <- dateToPeriod(trans_df = ex_sales,
                            date = 'sale_date',
                            periodicity = 'monthly')
-}
+
 }

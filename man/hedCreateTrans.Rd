@@ -34,7 +34,7 @@ attributes to the returned `hed` object
 Generate standardized data for the `hed` modeling approach
 }
 \examples{
-\donttest{
+
  # Load example data
  data(ex_sales)
 
@@ -45,5 +45,5 @@ Generate standardized data for the `hed` modeling approach
                               price = 'sale_price',
                               date = 'sale_date',
                               periodicity = 'monthly')
-}
+
 }

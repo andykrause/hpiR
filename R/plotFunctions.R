@@ -11,7 +11,7 @@
 #' @method plot hpiindex
 #' @return `plotindex` object inheriting from a ggplot object
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -34,7 +34,7 @@
 #'
 #'  # Make Plot
 #'  plot(hpi_index)
-#'}
+#'
 #' @export
 
 plot.hpiindex <- function(x,
@@ -105,7 +105,7 @@ plot.hpiindex <- function(x,
 #' @section Further Details:
 #' Additional argument can include those argument for `plot.hpindex``
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -128,7 +128,7 @@ plot.hpiindex <- function(x,
 #'  # Plot data
 #'  plot(rt_index)
 #'  plot(rt_index, smooth = TRUE)
-#'}
+#'
 #' @export
 
 plot.hpi <- function(x,
@@ -149,7 +149,7 @@ plot.hpi <- function(x,
 #' @return `plotvolatility` object inheriting from a ggplot object
 #' @import ggplot2
 #' @examples
-#'\donttest{
+#'
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -175,7 +175,7 @@ plot.hpi <- function(x,
 #'
 #'  # Make Plot
 #'  plot(index_vol)
-#'}
+#'
 #' @export
 
 plot.indexvolatility <- function(x, ...){
@@ -215,7 +215,7 @@ plot.indexvolatility <- function(x, ...){
 #' @importFrom graphics plot
 #' @importFrom gridExtra grid.arrange
 #' @examples
-#'\donttest{
+#'
 #'  # Load Data
 #'  data(ex_sales)
 #'
@@ -242,7 +242,7 @@ plot.indexvolatility <- function(x, ...){
 #'
 #'  # Make Plot
 #'  plot(hpi_accr)
-#'}
+#'
 #' @export
 
 plot.hpiaccuracy <- function(x,
@@ -324,7 +324,7 @@ plot.hpiaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom graphics plot
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -355,7 +355,7 @@ plot.hpiaccuracy <- function(x,
 #'                                        test_method = 'insample')
 #'  # Make Plot
 #'  plot(hpi_series_accr)
-#'}
+#'
 #' @export
 
 plot.seriesaccuracy <- function(x,
@@ -380,7 +380,7 @@ plot.seriesaccuracy <- function(x,
 #' @import ggplot2
 #' @importFrom purrr map
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -407,7 +407,7 @@ plot.seriesaccuracy <- function(x,
 #'
 #'  # Make Plot
 #'  plot(hpi_series)
-#'}
+#'
 #' @export
 
 plot.serieshpi<- function(x,
@@ -480,7 +480,7 @@ plot.serieshpi<- function(x,
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate
 #' @examples
-#'\donttest{
+#'
 #'  # Load example sales
 #'  data(ex_sales)
 #'
@@ -510,7 +510,7 @@ plot.serieshpi<- function(x,
 #'
 #'  # Make Plot
 #'  plot(series_rev)
-#'}
+#'
 #' @export
 
 plot.seriesrevision <- function(x,

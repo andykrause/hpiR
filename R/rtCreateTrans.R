@@ -29,7 +29,7 @@
 #' If passing a raw data.frame (not a `hpidata`` object) the "date" field should refer to
 #' a field containing a vector of class POSIXt or Date.
 #' @examples
-#'\donttest{
+#'
 #'  # Load data
 #'  data(ex_sales)
 #'
@@ -40,7 +40,7 @@
 #'                           price = 'sale_price',
 #'                           periodicity = 'monthly',
 #'                           date = 'sale_date')
-#'}
+#'
 #' @export
 
 rtCreateTrans <- function(trans_df,

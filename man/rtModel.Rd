@@ -29,7 +29,7 @@ Three available specific methods: 'base', 'robust' and 'weighted'
 }
 
 \examples{
-\donttest{
+
   # Load data
   data(ex_sales)
 
@@ -52,5 +52,5 @@ Three available specific methods: 'base', 'robust' and 'weighted'
                       price_diff = price_diff,
                       time_matrix = rt_matrix,
                       estimator = structure('base', class='base'))
-}
+
 }

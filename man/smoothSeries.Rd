@@ -25,7 +25,6 @@ Leaving order blank default to a moving average with order 3.
 }
 
 \examples{
-\donttest{
  # Load data
  data(ex_sales)
 
@@ -52,5 +51,5 @@ Leaving order blank default to a moving average with order 3.
  # Smooth indexes
  sm_series <- smoothSeries(series_obj = hpi_series,
                            order = 5)
-}
+
 }
