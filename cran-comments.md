@@ -2,8 +2,7 @@
 
 This is a resubmission.  In this version I have:
 
-* Fixed the Authors@R line in the Description
-* Have changed the 'dontrun's to 'donttest's where applicable
+* Added unit tests to .RBuildIgnore to reduce check time
 
 ## Test environments
 * ubuntu 14.04.5 (on travis-ci), R 3.5.0
