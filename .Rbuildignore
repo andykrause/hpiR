@@ -5,8 +5,9 @@ cran-comments.md
 
 ^README\.Rmd$
 ^README-.*\.png$
-
-\tests\testthat\test-5_viz.R
-\tests\testthat\test-4_analysis.R
-\tests\testthat\test-3_hedonicmodel.R
-\tests\testthat\test-2_repeatsales.R
+^tests/testthat\.r$
+^tests/test_that/test_1_prepfunctions\.r$
+^tests/test_that/test_2_repeatsales\.r$
+^tests/test_that/test_3_hedonicmodels\.r$
+^tests/test_that/test_4_analysis\.r$
+^tests/test_that/test_5_viz\.r$
