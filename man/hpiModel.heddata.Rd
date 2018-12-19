@@ -5,8 +5,8 @@
 \title{Specific method for hpi modeling (hed) approach)}
 \usage{
 \method{hpiModel}{heddata}(hpi_df, estimator = "base", log_dep = TRUE,
-  trim_model = TRUE, hed_spec = NULL, dep_var = NULL, ind_var = NULL,
-  ...)
+  trim_model = TRUE, hed_spec = NULL, dep_var = NULL,
+  ind_var = NULL, ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateSales() function in this package.}

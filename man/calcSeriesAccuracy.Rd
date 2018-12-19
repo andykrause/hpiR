@@ -4,9 +4,10 @@
 \alias{calcSeriesAccuracy}
 \title{Calculate the accuracy of a series of indexes}
 \usage{
-calcSeriesAccuracy(series_obj, test_method = "insample", test_type = "rt",
-  pred_df = NULL, smooth = FALSE, summarize = FALSE, in_place = FALSE,
-  in_place_name = "accuracy", ...)
+calcSeriesAccuracy(series_obj, test_method = "insample",
+  test_type = "rt", pred_df = NULL, smooth = FALSE,
+  summarize = FALSE, in_place = FALSE, in_place_name = "accuracy",
+  ...)
 }
 \arguments{
 \item{series_obj}{Serieshpi object to be analyzed}

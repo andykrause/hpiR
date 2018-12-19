@@ -420,6 +420,14 @@ context('hpiModel.rtdata(): after rtModel()')
                              log_dep = FALSE,
                              trim_model=TRUE)
 
+    set.seed(123)
+    rt_model_wwgt <- hpiModel(hpi_df = rt_df,
+                              estimator = 'weighted',
+                              log_dep = FALSE,
+                              weights = runif(nrow(rt_df), 0, 1),
+                              trim_model=TRUE)
+
+
     # Estimatort
     expect_is(rt_model_base$estimator, 'base')
     expect_is(rt_model_robust$estimator, 'robust')
@@ -432,6 +440,9 @@ context('hpiModel.rtdata(): after rtModel()')
     expect_true(nrow(rt_model_base$coefficients) == 84)
     expect_true(max(rt_model_robust$coefficients$time) == 84)
     expect_true(rt_model_wgt$coefficients$coefficient[1] == 0)
+    expect_false(identical(
+      rt_model_wgt$coefficients$coefficient,
+                  rt_model_wwgt$coefficients$coefficient))
 
     # Modelobj
     expect_is(rt_model_base$model_obj, 'rtmodel')

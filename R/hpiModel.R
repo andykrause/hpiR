@@ -39,6 +39,13 @@
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
 #'
+#'  # For custom weighted repeat transaction model
+#'
+#'  hpi_model_wgt <- hpiModel(hpi_df = rt_data,
+#'                            estimator = 'weighted',
+#'                            weights = runif(nrow(rt_data), 0, 1))
+#'
+#'
 #' @export
 
 hpiModel <- function(hpi_df,

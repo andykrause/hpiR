@@ -4,8 +4,8 @@
 \alias{hpiModel}
 \title{Wrapper to estimate model approaches (generic method)}
 \usage{
-hpiModel(hpi_df, estimator = "base", log_dep = TRUE, trim_model = TRUE,
-  ...)
+hpiModel(hpi_df, estimator = "base", log_dep = TRUE,
+  trim_model = TRUE, ...)
 }
 \arguments{
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
@@ -51,5 +51,12 @@ Generic method to estimate modeling approaches for indexes
  hpi_model <- hpiModel(hpi_df = rt_data,
                        estimator = 'base',
                        log_dep = TRUE)
+
+ # For custom weighted repeat transaction model
+
+ hpi_model_wgt <- hpiModel(hpi_df = rt_data,
+                           estimator = 'weighted',
+                           weights = runif(nrow(rt_data), 0, 1))
+
 
 }

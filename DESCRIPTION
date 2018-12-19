@@ -32,7 +32,7 @@ Imports:
     plyr,
     zoo
 URL: https://www.github.com/andykrause/hpiR
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Suggests: markdown,
     testthat
 VignetteBuilder: knitr

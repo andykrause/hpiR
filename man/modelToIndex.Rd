@@ -4,7 +4,8 @@
 \alias{modelToIndex}
 \title{Convert model results into a house price index}
 \usage{
-modelToIndex(model_obj, max_period = max(model_obj$coefficients$time), ...)
+modelToIndex(model_obj, max_period = max(model_obj$coefficients$time),
+  ...)
 }
 \arguments{
 \item{model_obj}{Model results object}

@@ -170,20 +170,24 @@ rtModel.weighted <- function(rt_df,
                              estimator,
                              ...){
 
-  # Run base model
-  lm_model <- stats::lm(price_diff ~ time_matrix + 0)
+  if (is.null(list(...)$weights)){
+    # Run base model
+    lm_model <- stats::lm(price_diff ~ time_matrix + 0)
 
-  # Estimate impact of time dif on errors
-  rt_df$time_diff <- rt_df$period_2 - rt_df$period_1
-  err_fit <- stats::lm((stats::residuals(lm_model) ^ 2) ~ rt_df$time_diff)
+    # Estimate impact of time dif on errors
+    rt_df$time_diff <- rt_df$period_2 - rt_df$period_1
+    err_fit <- stats::lm((stats::residuals(lm_model) ^ 2) ~ rt_df$time_diff)
 
-  # Implement weights
-  wgts <- stats::fitted(err_fit)
-  wgts <- ifelse(wgts > 0, 1 / wgts, 0)
+    # Implement weights
+    wgts <- stats::fitted(err_fit)
+    wgts <- ifelse(wgts > 0, 1 / wgts, 0)
+  } else {
+
+    wgts <- list(...)$weights
+  }
 
   # Re-run model
   rt_model <- stats::lm(price_diff ~ time_matrix + 0, weights=wgts)
-
   # Add Class
   class(rt_model) <- 'rtmodel'
 

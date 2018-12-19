@@ -4,7 +4,8 @@
 \alias{hedIndex}
 \title{Create a full index object by hedonic approach}
 \usage{
-hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL, ...)
+hedIndex(trans_df, dep_var = NULL, ind_var = NULL, hed_spec = NULL,
+  ...)
 }
 \arguments{
 \item{trans_df}{data.frame of transactions}
