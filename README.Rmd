@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-[![Travis-CI Build Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR)
+[![Travis-CI Build Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR) [![CRAN status](https://www.r-pkg.org/badges/version/hpiR)](https://cran.r-project.org/package=hpiR)  [![Coverage status](https://codecov.io/gh/andykrause/hpiR/branch/master/graph/badge.svg)](https://codecov.io/github/andykrause/hpiR?branch=master)
 
 &nbsp;
 
@@ -12,7 +12,8 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "README-",
+  eval = FALSE
 )
 ```
 

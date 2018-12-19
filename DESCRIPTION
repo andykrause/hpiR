@@ -33,6 +33,8 @@ Imports:
     zoo
 URL: https://www.github.com/andykrause/hpiR
 RoxygenNote: 6.1.0
-Suggests: markdown,
-    testthat
+Suggests: 
+    markdown,
+    testthat,
+    covr
 VignetteBuilder: knitr
