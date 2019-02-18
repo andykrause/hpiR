@@ -295,3 +295,131 @@ hpiModel.heddata <- function(hpi_df,
   hed_model
 
 }
+
+#'
+#' Specific method for hpi modeling (hed) approach)
+#'
+#' Estimate hpi models with hed approach
+#'
+#' @method hpiModel heddata
+#' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
+#' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
+#' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
+#' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
+#' @param hed_spec default=NULL; hedonic model specification
+#' @param dep_var default=NULL; dependent variable of the model
+#' @param ind_var default=NULL; independent variable(s) of the model
+#' @param ... Additional Arguments
+#' @return hpimodel object consisting of:
+#' \describe{
+#' \item{estimator}{Type of estimator}
+#' \item{coefficients}{Data.frame of coefficient}
+#' \item{model_obj}{class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}{Full model specification}
+#' \item{log_dep}{Binary: is the dependent variable in logged format}
+#' \item{base_price}{Mean price in the base period}
+#' \item{periods}{`data.frame` of periods}
+#' \item{approach}{Type of model used}
+#' }
+#' @importFrom stats update
+#' @export
+
+hpiModel.rfdata <- function(hpi_df,
+                             estimator='base',
+                             log_dep=TRUE,
+                             trim_model=TRUE,
+                             hed_spec=NULL,
+                             dep_var=NULL,
+                             ind_var=NULL,
+                             ...){
+
+  # Create specification
+  if (!is.null(hed_spec)){
+    if (class(hed_spec) != 'formula'){
+      message('"hed_spec" argument must be of class "formula"')
+      stop()
+    } else {
+      hed_spec <- stats::update(hed_spec, ~ . + trans_period)
+    }
+  } else {
+
+    if (is.null(dep_var) | is.null(ind_var)){
+      message('"dep_var" and "ind_var" must be supplied')
+      stop()
+    }
+
+    if(log_dep){
+      dep_var <- paste0('log(', dep_var, ')')
+    }
+    hed_spec <- stats::as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
+                                         '+ trans_period'))
+  }
+
+  # Extract base period mean price
+  base_price <- mean(hpi_df$price[hpi_df$trans_period == min(hpi_df$trans_period)])
+
+  ## Estimate Model
+
+  # Check for legal estimator type
+  if(!estimator %in% c('base')){
+    message('Provided estimator type is not supported. Allowed estimators are:',
+            '"base".  Defaulting to "base"')
+    estimator <- 'base'
+  }
+
+  # Check log dep vs data
+  if ((log_dep && any(hpi_df$price <= 0)) |
+      any(is.na(hpi_df$price)) |
+      any(!is.finite(hpi_df$price))){
+    message('Your "price" field includes invalid values')
+    stop()
+  }
+
+  # Set estimator class, call method
+  class(estimator) <- estimator
+  if (class(estimator) == 'weighted' & is.null(list(...)$weights)){
+    message('You selected a weighted model but did not supply any weights.',
+            '"weights" argument is NULL. Model run in base OLS format.')
+    estimator <- structure('base', class='base')
+  }
+
+  rf_mod <- rfModel(estimator=estimator,
+                    rf_df = hpi_df,
+                    rf_spec = hed_spec,
+                    ...)
+
+  # Check for successful model estimation
+  if (!'rfmodel' %in% class(rf_mod)){
+
+    message('Model estimator was unsuccessful')
+    stop()
+  }
+
+  # Remove qr to keep model obj small
+  if (trim_model) rf_mod$forest <- NULL
+
+  # If successful create list of results
+  base_period <- min(hpi_df$trans_period)
+
+  # Period names
+  model_df <- data.frame(time = rf_mod$coefficients$time,
+                         coefficient = rf_mod$coefficients$coefficient,
+                         stringsAsFactors = FALSE)
+
+  # Combine into list
+  rf_model <- list(estimator=estimator,
+                    coefficients=model_df,
+                    model_obj=rf_mod,
+                    log_dep=log_dep,
+                    mod_spec=hed_spec,
+                    base_price=base_price,
+                    periods=attr(hpi_df, 'period_table'),
+                    approach='rf')
+
+  # Assign a class
+  class(rf_model) <- 'hpimodel'
+
+  # Return Values
+  rf_model
+
+}

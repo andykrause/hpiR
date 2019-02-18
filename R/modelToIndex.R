@@ -95,13 +95,18 @@ modelToIndex <- function(model_obj,
   }
 
   # Convert estimate to an index value
-  if (model_obj$log_dep){
-    estimate <- c(exp(coef_df$coefficient) - 1)
+  if ('rfModel' %in% class(model_obj)){
+    estimate <- coef_df$coefficient
     index_value <- ((estimate + 1) * 100)[1:max_period]
   } else {
-    estimate <- ((coef_df$coefficient + model_obj$base_price) /
-                    model_obj$base_price)
-    index_value <- ((estimate) * 100)[1:max_period]
+    if (model_obj$log_dep){
+      estimate <- c(exp(coef_df$coefficient) - 1)
+      index_value <- ((estimate + 1) * 100)[1:max_period]
+    } else {
+      estimate <- ((coef_df$coefficient + model_obj$base_price) /
+                     model_obj$base_price)
+      index_value <- ((estimate) * 100)[1:max_period]
+    }
   }
 
   # Convert to a time series (ts) object
