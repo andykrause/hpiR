@@ -29,7 +29,8 @@
 #'                           date = 'sale_date')
 #'
 #'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = rt_data,
+#'  hpi_model <- hpiModel(model_type = 'rt',
+#'                        hpi_df = rt_data,
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
 #'

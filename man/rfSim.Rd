@@ -4,7 +4,7 @@
 \alias{rfSim}
 \title{Simulation engine}
 \usage{
-rfSim(rf_obj, sim_df, periods, ...)
+rfSim(rf_obj, sim_df, periods, log_dep = FALSE, ...)
 }
 \arguments{
 \item{rf_obj}{A `ranger` random forest object}
@@ -12,6 +12,8 @@ rfSim(rf_obj, sim_df, periods, ...)
 \item{sim_df}{Single property to simulate over time}
 
 \item{periods}{Time periods to simulate over}
+
+\item{log_dep}{[fALSE] Is the dependent variables in log form?}
 
 \item{...}{Additional arguments}
 }

@@ -12,3 +12,4 @@ cran-comments.md
 ^tests/test_that/test_3_hedonicmodels\.r$
 ^tests/test_that/test_4_analysis\.r$
 ^tests/test_that/test_5_viz\.r$
+^papers

@@ -5,7 +5,7 @@
 \title{Simulate selected properties}
 \usage{
 rfSimulate(rf_obj, rf_df, sim_type = "random", sim_per = 0.1,
-  sim_count = NULL, ...)
+  sim_count = NULL, seed = 1, ...)
 }
 \arguments{
 \item{rf_obj}{A `ranger` random forest object}
@@ -17,6 +17,8 @@ rfSimulate(rf_obj, rf_df, sim_type = "random", sim_per = 0.1,
 \item{sim_per}{[0.1] Percentage of the total set to simulate}
 
 \item{sim_count}{[NULL] If not giving a percentage, the total number of properties to simulate}
+
+\item{seed}{[1] Seed for reproducibility}
 
 \item{...}{Additional arguments}
 }

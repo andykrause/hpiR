@@ -18,6 +18,8 @@
 
 \item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
 
+\item{mod_spec}{Model specification}
+
 \item{...}{Additional Arguments}
 }
 \value{

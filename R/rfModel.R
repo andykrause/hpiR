@@ -4,14 +4,14 @@
 #' Estimate coefficients for an index via the hedonic approach (generic method)
 #'
 #' @param estimator Type of model to estimates (base, robust, weighted)
-#' @param hed_df Repeat sales dataset from hedCreateSales()
-#' @param hed_spec Model specification (`formula` object)
+#' @param rf_df Transactions dataset from hedCreateSales()
+#' @param rf_spec Model specification (`formula` object)
+#' @param ntrees [200] Set number of trees to use
+#' @param seed [1] Random seed for reproducibility
 #' @param ... Additional arguments
 #' @return `hedmodel` object: model object of the estimator (ex.: `lm`)
 #' @importFrom utils methods
 #' @importFrom stats median lm as.formula
-#' @importFrom MASS rlm
-#' @importFrom robustbase lmrob
 #' @section Further Details:
 #' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
 #' This function is not generally called directly, but rather from `hpiModel()`
@@ -29,15 +29,17 @@
 #'                            periodicity = 'monthly')
 #'
 #'  # Estimate Model
-#'  hed_model <- hedModel(estimator = structure('base', class = 'base'),
-#'                        hed_df = hed_data,
-#'                        hed_spec = as.formula(log(price) ~ baths + tot_sf))
+#'  rf_model <- rfModel(estimator = structure('base', class = 'base'),
+#'                      rf_df = hed_data,
+#'                      rf_spec = as.formula(log(price) ~ baths + tot_sf))
 #'
 #' @export
 
 rfModel <- function(estimator,
                     rf_df,
                     rf_spec,
+                    ntrees = 200,
+                    seed = 1,
                     ...){
 
   ## Check for proper classes
@@ -73,7 +75,7 @@ rfModel <- function(estimator,
 #' See `?rfModel` for more information
 #' @inherit rfModel params
 #' @method rfModel base
-#' @importFrom stats lm
+#' @importFrom ranger ranger
 #' @export
 
 rfModel.base <- function(estimator,
@@ -89,14 +91,16 @@ rfModel.base <- function(estimator,
   rf_model <- ranger::ranger(rf_spec,
                              data = rf_df,
                              num.tree = ntrees,
-                             seed = seed,
-                             ...)
+                             seed = seed)
 
   # Add class
   class(rf_model) <- c('rfmodel', class(rf_model))
 
+  log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
+
   rfSimulate(rf_obj = rf_model,
              rf_df = rf_df,
+             log_dep = log_dep,
              ...)
 }
 
@@ -110,6 +114,7 @@ rfModel.base <- function(estimator,
 #' @param sim_type ['random'] Sampling type to use
 #' @param sim_per [0.1] Percentage of the total set to simulate
 #' @param sim_count [NULL] If not giving a percentage, the total number of properties to simulate
+#' @param seed [1] Seed for reproducibility
 #' @param ... Additional arguments
 #' @importFrom purrr map
 #' @export
@@ -151,19 +156,23 @@ rfSimulate <- function(rf_obj,
 #' @param rf_obj A `ranger` random forest object
 #' @param sim_df Single property to simulate over time
 #' @param periods Time periods to simulate over
+#' @param log_dep [fALSE] Is the dependent variables in log form?
 #' @param ... Additional arguments
 #' @importFrom dplyr mutate
+#' @importFrom stats predict
 #' @export
 
 rfSim <- function(rf_obj,
                   sim_df,
                   periods,
+                  log_dep = FALSE,
                   ...){
 
   new_data <- sim_df[rep(1,length(periods)), ] %>%
     dplyr::mutate(trans_period = periods)
 
-  pred <- predict(rf_obj, new_data)$prediction
+  pred <- stats::predict(rf_obj, new_data)$prediction
+  if (log_dep) pred <- exp(pred)
   pred / pred[1]
 
 }

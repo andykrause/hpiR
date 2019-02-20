@@ -4,16 +4,20 @@
 \alias{rfModel}
 \title{Estimate hedonic model for index creation}
 \usage{
-rfModel(estimator, rf_df, rf_spec, ...)
+rfModel(estimator, rf_df, rf_spec, ntrees = 200, seed = 1, ...)
 }
 \arguments{
 \item{estimator}{Type of model to estimates (base, robust, weighted)}
 
+\item{rf_df}{Transactions dataset from hedCreateSales()}
+
+\item{rf_spec}{Model specification (`formula` object)}
+
+\item{ntrees}{[200] Set number of trees to use}
+
+\item{seed}{[1] Random seed for reproducibility}
+
 \item{...}{Additional arguments}
-
-\item{hed_df}{Repeat sales dataset from hedCreateSales()}
-
-\item{hed_spec}{Model specification (`formula` object)}
 }
 \value{
 `hedmodel` object: model object of the estimator (ex.: `lm`)
@@ -41,8 +45,8 @@ This function is not generally called directly, but rather from `hpiModel()`
                            periodicity = 'monthly')
 
  # Estimate Model
- hed_model <- hedModel(estimator = structure('base', class = 'base'),
-                       hed_df = hed_data,
-                       hed_spec = as.formula(log(price) ~ baths + tot_sf))
+ rf_model <- rfModel(estimator = structure('base', class = 'base'),
+                     rf_df = hed_data,
+                     rf_spec = as.formula(log(price) ~ baths + tot_sf))
 
 }

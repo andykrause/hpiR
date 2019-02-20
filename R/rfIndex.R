@@ -6,7 +6,7 @@
 #' @param trans_df data.frame of transactions
 #' @param dep_var default = NULL; Dependent variable in hedonic model
 #' @param ind_var default = NULL; Independent variables in the hedonic model
-#' @param hed_spec default = NULL; Full hedonic model specification
+#' @param rf_spec default = NULL; Full hedonic model specification
 #' @param ... Additional Arguments
 #' @return `hpi`` object.  S3 list with:
 #' \describe{
@@ -107,7 +107,8 @@ rfIndex <- function(trans_df,
   # Estimate the model if dep/ind given
   if (is.null(rf_spec) & (!is.null(dep_var) & !is.null(ind_var))){
 
-    rf_model <- hpiModel(hpi_df = rf_trans,
+    rf_model <- hpiModel(model_type = 'rf',
+                         hpi_df = rf_trans,
                           dep_var = dep_var,
                           ind_var = ind_var,
                           ...)

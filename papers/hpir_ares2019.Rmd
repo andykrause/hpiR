@@ -195,7 +195,8 @@ Next, we use the `rtdata` object to estimate a repeat transactions model.  In th
 The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argumet. In this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
 
 ```{r create_rtmodel}
-  rt_model <- hpiModel(hpi_df = sales_rtdf,
+  rt_model <- hpiModel(model_type = 'rt',
+                       hpi_df = sales_rtdf,
                        estimator = 'base',
                        log_dep = TRUE)
 
@@ -205,7 +206,8 @@ The `hpiModel()` function is an S3 method that will dispatch on the class of the
 The objects created by regression models can be rather large, so by default the `hpiModel()` function trims some of the unnecessary results from the model estimation function(s). If you want full results you can set `trim_model = FALSE`.
 
 ```{r full_rtmodel}
-  rt_full <- hpiModel(hpi_df = sales_rtdf,
+  rt_full <- hpiModel(model_type = 'rt',
+                      hpi_df = sales_rtdf,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model = FALSE)
@@ -426,7 +428,8 @@ First, we create a set of hedonic model ready data with the `hedCreateTrans()` f
 Next, we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The `log_dep` argument will control whether or not the dependent variable (`dep_var`) is converted into log format (as is common in hedonic price studies).
 
 ```{r hedmodel_1}
-  hed_model <- hpiModel(hpi_df = sales_hhdf,
+  hed_model <- hpiModel(model_type = 'hed',
+                        hpi_df = sales_hhdf,
                         estimator = 'base',
                         dep_var = 'price',
                         ind_var = c('tot_sf', 'beds', 'baths'),
@@ -439,9 +442,10 @@ If you'd like more control over the model specification -- such as using interac
 ```{r hedmodel_2}
   model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf')
   
-  hed_model <- hpiModel(hpi_df = sales_hhdf,
+  hed_model <- hpiModel(model_type = 'hed',
+                        hpi_df = sales_hhdf,
                         estimator = 'base',
-                        hed_spec = model_spec,
+                        mod_spec = model_spec,
                         log_dep = TRUE)
 
 ```
@@ -449,7 +453,8 @@ If you'd like more control over the model specification -- such as using interac
 In addition to the base estimator (OLS) there are robust regression (`estimator = "robust"`) and weighted least squares (`estimator = "weighted"`) options.
 
 ```{r hedmodel_rob}
-  hed_model_rob <- hpiModel(hpi_df = sales_hhdf,
+  hed_model_rob <- hpiModel(model_type = 'hed',
+                            hpi_df = sales_hhdf,
                             estimator = 'robust',
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'),
@@ -460,7 +465,8 @@ In addition to the base estimator (OLS) there are robust regression (`estimator 
 Do note that the weighted option requires a vectors of weights.
 
 ```{r hedmodel_wgt}
-  hed_model_wgt <- hpiModel(hpi_df = sales_hhdf,
+  hed_model_wgt <- hpiModel(model_type = 'hed',
+                            hpi_df = sales_hhdf,
                             estimator = 'weighted',
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'),

@@ -8,6 +8,7 @@
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
+#' @param mod_spec Model specification
 #' @param ... Additional Arguments
 #' @return hpimodel object consisting of:
 #' \describe{
@@ -36,13 +37,15 @@
 #'                           date = 'sale_date')
 #'
 #'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = rt_data,
+#'  hpi_model <- hpiModel(model_type = 'rt',
+#'                        hpi_df = rt_data,
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
 #'
 #'  # For custom weighted repeat transaction model
 #'
-#'  hpi_model_wgt <- hpiModel(hpi_df = rt_data,
+#'  hpi_model_wgt <- hpiModel(model_type = 'rt',
+#'                            hpi_df = rt_data,
 #'                            estimator = 'weighted',
 #'                            weights = runif(nrow(rt_data), 0, 1))
 #'
@@ -77,6 +80,7 @@ hpiModel <- function(model_type,
 #' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
 #' @param log_dep default TRUE, should the dependent variable (change in price) be logged?
 #' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
+#' @param mod_spec Model specification
 #' @param ... Additional Arguments
 #' @return hpimodel object consisting of:
 #' \describe{

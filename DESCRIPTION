@@ -30,7 +30,8 @@ Imports:
     MASS,
     rlang,
     plyr,
-    zoo
+    zoo,
+    ranger
 URL: https://www.github.com/andykrause/hpiR
 RoxygenNote: 6.1.0
 Suggests: 

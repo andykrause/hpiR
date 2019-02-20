@@ -4,10 +4,19 @@
 \alias{rfModel.base}
 \title{Hedonic model approach with base estimator}
 \usage{
-\method{rfModel}{base}(estimator, rf_df, rf_spec, ntrees = 200, ...)
+\method{rfModel}{base}(estimator, rf_df, rf_spec, ntrees = 200,
+  seed = 1, ...)
 }
 \arguments{
 \item{estimator}{Type of model to estimates (base, robust, weighted)}
+
+\item{rf_df}{Transactions dataset from hedCreateSales()}
+
+\item{rf_spec}{Model specification (`formula` object)}
+
+\item{ntrees}{[200] Set number of trees to use}
+
+\item{seed}{[1] Random seed for reproducibility}
 
 \item{...}{Additional arguments}
 }

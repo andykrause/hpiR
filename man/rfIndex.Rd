@@ -14,9 +14,9 @@ rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL,
 
 \item{ind_var}{default = NULL; Independent variables in the hedonic model}
 
-\item{...}{Additional Arguments}
+\item{rf_spec}{default = NULL; Full hedonic model specification}
 
-\item{hed_spec}{default = NULL; Full hedonic model specification}
+\item{...}{Additional Arguments}
 }
 \value{
 `hpi`` object.  S3 list with:

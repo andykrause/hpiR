@@ -18,6 +18,8 @@ hpiModel(model_type, hpi_df, estimator = "base", log_dep = TRUE,
 
 \item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
 
+\item{mod_spec}{Model specification}
+
 \item{...}{Additional Arguments}
 }
 \value{
@@ -50,13 +52,15 @@ Generic method to estimate modeling approaches for indexes
                           date = 'sale_date')
 
  # Create model object
- hpi_model <- hpiModel(hpi_df = rt_data,
+ hpi_model <- hpiModel(model_type = 'rt',
+                       hpi_df = rt_data,
                        estimator = 'base',
                        log_dep = TRUE)
 
  # For custom weighted repeat transaction model
 
- hpi_model_wgt <- hpiModel(hpi_df = rt_data,
+ hpi_model_wgt <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_data,
                            estimator = 'weighted',
                            weights = runif(nrow(rt_data), 0, 1))
 
