@@ -177,15 +177,17 @@ context('hpiModel.heddata(): before hedModel()')
     #           'hpimodel')
 
     # Full formula
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'base',
-                                    hed_spec = as.formula(paste0('log(price) ~ as.factor(baths)',
+                                    mod_spec = as.formula(paste0('log(price) ~ as.factor(baths)',
                                                                  ' + tot_sf')),
                                     log_dep = TRUE),
               'hpimodel')
 
     # Dep/Ind variety
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'robust',
                                     dep_var = 'price',
                                     ind_var = c('tot_sf', 'beds', 'baths'),
@@ -201,7 +203,8 @@ context('hpiModel.heddata(): before hedModel()')
     #           'hpimodel')
 
     # Dep/Ind variety
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'weighted',
                                     dep_var = 'price',
                                     ind_var = c('tot_sf', 'beds', 'baths'),
@@ -228,7 +231,8 @@ context('hpiModel.heddata(): before hedModel()')
     #                      ind_var = c('tot_sf', 'beds', 'baths'),
     #                      log_dep = TRUE)$model_obj$fitted.values[1] < 20)
 
-    expect_true(hpiModel(hpi_df = hed_df,
+    expect_true(hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          estimator = 'robust',
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'),
@@ -242,14 +246,16 @@ context('hpiModel.heddata(): before hedModel()')
     hed_dfx$price[1] <- 0
 
     # 0 in prices with Log Dep
-    expect_error(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_error(hed_model <- hpiModel(model_type = 'hed',
+                                       hpi_df = hed_dfx,
                                        estimator = 'base',
                                        dep_var = 'price',
                                        ind_var = c('tot_sf', 'beds', 'baths'),
                                        log_dep = TRUE))
 
     # 0 in prices with no Log Dep (Works)
-    expect_is(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_dfx,
                                     estimator = 'base',
                                     dep_var = 'price',
                                     ind_var = c('tot_sf', 'beds', 'baths'),
@@ -260,14 +266,16 @@ context('hpiModel.heddata(): before hedModel()')
     hed_dfx$price[1] <- NA_integer_
 
     # NA in prices with Log Dep
-    expect_error(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_error(hed_model <- hpiModel(model_type = 'hed',
+                                       hpi_df = hed_dfx,
                                        estimator = 'base',
                                        dep_var = 'price',
                                        ind_var = c('tot_sf', 'beds', 'baths'),
                                        log_dep = TRUE))
 
     # NA in prices with no Log Dep
-    expect_error(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_error(hed_model <- hpiModel(model_type = 'hed',
+                                       hpi_df = hed_dfx,
                                        estimator = 'base',
                                        dep_var = 'price',
                                        ind_var = c('tot_sf', 'beds', 'baths'),
@@ -277,14 +285,16 @@ context('hpiModel.heddata(): before hedModel()')
     hed_dfx$price[1] <- Inf
 
     # Inf in prices with Log Dep
-    expect_error(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_error(hed_model <- hpiModel(model_type = 'hed',
+                                       hpi_df = hed_dfx,
                                        estimator = 'base',
                                        dep_var = 'price',
                                        ind_var = c('tot_sf', 'beds', 'baths'),
                                        log_dep = TRUE))
 
     # Inf in prices with no Log Dep
-    expect_error(hed_model <- hpiModel(hpi_df = hed_dfx,
+    expect_error(hed_model <- hpiModel(model_type = 'hed',
+                                       hpi_df = hed_dfx,
                                        estimator = 'base',
                                        dep_var = 'price',
                                        ind_var = c('tot_sf', 'beds', 'baths'),
@@ -295,24 +305,28 @@ context('hpiModel.heddata(): before hedModel()')
   test_that('Check for estimator type works',{
 
     # Base
-    expect_true(hpiModel(hpi_df = hed_df,
+    expect_true(hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'))$estimator == 'base')
 
     # Robust
-    expect_true(hpiModel(hpi_df = hed_df,
+    expect_true(hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          estimator = 'robust',
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'))$estimator == 'robust')
 
     # Weighted without Weights
-    expect_true(hpiModel(hpi_df = hed_df,
+    expect_true(hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          estimator = 'weighted',
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'))$estimator == 'base')
 
     # Weighted with weights
-    expect_true(hpiModel(hpi_df = hed_df,
+    expect_true(hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          estimator = 'weighted',
                          dep_var = 'price',
                          ind_var = c('tot_sf', 'beds', 'baths'),
@@ -419,7 +433,8 @@ context('hpiModel.heddata()')
     #                                 trim_model=FALSE), 'hpimodel')
     # expect_is(hed_model$model_obj$qr, 'qr')
 
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'base',
                                     log_dep = TRUE,
                                     dep_var = 'price',
@@ -428,7 +443,8 @@ context('hpiModel.heddata()')
     expect_is(hed_model$model_obj$qr, 'NULL')
 
     # Robust
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'robust',
                                     log_dep = TRUE,
                                     dep_var = 'price',
@@ -445,7 +461,8 @@ context('hpiModel.heddata()')
     # expect_is(hed_model$model_obj$qr, 'NULL')
 
     # Weighted
-    expect_is(hed_model <- hpiModel(hpi_df = hed_df,
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     dep_var = 'price',
@@ -470,21 +487,24 @@ context('hpiModel.heddata()')
   test_that('hpiModel.heddata outputs are correct', {
 
     # Run a model of each estimator type
-    hed_model_base <- hpiModel(hpi_df = hed_df,
+    hed_model_base <- hpiModel(model_type = 'hed',
+                               hpi_df = hed_df,
                                estimator = 'base',
                                dep_var = 'price',
                                ind_var = c('tot_sf', 'beds', 'baths'),
                                log_dep = TRUE,
                                trim_model=TRUE)
 
-    hed_model_robust <- hpiModel(hpi_df = hed_df,
+    hed_model_robust <- hpiModel(model_type = 'hed',
+                                 hpi_df = hed_df,
                                  estimator = 'robust',
                                  dep_var = 'price',
                                  ind_var = c('tot_sf', 'beds', 'baths'),
                                  log_dep = TRUE,
                                  trim_model=FALSE)
 
-    hed_model_wgt <- hpiModel(hpi_df = hed_df,
+    hed_model_wgt <- hpiModel(model_type = 'hed',
+                              hpi_df = hed_df,
                               estimator = 'weighted',
                               dep_var = 'price',
                               ind_var = c('tot_sf', 'beds', 'baths'),
@@ -539,7 +559,8 @@ context('hpiModel.heddata()')
 
   context('modelToIndex(): hed')
 
-  hed_model <- hpiModel(hpi_df = hed_df,
+  hed_model <- hpiModel(model_type = 'hed',
+                        hpi_df = hed_df,
                         estimator = 'base',
                         log_dep = TRUE,
                         trim_model=TRUE,
@@ -555,7 +576,8 @@ context('hpiModel.heddata()')
   test_that('modelToIndex works with other estimators and options', {
 
     # Robust, LogDep=T, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_df = hed_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'robust',
                                     log_dep = TRUE,
                                     trim_model=TRUE,
@@ -583,7 +605,8 @@ context('hpiModel.heddata()')
     #           'hpiindex')
 
     # Weighted, LogDep=T, TrimModel=F
-    expect_is(modelToIndex(hpiModel(hpi_df = hed_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     trim_model=FALSE,
@@ -595,7 +618,8 @@ context('hpiModel.heddata()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDEP',{
 
-    model_base <- hpiModel(hpi_df = hed_df,
+    model_base <- hpiModel(model_type = 'hed',
+                           hpi_df = hed_df,
                            estimator = 'base',
                            log_dep = TRUE,
                            trim_model=TRUE,
@@ -628,7 +652,8 @@ context('hpiModel.heddata()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDep=FALSE',{
 
-    model_base <- hpiModel(hpi_df = hed_df,
+    model_base <- hpiModel(model_type = 'hed',
+                           hpi_df = hed_df,
                            estimator = 'base',
                            log_dep = FALSE,
                            trim_model=TRUE,
@@ -724,7 +749,8 @@ context('hpiModel.heddata()')
 
   context('smoothIndex()')
 
-  model_base <- hpiModel(hpi_df = hed_df,
+  model_base <- hpiModel(model_type = 'hed',
+                         hpi_df = hed_df,
                          estimator = 'base',
                          log_dep = TRUE,
                          trim_model=TRUE,

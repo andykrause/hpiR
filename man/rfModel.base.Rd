@@ -4,7 +4,7 @@
 \alias{rfModel.base}
 \title{Hedonic model approach with base estimator}
 \usage{
-\method{rfModel}{base}(estimator, rf_df, rf_spec, ...)
+\method{rfModel}{base}(estimator, rf_df, rf_spec, ntrees = 200, ...)
 }
 \arguments{
 \item{estimator}{Type of model to estimates (base, robust, weighted)}

@@ -99,7 +99,8 @@ hedIndex <- function(trans_df,
   # Estimate model if hed_spec given
   if (!is.null(hed_spec)){
 
-    hed_model <- hpiModel(hpi_df = hed_trans,
+    hed_model <- hpiModel(model_type = 'hed',
+                          hpi_df = hed_trans,
                           hed_spec = hed_spec,
                           ...)
   }
@@ -107,7 +108,8 @@ hedIndex <- function(trans_df,
   # Estimate the model if dep/ind given
   if (is.null(hed_spec) & (!is.null(dep_var) & !is.null(ind_var))){
 
-    hed_model <- hpiModel(hpi_df = hed_trans,
+    hed_model <- hpiModel(model_type = 'hed',
+                          hpi_df = hed_trans,
                           dep_var = dep_var,
                           ind_var = ind_var,
                           ...)

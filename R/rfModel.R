@@ -43,7 +43,7 @@ rfModel <- function(estimator,
   ## Check for proper classes
 
   # hed_df object
-  if (!any(class(rf_df) %in% c('rfdata', 'heddata'))){
+  if (!any(class(rf_df) == 'heddata')){
     message('\nIncorrect class for "rf_df" object. "rf" estimator use hedonic data (class "hed")')
     stop()
   }
@@ -79,11 +79,18 @@ rfModel <- function(estimator,
 rfModel.base <- function(estimator,
                          rf_df,
                          rf_spec,
+                         ntrees = 200,
+                         seed = 1,
                          ...){
+
+  set.seed(seed)
 
   # Estimate model
   rf_model <- ranger::ranger(rf_spec,
-                             data = rf_df)
+                             data = rf_df,
+                             num.tree = ntrees,
+                             seed = seed,
+                             ...)
 
   # Add class
   class(rf_model) <- c('rfmodel', class(rf_model))
@@ -112,12 +119,14 @@ rfSimulate <- function(rf_obj,
                        sim_type = 'random',
                        sim_per = .1,
                        sim_count = NULL,
+                       seed = 1,
                        ...){
 
   # if no count of simulation is given
   if (is.null(sim_count)) sim_count <- floor(sim_per * nrow(rf_df))
 
   # Get simulation observations
+  set.seed(seed)
   sim_df <- rf_df[sample(1:nrow(rf_df), sim_count, replace = FALSE), ]
 
   # Calculate individual price movements
@@ -128,7 +137,7 @@ rfSimulate <- function(rf_obj,
                           ...)
 
   rf_obj$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
-                                    coefficient = Reduce('+', sim_coefs) / length(sim_coef) - 1)
+                                    coefficient = Reduce('+', sim_coefs) / length(sim_coefs) - 1)
 
   rf_obj
 

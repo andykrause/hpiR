@@ -71,7 +71,7 @@ The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` comma
 
 ```
 
-All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data.  
+All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data (though this can be changed by the user).  
 
 The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The available periodicity options are:
 

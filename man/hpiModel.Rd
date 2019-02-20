@@ -4,10 +4,12 @@
 \alias{hpiModel}
 \title{Wrapper to estimate model approaches (generic method)}
 \usage{
-hpiModel(hpi_df, estimator = "base", log_dep = TRUE,
-  trim_model = TRUE, ...)
+hpiModel(model_type, hpi_df, estimator = "base", log_dep = TRUE,
+  trim_model = TRUE, mod_spec = NULL, ...)
 }
 \arguments{
+\item{model_type}{Type of model to estimate ('rt', 'hed', 'rf')}
+
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}

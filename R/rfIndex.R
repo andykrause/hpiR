@@ -46,11 +46,10 @@ rfIndex <- function(trans_df,
                      dep_var = NULL,
                      ind_var = NULL,
                      rf_spec = NULL,
-                     ...
-){
+                     ...){
 
   # Check if trans_df is an hed_df object
-  if ('rfdata' %in% class(trans_df)){
+  if ('heddata' %in% class(trans_df)){
 
     rf_trans <- trans_df
 
@@ -87,11 +86,11 @@ rfIndex <- function(trans_df,
     }
 
     # Create Tranactions object
-    rf_trans <- rfCreateTrans(trans_df = trans_df,
+    rf_trans <- hedCreateTrans(trans_df = trans_df,
                                 ...)
   } # Ends if/else ('heddata' %in% ...)
 
-  if (!'rfdata' %in% class(rf_trans)){
+  if (!'heddata' %in% class(rf_trans)){
     message('Converting sales data to random forest sales object failed')
     stop()
   }
@@ -99,8 +98,9 @@ rfIndex <- function(trans_df,
   # Estimate model if hed_spec given
   if (!is.null(rf_spec)){
 
-    rf_model <- hpiModel(hpi_df = rf_trans,
-                         hed_spec = rf_spec,
+    rf_model <- hpiModel(model_type = 'rf',
+                         hpi_df = rf_trans,
+                         mod_spec = rf_spec,
                          ...)
   }
 

@@ -193,7 +193,8 @@ context('rtTimeMatrix()')
 context('hpiModel.rtdata(): Prior to rtModel() call')
 
   test_that('hpiModel.rtdata works in simplest format',{
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE),
               'hpimodel')
@@ -202,12 +203,14 @@ context('hpiModel.rtdata(): Prior to rtModel() call')
   test_that('"log_dep" argument works both ways',{
 
     # TRUE
-    expect_true(hpiModel(hpi_df = rt_df,
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator = 'base',
                          log_dep = TRUE)$model_obj$fitted.values[1] < 1)
 
     # FALSE
-    expect_true(hpiModel(hpi_df = rt_df,
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator = 'base',
                          log_dep = FALSE)$model_obj$fitted.values[1] > 10000)
 
@@ -219,29 +222,35 @@ context('hpiModel.rtdata(): Prior to rtModel() call')
 
     # Zero Price
     rt_dfx$price_1[1] <- 0
-    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_error(rt_model <- hpiModel(model_type = 'rt',
+                                      hpi_df = rt_dfx,
                                       estimator = 'base',
                                       log_dep = TRUE))
-    expect_is(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_dfx,
                                    estimator = 'base',
                                    log_dep = FALSE),
               'hpimodel')
 
     # NA
     rt_dfx$price_1[1] <- NA_integer_
-    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_error(rt_model <- hpiModel(model_type = 'rt',
+                                      hpi_df = rt_dfx,
                                       estimator = 'base',
                                       log_dep = TRUE))
-    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_error(rt_model <- hpiModel(model_type = 'rt',
+                                      hpi_df = rt_dfx,
                                       estimator = 'base',
                                       log_dep = FALSE))
 
     # Infinity
     rt_dfx$price_1[1] <- Inf
-    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_error(rt_model <- hpiModel(model_type = 'rt',
+                                      hpi_df = rt_dfx,
                                       estimator = 'base',
                                       log_dep = TRUE))
-    expect_error(rt_model <- hpiModel(hpi_df = rt_dfx,
+    expect_error(rt_model <- hpiModel(model_type = 'rt',
+                                      hpi_df = rt_dfx,
                                       estimator = 'base',
                                       log_dep = FALSE))
 
@@ -250,18 +259,22 @@ context('hpiModel.rtdata(): Prior to rtModel() call')
   test_that('Check for estimator type works',{
 
     # Base
-    expect_true(hpiModel(hpi_df = rt_df)$estimator == 'base')
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df)$estimator == 'base')
 
     # Convert to base with bad estimator
-    expect_true(hpiModel(hpi_df = rt_df,
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator='xxxx')$estimator == 'base')
 
     # Robust
-    expect_true(hpiModel(hpi_df = rt_df,
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator='robust')$estimator == 'robust')
 
     # Weighted
-    expect_true(hpiModel(hpi_df = rt_df,
+    expect_true(hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator='weighted')$estimator == 'weighted')
   })
 
@@ -368,35 +381,43 @@ context('rtModel()')
 context('hpiModel.rtdata(): after rtModel()')
 
   test_that('hpiModel.rtdata works in both trim_model cases', {
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = TRUE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = FALSE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'base',
                                    log_dep = FALSE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'weighted',
                                    log_dep = TRUE,
                                    trim_model=FALSE), 'hpimodel')
-    expect_is(rt_model <- hpiModel(hpi_df = rt_df,
+    expect_is(rt_model <- hpiModel(model_type = 'rt',
+                                   hpi_df = rt_df,
                                    estimator = 'robust',
                                    log_dep = FALSE,
                                    trim_model=TRUE), 'hpimodel')
-    expect_true(is.null(hpiModel(hpi_df = rt_df,
+    expect_true(is.null(hpiModel(model_type = 'rt',
+                                 hpi_df = rt_df,
                                  estimator = 'weighted',
                                  log_dep = TRUE,
                                  trim_model=TRUE)$model_obj$qr))
-    expect_true(!is.null(hpiModel(hpi_df = rt_df,
+    expect_true(!is.null(hpiModel(model_type = 'rt',
+                                  hpi_df = rt_df,
                                   estimator = 'weighted',
                                   log_dep = TRUE,
                                   trim_model=FALSE)$model_obj$qr))
@@ -405,23 +426,27 @@ context('hpiModel.rtdata(): after rtModel()')
   test_that('hpiModel.rtdata outputs are correct', {
 
     # Run a model of each estimator type
-    rt_model_base <- hpiModel(hpi_df = rt_df,
+    rt_model_base <- hpiModel(model_type = 'rt',
+                              hpi_df = rt_df,
                               estimator = 'base',
                               log_dep = TRUE,
                               trim_model=TRUE)
 
-    rt_model_robust <- hpiModel(hpi_df = rt_df,
+    rt_model_robust <- hpiModel(model_type = 'rt',
+                                hpi_df = rt_df,
                                 estimator = 'robust',
                                 log_dep = TRUE,
                                 trim_model=FALSE)
 
-    rt_model_wgt <- hpiModel(hpi_df = rt_df,
+    rt_model_wgt <- hpiModel(model_type = 'rt',
+                             hpi_df = rt_df,
                              estimator = 'weighted',
                              log_dep = FALSE,
                              trim_model=TRUE)
 
     set.seed(123)
-    rt_model_wwgt <- hpiModel(hpi_df = rt_df,
+    rt_model_wwgt <- hpiModel(model_type = 'rt',
+                              hpi_df = rt_df,
                               estimator = 'weighted',
                               log_dep = FALSE,
                               weights = runif(nrow(rt_df), 0, 1),
@@ -477,7 +502,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
  context('modelToIndex')
 
- rt_model <- hpiModel(hpi_df = rt_df,
+ rt_model <- hpiModel(model_type = 'rt',
+                      hpi_df = rt_df,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model=TRUE)
@@ -491,25 +517,29 @@ context('hpiModel.rtdata(): after rtModel()')
   test_that('modelToIndex works with other estimatort and options', {
 
     # Robust, LogDep=T, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_df = rt_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'rt',
+                                    hpi_df = rt_df,
                                     estimator = 'robust',
                                     log_dep = TRUE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Weighted, LogDep=T, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_df = rt_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'rt',
+                                    hpi_df = rt_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Robust, LogDep=F, TrimModel=T
-    expect_is(modelToIndex(hpiModel(hpi_df = rt_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'rt',
+                                    hpi_df = rt_df,
                                     estimator = 'robust',
                                     log_dep = FALSE,
                                     trim_model=TRUE)), 'hpiindex')
 
     # Weighted, LogDep=T, TrimModel=F
-    expect_is(modelToIndex(hpiModel(hpi_df = rt_df,
+    expect_is(modelToIndex(hpiModel(model_type = 'rt',
+                                    hpi_df = rt_df,
                                     estimator = 'weighted',
                                     log_dep = TRUE,
                                     trim_model=FALSE)), 'hpiindex')
@@ -521,7 +551,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDEP',{
 
-    model_base <- hpiModel(hpi_df = rt_df,
+    model_base <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_df,
                            estimator = 'base',
                            log_dep = TRUE,
                            trim_model=TRUE)
@@ -552,7 +583,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   test_that('modelToIndex imputes properly, BASE model, LogDep=FALSE',{
 
-    model_base <- hpiModel(hpi_df = rt_df,
+    model_base <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_df,
                            estimator = 'base',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -583,7 +615,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   test_that('modelToIndex imputes properly, Robust model, LogDEP = TRUE',{
 
-    model_base <- hpiModel(hpi_df = rt_df,
+    model_base <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_df,
                            estimator = 'robust',
                            log_dep = TRUE,
                            trim_model=TRUE)
@@ -611,7 +644,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   test_that('modelToIndex imputes properly, Weighted model, LogDep=FALSE',{
 
-    model_base <- hpiModel(hpi_df = rt_df,
+    model_base <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_df,
                            estimator = 'weighted',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -639,7 +673,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   test_that('modelToIndex "max_period" cutoff works',{
 
-    model_base <- hpiModel(hpi_df = rt_df,
+    model_base <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_df,
                            estimator = 'weighted',
                            log_dep = FALSE,
                            trim_model=TRUE)
@@ -655,7 +690,8 @@ context('hpiModel.rtdata(): after rtModel()')
 
   context('smoothIndex()')
 
-  model_base <- hpiModel(hpi_df = rt_df,
+  model_base <- hpiModel(model_type = 'rt',
+                         hpi_df = rt_df,
                          estimator = 'base',
                          log_dep = TRUE,
                          trim_model=TRUE)
