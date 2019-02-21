@@ -6,18 +6,20 @@ author:
  -- Seattle, WA
 date: "`r Sys.Date()`"
 output: 
-  pdf_document
+  html_document
 editor_options: 
   chunk_output_type: console
 ---
 
 ### Abstract
 
-Real estate price indexes are widely used across many different property types, use cases and research designs.  This paper provides an overview of the recently released open source package, **hpiR**,  (R language) for calculating house price indexes.  I cover the development of a consistent terminology such  as well as presenting key functionality of the package such as calculating price index accuracy, volatility and revision statistics. 
+Real estate price indexes are widely used across many different property types, use cases and research designs. This paper is divided into two parts.  In the first, I provide an overview of the recently released open source package, **hpiR**,  (R language) for calculating house price indexes.  I also cover the development of a consistent terminology such  as well as presenting key functionality of the package such as calculating price index accuracy, volatility and revision statistics. In the second part of the paper I present a new approach to house price index construction -- the use of random forest simulations -- and compare this new method with established repeat sales and hedonic model methodologies. 
 
 ```{r setup, include=FALSE}
   knitr::opts_chunk$set(echo = TRUE, collapse=TRUE, messages=FALSE, eval=TRUE)
 ```
+
+## Part 1: Concepts and Functionality
 
 ### Introduction
 
@@ -945,3 +947,12 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
 ```
 
 More information on the class structures of the object created above can be found in the "Classes in hpiR" vignette in this package. 
+
+## Part 2: Random Forest Method and its Relative Performance
+
+```{build_rt_series}
+
+```
+
+
+
