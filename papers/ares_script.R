@@ -3,22 +3,38 @@ library(hpiR)
 library(tidyverse)
 
 data(seattle_sales)
+data(ex_sales)
 
-sales_hdf <- dateToPeriod(trans_df = seattle_sales,
-                          date = 'sale_date',
-                          periodicity = 'monthly')
+source(file.path(getwd(), 'papers', 'ares_script_functions.r'))
 
-sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
-                            prop_id = 'pinx',
-                            trans_id = 'sale_id',
-                            price = 'sale_price')
+# Plan
 
-sales_hhdf <- hedCreateTrans(trans_df = seattle_sales,
-                             prop_id = 'pinx',
-                             trans_id = 'sale_id',
-                             price = 'sale_price',
-                             date= 'sale_date',
-                             periodicity = 'monthly')
+# 1. test across rf parameters
+# -- ntrees, nsim, N, time, periodicity
+# 2. compare to rt, hed
+# -- all
+# -- short time
+# -- small areas (groups of areas, areas)
+
+### 1. Test accross rf parameters
+
+ ## Standard (exales, )
+ s1 <- testRfHpi(ex_sales)
+
+ ##
+ s2 <- testRfHpi(ex_sales,
+                 ntrees = 100)
+
+ s3 <- testRfHpi(ex_sales,
+                 sim_count = 100)
+
+ s4 <- testRfHpi(ex_sales,
+                 sim_count = 50)
+
+ s5 <- testRfHpi(ex_sales,
+                 sim_count = 500)
+
+
 
 rt_hpi <- rtIndex(trans_df = sales_rtdf,
                   estimator = 'robust',
@@ -49,8 +65,7 @@ rt_vol <- calcVolatility(index = rt_hpi$index$value,
                             window = 3)
 he_vol <- calcVolatility(index = he_hpi$index$value,
                          window = 3)
-rf_vol <- calcVolatility(index = rf_hpi$index$value,
-                         window = 3)
+
 
 rt_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
                            test_type = 'rt',
@@ -65,12 +80,6 @@ he_is_accr <- calcAccuracy(hpi_obj = he_hpi,
                            smooth = FALSE)
 summary(abs(he_is_accr$pred_error))
 
-rf_is_accr <- calcAccuracy(hpi_obj = rf_hpi,
-                           test_type = 'rt',
-                           pred_df = sales_rtdf,
-                           test_method = 'insample',
-                           smooth = FALSE)
-summary(abs(rf_is_accr$pred_error))
 
 
 
