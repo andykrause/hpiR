@@ -114,7 +114,8 @@ calcKFoldError <- function(hpi_obj,
                         .f=hpiModel,
                         mod_spec=hpi_obj$model$mod_spec,
                         log_dep = hpi_obj$model$log_dep,
-                        model_type = hpi_obj$model$approach)
+                        model_type = hpi_obj$model$approach,
+                        ...)
 
   # Create K indexes (just extract index)
   k_index <- purrr::map(.x=k_model,

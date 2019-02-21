@@ -107,7 +107,8 @@ createSeries <- function(hpi_obj,
                              structure(list(model = mod,
                                             index = ind),
                                        class = 'hpi')
-                          })
+                          },
+                         ...)
 
   # Return Values
   structure(list(data = hpi_obj$data,
