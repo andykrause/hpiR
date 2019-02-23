@@ -36,8 +36,11 @@ testRfHpi <- function(ex_sales,
                       verbose = TRUE,
                       ...){
 
+  cat('**** Trees: ', ntrees, "    Sim Count: ", sim_count, "********\n\n")
+
   if (verbose) message('Creating sales object')
   sales_ <- createSales(ex_sales, 'monthly')
+
 
   if (verbose) message('Creating hpi object')
   hpi_time <- system.time(
@@ -52,11 +55,13 @@ testRfHpi <- function(ex_sales,
                  sim_count = sim_count,
                  sim_per = sim_per,
                  ...))
+  if (verbose) message('....', round(hpi_time[3], 1))
 
 
   if (verbose) message('Calculating volatility')
   vol <- calcVolatility(index = hpi$index$value,
                         window = 3)
+  if (verbose) message('....', round(vol$median, 3))
 
 
   if (verbose) message('Calculating in sample accuracy')
@@ -65,6 +70,7 @@ testRfHpi <- function(ex_sales,
                           pred_df = sales_$rt,
                           test_method = 'insample',
                           smooth = FALSE)
+  if (verbose) message('....', round(median(abs(is_accr$pred_error)), 3))
 
 
   if (verbose) message('Creating series object')
@@ -74,7 +80,7 @@ testRfHpi <- function(ex_sales,
                          max_period = max_period,
                          sim_count = sim_count,
                          ntrees = ntrees))
-
+  if (verbose) message('....', round(series_time[3], 1))
 
   if (verbose) message('Calculating series volatility')
   series <- calcSeriesVolatility(series_obj = series,
@@ -84,7 +90,7 @@ testRfHpi <- function(ex_sales,
 
   if (verbose) message('Calculating revision')
   rev <- calcRevision(series_obj = series)
-
+  if (verbose) message('....', round(rev$median, 3))
 
   if (verbose) message('Calculating series accuracy')
   series <- calcSeriesAccuracy(series_obj = series,
@@ -93,6 +99,7 @@ testRfHpi <- function(ex_sales,
                                smooth = FALSE,
                                pred_df = sales_$rt,
                                in_place = TRUE)
+  if (verbose) message('....', round(median(abs(series$accuracy$pred_error)), 3))
 
   list(hpi = hpi,
        vol = vol,

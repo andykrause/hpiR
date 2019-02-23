@@ -18,21 +18,85 @@ source(file.path(getwd(), 'papers', 'ares_script_functions.r'))
 
 ### 1. Test accross rf parameters
 
- ## Standard (exales, )
- s1 <- testRfHpi(ex_sales)
-
- ##
- s2 <- testRfHpi(ex_sales,
-                 ntrees = 100)
-
- s3 <- testRfHpi(ex_sales,
-                 sim_count = 100)
-
- s4 <- testRfHpi(ex_sales,
+## Standard (exales, )
+s11 <- testRfHpi(ex_sales,
+                 ntrees = 50,
                  sim_count = 50)
 
- s5 <- testRfHpi(ex_sales,
-                 sim_count = 500)
+##
+s12 <- testRfHpi(ex_sales,
+                 ntrees = 100,
+                 sim_count = 50)
+
+s13 <- testRfHpi(ex_sales,
+                 ntrees = 200,
+                 sim_count = 50)
+
+s14 <- testRfHpi(ex_sales,
+                 ntrees = 500,
+                 sim_count = 50)
+
+save.image("C:/Users/andyx/Desktop/ares.RData")
+
+ ## Standard (exales, )
+ s21 <- testRfHpi(ex_sales,
+                 ntrees = 50,
+                 sim_count = 100)
+
+ ##
+ s22 <- testRfHpi(ex_sales,
+                 ntrees = 100,
+                 sim_count = 100)
+
+ s23 <- testRfHpi(ex_sales,
+                 ntrees = 200,
+                 sim_count = 100)
+
+ s24 <- testRfHpi(ex_sales,
+                 ntrees = 500,
+                 sim_count = 100)
+
+ ## Standard (exales, )
+ s31 <- testRfHpi(ex_sales,
+                  ntrees = 50,
+                  sim_count = 200)
+
+ save.image("C:/Users/andyx/Desktop/ares.RData")
+
+ ##
+ s32 <- testRfHpi(ex_sales,
+                  ntrees = 100,
+                  sim_count = 200)
+
+ s33 <- testRfHpi(ex_sales,
+                  ntrees = 200,
+                  sim_count = 200)
+
+ s34 <- testRfHpi(ex_sales,
+                  ntrees = 500,
+                  sim_count = 200)
+
+ save.image("C:/Users/andyx/Desktop/ares.RData")
+
+ ## Standard (exales, )
+ s41 <- testRfHpi(ex_sales,
+                  ntrees = 50,
+                  sim_count = 500)
+
+ ##
+ s42 <- testRfHpi(ex_sales,
+                  ntrees = 100,
+                  sim_count = 500)
+
+ s43 <- testRfHpi(ex_sales,
+                  ntrees = 200,
+                  sim_count = 500)
+
+ s44 <- testRfHpi(ex_sales,
+                  ntrees = 500,
+                  sim_count = 500)
+
+ save.image("C:/Users/andyx/Desktop/ares.RData")
 
 
 
