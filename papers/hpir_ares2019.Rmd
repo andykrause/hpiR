@@ -115,7 +115,34 @@ The data includes the following information for all transactions:
 | age  | integer   | 100 | Age of home   |
 | eff_age  | integer   | 12   | Years since major renovation   |
 | longitude  | numeric   | -122.30254   | Longitude  |
-| latitude  | numeric   | 47.60391  | Latitude   |
+| latitude  | numeric   | 47.60391  | Latitude  |
+
+## Random Forest House Price Indexes
+
+Random forests are a common modeling approach in the machine learning literature and industry (... insert more here).  However, they have been little used in real estate studies (add examples if any) and not at all in house price index creation. Much of the reason for this dearth is that random forests are somewhat of a black box in that they do not directly create coefficient estimates as more traditional statistical models do and, therefore, do not offer a direct approach to create price indexes.  
+
+With the use of simulations, however, price trends can be extracted from random forest models as used to create an index.  In general, the process works like this:
+
+1. Estimate a random forest model (including a time period variable in the specification)
+2. Create a hypothetical observation with transaction dates at every available period in your model 
+3. Predict the value of these observation at each period using the random forest
+4. Convert this series of price predictions to a index
+5. Repeat steps 2 through 4 multiple times and average the results
+
+```{r}
+  readRDS(file.path(getwd(), 'ex1plot.rds'))
+```
+
+```{r}
+  readRDS(file.path(getwd(), 'ex15plot.rds'))
+```
+
+```{r}
+  readRDS(file.path(getwd(), 'ex15aplot.rds'))
+```
+
+How does this compete
+
 
 <!-- All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data.   -->
 
