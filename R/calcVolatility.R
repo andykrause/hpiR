@@ -188,6 +188,7 @@ calcVolatility <- function(index,
 calcSeriesVolatility <- function(series_obj,
                                  window = 3,
                                  smooth = FALSE,
+                                 in_place_name = 'volatility',
                                  ...){
 
   # Bad series_obj
@@ -222,7 +223,7 @@ calcSeriesVolatility <- function(series_obj,
   }
 
   # Add to series obj
-  series_obj$hpis <- s_hpis
+  series_obj[[in_place_name]] <- s_hpis
 
   # Return standard
   series_obj
