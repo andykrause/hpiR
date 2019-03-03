@@ -35,7 +35,7 @@
                          prop_id = 'pinx',
                          trans_id = 'sale_id',
                          price = 'sale_price',
-                         data = 'sale_date',
+                         date = 'sale_date',
                          periodicity = 'monthly')
 
 ### Random Forest Example --------------------------------------------------------------------------
@@ -140,19 +140,19 @@
 
  saveRDS(gg_1to5a, file.path(getwd(), 'papers', 'ex15aplot.RDS'))
 
-## 500 version
+## 100 version
 
- rf_500 <- rfSimulate(rf_obj = rf_model,
+ rf_100 <- rfSimulate(rf_obj = rf_model,
                       rf_df = hed_df,
-                      sim_count = 500,
-                      seed = 500)$coefficients %>%
+                      sim_count = 100,
+                      seed = 100)$coefficients %>%
    dplyr::mutate(index = 100 * (1+coefficient)) %>%
    dplyr::select(period = time,
                  value = index)
 
 ### Compare to RT/HED ------------------------------------------------------------------------------
 
- rt_hpi <- rtIndex(trans_df = sales_rtdf,
+ rt_hpi <- rtIndex(trans_df = rt_df,
                    estimator = 'robust',
                    log_dep = TRUE,
                    trim_model = FALSE,
@@ -188,12 +188,72 @@
 
  saveRDS(gg_rhr, file.path(getwd(), 'papers', 'rhrplot.RDS'))
 
+### Simple Comparisons -----------------------------------------------------------------------------
 
+ ## Repeat Transaction Example
+ rt_hpi <- rtIndex(trans_df = rt_df,
+                   estimator = 'robust',
+                   log_dep = TRUE,
+                   trim_model = FALSE,
+                   max_period = 84,
+                   smooth = TRUE)
 
+ ## Hedonic sales Example
+ he_hpi <- hedIndex(trans_df = hed_df,
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    dep_var = 'price',
+                    ind_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area'),
+                    trim_model = FALSE,
+                    max_period = 84,
+                    smooth = TRUE)
 
-
+ # Random Forest
+ rf_hpi <- rfIndex(trans_df = hed_df,
+                   estimator = 'base',
+                   dep_var = 'price',
+                   ind_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area',
+                               'latitude', 'longitude'),
+                   max_period = 84,
+                   smooth = FALSE,
+                   ntrees = 100,
+                   sim_count = 100)
 
 ### Comparisons ------------------------------------------------------------------------------------
+
+ full_comp <- threeWayComparison(data_obj = seattle_sales)
+
+## Do these same results hold (Over a small geo area period)
+
+  geo_df <- seattle_sales %>% dplyr::filter(!area %in% 23)
+
+  geo_ <- purrr::map(.x = split(geo_df, geo_df$area),
+                      .f = threeWayComparison,
+                      hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age'))
+
+  geo_comp <- summarizeComp(geo_)
+
+## Do these same results hold (Over a tiny geo area period)
+  time_data <- list(seattle_sales %>% dplyr::filter(sale_date <= '2011-12-31'),
+                    seattle_sales %>% dplyr::filter(sale_date <= '2012-12-31' &
+                                                      sale_date >= '2011-01-01'),
+                    seattle_sales %>% dplyr::filter(sale_date <= '2013-12-31' &
+                                                      sale_date >= '2012-01-01'),
+                    seattle_sales %>% dplyr::filter(sale_date <= '2014-12-31' &
+                                                      sale_date >= '2013-01-01'),
+                    seattle_sales %>% dplyr::filter(sale_date <= '2015-12-31' &
+                                                      sale_date >= '2014-01-01'),
+                    seattle_sales %>% dplyr::filter(sale_date <= '2016-12-31' &
+                                                      sale_date >= '2015-01-01'))
+
+  time_ <- purrr::map(.x = time_data,
+                      .f = threeWayComparison,
+                      train_period = 12,
+                      max_period = 24)
+
+  time_summ <- summarizeComp(time_)
+
+### Random Forest Hyperparmater tests --------------------------------------------------------------
 
   ## Small Area
 exgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
@@ -236,97 +296,4 @@ exgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
 ###############
 
 
-rt_hpi <- rtIndex(trans_df = sales_rtdf,
-                  estimator = 'robust',
-                  log_dep = TRUE,
-                  trim_model = FALSE,
-                  max_period = 84,
-                  smooth = TRUE)
-he_hpi <- hedIndex(trans_df = sales_hhdf,
-                   estimator = 'robust',
-                   log_dep = TRUE,
-                   dep_var = 'price',
-                   ind_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area'),
-                   trim_model = FALSE,
-                   max_period = 84,
-                   smooth = TRUE)
-
-
-rt_vol <- calcVolatility(index = rt_hpi$index$value,
-                            window = 3)
-he_vol <- calcVolatility(index = he_hpi$index$value,
-                         window = 3)
-
-
-rt_is_accr <- calcAccuracy(hpi_obj = rt_hpi,
-                           test_type = 'rt',
-                           test_method = 'insample',
-                           smooth = FALSE)
-summary(abs(rt_is_accr$pred_error))
-
-he_is_accr <- calcAccuracy(hpi_obj = he_hpi,
-                           test_type = 'rt',
-                           pred_df = sales_rtdf,
-                           test_method = 'insample',
-                           smooth = FALSE)
-summary(abs(he_is_accr$pred_error))
-
-
-
-
-rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
-                           test_type = 'rt',
-                           test_method = 'kfold',
-                           k = 10,
-                           seed = 123)
-summary(abs(rt_kf_accr$pred_error))
-
-he_kf_accr <- calcAccuracy(hpi_obj = he_hpi,
-                           test_type = 'rt',
-                           test_method = 'kfold',
-                           k = 10,
-                           seed = 123,
-                           pred_df = rt_hpi$data)
-summary(abs(he_kf_accr$pred_error))
-
-
-
-
-rt_series <- createSeries(hpi_obj = rt_hpi,
-                          train_period = 24,
-                          max_period = 84)
-he_series <- createSeries(hpi_obj = he_hpi,
-                          train_period = 24,
-                          max_period = 84)
-
-plot(rt_series)
-plot(he_series)
-
-rt_series <- calcSeriesVolatility(series_obj = rt_series,
-                                  window = 3,
-                                  smooth = FALSE)
-he_series <- calcSeriesVolatility(series_obj = he_series,
-                                  window = 3,
-                                  smooth = FALSE)
-
-rt_rev <- calcRevision(series_obj = rt_series)
-he_rev <- calcRevision(series_obj = he_series)
-
-plot(rt_rev, measure='median')
-plot(he_rev, measure='median')
-
-rt_series <- calcSeriesAccuracy(series_obj = rt_series,
-                                test_method = 'forecast',
-                                test_type = 'rt',
-                                smooth = FALSE,
-                                in_place = TRUE)
-summary(abs(rt_series$accuracy$pred_error))
-
-he_series <- calcSeriesAccuracy(series_obj = he_series,
-                                test_method = 'forecast',
-                                test_type = 'rt',
-                                smooth = FALSE,
-                                pred_df = rt_hpi$data,
-                                in_place = TRUE)
-summary(abs(he_series$accuracy$pred_error))
 
