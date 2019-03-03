@@ -59,7 +59,9 @@ modelToIndex <- function(model_obj,
   ## Deal with imputations
 
   # Extract coefficients
-  coef_df <- model_obj$coefficients[1:max_period, ]
+  coef_df <- data.frame(time = 1:max_period) %>%
+    dplyr::left_join(model_obj$coefficients[1:max_period, ],
+                     by = 'time')
 
   # Set up imputation identification vector
   is_imputed <- rep(0, length(coef_df$coef))
