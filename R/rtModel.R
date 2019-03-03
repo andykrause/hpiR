@@ -138,11 +138,20 @@ rtModel.robust <- function(rt_df,
   time_size <- stats::median(table(c(rt_df$period_1, rt_df$period_2)))
 
   # Use different robust packages based on sparseness
-  if(time_size > 5){
-    rt_model <- MASS::rlm(price_diff ~ time_matrix + 0)
-  } else {
-    rt_model <- robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")
-  }
+   rt_model <- tryCatch({MASS::rlm(price_diff ~ time_matrix + 0)},
+                        error = function(e) e)
+   if (class(rt_model) == 'simpleError'){
+    rt_model <- tryCatch({robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")},
+                         error = function(e) e)
+   }
+   if (class(rt_model) == 'simpleError'){
+     if (!is.null(list(...)$lm_recover) && list(...)$lm_recover = TRUE){
+       rt_model <- lm(price_diff ~ time_matrix + 0)
+     } else {
+       cat(rt_model)
+       stop()
+     }
+   }
 
   # Add class
   class(rt_model) <- 'rtmodel'
