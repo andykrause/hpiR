@@ -132,7 +132,7 @@ rfSimulate <- function(rf_obj,
 
   # Get simulation observations
   set.seed(seed)
-  sim_df <- rf_df[sample(1:nrow(rf_df), sim_count, replace = FALSE), ]
+  sim_df <- rf_df[sample(1:nrow(rf_df), sim_count, replace = TRUE), ]
 
   # Calculate individual price movements
   sim_coefs <- purrr::map(.x = sim_df %>% split(., sim_df$trans_id),
