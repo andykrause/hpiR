@@ -140,15 +140,15 @@ rtModel.robust <- function(rt_df,
   # Use different robust packages based on sparseness
    rt_model <- tryCatch({MASS::rlm(price_diff ~ time_matrix + 0)},
                         error = function(e) e)
-   if (class(rt_model) == 'simpleError'){
+   if ('simpleError' %in% class(rt_model)){
     rt_model <- tryCatch({robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")},
                          error = function(e) e)
    }
-   if (class(rt_model) == 'simpleError'){
-     if (!is.null(list(...)$lm_recover) && list(...)$lm_recover = TRUE){
+   if ('simpleError' %in% class(rt_model)){
+     if (!is.null(list(...)$lm_recover) && list(...)$lm_recover == TRUE){
        rt_model <- lm(price_diff ~ time_matrix + 0)
      } else {
-       cat(rt_model)
+       #cat(rt_model)
        stop()
      }
    }
