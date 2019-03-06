@@ -123,7 +123,8 @@ threeWayComparison <- function(data_obj,
                                hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds',
                                            'baths', 'eff_age', 'area'),
                                rf_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age',
-                                          'latitude', 'longitude')){
+                                          'latitude', 'longitude'),
+                               ...){
 
   message('Building Data')
   # Hedonic Data
@@ -150,7 +151,8 @@ threeWayComparison <- function(data_obj,
                     log_dep = TRUE,
                     trim_model = FALSE,
                     max_period = max_period,
-                    smooth = TRUE)
+                    smooth = TRUE,
+                    ...)
 
   ## Hedonic sales Example
   he_hpi <- hedIndex(trans_df = hed_df,
@@ -260,7 +262,9 @@ threeWayComparison <- function(data_obj,
                          test_type = 'rt',
                          pred_df = rt_df,
                          in_place = TRUE,
-                         in_place_name = 'kf_accuracy')
+                         in_place_name = 'kf_accuracy',
+                         ntrees = ntrees,
+                         sim_count = sim_count)
 
   message('Creating Series')
 
@@ -278,7 +282,9 @@ threeWayComparison <- function(data_obj,
 
   suppressWarnings(rf_series <- createSeries(hpi_obj = rf_hpi,
                             train_period = train_period,
-                            max_period = max_period))
+                            max_period = max_period,
+                            ntrees = ntrees,
+                            sim_count = sim_count))
 
   message('Comparing Series Volatilities')
 
@@ -433,9 +439,9 @@ summarizeComp <- function(comp_){
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())))
 
   kf_accr <- c(median(abs(lapply(comp_, function(x) x$hpi$rt$index$kf_accuracy) %>%
-                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
+                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist()), na.rm=T),
                median(abs(lapply(comp_, function(x) x$hpi$rt$index$kf_accuracy_smooth) %>%
-                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
+                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist()), na.rm=T),
                median(abs(lapply(comp_, function(x) x$hpi$he$index$kf_accuracy) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
                median(abs(lapply(comp_, function(x) x$hpi$he$index$kf_accuracy_smooth) %>%

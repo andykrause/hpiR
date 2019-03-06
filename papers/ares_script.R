@@ -173,7 +173,7 @@
  hei_df <- data.frame(period = he_hpi$index$period,
                       value = as.numeric(he_hpi$index$value),
                       model = 'Hedonic')
- rhi_df <- rbind(rti_df, hei_df, rf_500 %>% dplyr::mutate(model = 'Random Forest (500)'))
+ rhi_df <- rbind(rti_df, hei_df, rf_100 %>% dplyr::mutate(model = 'Random Forest (100)'))
 
  gg_rhr <- ggplot() +
    geom_line(data = rhi_df,
@@ -221,7 +221,11 @@
 
 ### Comparisons ------------------------------------------------------------------------------------
 
- full_comp <- threeWayComparison(data_obj = seattle_sales)
+ full_comp <- threeWayComparison(data_obj = seattle_sales,
+                                 ntrees = 100,
+                                 sim_count = 100)
+
+ saveRDS(full_comp$summary, file.path(getwd(), 'papers', 'full_summ.RDS'))
 
 ## Do these same results hold (Over a small geo area period)
 
@@ -229,9 +233,11 @@
 
   geo_ <- purrr::map(.x = split(geo_df, geo_df$area),
                       .f = threeWayComparison,
-                      hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age'))
+                      hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age'),
+                     lm_recover = TRUE)
 
   geo_comp <- summarizeComp(geo_)
+  saveRDS(geo_comp, file.path(getwd(), 'papers', 'geo_summ.RDS'))
 
 ## Do these same results hold (Over a tiny geo area period)
   time_data <- list(seattle_sales %>% dplyr::filter(sale_date <= '2011-12-31'),
@@ -252,48 +258,51 @@
                       max_period = 24)
 
   time_summ <- summarizeComp(time_)
+  saveRDS(time_summ, file.path(getwd(), 'papers', 'time_summ.RDS'))
+
+
 
 ### Random Forest Hyperparmater tests --------------------------------------------------------------
-
-  ## Small Area
-exgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
-                      .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
-                      .f = testRfHpi,
-                      ex_sales = ex_sales)
-
-  save.image("C:/Users/andyx/Desktop/ares.RData")
-
- # All Seattle
-  allgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
-                        .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
-                        .f = testRfHpi,
-                        ex_sales = seattle_sales)
-
-  # Area X
-  save.image("C:/Users/andyx/Desktop/ares.RData")
-
-  x <- 43
-  xgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
-                         .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
-                         .f = testRfHpi,
-                         ex_sales = seattle_sales  %>% dplyr::filter(area == x))
-  # Area Y
-  y <- 77
-  ygrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
-                         .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
-                         .f = testRfHpi,
-                         ex_sales = seattle_sales  %>% dplyr::filter(area == y))
-
-  # Area Z
-  z <- 22
-  zgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
-                         .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
-                         .f = testRfHpi,
-                         ex_sales = seattle_sales  %>% dplyr::filter(area == z))
-
-  save.image("C:/Users/andyx/Desktop/ares.RData")
-
-###############
-
-
-
+#
+#   ## Small Area
+# exgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
+#                       .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
+#                       .f = testRfHpi,
+#                       ex_sales = ex_sales)
+#
+#   save.image("C:/Users/andyx/Desktop/ares.RData")
+#
+#  # All Seattle
+#   allgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
+#                         .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
+#                         .f = testRfHpi,
+#                         ex_sales = seattle_sales)
+#
+#   # Area X
+#   save.image("C:/Users/andyx/Desktop/ares.RData")
+#
+#   x <- 43
+#   xgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
+#                          .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
+#                          .f = testRfHpi,
+#                          ex_sales = seattle_sales  %>% dplyr::filter(area == x))
+#   # Area Y
+#   y <- 77
+#   ygrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
+#                          .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
+#                          .f = testRfHpi,
+#                          ex_sales = seattle_sales  %>% dplyr::filter(area == y))
+#
+#   # Area Z
+#   z <- 22
+#   zgrid <- purrr::map2(.x = rep(c(10, 50, 100, 200), 4),
+#                          .y = c(rep(10, 4), rep(50, 4), rep(100, 4), rep(200, 4)),
+#                          .f = testRfHpi,
+#                          ex_sales = seattle_sales  %>% dplyr::filter(area == z))
+#
+#   save.image("C:/Users/andyx/Desktop/ares.RData")
+#
+# ###############
+#
+#
+#
