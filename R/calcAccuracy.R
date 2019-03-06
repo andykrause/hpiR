@@ -122,6 +122,7 @@ calcAccuracy <- function(hpi_obj,
 
     accr_obj <- calcInSampleError(pred_df = pred_df,
                                   index = hpi_obj$index[[index_name]],
+                                  smooth = smooth,
                                    ...)
   }
 
@@ -129,6 +130,7 @@ calcAccuracy <- function(hpi_obj,
   if (test_method == 'kfold'){
     accr_obj <- calcKFoldError(hpi_obj = hpi_obj,
                                pred_df = pred_df,
+                               smooth = smooth,
                                 ...)
   }
 
