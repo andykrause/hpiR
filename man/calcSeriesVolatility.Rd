@@ -4,7 +4,8 @@
 \alias{calcSeriesVolatility}
 \title{Calculate volatility of a series of indexes}
 \usage{
-calcSeriesVolatility(series_obj, window = 3, smooth = FALSE, ...)
+calcSeriesVolatility(series_obj, window = 3, smooth = FALSE,
+  in_place_name = "volatility", ...)
 }
 \arguments{
 \item{series_obj}{Series object to be calculated}

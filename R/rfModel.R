@@ -76,6 +76,7 @@ rfModel <- function(estimator,
 #' @inherit rfModel params
 #' @method rfModel base
 #' @importFrom ranger ranger
+#' @importFrom pdp partial
 #' @export
 
 rfModel.base <- function(estimator,
@@ -98,11 +99,125 @@ rfModel.base <- function(estimator,
 
   log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
 
+  pred_grid <- data.frame(trans_period = 1:max(attr(rf_df, 'period_table')$period))
+  pdp_df <- pdp::partial(rf_model,
+                         train = rf_df,
+                         pred.var = "trans_period",
+                         pred.grid = pred_grid)
+
+  if(log_dep){
+    coefs <- pdp_df$yhat - pdp_df$yhat[1]
+  } else {
+    coefs <- pdp_df$yhat / pdf_df$yhat[1]
+  }
+
+  rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
+                                    coefficient = coefs)
+
+  rf_model
+  #
+  # rfSimulate(rf_obj = rf_model,
+  #            rf_df = rf_df,
+  #            log_dep = log_dep,
+  #            ...)
+}
+
+#'
+#' Hedonic model approach with base estimator
+#'
+#' Use of base estimator in hedonic model approach
+#'
+#' @section Further Details:
+#' See `?rfModel` for more information
+#' @inherit rfModel params
+#' @method rfModel pdp
+#' @importFrom ranger ranger
+#' @importFrom pdp partial
+#' @export
+
+rfModel.pdp <- function(estimator,
+                         rf_df,
+                         rf_spec,
+                         ntrees = 200,
+                         seed = 1,
+                         ...){
+
+  set.seed(seed)
+
+  # Estimate model
+  rf_model <- ranger::ranger(rf_spec,
+                             data = rf_df,
+                             num.tree = ntrees,
+                             seed = seed)
+
+  # Add class
+  class(rf_model) <- c('rfmodel', class(rf_model))
+
+  log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
+
+  pred_grid <- data.frame(trans_period = 1:max(attr(rf_df, 'period_table')$period))
+  pdp_df <- pdp::partial(rf_model,
+                         train = rf_df,
+                         pred.var = "trans_period",
+                         pred.grid = pred_grid)
+
+  if(log_dep){
+    coefs <- pdp_df$yhat - pdp_df$yhat[1]
+  } else {
+    coefs <- pdp_df$yhat / pdf_df$yhat[1]
+  }
+
+  rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
+                                      coefficient = coefs)
+
+  rf_model
+
+}
+
+
+#'
+#' Hedonic model approach with base estimator
+#'
+#' Use of base estimator in hedonic model approach
+#'
+#' @section Further Details:
+#' See `?rfModel` for more information
+#' @inherit rfModel params
+#' @method rfModel sim
+#' @importFrom ranger ranger
+#' @export
+
+rfModel.sim <- function(estimator,
+                         rf_df,
+                         rf_spec,
+                         ntrees = 200,
+                         seed = 1,
+                         ...){
+
+  set.seed(seed)
+
+  # Estimate model
+  rf_model <- ranger::ranger(rf_spec,
+                             data = rf_df,
+                             num.tree = ntrees,
+                             seed = seed)
+
+  # Add class
+  class(rf_model) <- c('rfmodel', class(rf_model))
+
+  log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
+
+
   rfSimulate(rf_obj = rf_model,
              rf_df = rf_df,
              log_dep = log_dep,
              ...)
 }
+
+
+
+
+
 
 #'
 #' Simulate selected properties
