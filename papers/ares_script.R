@@ -92,6 +92,9 @@
     dplyr::select(period = time,
                   value = index)
 
+
+  #### Convert this to Partial....
+
   # Examples 1 to 5
   rf_15 <- dplyr::bind_rows(list(rf_1, rf_2, rf_3, rf_4, rf_5)) %>%
     dplyr::group_by(period) %>%
@@ -209,8 +212,8 @@
                     smooth = TRUE)
 
  # Random Forest
- rf_hpi <- rfIndex(trans_df = hed_df,
-                   estimator = 'base',
+ rfs_hpi <- rfIndex(trans_df = hed_df,
+                   estimator = 'sim',
                    dep_var = 'price',
                    ind_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area',
                                'latitude', 'longitude'),
@@ -219,25 +222,43 @@
                    ntrees = 100,
                    sim_count = 100)
 
+ rfp_hpi <- rfIndex(trans_df = hed_df,
+                    estimator = 'pdp',
+                    dep_var = 'price',
+                    ind_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area',
+                                'latitude', 'longitude'),
+                    max_period = 84,
+                    smooth = FALSE,
+                    ntrees = 100,
+                    sim_count = 100)
+
 ### Comparisons ------------------------------------------------------------------------------------
 
  full_comp <- threeWayComparison(data_obj = seattle_sales,
                                  ntrees = 100,
                                  sim_count = 100)
 
- saveRDS(full_comp$summary, file.path(getwd(), 'papers', 'full_summ.RDS'))
+
+ ff <- summarizeComp(list(full_comp))
+
+ saveRDS(ff$summ, file.path(getwd(), 'papers', 'full_summ.RDS'))
+ saveRDS(ff, file.path(getwd(), 'papers', 'full_comp.RDS'))
 
 ## Do these same results hold (Over a small geo area period)
 
   geo_df <- seattle_sales %>% dplyr::filter(!area %in% 23)
+  #geo_df <- seattle_sales %>% dplyr::filter(area %in% 7)
 
-  geo_ <- purrr::map(.x = split(geo_df, geo_df$area),
-                      .f = threeWayComparison,
-                      hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age'),
-                     lm_recover = TRUE)
+  geo_ <- suppressWarnings(
+    purrr::map(.x = split(geo_df, geo_df$area),
+                          .f = threeWayComparison,
+                          hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age'),
+                          lm_recover = TRUE))
 
   geo_comp <- summarizeComp(geo_)
-  saveRDS(geo_comp, file.path(getwd(), 'papers', 'geo_summ.RDS'))
+  saveRDS(geo_comp$summ, file.path(getwd(), 'papers', 'geo_summ.RDS'))
+  saveRDS(geo_comp, file.path(getwd(), 'papers', 'geo_comp.RDS'))
+
 
 ## Do these same results hold (Over a tiny geo area period)
   time_data <- list(seattle_sales %>% dplyr::filter(sale_date <= '2011-12-31'),
@@ -255,12 +276,14 @@
   time_ <- purrr::map(.x = time_data,
                       .f = threeWayComparison,
                       train_period = 12,
-                      max_period = 24)
+                      max_period = 24,
+                      lm_recover = TRUE)
 
   time_summ <- summarizeComp(time_)
-  saveRDS(time_summ, file.path(getwd(), 'papers', 'time_summ.RDS'))
+  saveRDS(time_summ$summ, file.path(getwd(), 'papers', 'time_summ.RDS'))
+  saveRDS(time_summ, file.path(getwd(), 'papers', 'time_comp.RDS'))
 
-
+  ## Errors by time (check oversmoothing....are errors bigger in periods with larger increases)
 
 ### Random Forest Hyperparmater tests --------------------------------------------------------------
 #

@@ -115,6 +115,7 @@ calcKFoldError <- function(hpi_obj,
                         mod_spec=hpi_obj$model$mod_spec,
                         log_dep = hpi_obj$model$log_dep,
                         model_type = hpi_obj$model$approach,
+                        estimator = hpi_obj$model$estimator,
                         ...)
 
   # Create K indexes (just extract index)

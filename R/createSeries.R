@@ -97,11 +97,13 @@ createSeries <- function(hpi_obj,
                          mod_spec=hpi_obj$model$mod_spec,
                          log_dep = hpi_obj$model$log_dep,
                          mod_type = hpi_obj$model$approach,
-                         .f=function(x, y, z, mod_spec, log_dep, mod_type, ...){
+                         estimator = hpi_obj$model$estimator,
+                         .f=function(x, y, z, mod_spec, log_dep, mod_type, estimator, ...){
                              mod <- hpiModel(model_type = mod_type,
                                              hpi_df=z[x, ],
                                              mod_spec=mod_spec,
                                              log_dep=log_dep,
+                                             estimator = estimator,
                                              ...)
                              ind <- modelToIndex(mod, max_period=y-1, ...)
                              structure(list(model = mod,

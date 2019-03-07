@@ -165,8 +165,18 @@ threeWayComparison <- function(data_obj,
                      smooth = TRUE)
 
   # Random Forest
-  rf_hpi <- rfIndex(trans_df = hed_df,
-                    estimator = 'base',
+  rfs_hpi <- rfIndex(trans_df = hed_df,
+                    estimator = 'sim',
+                    dep_var = 'price',
+                    ind_var = rf_var,
+                    max_period = max_period,
+                    smooth = FALSE,
+                    ntrees = ntrees,
+                    sim_count = sim_count)
+
+  # Random Forest
+  rfp_hpi <- rfIndex(trans_df = hed_df,
+                    estimator = 'pdp',
                     dep_var = 'price',
                     ind_var = rf_var,
                     max_period = max_period,
@@ -193,9 +203,13 @@ threeWayComparison <- function(data_obj,
                            in_place = TRUE,
                            smooth = TRUE,
                            in_place_name = 'volatility_smooth')
-  rf_hpi <- calcVolatility(index = rf_hpi,
+  rfs_hpi <- calcVolatility(index = rfs_hpi,
                            window = 3,
                            in_place = TRUE)
+  rfp_hpi <- calcVolatility(index = rfp_hpi,
+                           window = 3,
+                           in_place = TRUE)
+
 
   message('Comparing In-Sample Accuracy')
   ## In sample accuracy
@@ -223,12 +237,19 @@ threeWayComparison <- function(data_obj,
                          smooth = TRUE,
                          in_place = TRUE,
                          in_place_name = 'is_accuracy_smooth')
-  rf_hpi <- calcAccuracy(hpi_obj = rf_hpi,
+  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
                          test_method = 'insample',
                          test_type = 'rt',
                          pred_df = rt_df,
                          in_place = TRUE,
                          in_place_name = 'is_accuracy')
+  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
+                         test_method = 'insample',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         in_place = TRUE,
+                         in_place_name = 'is_accuracy')
+
 
   message('Comparing Out-of-Sample (KFold) Accuracy')
 
@@ -237,13 +258,15 @@ threeWayComparison <- function(data_obj,
                          test_method = 'kfold',
                          test_type = 'rt',
                          in_place = TRUE,
-                         in_place_name = 'kf_accuracy')
+                         in_place_name = 'kf_accuracy',
+                         ...)
   rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
                          test_method = 'kfold',
                          test_type = 'rt',
                          smooth = TRUE,
                          in_place = TRUE,
-                         in_place_name = 'kf_accuracy_smooth')
+                         in_place_name = 'kf_accuracy_smooth',
+                         ...)
   he_hpi <- calcAccuracy(hpi_obj = he_hpi,
                          test_method = 'kfold',
                          test_type = 'rt',
@@ -257,7 +280,15 @@ threeWayComparison <- function(data_obj,
                          smooth = TRUE,
                          in_place = TRUE,
                          in_place_name = 'kf_accuracy_smooth')
-  rf_hpi <- calcAccuracy(hpi_obj = rf_hpi,
+  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
+                         test_method = 'kfold',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         in_place = TRUE,
+                         in_place_name = 'kf_accuracy',
+                         ntrees = ntrees,
+                         sim_count = sim_count)
+  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
                          test_method = 'kfold',
                          test_type = 'rt',
                          pred_df = rt_df,
@@ -266,6 +297,7 @@ threeWayComparison <- function(data_obj,
                          ntrees = ntrees,
                          sim_count = sim_count)
 
+
   message('Creating Series')
 
   ## Series
@@ -273,18 +305,25 @@ threeWayComparison <- function(data_obj,
     rt_series <- createSeries(hpi_obj = rt_hpi,
                             train_period = train_period,
                             max_period = max_period,
-                            smooth = TRUE) %>% smoothSeries())
+                            smooth = TRUE,
+                            ...) %>% smoothSeries())
 
   suppressWarnings(he_series <- createSeries(hpi_obj = he_hpi,
                             train_period = train_period,
                             max_period = max_period,
                             smooth = TRUE)  %>% smoothSeries())
 
-  suppressWarnings(rf_series <- createSeries(hpi_obj = rf_hpi,
+  suppressWarnings(rfs_series <- createSeries(hpi_obj = rfs_hpi,
                             train_period = train_period,
                             max_period = max_period,
                             ntrees = ntrees,
                             sim_count = sim_count))
+
+  suppressWarnings(rfp_series <- createSeries(hpi_obj = rfp_hpi,
+                                             train_period = train_period,
+                                             max_period = max_period,
+                                             ntrees = ntrees,
+                                             sim_count = sim_count))
 
   message('Comparing Series Volatilities')
 
@@ -311,7 +350,12 @@ threeWayComparison <- function(data_obj,
                                     in_place = TRUE,
                                     in_place_name = 'volatility_smooth')
 
-  rf_series <- calcSeriesVolatility(series_obj = rf_series,
+  rfs_series <- calcSeriesVolatility(series_obj = rfs_series,
+                                    window = 3,
+                                    smooth = FALSE,
+                                    in_place = TRUE,
+                                    in_place_name = 'volatility')
+  rfp_series <- calcSeriesVolatility(series_obj = rfp_series,
                                     window = 3,
                                     smooth = FALSE,
                                     in_place = TRUE,
@@ -334,7 +378,10 @@ threeWayComparison <- function(data_obj,
                             smooth = TRUE,
                             in_place = TRUE,
                             in_place_name = 'revision_smooth')
-  rf_series <- calcRevision(series_obj = rf_series,
+  rfs_series <- calcRevision(series_obj = rfs_series,
+                            in_place = TRUE,
+                            in_place_name = 'revision')
+  rfp_series <- calcRevision(series_obj = rfp_series,
                             in_place = TRUE,
                             in_place_name = 'revision')
 
@@ -367,7 +414,14 @@ threeWayComparison <- function(data_obj,
                                   smooth = TRUE,
                                   in_place = TRUE,
                                   in_place_name = 'pr_accuracy_smooth')
-  rf_series <- calcSeriesAccuracy(series_obj = rf_series,
+  rfs_series <- calcSeriesAccuracy(series_obj = rfs_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  pred_df = rt_df,
+                                  smooth = FALSE,
+                                  in_place = TRUE,
+                                  in_place_name = 'pr_accuracy')
+  rfp_series <- calcSeriesAccuracy(series_obj = rfp_series,
                                   test_method = 'forecast',
                                   test_type = 'rt',
                                   pred_df = rt_df,
@@ -380,29 +434,34 @@ threeWayComparison <- function(data_obj,
            rt_hpi$index$volatility_smooth$mean,
            he_hpi$index$volatility$mean,
            he_hpi$index$volatility_smooth$mean,
-           rf_hpi$index$volatility$mean)
+           rfs_hpi$index$volatility$mean,
+           rfp_hpi$index$volatility$mean)
   is_accr <- c(median(abs(rt_hpi$index$is_accuracy$pred_error), na.rm=T),
                median(abs(rt_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
                median(abs(he_hpi$index$is_accuracy$pred_error), na.rm=T),
                median(abs(he_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rf_hpi$index$is_accuracy$pred_error), na.rm=T))
+               median(abs(rfs_hpi$index$is_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_hpi$index$is_accuracy$pred_error), na.rm=T))
   kf_accr <- c(median(abs(rt_hpi$index$kf_accuracy$pred_error), na.rm=T),
                median(abs(rt_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
                median(abs(he_hpi$index$kf_accuracy$pred_error), na.rm=T),
                median(abs(he_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rf_hpi$index$kf_accuracy$pred_error), na.rm=T))
+               median(abs(rfs_hpi$index$kf_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_hpi$index$kf_accuracy$pred_error), na.rm=T))
   rev <- c(rt_series$revision$mean,
            rt_series$revision_smooth$mean,
            he_series$revision$mean,
            he_series$revision_smooth$mean,
-           rf_series$revision$mean)
+           rfs_series$revision$mean,
+           rfp_series$revision$mean)
   pr_accr <- c(median(abs(rt_series$pr_accuracy$pred_error), na.rm=T),
                median(abs(rt_series$pr_accuracy_smooth$pred_error), na.rm=T),
                median(abs(he_series$pr_accuracy$pred_error), na.rm=T),
                median(abs(he_series$pr_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rf_series$pr_accuracy$pred_error), na.rm=T))
+               median(abs(rfs_series$pr_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_series$pr_accuracy$pred_error), na.rm=T))
 
-  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RF'),
+  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RFs', 'RFp'),
                         vol = vol,
                         rev = rev,
                         is_accr = is_accr,
@@ -411,10 +470,12 @@ threeWayComparison <- function(data_obj,
 
   list(hpi = list(rt=rt_hpi,
                   he=he_hpi,
-                  rf=rf_hpi),
+                  rfs=rfs_hpi,
+                  rfp=rfp_hpi),
        series = list(rt=rt_series,
                      he =he_series,
-                     rf=rf_series),
+                     rfs=rfs_series,
+                     rfp=rfp_series),
        summary = summ_df)
 }
 
@@ -425,7 +486,9 @@ summarizeComp <- function(comp_){
            median(lapply(comp_, function(x) x$hpi$rt$index$volatility_smooth$median) %>% unlist()),
            median(lapply(comp_, function(x) x$hpi$he$index$volatility$median) %>% unlist()),
            median(lapply(comp_, function(x) x$hpi$he$index$volatility_smooth$median) %>% unlist()),
-           median(lapply(comp_, function(x) x$hpi$rf$index$volatility$median) %>% unlist()))
+           median(lapply(comp_, function(x) x$hpi$rfs$index$volatility$median) %>% unlist()),
+           median(lapply(comp_, function(x) x$hpi$rfp$index$volatility$median) %>% unlist()))
+
 
   is_accr <- c(median(abs(lapply(comp_, function(x) x$hpi$rt$index$is_accuracy) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
@@ -435,8 +498,24 @@ summarizeComp <- function(comp_){
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
                median(abs(lapply(comp_, function(x) x$hpi$he$index$is_accuracy_smooth) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
-               median(abs(lapply(comp_, function(x) x$hpi$rf$index$is_accuracy) %>%
+               median(abs(lapply(comp_, function(x) x$hpi$rfs$index$is_accuracy) %>%
+                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
+               median(abs(lapply(comp_, function(x) x$hpi$rfp$index$is_accuracy) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())))
+
+  is_accr_data <- list(lapply(comp_, function(x) x$hpi$rt$index$is_accuracy) %>% dplyr::bind_rows() %>%
+                         dplyr::mutate(model = 'rt'),
+                       lapply(comp_, function(x) x$hpi$rt$index$is_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rts'),
+                       lapply(comp_, function(x) x$hpi$he$index$is_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'he'),
+                       lapply(comp_, function(x) x$hpi$he$index$is_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'hes'),
+                       lapply(comp_, function(x) x$hpi$rfs$index$is_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfs'),
+                       lapply(comp_, function(x) x$hpi$rfp$index$is_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfp')) %>%
+    dplyr::bind_rows()
 
   kf_accr <- c(median(abs(lapply(comp_, function(x) x$hpi$rt$index$kf_accuracy) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist()), na.rm=T),
@@ -446,14 +525,31 @@ summarizeComp <- function(comp_){
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
                median(abs(lapply(comp_, function(x) x$hpi$he$index$kf_accuracy_smooth) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
-               median(abs(lapply(comp_, function(x) x$hpi$rf$index$kf_accuracy) %>%
+               median(abs(lapply(comp_, function(x) x$hpi$rfs$index$kf_accuracy) %>%
+                            dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())),
+               median(abs(lapply(comp_, function(x) x$hpi$rfp$index$kf_accuracy) %>%
                             dplyr::bind_rows() %>% dplyr::select(pred_error) %>% unlist())))
+
+  kf_accr_data <- list(lapply(comp_, function(x) x$hpi$rt$index$kf_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rt'),
+                       lapply(comp_, function(x) x$hpi$rt$index$kf_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rts'),
+                       lapply(comp_, function(x) x$hpi$he$index$kf_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'he'),
+                       lapply(comp_, function(x) x$hpi$he$index$kf_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'hes'),
+                       lapply(comp_, function(x) x$hpi$rfs$index$kf_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfs'),
+                       lapply(comp_, function(x) x$hpi$rfp$index$kf_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfp')) %>%
+    dplyr::bind_rows()
 
   rev <- c(median(abs(lapply(comp_, function(x) x$series$rt$revision$median) %>% unlist())),
            median(abs(lapply(comp_, function(x) x$series$rt$revision_smooth$median) %>% unlist())),
            median(abs(lapply(comp_, function(x) x$series$he$revision$median) %>% unlist())),
            median(abs(lapply(comp_, function(x) x$series$he$revision_smooth$median) %>% unlist())),
-           median(abs(lapply(comp_, function(x) x$series$rf$revision$median) %>% unlist())))
+           median(abs(lapply(comp_, function(x) x$series$rfs$revision$median) %>% unlist())),
+           median(abs(lapply(comp_, function(x) x$series$rfp$revision$median) %>% unlist())))
 
   pr_accr <- c(median(abs(lapply(comp_, function(x) x$series$rt$pr_accuracy) %>%
                             dplyr::bind_rows()%>% dplyr::select(pred_error) %>% unlist())),
@@ -463,14 +559,35 @@ summarizeComp <- function(comp_){
                             dplyr::bind_rows()%>% dplyr::select(pred_error) %>% unlist())),
                median(abs(lapply(comp_, function(x) x$series$he$pr_accuracy_smooth) %>%
                             dplyr::bind_rows()%>% dplyr::select(pred_error) %>% unlist())),
-               median(abs(lapply(comp_, function(x) x$series$rf$pr_accuracy) %>%
+               median(abs(lapply(comp_, function(x) x$series$rfs$pr_accuracy) %>%
+                            dplyr::bind_rows()%>% dplyr::select(pred_error) %>% unlist())),
+               median(abs(lapply(comp_, function(x) x$series$rfp$pr_accuracy) %>%
                             dplyr::bind_rows()%>% dplyr::select(pred_error) %>% unlist())))
 
-  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RF'),
+  pr_accr_data <- list(lapply(comp_, function(x) x$series$rt$pr_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rt'),
+                       lapply(comp_, function(x) x$series$rt$pr_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rts'),
+                       lapply(comp_, function(x) x$series$he$pr_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'he'),
+                       lapply(comp_, function(x) x$series$he$pr_accuracy_smooth) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'hes'),
+                       lapply(comp_, function(x) x$series$rfs$pr_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfs'),
+                       lapply(comp_, function(x) x$series$rfp$pr_accuracy) %>% dplyr::bind_rows()%>%
+                         dplyr::mutate(model = 'rfp')) %>%
+    dplyr::bind_rows()
+
+
+  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RFs', 'RFp'),
                         vol = vol,
                         rev = rev,
                         is_accr = is_accr,
                         kf_accr = kf_accr,
                         pr_accr = pr_accr)
+  list(pr=pr_accr_data,
+       kf=kf_accr_data,
+       is=is_accr_data,
+       summ=summ_df)
 
 }
