@@ -86,37 +86,91 @@ rfModel.pdp <- function(estimator,
                          seed = 1,
                          ...){
 
-  set.seed(seed)
-
   # Estimate model
   rf_model <- ranger::ranger(rf_spec,
                              data = rf_df,
                              num.tree = ntrees,
                              seed = seed)
 
-  # Add class
-  class(rf_model) <- c('rfmodel', class(rf_model))
+
+  # Get Simulation DF
+  sim_df <- rfSimDf(rf_df = rf_df,
+                    seed = seed,
+                    ...)
+
+  # Get simulation observations
+  pdp_df <- pdp::partial(object = rf_model,
+                         train = sim_df,
+                         pred.var = "trans_period",
+                         pred.grid = data.frame(trans_period = 1:max(rf_df$trans_period)))
+
+  # Add 'coefficients'
 
   log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
 
-  pred_grid <- data.frame(trans_period = 1:max(rf_df$trans_period))
-  pdp_df <- pdp::partial(rf_model,
-                         train = rf_df,
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid)
-
-  if(log_dep){
+    if(log_dep){
     coefs <- pdp_df$yhat - pdp_df$yhat[1]
   } else {
     coefs <- pdp_df$yhat / pdf_df$yhat[1]
   }
-
   rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
                                       coefficient = coefs)
 
-  rf_model
+  # Structure and return
+  structure(rf_model, class = c('rfmodel', class(rf_model)))
 
 }
+
+#'
+#' Create simulation data for Random forest approach
+#'
+#' Create data to use in PDP simulation
+#'
+#' @section Further Details:
+#' See `?rfModel` for more information
+#' @param rf_df Full training dataset
+#' @param seed Random seed for reproducibility
+#' @param ... Additional arguments
+#' @export
+
+rfSimDf <- function(rf_df,
+                    seed,
+                    ...){
+
+  # If no filters
+  if (is.null(list(...)$sim_ids) &
+      is.null(list(...)$sim_count) &
+      is.null(list(...)$sim_per)){
+    return(rf_df)
+  }
+
+  # If by sim id
+  if (!is.null(list(...)$sim_ids)) return(rf_df[sim_ids, ])
+
+  set.seed(seed)
+
+  # If a sim count is provided
+  if (!is.null(list(...)$sim_count)){
+    return(rf_df[sample(1:nrow(rf_df), list(...)$sim_count, replace = TRUE), ])
+  }
+
+  # If just a sim_par is applied
+
+  sim_count <- floor(list(...)$sim_per * nrow(rf_df))
+  rf_df[sample(1:nrow(rf_df), sim_count, replace = TRUE), ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #'
@@ -157,11 +211,6 @@ rfModel.sim <- function(estimator,
              log_dep = log_dep,
              ...)
 }
-
-
-
-
-
 
 #'
 #' Simulate selected properties
