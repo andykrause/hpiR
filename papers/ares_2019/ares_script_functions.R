@@ -1,4 +1,5 @@
 
+### Create Sales -----------------------------------------------------------------------------------
 
 createSales <- function(sales_df,
                         periodicity = 'monthly'){
@@ -23,6 +24,383 @@ createSales <- function(sales_df,
        rt = sales_rtdf,
        hed = sales_hhdf)
 }
+
+### Three Way Comparison ---------------------------------------------------------------------------
+
+threeWayComparison <- function(data_obj,
+                               periodicity = 'monthly',
+                               ntrees = 200,
+                               sim_count = 200,
+                               train_period = 24,
+                               max_period = 84,
+                               hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds',
+                                           'baths', 'eff_age', 'area'),
+                               rf_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age',
+                                          'latitude', 'longitude'),
+                               ...){
+
+  message('Building Data')
+
+  # Hedonic Data
+  hed_df <- hedCreateTrans(trans_df = data_obj,
+                           prop_id = 'pinx',
+                           trans_id = 'sale_id',
+                           price = 'sale_price',
+                           date = 'sale_date',
+                           periodicity = periodicity)
+
+  # Repeat Transaction Data
+  rt_df <- rtCreateTrans(trans_df = data_obj,
+                         prop_id = 'pinx',
+                         trans_id = 'sale_id',
+                         price = 'sale_price',
+                         date = 'sale_date',
+                         periodicity = periodicity)
+
+
+  message('Building Indexes')
+
+  ## Repeat Transaction Example
+  rt_hpi <- rtIndex(trans_df = rt_df,
+                    estimator = 'robust',
+                    log_dep = TRUE,
+                    trim_model = FALSE,
+                    max_period = max_period,
+                    smooth = TRUE,
+                    ...)
+
+  ## Hedonic sales Example
+  he_hpi <- hedIndex(trans_df = hed_df,
+                     estimator = 'robust',
+                     log_dep = TRUE,
+                     dep_var = 'price',
+                     ind_var = hed_var,
+                     trim_model = FALSE,
+                     max_period = max_period,
+                     smooth = TRUE)
+
+  # Random Forest
+  rfs_hpi <- rfIndex(trans_df = hed_df,
+                     estimator = 'sim',
+                     dep_var = 'price',
+                     ind_var = rf_var,
+                     max_period = max_period,
+                     smooth = FALSE,
+                     ntrees = ntrees,
+                     sim_count = sim_count)
+
+  # Random Forest
+  rfp_hpi <- rfIndex(trans_df = hed_df,
+                     estimator = 'pdp',
+                     dep_var = 'price',
+                     ind_var = rf_var,
+                     max_period = max_period,
+                     smooth = FALSE,
+                     ntrees = ntrees,
+                     sim_count = sim_count)
+
+  message('Comparing Index Volatilities')
+  ## Volatility
+
+  rt_hpi <- calcVolatility(index = rt_hpi,
+                           window = 3,
+                           in_place = TRUE)
+  rt_hpi <- calcVolatility(index = rt_hpi,
+                           window = 3,
+                           in_place = TRUE,
+                           smooth = TRUE,
+                           in_place_name = 'volatility_smooth')
+  he_hpi <- calcVolatility(index = he_hpi,
+                           window = 3,
+                           in_place = TRUE)
+  he_hpi <- calcVolatility(index = he_hpi,
+                           window = 3,
+                           in_place = TRUE,
+                           smooth = TRUE,
+                           in_place_name = 'volatility_smooth')
+  rfs_hpi <- calcVolatility(index = rfs_hpi,
+                            window = 3,
+                            in_place = TRUE)
+  rfp_hpi <- calcVolatility(index = rfp_hpi,
+                            window = 3,
+                            in_place = TRUE)
+
+
+  message('Comparing In-Sample Accuracy')
+  ## In sample accuracy
+  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
+                         test_method = 'insample',
+                         test_type = 'rt',
+                         in_place = TRUE,
+                         in_place_name = 'is_accuracy')
+  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
+                         test_method = 'insample',
+                         test_type = 'rt',
+                         smooth = TRUE,
+                         in_place = TRUE,
+                         in_place_name = 'is_accuracy_smooth')
+  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
+                         test_method = 'insample',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         in_place = TRUE,
+                         in_place_name = 'is_accuracy')
+  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
+                         test_method = 'insample',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         smooth = TRUE,
+                         in_place = TRUE,
+                         in_place_name = 'is_accuracy_smooth')
+  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
+                          test_method = 'insample',
+                          test_type = 'rt',
+                          pred_df = rt_df,
+                          in_place = TRUE,
+                          in_place_name = 'is_accuracy')
+  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
+                          test_method = 'insample',
+                          test_type = 'rt',
+                          pred_df = rt_df,
+                          in_place = TRUE,
+                          in_place_name = 'is_accuracy')
+
+
+  message('Comparing Out-of-Sample (KFold) Accuracy')
+
+  ## Out of sample K Fold accuracy
+  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
+                         test_method = 'kfold',
+                         test_type = 'rt',
+                         in_place = TRUE,
+                         in_place_name = 'kf_accuracy',
+                         ...)
+  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
+                         test_method = 'kfold',
+                         test_type = 'rt',
+                         smooth = TRUE,
+                         in_place = TRUE,
+                         in_place_name = 'kf_accuracy_smooth',
+                         ...)
+  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
+                         test_method = 'kfold',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         in_place = TRUE,
+                         in_place_name = 'kf_accuracy')
+  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
+                         test_method = 'kfold',
+                         test_type = 'rt',
+                         pred_df = rt_df,
+                         smooth = TRUE,
+                         in_place = TRUE,
+                         in_place_name = 'kf_accuracy_smooth')
+  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
+                          test_method = 'kfold',
+                          test_type = 'rt',
+                          pred_df = rt_df,
+                          in_place = TRUE,
+                          in_place_name = 'kf_accuracy',
+                          ntrees = ntrees,
+                          sim_count = sim_count)
+  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
+                          test_method = 'kfold',
+                          test_type = 'rt',
+                          pred_df = rt_df,
+                          in_place = TRUE,
+                          in_place_name = 'kf_accuracy',
+                          ntrees = ntrees,
+                          sim_count = sim_count)
+
+
+  message('Creating Series')
+
+  ## Series
+  suppressWarnings(
+    rt_series <- createSeries(hpi_obj = rt_hpi,
+                              train_period = train_period,
+                              max_period = max_period,
+                              smooth = TRUE,
+                              ...) %>% smoothSeries())
+
+  suppressWarnings(he_series <- createSeries(hpi_obj = he_hpi,
+                                             train_period = train_period,
+                                             max_period = max_period,
+                                             smooth = TRUE)  %>% smoothSeries())
+
+  suppressWarnings(rfs_series <- createSeries(hpi_obj = rfs_hpi,
+                                              train_period = train_period,
+                                              max_period = max_period,
+                                              ntrees = ntrees,
+                                              sim_count = sim_count))
+
+  suppressWarnings(rfp_series <- createSeries(hpi_obj = rfp_hpi,
+                                              train_period = train_period,
+                                              max_period = max_period,
+                                              ntrees = ntrees,
+                                              sim_count = sim_count))
+
+  message('Comparing Series Volatilities')
+
+  # Series Volatility
+  rt_series <- calcSeriesVolatility(series_obj = rt_series,
+                                    window = 3,
+                                    smooth = FALSE,
+                                    in_place = TRUE,
+                                    in_place_name = 'volatility')
+  rt_series <- calcSeriesVolatility(series_obj = rt_series,
+                                    window = 3,
+                                    smooth = TRUE,
+                                    in_place = TRUE,
+                                    in_place_name = 'volatility_smooth')
+
+  he_series <- calcSeriesVolatility(series_obj = he_series,
+                                    window = 3,
+                                    smooth = FALSE,
+                                    in_place = TRUE,
+                                    in_place_name = 'volatility')
+  he_series <- calcSeriesVolatility(series_obj = he_series,
+                                    window = 3,
+                                    smooth = TRUE,
+                                    in_place = TRUE,
+                                    in_place_name = 'volatility_smooth')
+
+  rfs_series <- calcSeriesVolatility(series_obj = rfs_series,
+                                     window = 3,
+                                     smooth = FALSE,
+                                     in_place = TRUE,
+                                     in_place_name = 'volatility')
+  rfp_series <- calcSeriesVolatility(series_obj = rfp_series,
+                                     window = 3,
+                                     smooth = FALSE,
+                                     in_place = TRUE,
+                                     in_place_name = 'volatility')
+
+  message('Calculating Revisions')
+
+  ## Revision
+  rt_series <- calcRevision(series_obj = rt_series,
+                            in_place = TRUE,
+                            in_place_name = 'revision')
+  rt_series <- calcRevision(series_obj = rt_series,
+                            smooth = TRUE,
+                            in_place = TRUE,
+                            in_place_name = 'revision_smooth')
+  he_series <- calcRevision(series_obj = he_series,
+                            in_place = TRUE,
+                            in_place_name = 'revision')
+  he_series <- calcRevision(series_obj = he_series,
+                            smooth = TRUE,
+                            in_place = TRUE,
+                            in_place_name = 'revision_smooth')
+  rfs_series <- calcRevision(series_obj = rfs_series,
+                             in_place = TRUE,
+                             in_place_name = 'revision')
+  rfp_series <- calcRevision(series_obj = rfp_series,
+                             in_place = TRUE,
+                             in_place_name = 'revision')
+
+  message('Comparing Out-of-Sample (Prediction) Accuracy')
+
+  ## Prediction accuracy
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  smooth = FALSE,
+                                  in_place = TRUE,
+                                  in_place_name = 'pr_accuracy')
+  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  smooth = TRUE,
+                                  in_place = TRUE,
+                                  in_place_name = 'pr_accuracy_smooth')
+  he_series <- calcSeriesAccuracy(series_obj = he_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  pred_df = rt_df,
+                                  smooth = FALSE,
+                                  in_place = TRUE,
+                                  in_place_name = 'pr_accuracy')
+  he_series <- calcSeriesAccuracy(series_obj = he_series,
+                                  test_method = 'forecast',
+                                  test_type = 'rt',
+                                  pred_df = rt_df,
+                                  smooth = TRUE,
+                                  in_place = TRUE,
+                                  in_place_name = 'pr_accuracy_smooth')
+  rfs_series <- calcSeriesAccuracy(series_obj = rfs_series,
+                                   test_method = 'forecast',
+                                   test_type = 'rt',
+                                   pred_df = rt_df,
+                                   smooth = FALSE,
+                                   in_place = TRUE,
+                                   in_place_name = 'pr_accuracy')
+  rfp_series <- calcSeriesAccuracy(series_obj = rfp_series,
+                                   test_method = 'forecast',
+                                   test_type = 'rt',
+                                   pred_df = rt_df,
+                                   smooth = FALSE,
+                                   in_place = TRUE,
+                                   in_place_name = 'pr_accuracy')
+
+  ## Combine into results
+  vol <- c(rt_hpi$index$volatility$mean,
+           rt_hpi$index$volatility_smooth$mean,
+           he_hpi$index$volatility$mean,
+           he_hpi$index$volatility_smooth$mean,
+           rfs_hpi$index$volatility$mean,
+           rfp_hpi$index$volatility$mean)
+  is_accr <- c(median(abs(rt_hpi$index$is_accuracy$pred_error), na.rm=T),
+               median(abs(rt_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(he_hpi$index$is_accuracy$pred_error), na.rm=T),
+               median(abs(he_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(rfs_hpi$index$is_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_hpi$index$is_accuracy$pred_error), na.rm=T))
+  kf_accr <- c(median(abs(rt_hpi$index$kf_accuracy$pred_error), na.rm=T),
+               median(abs(rt_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(he_hpi$index$kf_accuracy$pred_error), na.rm=T),
+               median(abs(he_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(rfs_hpi$index$kf_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_hpi$index$kf_accuracy$pred_error), na.rm=T))
+  rev <- c(rt_series$revision$mean,
+           rt_series$revision_smooth$mean,
+           he_series$revision$mean,
+           he_series$revision_smooth$mean,
+           rfs_series$revision$mean,
+           rfp_series$revision$mean)
+  pr_accr <- c(median(abs(rt_series$pr_accuracy$pred_error), na.rm=T),
+               median(abs(rt_series$pr_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(he_series$pr_accuracy$pred_error), na.rm=T),
+               median(abs(he_series$pr_accuracy_smooth$pred_error), na.rm=T),
+               median(abs(rfs_series$pr_accuracy$pred_error), na.rm=T),
+               median(abs(rfp_series$pr_accuracy$pred_error), na.rm=T))
+
+  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RFs', 'RFp'),
+                        vol = vol,
+                        rev = rev,
+                        is_accr = is_accr,
+                        kf_accr = kf_accr,
+                        pr_accr = pr_accr)
+
+  list(hpi = list(rt=rt_hpi,
+                  he=he_hpi,
+                  rfs=rfs_hpi,
+                  rfp=rfp_hpi),
+       series = list(rt=rt_series,
+                     he =he_series,
+                     rfs=rfs_series,
+                     rfp=rfp_series),
+       summary = summ_df)
+}
+
+
+
+
+
+
+
+
 
 
 testRfHpi <- function(ex_sales,
@@ -114,370 +492,6 @@ testRfHpi <- function(ex_sales,
 
 }
 
-threeWayComparison <- function(data_obj,
-                               periodicity = 'monthly',
-                               ntrees = 200,
-                               sim_count = 200,
-                               train_period = 24,
-                               max_period = 84,
-                               hed_var = c('use_type', 'lot_sf', 'tot_sf', 'beds',
-                                           'baths', 'eff_age', 'area'),
-                               rf_var = c('use_type', 'lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age',
-                                          'latitude', 'longitude'),
-                               ...){
-
-  message('Building Data')
-  # Hedonic Data
-  hed_df <- hedCreateTrans(trans_df = data_obj,
-                           prop_id = 'pinx',
-                           trans_id = 'sale_id',
-                           price = 'sale_price',
-                           date = 'sale_date',
-                           periodicity = periodicity)
-
-  # Repeat Transaction Data
-  rt_df <- rtCreateTrans(trans_df = data_obj,
-                         prop_id = 'pinx',
-                         trans_id = 'sale_id',
-                         price = 'sale_price',
-                         date = 'sale_date',
-                         periodicity = periodicity)
-
-  message('Building Indexes')
-
-  ## Repeat Transaction Example
-  rt_hpi <- rtIndex(trans_df = rt_df,
-                    estimator = 'robust',
-                    log_dep = TRUE,
-                    trim_model = FALSE,
-                    max_period = max_period,
-                    smooth = TRUE,
-                    ...)
-
-  ## Hedonic sales Example
-  he_hpi <- hedIndex(trans_df = hed_df,
-                     estimator = 'robust',
-                     log_dep = TRUE,
-                     dep_var = 'price',
-                     ind_var = hed_var,
-                     trim_model = FALSE,
-                     max_period = max_period,
-                     smooth = TRUE)
-
-  # Random Forest
-  rfs_hpi <- rfIndex(trans_df = hed_df,
-                    estimator = 'sim',
-                    dep_var = 'price',
-                    ind_var = rf_var,
-                    max_period = max_period,
-                    smooth = FALSE,
-                    ntrees = ntrees,
-                    sim_count = sim_count)
-
-  # Random Forest
-  rfp_hpi <- rfIndex(trans_df = hed_df,
-                    estimator = 'pdp',
-                    dep_var = 'price',
-                    ind_var = rf_var,
-                    max_period = max_period,
-                    smooth = FALSE,
-                    ntrees = ntrees,
-                    sim_count = sim_count)
-
-  message('Comparing Ibdex Volatilities')
-  ## Volatility
-
-  rt_hpi <- calcVolatility(index = rt_hpi,
-                           window = 3,
-                           in_place = TRUE)
-  rt_hpi <- calcVolatility(index = rt_hpi,
-                           window = 3,
-                           in_place = TRUE,
-                           smooth = TRUE,
-                           in_place_name = 'volatility_smooth')
-  he_hpi <- calcVolatility(index = he_hpi,
-                           window = 3,
-                           in_place = TRUE)
-  he_hpi <- calcVolatility(index = he_hpi,
-                           window = 3,
-                           in_place = TRUE,
-                           smooth = TRUE,
-                           in_place_name = 'volatility_smooth')
-  rfs_hpi <- calcVolatility(index = rfs_hpi,
-                           window = 3,
-                           in_place = TRUE)
-  rfp_hpi <- calcVolatility(index = rfp_hpi,
-                           window = 3,
-                           in_place = TRUE)
-
-
-  message('Comparing In-Sample Accuracy')
-  ## In sample accuracy
-  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy')
-  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         smooth = TRUE,
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy_smooth')
-  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy')
-  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         smooth = TRUE,
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy_smooth')
-  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy')
-  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
-                         test_method = 'insample',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'is_accuracy')
-
-
-  message('Comparing Out-of-Sample (KFold) Accuracy')
-
-  ## Out of sample K Fold accuracy
-  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy',
-                         ...)
-  rt_hpi <- calcAccuracy(hpi_obj = rt_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         smooth = TRUE,
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy_smooth',
-                         ...)
-  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy')
-  he_hpi <- calcAccuracy(hpi_obj = he_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         smooth = TRUE,
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy_smooth')
-  rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy',
-                         ntrees = ntrees,
-                         sim_count = sim_count)
-  rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
-                         test_method = 'kfold',
-                         test_type = 'rt',
-                         pred_df = rt_df,
-                         in_place = TRUE,
-                         in_place_name = 'kf_accuracy',
-                         ntrees = ntrees,
-                         sim_count = sim_count)
-
-
-  message('Creating Series')
-
-  ## Series
-  suppressWarnings(
-    rt_series <- createSeries(hpi_obj = rt_hpi,
-                            train_period = train_period,
-                            max_period = max_period,
-                            smooth = TRUE,
-                            ...) %>% smoothSeries())
-
-  suppressWarnings(he_series <- createSeries(hpi_obj = he_hpi,
-                            train_period = train_period,
-                            max_period = max_period,
-                            smooth = TRUE)  %>% smoothSeries())
-
-  suppressWarnings(rfs_series <- createSeries(hpi_obj = rfs_hpi,
-                            train_period = train_period,
-                            max_period = max_period,
-                            ntrees = ntrees,
-                            sim_count = sim_count))
-
-  suppressWarnings(rfp_series <- createSeries(hpi_obj = rfp_hpi,
-                                             train_period = train_period,
-                                             max_period = max_period,
-                                             ntrees = ntrees,
-                                             sim_count = sim_count))
-
-  message('Comparing Series Volatilities')
-
-  # Series Volatility
-  rt_series <- calcSeriesVolatility(series_obj = rt_series,
-                                    window = 3,
-                                    smooth = FALSE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility')
-  rt_series <- calcSeriesVolatility(series_obj = rt_series,
-                                    window = 3,
-                                    smooth = TRUE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility_smooth')
-
-  he_series <- calcSeriesVolatility(series_obj = he_series,
-                                    window = 3,
-                                    smooth = FALSE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility')
-  he_series <- calcSeriesVolatility(series_obj = he_series,
-                                    window = 3,
-                                    smooth = TRUE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility_smooth')
-
-  rfs_series <- calcSeriesVolatility(series_obj = rfs_series,
-                                    window = 3,
-                                    smooth = FALSE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility')
-  rfp_series <- calcSeriesVolatility(series_obj = rfp_series,
-                                    window = 3,
-                                    smooth = FALSE,
-                                    in_place = TRUE,
-                                    in_place_name = 'volatility')
-
-  message('Calculating Revisions')
-
-  ## Revision
-  rt_series <- calcRevision(series_obj = rt_series,
-                            in_place = TRUE,
-                            in_place_name = 'revision')
-  rt_series <- calcRevision(series_obj = rt_series,
-                            smooth = TRUE,
-                            in_place = TRUE,
-                            in_place_name = 'revision_smooth')
-  he_series <- calcRevision(series_obj = he_series,
-                            in_place = TRUE,
-                            in_place_name = 'revision')
-  he_series <- calcRevision(series_obj = he_series,
-                            smooth = TRUE,
-                            in_place = TRUE,
-                            in_place_name = 'revision_smooth')
-  rfs_series <- calcRevision(series_obj = rfs_series,
-                            in_place = TRUE,
-                            in_place_name = 'revision')
-  rfp_series <- calcRevision(series_obj = rfp_series,
-                            in_place = TRUE,
-                            in_place_name = 'revision')
-
-  message('Comparing Out-of-Sample (Prediction) Accuracy')
-
-  ## Prediction accuracy
-  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  smooth = FALSE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy')
-  rt_series <- calcSeriesAccuracy(series_obj = rt_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  smooth = TRUE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy_smooth')
-  he_series <- calcSeriesAccuracy(series_obj = he_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  pred_df = rt_df,
-                                  smooth = FALSE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy')
-  he_series <- calcSeriesAccuracy(series_obj = he_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  pred_df = rt_df,
-                                  smooth = TRUE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy_smooth')
-  rfs_series <- calcSeriesAccuracy(series_obj = rfs_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  pred_df = rt_df,
-                                  smooth = FALSE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy')
-  rfp_series <- calcSeriesAccuracy(series_obj = rfp_series,
-                                  test_method = 'forecast',
-                                  test_type = 'rt',
-                                  pred_df = rt_df,
-                                  smooth = FALSE,
-                                  in_place = TRUE,
-                                  in_place_name = 'pr_accuracy')
-
-  ## Combine into results
-  vol <- c(rt_hpi$index$volatility$mean,
-           rt_hpi$index$volatility_smooth$mean,
-           he_hpi$index$volatility$mean,
-           he_hpi$index$volatility_smooth$mean,
-           rfs_hpi$index$volatility$mean,
-           rfp_hpi$index$volatility$mean)
-  is_accr <- c(median(abs(rt_hpi$index$is_accuracy$pred_error), na.rm=T),
-               median(abs(rt_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(he_hpi$index$is_accuracy$pred_error), na.rm=T),
-               median(abs(he_hpi$index$is_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rfs_hpi$index$is_accuracy$pred_error), na.rm=T),
-               median(abs(rfp_hpi$index$is_accuracy$pred_error), na.rm=T))
-  kf_accr <- c(median(abs(rt_hpi$index$kf_accuracy$pred_error), na.rm=T),
-               median(abs(rt_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(he_hpi$index$kf_accuracy$pred_error), na.rm=T),
-               median(abs(he_hpi$index$kf_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rfs_hpi$index$kf_accuracy$pred_error), na.rm=T),
-               median(abs(rfp_hpi$index$kf_accuracy$pred_error), na.rm=T))
-  rev <- c(rt_series$revision$mean,
-           rt_series$revision_smooth$mean,
-           he_series$revision$mean,
-           he_series$revision_smooth$mean,
-           rfs_series$revision$mean,
-           rfp_series$revision$mean)
-  pr_accr <- c(median(abs(rt_series$pr_accuracy$pred_error), na.rm=T),
-               median(abs(rt_series$pr_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(he_series$pr_accuracy$pred_error), na.rm=T),
-               median(abs(he_series$pr_accuracy_smooth$pred_error), na.rm=T),
-               median(abs(rfs_series$pr_accuracy$pred_error), na.rm=T),
-               median(abs(rfp_series$pr_accuracy$pred_error), na.rm=T))
-
-  summ_df <- data.frame(type = c('RT', 'RT_smooth', 'Hed', 'Hed_smooth', 'RFs', 'RFp'),
-                        vol = vol,
-                        rev = rev,
-                        is_accr = is_accr,
-                        kf_accr = kf_accr,
-                        pr_accr = pr_accr)
-
-  list(hpi = list(rt=rt_hpi,
-                  he=he_hpi,
-                  rfs=rfs_hpi,
-                  rfp=rfp_hpi),
-       series = list(rt=rt_series,
-                     he =he_series,
-                     rfs=rfs_series,
-                     rfp=rfp_series),
-       summary = summ_df)
-}
 
 summarizeComp <- function(comp_){
 

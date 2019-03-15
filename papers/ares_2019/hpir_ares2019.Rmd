@@ -1,0 +1,441 @@
+---
+title: "A machine learning approach to House Price Indexes using the hpiR package"
+author: 
+ Andy Krause
+ -- Zillow Group
+ -- Seattle, WA
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true 
+    toc_depth: 3
+    theme: united
+    highlight: tango
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = TRUE, collapse=TRUE, messages=FALSE, eval=TRUE)
+```
+
+```{r quiet_package_load, echo=FALSE}
+
+  suppressMessages(suppressWarnings(library(hpiR)))
+  suppressMessages(suppressWarnings(library(knitr)))
+```
+
+### Abstract
+
+Real estate price indexes are widely used across many different use cases, research designs and property types. The approaches to generating these indexes are almostly exclusively found in the realm of traditional statistics: ranging from simple median calculation to complex multiple regression formats.  This paper presents a machine learning approach -- applying model-agnostic interpretability methods to a random forest -- to estimating real estate price indexes.  Additionally, I present a framework (and associated software package, `hpiR`) for evaluating and comparing the quality of house price indexes.
+
+## Introduction
+
+Traditionally, house price indexes have been generating through highly interpretable (statistical) modeling approaches such as multiple regression models, as the coefficient estimates are easily convertable into standardized indexes. In short, house price index generation is not viewed as a prediction problem (engineering), but rather a scientific endeavor in which the attribution of the effects on time on market movements is sought.  As a result, many of the rapidly growing set of machine learning algorithms -- support vector machines, random forests and neural networks -- have not been used in the production of price indexes.  With the rise of interpretability methods, these 'black-box' models can be made more explainable and suitable for a more diverse set of tasks. 
+
+This paper highlights the use of two related model-agnostic interpretability methods (Molnar 2019) -- individual conditional expections and partial dependency plots -- to generate house price indexes.  While any underlying model could be used (the beauty of model-agnostic approach), I show the process on a random forest model: one of the more common and intuitive machine learning models. Along with an explanation of the method and examples, the results from this approach are compared to the more traditional repeat sales and hedonic price model approaches.  Data used for the examples and the comparisons are from the `hpiR` open source R package.  In the comparative analyses I provided extra details on the functionality and lexicon of the `hpiR` package to assist in the reproducibility of this work.
+
+The remainder of this work is organized as follows:  Section two provides a brief overview on the main themes in house price index research. Next, I discuss the interpretable random forest approach and provide details using the `hpiR` dataset: Seattle, WA homes sales in the 2010 through 2016 period. In section four, the random forest method is compared to more traditional models across a number of metrics -- volatility, revision and accuracy. Finally, I conclude with a discussion and suggestions for future work. All data and code to reproduce this analysis (as well as download and use the entire `hpiR` package) can be found at: [www.github.com/andykrause/hpiR/papers/ares2019](https://www.github.com/andykrause/hpiR/papers/ares2019).
+
+## Previous Work
+
+Since the seminal Bailey et al. (1963) study there has been considerable and sustained research effort put into comparing and improving competing methods for generating house price indexes.  Published work in this subfield of housing economics is generally focused on one or more of four aims: 1) Comparison of model performance; 2) Identification and correction of an estimation issues or problems; 3) Creation of local or submarket indexes.  and 4) Development of a new model or estimator.
+
+Studies comparing various indexing method were popular in the 1980s and 1990s (Mark & Goldberg 1984; Case et al 1991; Clapp et al 1991; Crone & Voith 1992; Gatzlaff & Ling 1994; Meese & Wallace 1997).  In most cases, work published during this period compared indexes generated with some permutation of repeat sale, hedonic, median/mean, assessed/appraised value and/or hybrid methods.  The results suggest little agreement in terms of the preferred method, though the median/mean based methods used in industry are generally shown to be less reliable (Mark & Goldberg 1984; Crone & Voith 1992; Meese & Wallace 1997). Clapp et al (1991) suggest that the hedonic method may outperform repeat sales models in short time periods, while a more recent study by Nagaraja et al (2014) show better results from a hybrid, autoregressive model (expanding on Case & Quigley (1991)) than from more traditional repeat sales models. Dorsey et al (2010) show substantively different results between hedonic and repeat sales models in identifying the peak of the market during the housing boom of the mid 2000s. Common across all studies, but most explicitly made by Case et al (1991), are discussions of the various shortcomings and issues that plague each model type.
+
+Out of this arose a suite of research that set out to catalog, measure and, often, correct for the issues identified in the earliest comparative work.  The most commonly addressed issue is that of sample selection bias (Abraham & Schauman 1991; Haurin & Henderschott 1991; Clapp et al 1992; Case et al 1997;  Steele & Goy 1997; Gatzlaff & Haurin 1997, 1998; Munneke & Slade 2000), an issue affecting nearly all of the available models.  Issues stemming from the necessity to revise indexes over time, especially in the case of repeat sales models, have received attention in the literature (Clapp & Giacotto 1999; Butler et al 2005; Clapham et al 2006; Deng & Quigley 2008). Property age and depreciation and the biases associated with it have also been raised and methods presented to control for it have been offered (Goodman & Thibodeau 1997; Cannaday et al 2005; Chau et al 2005). Adding to the list of biases are potential problems arising from seller reservation bias (Goetzmann & Peng 2006) and submarket (or product) aggregation bias (Guttery and Sirmans 1998).
+
+A related set of work tackles issues stemming from the treatment of time in the various price indexing models.  In short, the aggregation of time periods required to keep per period sample sizes high enough may create biased results (Englund et al 1999; Dreiman & Pennington-Cross 2004). As may the assumption in standard hedonic approach of time-consistent coefficients for the non-temporal independent variables (Knight et al. 1995, Zabel 1999).  To combat violations of the temporally stability in coefficient estimates a number of time-varying parameters approaches have been proposed (Knight et al 1995; Zabel 1999; Munneke & Slade 2001, Clapham et al. 2006).  Alternative time parametizations have, likewise, been presented to provide alternatives to excessive temporal aggregation (Schwann 1998; McMillen & Dombrow 2001).
+
+Studies addressing spatial dependence in the models represent a final set of issues that have been raised (Can & Megbolugbe 1997; Gelfand et al 2004; Tu et al 2004; Nappi-Choulet & Maury 2009; Dorsey et al 2010).  The primary goal here is to improve the model estimates, and therefore, the index values by better accounting for the inherent spatial structure of housing markets.
+
+A third category of research aims are those dealing with indexes for submarkets.  In this context submarkets can be strictly geographic (Goodman 1978; Hill et al 1997; Gunterman et al 2016) or non-spatial in nature, based on price quantiles or housing product -- 2 bedroom vs 3 bedroom, for example. (Pollakowski et al 1991; Guttery & Sirmans 1998; McMillen & Thorsnes 2006; Coulson & McMillen 2007; Jansen et al 2008; Prasad & Richards 2009).  The most straightforward approach to dealing with submarkets involves simply segmenting the data by submarket definition (geographic or otherwise) and using an established method to generate an index.  More complex methods have been proposed as well.  These primarily include the use of weighting observations to better match the submarket for which the index is being generated (Meese & Wallace 1991; Goetzmann & Spiegel 1997; McMillen 2003; Clapp 2004; Jansen et al 2008).  Spatially weighted approaches like the semi-parameteric method proposed by Clapp (2004) allow for a 'surface' of price indexes to be created that vary continuously over space.
+
+The final set of studies present novel improvements to existing data generation, models or estimators. The first and most common are those presenting hybrid hedonic and repeat sales models aimed at capturing the benefits and negating the shortcomings of both individual model types (Case & Quigley 1991; Quigley 1995; Hill et al 1997; Englund et al. 1998, Nagaraja et al 2014; Guntermann et al 2016).  A number of more recent improvements have been offered to create pseudo-repeat sales (McMillen 2012; Guo et al 2014), estimate robust statistical models (Bourassa et al 2013; Bourassa et al 2016), produced chained indexes (Clapham et al 2006) and address small samples sizes with a frequency conversion method (Bokhari & Geltner 2012; Bourassa & Hoesli 2016).
+
+## A Machine Learning Approach
+
+* Something on interpretabilyt.  Molnar, LIME, etc. 
+
+![](concepts.png)
+
+Random forests are a common modeling approach in the machine learning literature and industry (... insert more here).  However, they have been little used in academic real estate studies (add examples if any) and not at all in house price index creation. Much of the reason for this dearth is that random forests are somewhat of a black box in that they do not directly create coefficient estimates as more traditional statistical models do and, therefore, do not offer a direct approach to create price indexes. In short, they are not inherently interpretable. 
+
+As the use of machine learning models has grown, so too have methods to help raise the interpretability of these approaches.  One such set of these enhancements are termed 'model-agnostic methods' (Molnar 2019). These approaches can be applied to any learner or model in order to provide a specific enhancement or extension in the overal interpretability of the model.  
+
+In the context of house price indexes, we are concerned with extracting from our model the specific impact that each time period has, conditionally, on the response or dependent variable.  For common modeled approaches such as a repeat sales or hedonic priceing model, the multiple regression coefficients serve as these conditional effects.  For a machine learning model, such as a random forest, coefficient-type values are not inherently generated by the model.  Here is where a model-agnostic interpretablility method can help.
+
+Partial dependence plots, and the individual conditional expectations that drive them, can be used to extract the marginal impact of each time period, conditionally, on the reponse or dependent variable: house prices in this case. The resulting shape -- linear, monotonic, sinusonoidal, spline-like, etc. -- is entirely depending on the underlying model being evaluated. 
+
+Conceptually, an individual conditional expectation plot takes a single observations, X_i, and for one of the feature or variables, Xs, simulates the predicted value of that observation under the hypothetical condition that this observation has the each individual unique value of Xs in the entire dataset. 
+
+Following the notation of Hastie et al. (2009) in The Elements of Statistical Learning, partial dependence plots can be mathematically defined as follows. Suppose S is a subset of p predictor variables, such that S⊂{X1,X2,…,Xp}. Let C be a complement to S, such that S∪C={X1,X2,…,Xp}. The random forest predictor function, f(X), will depend upon all p predictor variables. Thus, f(X)=f(XS,XC). The partial dependence of the S predictors on the predictive function f(X) is
+
+fS(XS)=EXC[f(XS,XC)]
+and can be estimated by
+
+f¯S(XS)=1N∑i=1N[f(XS,XCi)]
+where {xC1,xC2,…,xCN} are the values of XC ocurring over all observations in the training data. In other words, in order to calculate the partial dependence of a given variable (or variables), the entire training set must be utilized for every set of joint values in XS. As one can image, this can be quite computationally expensive when the data set becomes large.
+
+
+OR 
+
+The partial dependence plot (short PDP or PD plot) shows the marginal effect one or two features have on the predicted outcome of a machine learning model (J. H. Friedman 200127). A partial dependence plot can show whether the relationship between the target and a feature is linear, monotonous or more complex. For example, when applied to a linear regression model, partial dependence plots always show a linear relationship.
+
+The partial dependence function for regression is defined as:
+
+
+
+The  
+x
+S
+  are the features for which the partial dependence function should be plotted and  
+x
+C
+  are the other features used in the machine learning model  
+^
+f
+ . Usually, there are only one or two features in the set S. The feature(s) in S are those for which we want to know the effect on the prediction. The feature vectors  
+x
+S
+  and  
+x
+C
+  combined make up the total feature space x. Partial dependence works by marginalizing the machine learning model output over the distribution of the features in set C, so that the function shows the relationship between the features in set S we are interested in and the predicted outcome. By marginalizing over the other features, we get a function that depends only on features in S, interactions with other features included.
+
+### Examples 
+
+This package provides two sample datasets to work with. The first, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The second, `ex_sales` is a subset of the first, encompassing only the central area of the city.  This more limited set of data contains about 5,300 transactions over the same time period.  The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author.]  The data is open and free to share.
+
+The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` commands. We will work with the `ex_sales` object in this vignette.
+
+```{r load_data, echo = FALSE}
+  data(seattle_sales)
+
+  data(ex_sales)
+
+```
+
+The data includes the following information for all transactions:
+
+| Field Name | Type | Example | Description |
+| :----- | :-----: | :-----: | :------------------------- |
+| pinx   | chr  | ..0007600046  | Tax assessor parcel identification number |
+| sale_id  | chr | 2011..2621   | Unique sale identifier   |
+| sale_price  | integer  | 308900   | Sale price  |
+| sale_date  | Date   | 2011-02-22   | Date of sale   |
+| use_type  | factor  | sfr   | Structure type   |
+| area  | factor  | 15   | Tax assessor defined neighborhood or area   |
+| lot_sf  | integer  | 5160   | Size of lot in square feet  |
+| wfnt  | binary   | 1  | Is the property waterfront?  |
+| bldg_grade  | integer  | 8 | Structure building quality  |
+| tot_sf  | integer  | 2200   | Total finished square feet of the home |
+| beds  | integer  | 3   | Number of bedrooms |
+| baths  | numeric   |  2.5 | Numbrer of bathrooms   |
+| age  | integer   | 100 | Age of home   |
+| eff_age  | integer   | 12   | Years since major renovation   |
+| longitude  | numeric   | -122.30254   | Longitude  |
+| latitude  | numeric   | 47.60391  | Latitude  |
+
+In our house price index case above, we had 84 periods (months) worth of transactions.  So, let's take the first observation in the dataset and create 83 hypothetical situations -- simulating a sale with all the same characteristics but a different sale period -- and add them to the single real observation.  Now using our fitted model, predict the value of these 84 observations across the 84 time periods and plot this.  This is an estimate of how time influenced home prices for this single observation.  
+
+```{r, echo = FALSE}
+  readRDS('c:/code/research/hpir/papers/ares_2019/ex1plot.rds')
+```
+
+If we now calculate the same ICE's for four  more observations following the same steps above we see a trend starting to emerge:
+
+```{r, echo = FALSE}
+   readRDS('c:/code/research/hpir/papers/ares_2019/ex15plot.rds')
+```
+
+If we were to calculate the individual conditional expectations for all of our training data observations and average the value at each point we have a partial dependency plot.  The chart below average the five example above to show how quickly this process can get to a relatively smooth result. 
+
+```{r, echo = FALSE}
+   readRDS('c:/code/research/hpir/papers/ares_2019/ex15aplot.rds')
+```
+
+* note about asymtotic relationship very soon
+
+## HOW to convert these to an index
+
+```{r, echo = FALSE}
+   readRDS('c:/code/research/hpir/papers/ares_2019/ind15plot.rds')
+```
+
+## Comparison to Traditional Methods
+
+To compare the quality of the random forest derived house price indexes I will use the `hpiR` package and its various comparative functionalities.  Before showing the comparison, it is worth a detour to discuss the lexicon around the judging the quality of indexes and how `hpiR` accomplishes this.^[More information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR).] ^[The official CRAN repository page is located at: 
+[https://cran.r-project.org/web/packages/hpiR/index.html](https://cran.r-project.org/web/packages/hpiR/index.html)] ^[A detailed explanation of the class and method structure employed in this package can be found in the **Classes in hpiR** vignette in this package, or at: [https://cran.r-project.org/web/packages/hpiR/vignettes/classstructure.html](https://cran.r-project.org/web/packages/hpiR/vignettes/classstructure.html)] 
+
+### Package Basics
+
+The `hpiR` package is written for the R statistical language.  The stable version of this package can be obtained by installing from the Comprehensive R Archive Netwok (CRAN) from within R with the following command:
+
+```{r eval=FALSE}
+  install.packages('hpiR')
+```
+
+If you want the most up-to-date, development version this can be downloaded directly from my Github repository with (ensure that you have the `devtools` package installed first as well):
+
+```{r eval=FALSE}
+   devtools::install_github("andykrause/hpiR")
+```
+
+#### Terminology
+
+The following terms are used through the `hpiR` package, its documentation, and this paper:
+
+* **Index**: a time-series of values estimating the movement of prices over time with a base period value of 100
+* **Series**: progression of increasing longer indexes, each one adding one more time period than the previous  
+* **Model**: statistical or other type of mathematical equation or algorithm used to generate the raw coefficient (or other) estimates that are converted into the scaled (base = 100) index values
+* **Accuracy**: ability of an index to represent the actual market movements
+* **Volatility**: measure of the period to period movement in index values
+* **Smooth**: reduce volatility with a rolling average or similar smoothing process
+* **Revision**: amount that the index value for a specific period moves over the course of a **series**
+
+### Functionality
+
+The `hpiR` package is designed to provide standardized process that encompass all of the common steps in producing a house price index.  In general order of execution these are: 
+
+1. **Data Preparation**: Converting transaction data into a format useable by one or more of the available models
+2. **Modeling**: Estimate a statistical (or other) model to derive raw coefficient or price movements
+3. **Index Creation**: Converting model output into a standardized index with base 100
+4. **Analysis: Index-level**: Assessing the quality of index
+    * **Volality** - Period to period movement
+    * **In-Sample Accuracy** - Ability of the model to accurately prediction the second sales in a repeat sales pair (with no holdout structure)
+    * **K-Fold Out-of-Sample Accuracy** - Ability of the model to accurately prediction the second sales in a repeat sales pair (with a k-fold holdout structure)
+5. **Series Creation** - Building a sequentially longer set of indexes using the same model and an increasing (over time) dataset
+6. **Analysis: Series-level**: Assessing the quality of a series
+    * **Volatility** - Period to period movement in each index of the series
+    * **Revision** - Amount that the value of each period changes when new data and a new index is added to the series
+    * **Prediction Out-of-Sample Accuracy** - Ability of the model to accurately prediction the second sales in a repeat sales pair (with a forward prediction holdout structure)
+
+
+First, let's compare it to the hedonice and repeat transaction indexes that we estimated above.
+
+```{r, echo = FALSE}
+ readRDS('c:/code/research/hpir/papers/ares_2019/rhrplot.rds')
+```
+
+```{r, echo = FALSE}
+ readRDS('c:/code/research/hpir/papers/ares_2019/rhsplot.rds')
+```
+
+## Comparative Analysis
+
+In this section I highlight the functionality of the `hpiR` package by using it to compare the 'quality' of the price index (and related series) generated by the Random Forest method with those from more traditional Repeat Sales and Hedonic Price approaches. 
+
+Above we used the model-agnostic partial dependence plots and individual conditional expectations to create a house price index from a random forest model.  While the resulting index appears smooth and to generally follow the known trends in the Seattle housing market, we are not sure that the index is any good.  
+
+
+Overall, the index derived from the Random Forest PDP appears to track the other two very well, with the exception of the the final 10 periods of  the time frame.  It is also noticably smoothing than the index created by the two more traditional methods.  
+
+### Full City, 2010 through 2016
+
+```{r, echo = FALSE}
+ full_df <- readRDS('c:/code/research/hpir/papers/ares_2019/full_summ.rds')
+ names(full_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
+                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ full_df <- full_df[c(1,3,6), ]
+ full_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
+ knitr::kable(full_df, format = 'html', digits = 3, row.names = FALSE)
+```
+
+### Small Geographic Areas
+
+```{r, echo = FALSE}
+ geo_df <- readRDS('c:/code/research/hpir/papers/ares_2019/geo_summ.rds')
+ names(geo_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
+                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ geo_df <- geo_df[c(1,3,6), ]
+ geo_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
+ knitr::kable(geo_df, format = 'html', digits = 3, row.names = FALSE)
+```
+
+### Short Time Frames
+
+```{r, echo = FALSE}
+ time_df <- readRDS('c:/code/research/hpir/papers/ares_2019/time_summ.rds')
+ names(time_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
+                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ time_df <- time_df[c(1,3,6), ]
+ time_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
+ knitr::kable(time_df, format = 'html', digits = 3, row.names = FALSE)
+```
+
+
+* Show by beds
+
+
+## Conclusion
+
+Model Agnaostic intepretability methods open up many new ML models for using for house price indexes
+RF derived models are smoother than HE/RT and roughly as accurate as HE
+* But less so in forward prediction
+* And at a larger computational cost
+* They do have larger revision than 
+RF don't require smoothing choices, but do require othe rhyper parameter decisions
+
+HPIR package can help make building and comparing indexes fast, easy and thorough
+* Provides a lexicon to discuss comparison
+
+
+\pagebreak
+
+# Bibliography
+
+Abraham, J. M., & Schauman, W. S. (1991). New evidence on home prices from Freddie Mac repeat sales. *Real Estate Economics*, 19(3), 333-352.
+
+Allaire, JJ, Joe Cheng, Yihui Xie, Jonathan McPherson, Winston Chang, Jeff Allen, Hadley Wickham, Aron Atkins, and Rob Hyndman. 2016. Rmarkdown: Dynamic Documents for R. https://CRAN.R-project.org/package=rmarkdown.
+
+Bailey, M., Muth, R., & Nourse, H. (1963). A Regression Method for Real Estate Price Index Construction. *Journal of the American Statistical Association*, 58, 933-942.
+
+Bivand, Roger, and Nicholas Lewin-Koh. 2016. Maptools: Tools for Reading and Handling Spatial Objects. https://CRAN.R-project.org/package=maptools
+
+Bogin, A. N., Doerner, W. M., Larson, W. D., & others. (2016). Local House Price Dynamics: New Indices and Stylized Facts *FHFA Working Paper*.
+
+Bourassa, S., Cantoni, E., & Hoesli, M. (2013). Robust repeat sales indexes. *Real Estate Economics*, 41(3), 517-541.
+
+Bourassa, S., Cantoni, E., & Hoesli, M. (2016). Robust hedonic price indexes. *International Journal of Housing Markets and Analysis*, 9(1), 47-65.
+
+Bourassa, S. C., & Hoesli, M. (2016). High Frequency House Price Indexes with Scarce Data. *Swiss Finance Institute Research Paper*, (16-27).
+
+Bourassa, S. C., Hoesli, M., & Sun, J. (2006). A simple alternative house price index method. *Journal of Housing Economics*, 15(1), 80-97.
+
+Butler, J. S., Chang, Y., & Cutts, A. C. (2005). Revision bias in repeat-sales home price indices. *Freddie Mac Working Paper*
+
+Can, A., & Megbolugbe, I. (1997). Spatial dependence and house price index construction. *The Journal of Real Estate Finance and Economics*, 14(1-2), 203-222.
+
+Cannaday, R. E., Munneke, H. J., & Yang, T. T. (2005). A multivariate repeat-sales model for estimating house price indices. *Journal of Urban Economics*, 57(2), 320-342.
+
+Case, B., Pollakowski, H. O., & Wachter, S. M. (1991). On choosing among house price index methodologies. *Real Estate Economics*, 19(3), 286-307.
+
+Case, B., Pollakowski, H. O., & Wachter, S. (1997). Frequency of transaction and house price modeling. *The Journal of Real Estate Finance and Economics*, 14(1), 173-187.
+
+Case, B., & Quigley, J. M. (1991). The dynamics of real estate prices. *The Review of Economics and Statistics*, 50-58.
+
+Case, K., & Shiller, R. (1987). Prices of Single Family Homes Since 1970: New Indexes for Four Cities. *New England Economic Review*, Sept/Oct, 45-56.
+
+Chau, K. W., Wong, S. K., & Yiu, C. Y. (2005). Adjusting for non-linear age effects in the repeat sales index. *The Journal of Real Estate Finance and Economics*, 31(2), 137-153.
+
+Chinloy, P. T. (1977). Hedonic price and depreciation indexes for residential housing: A longitudinal approach. *Journal of Urban Economics*, 4(4), 469-482.
+
+Clapham, E., Englund, P., Quigley, J. M., & Redfearn, C. L. (2006). Revisiting the past and settling the score: index revision for house price derivatives. *Real Estate Economics*, 34(2), 275-302.
+
+Clapp, J. M. (2004). A semiparametric method for estimating local house price indices. *Real Estate Economics*, 32(1), 127-160.
+
+Clapp, J., & Giaccotto, C. (1992). Estimating price indices for residential property: a comparison of repeat sales and assessed value methods. *Journal of the American Statistical Association*, 87(418), 300-306.
+
+Clapp, J. M., & Giaccotto, C. (1999). Revisions in Repeat-Sales Price Indexes: Here Today, Gone Tomorrow? *Real Estate Economics*, 27(1), 79-104.
+
+Clapp, J. M., Giaccotto, C., & Tirtiroglu, D. (1991). Housing price indices based on all transactions compared to repeat subsamples. *Real Estate Economics*, 19(3), 270-285.
+
+Clapp, J. M., Giaccotto, C., & Tirtiroglu, D. (1992). Repeat sales methodology for price trend estimation: an evaluation of sample selectivity. *Journal of Real Estate Finance and Economics*, 5(4), 357-374.
+
+Coulson, N. E., & McMillen, D. P. (2007). The dynamics of intraurban quantile house price indexes. *Urban Studies*, 44(8), 1517-1537.
+
+Crone, T. M., & Voith, R. (1992). Estimating house price appreciation: a comparison of methods. *Journal of Housing Economics*, 2(4), 324-338.
+
+Dahl, David B. 2016. Xtable: Export Tables to Latex or Html. https://CRAN.R-project.org/package=xtable
+
+de Haan, J., & Diewert, W. E. (2013). Handbook on Residential Property Price Indices. Eurostat, Belgium.
+
+De Vries, P., de Haan, J., van der Wal, E., & Mari?n, G. (2009). A house price index based on the SPAR method. *Journal of Housing Economics*, 18(3), 214-223.
+
+Deng, Y., & Quigley, J. M. (2008). Index revision, house price risk, and the market for house price derivatives. *The Journal of Real Estate Finance and Economics*, 37(3), 191-209.
+
+Dorsey, R. E., Hu, H., Mayer, W. J., & Wang, H. (2010). Hedonic versus repeat-sales housing price indexes for measuring the recent boom-bust cycle. *Journal of Housing Economics*, 19(2), 75-93.
+
+Dreiman, M. H., & Pennington-Cross, A. (2004). Alternative methods of increasing the precision of weighted repeat sales house prices indices. *The Journal of Real Estate Finance and Economics*, 28(4), 299-317.
+
+Englund, P., Quigley, J. M., & Redfearn, C. L. (1998). Improved price indexes for real estate: measuring the course of Swedish housing prices. *Journal of Urban Economics*, 44(2), 171-196.
+
+Englund, P., Quigley, J. M., & Redfearn, C. L. (1999). The choice of methodology for computing housing price indexes: comparisons of temporal aggregation and sample definition. *The Journal of Real Estate Finance and Economics*, 19(2), 91-112.
+
+Francke, M. K. (2010). Repeat sales index for thin markets. *The Journal of Real Estate Finance and Economics*, 41(1), 24-52.
+
+Francke, M. K., & Vos, G. A. (2004). The hierarchical trend model for property valuation and local price indices. *The Journal of Real Estate Finance and Economics*, 28(2), 179-208.
+
+Gatzlaff, D. H., & Haurin, D. R. (1997). Sample Selection Bias and Repeat-Sales Index Estimates. *The Journal of Real Estate Finance and Economics*, 14, 33-50.
+
+Gatzlaff, D. H., & Haurin, D. R. (1998). Sample Selection and Biases in Local House Value Indices. *Journal of Urban Economics*, 43, 199-222.
+
+Gatzlaff, D. H., & Ling, D. C. (1994). Measuring Changes in Local House Prices: An Empirical Investigation of Alternative Methodologies. *Journal of Urban Economics*, 35, 221-244.
+
+Gelfand, A. E., Ecker, M. D., Knight, J. R., & Sirmans, C. F. (2004). The Dynamics of Location in Home Prices. *Journal of Real Estate Finance and Economics*, 29(2), 149-166.
+
+Goetzmann, W., & Spiegel, M. (1997). A Spatial Model of Housing Returns and Neighborhood Substitutability. *Journal of Real Estate Finance and Economics*, 14(1), 11-31.
+
+Goetzmann, W., & Peng, L. (2006). Estimating house price indexes in the presence of seller reservation prices. *Review of Economics and Statistics*, 88(1), 100-112.
+
+Goodman, A. C. (1978). Hedonic prices, price indices and housing markets. *Journal of Urban Economics*, 5, 471-484.
+
+Goodman, A. C., & Thibodeau, T. (1997). Dwelling-age-related heteroskedasticity in hedonic house price equations: an extension. *Journal of Housing Research*, 8, 299-317.
+
+Guntermann, K. L., Liu, C., & Nowak, A. D. (2016). Price Indexes for Short Horizons, Thin Markets or Smaller Cities. *Journal of Real Estate Research*, 38(1), 93-127.
+
+Guo, X., Zheng, S., Geltner, D., & Liu, H. (2014). A new approach for constructing home price indices: The pseudo repeat sales model and its application in China. Journal of Housing Economics, 25, 20-38.
+
+Guttery, R. S., & Sirmans, C. F. (1998). Aggregation Bias in Price Indices for Multi-Family Rental Properties. *Journal of Real Estate Research*, 15(3), 309-325.
+
+Haurin, D. R., & Hendershott, P. H. (1991). House price indexes: issues and results. *Real Estate Economics*, 19(3), 259-269.
+
+Haurin, D. R., Hendershott, P. H., & Kim, D. (1991). Local house price indexes: 1982--1991. *Real Estate Economics*, 19(3), 451-472.
+
+Hill, R. C., Knight, J. R., & Sirmans, C. F. (1997). Estimating capital asset price indexes. *Review of Economics and Statistics*, 79(2), 226-233.
+Jansen, S. J. T., de Vries, P., Coolen, H., Lamain, C. J. M., & Boelhouwer, P. J. (2008). Developing a house price index for the Netherlands: A practical application of weighted repeat sales. *The Journal of Real Estate Finance and Economics*, 37(2), 163-186.
+
+Knight, J. R., Dombrow, J., & Sirmans, C. F. (1995). A varying parameters approach to constructing house price indexes. *Real Estate Economics*, 23(2), 187-205.
+
+Leishman, C., & Watkins, C. (2002). Estimating local repeat sales house price indices for British cities. *Journal of Property Investment & Finance*, 20(1), 36-58.
+
+McMillen, D. P. (2003). Neighborhood house price indexes in Chicago: a Fourier repeat sales approach. *Journal of Economic Geography*, 3(1), 57-73.
+
+McMillen, D. (2012). Repeat sales as a matching estimator. *Real Estate Economics*, 40(4), 745-773.
+
+Mcmillen, D. P., & Dombrow, J. (2001). A Flexible Fourier Approach to Repeat Sales Price Indexes. *Real Estate Economics*, 29(2), 207-225.
+
+Mcmillen, D. P., & Thorsnes, P. (2006). Housing Renovations and the Quantile Repeat-Sales Price Index. *Real Estate Economic*s, 34(4), 567-584.
+
+Mark, J. H., & Goldberg, M. (1984). Alternative housing price indices: an evaluation. *Real Estate Economics*, 12(1), 30-49.
+
+Meese, R. A., & Wallace, N. (1991). Nonparametric estimation of dynamic hedonic price models and the construction of residential housing price indexes. *Journal of the American Real Estate & Urban Economics Association*, 19(3), 308-332.
+
+Meese, R. A., & Wallace, N. (1997). The construction of residential housing price indices: a comparison of repeat-sales, hedonic-regression, and hybrid approaches. *The Journal of Real Estate Finance and Economics*, 14(1), 51-73.
+
+Munneke, H. J., & Slade, B. A. (2000). An empirical study of sample-selection bias in indices of commercial real estate. *The Journal of Real Estate Finance and Economics*, 21(1), 45-64.
+
+Munneke, H. J., & Slade, B. A. (2001). Metropolitan Transaction-Based Commercial Price Index : A Time-Varying Parameter Approach. *Real Estate Economics*, 29(1), 55-84.
+
+Nagaraja, C., Brown, L., & Wachter, S. (2014). Repeat sales house price index methodology. *Journal of Real Estate Literature*, 22(1), 23-46.
+
+Nappi-Choulet, I., & Maury, T.-P. (2009). A spatiotemporal autoregressive price index for the Paris office property market. *Real Estate Economics*, 37(2), 305-340.
+
+Pebesma, E. J., and R. S. Bivand. 2005. "Classes and Methods for Spatial Data in R." *R News*, 2(5): 211-22.
+
+Pollakowski, H. O., Stegman, M. A., & Rohe, W. (1991). Rates of return on housing of low-and moderate-income owners. *Journal of the American Real Estate & Urban Economics Association*, 19(3), 417-426.
+
+Prasad, N., & Richards, A. (2009). Improving median housing price indexes through stratification. *Journal of Real Estate Research*, 30, 45-71.
+
+Quigley, J. M. (1995). A simple hybrid model for estimating real estate price indexes. *Journal of Housing Economics*, 4(1), 1-12.
+
+Schwann, G. M. (1998). A real estate price index for thin markets. *The Journal of Real Estate Finance and Economics*, 16(3), 269-287.
+
+Steele, M., & Goy, R. (1997). Short holds, the distributions of first and second sales, and bias in the repeat-sales price index. *The Journal of Real Estate Finance and Economics*, 14(1), 133-154.
+
+Tu, Y., Shi-Ming, Y., & Sun, H. (2004). Transaction-based office price indexes: A spatiotemporal modeling approach. *Real Estate Economics*, 32(2), 297.
+
+Wickham, Hadley. 2007. "Reshaping Data with the reshape Package." *Journal of Statistical Software*, 21 (12): 1-20. http://www.jstatsoft.org/v21/i12/.
+
+---. 2009. Ggplot2: *Elegant Graphics for Data Analysis.* Springer-Verlag New York. http: //ggplot2.org.
+
+---. 2011. "The Split-Apply-Combine Strategy for Data Analysis." *Journal of Statistical Software*, 40 (1): 1-29. http://www.jstatsoft.org/v40/i01/.
+
+---. 2016. Stringr: Simple, Consistent Wrappers for Common String Operations. https: //CRAN.R-project.org/package=stringr.
+
+Xie, Yihui. 2015. *Dynamic Documents with R and Knitr*, 2nd Edition. Chapman; Hall.
+
+Zabel, J. E. (1999). Controlling for quality in house price indices. *The Journal of Real Estate Finance and Economics*, 19(3), 223-241.
+
+
