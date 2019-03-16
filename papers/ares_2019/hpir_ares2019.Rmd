@@ -27,21 +27,23 @@ editor_options:
 
 ### Abstract
 
-Real estate price indexes are widely used across many different use cases, research designs and property types. The approaches to generating these indexes are almostly exclusively found in the realm of traditional statistics: ranging from simple median calculation to complex multiple regression formats.  This paper presents a machine learning approach -- applying model-agnostic interpretability methods to a random forest -- to estimating real estate price indexes.  Additionally, I present a framework (and associated software package, `hpiR`) for evaluating and comparing the quality of house price indexes.
+Real estate price indexes are widely used across a variety of use cases, research designs and property types. The approaches to index generation are almost exclusively found in the realm of traditional statistics: ranging from simple median calculation to complex multiple regression formats. This paper presents a machine learning approach -- applying model-agnostic interpretability methods to a random forest -- to derived home price indexes.  Additionally, I present a framework (and associated software package, `hpiR`) for evaluating and comparing the quality of house price indexes.
 
 ## Introduction
 
-Traditionally, house price indexes have been generating through highly interpretable (statistical) modeling approaches such as multiple regression models, as the coefficient estimates are easily convertable into standardized indexes. In short, house price index generation is not viewed as a prediction problem (engineering), but rather a scientific endeavor in which the attribution of the effects on time on market movements is sought.  As a result, many of the rapidly growing set of machine learning algorithms -- support vector machines, random forests and neural networks -- have not been used in the production of price indexes.  With the rise of interpretability methods, these 'black-box' models can be made more explainable and suitable for a more diverse set of tasks. 
+Traditionally, house price indexes have been generated through highly interpretable (statistical) modeling approaches such as multiple regression models.  Standard statistical models are a good fit for this task as the coefficient estimates are easily convertable into standardized indexes. In short, house price index generation is not viewed as a prediction problem (engineering), but rather a scientific endeavor in which the attribution of the effects on time on market movements is sought.  As a result, many of the rapidly growing set of machine learning algorithms -- support vector machines, random forests and neural networks -- have not been used in the production of price indexes due to the fact that the do not directly (easily) attribute impacts to the variables or features in the model. With the rise of interpretability methods, these 'black-box' models can be made more explainable and suitable for a more diverse set of tasks. 
 
-This paper highlights the use of two related model-agnostic interpretability methods (Molnar 2019) -- individual conditional expections and partial dependency plots -- to generate house price indexes.  While any underlying model could be used (the beauty of model-agnostic approach), I show the process on a random forest model: one of the more common and intuitive machine learning models. Along with an explanation of the method and examples, the results from this approach are compared to the more traditional repeat sales and hedonic price model approaches.  Data used for the examples and the comparisons are from the `hpiR` open source R package.  In the comparative analyses I provided extra details on the functionality and lexicon of the `hpiR` package to assist in the reproducibility of this work.
+This paper highlights the use of two related model-agnostic interpretability methods (Molnar 2019) -- individual conditional expections and partial dependency plots -- to generate house price indexes.  While any underlying model could be used (the beauty of model-agnostic approach), I show the process on a random forest model: one of the more common and intuitive machine learning models. Along with an explanation of the method and examples, the results from this application of model-agnostic interpretability methods are compared to the more traditional repeat sales and hedonic price model approaches. 
+
+Data used in the examples and the comparisons are from the `hpiR` open source R package. In the comparative analyses I provide extra details on the functionality and lexicon of the `hpiR` package to assist in the reproducibility of this work.
 
 The remainder of this work is organized as follows:  Section two provides a brief overview on the main themes in house price index research. Next, I discuss the interpretable random forest approach and provide details using the `hpiR` dataset: Seattle, WA homes sales in the 2010 through 2016 period. In section four, the random forest method is compared to more traditional models across a number of metrics -- volatility, revision and accuracy. Finally, I conclude with a discussion and suggestions for future work. All data and code to reproduce this analysis (as well as download and use the entire `hpiR` package) can be found at: [www.github.com/andykrause/hpiR/papers/ares2019](https://www.github.com/andykrause/hpiR/papers/ares2019).
 
 ## Previous Work
 
-Since the seminal Bailey et al. (1963) study there has been considerable and sustained research effort put into comparing and improving competing methods for generating house price indexes.  Published work in this subfield of housing economics is generally focused on one or more of four aims: 1) Comparison of model performance; 2) Identification and correction of an estimation issues or problems; 3) Creation of local or submarket indexes.  and 4) Development of a new model or estimator.
+Since the seminal Bailey et al. (1963) study there has been considerable and sustained research effort put into comparing and improving competing methods for generating house price indexes.  Published work in this subfield of housing economics is generally focused on one or more of four aims: 1) Comparison of model performance; 2) Identification and correction of estimation issues or problems; 3) Creation of local or submarket indexes; and 4) Development of a new model or estimator.
 
-Studies comparing various indexing method were popular in the 1980s and 1990s (Mark & Goldberg 1984; Case et al 1991; Clapp et al 1991; Crone & Voith 1992; Gatzlaff & Ling 1994; Meese & Wallace 1997).  In most cases, work published during this period compared indexes generated with some permutation of repeat sale, hedonic, median/mean, assessed/appraised value and/or hybrid methods.  The results suggest little agreement in terms of the preferred method, though the median/mean based methods used in industry are generally shown to be less reliable (Mark & Goldberg 1984; Crone & Voith 1992; Meese & Wallace 1997). Clapp et al (1991) suggest that the hedonic method may outperform repeat sales models in short time periods, while a more recent study by Nagaraja et al (2014) show better results from a hybrid, autoregressive model (expanding on Case & Quigley (1991)) than from more traditional repeat sales models. Dorsey et al (2010) show substantively different results between hedonic and repeat sales models in identifying the peak of the market during the housing boom of the mid 2000s. Common across all studies, but most explicitly made by Case et al (1991), are discussions of the various shortcomings and issues that plague each model type.
+Studies comparing various indexing method were popular in the 1980s and 1990s (Mark & Goldberg 1984; Case et al 1991; Clapp et al 1991; Crone & Voith 1992; Gatzlaff & Ling 1994; Meese & Wallace 1997).  In most cases, work published during this period compared indexes generated with some permutation of repeat sale, hedonic, median/mean, assessed/appraised value and/or hybrid methods.  The results suggest little agreement in terms of the preferred method, though the median/mean based methods used in industry are generally shown to be less reliable (Mark & Goldberg 1984; Crone & Voith 1992; Meese & Wallace 1997). Clapp et al (1991) suggest that the hedonic method may outperform repeat sales models in short time periods, while a more recent study by Nagaraja et al (2014) show better results from a hybrid, autoregressive model (expanding on Case & Quigley (1991)) than from more traditional repeat sales models. Dorsey et al (2010) show substantively different results between hedonic and repeat sales models in identifying the peak of the market during the housing boom of the mid-2000s. Common across all studies, but most explicitly made by Case et al (1991), are discussions of the various shortcomings and issues that plague each model type.
 
 Out of this arose a suite of research that set out to catalog, measure and, often, correct for the issues identified in the earliest comparative work.  The most commonly addressed issue is that of sample selection bias (Abraham & Schauman 1991; Haurin & Henderschott 1991; Clapp et al 1992; Case et al 1997;  Steele & Goy 1997; Gatzlaff & Haurin 1997, 1998; Munneke & Slade 2000), an issue affecting nearly all of the available models.  Issues stemming from the necessity to revise indexes over time, especially in the case of repeat sales models, have received attention in the literature (Clapp & Giacotto 1999; Butler et al 2005; Clapham et al 2006; Deng & Quigley 2008). Property age and depreciation and the biases associated with it have also been raised and methods presented to control for it have been offered (Goodman & Thibodeau 1997; Cannaday et al 2005; Chau et al 2005). Adding to the list of biases are potential problems arising from seller reservation bias (Goetzmann & Peng 2006) and submarket (or product) aggregation bias (Guttery and Sirmans 1998).
 
@@ -53,17 +55,27 @@ A third category of research aims are those dealing with indexes for submarkets.
 
 The final set of studies present novel improvements to existing data generation, models or estimators. The first and most common are those presenting hybrid hedonic and repeat sales models aimed at capturing the benefits and negating the shortcomings of both individual model types (Case & Quigley 1991; Quigley 1995; Hill et al 1997; Englund et al. 1998, Nagaraja et al 2014; Guntermann et al 2016).  A number of more recent improvements have been offered to create pseudo-repeat sales (McMillen 2012; Guo et al 2014), estimate robust statistical models (Bourassa et al 2013; Bourassa et al 2016), produced chained indexes (Clapham et al 2006) and address small samples sizes with a frequency conversion method (Bokhari & Geltner 2012; Bourassa & Hoesli 2016).
 
+The existing literature on house price index creation is broad and ventures into most directions taken by standard, inferential statistics.  What is lacking are attempts to leverage the growing body of machine learning models and techniques to understand real estate price movements over time.  This study presents a first attempt at doing so along with a software package to aid other in doing so as well. 
+
 ## A Machine Learning Approach
 
-* Something on interpretabilyt.  Molnar, LIME, etc. 
+The term 'machine learning' often conjures the pejorative term 'black box'.  Or in other words, a model for which predictions are given but for reasons unknown and, perhaps, unknowable, by humans.  For use cases where a predicted outcome or response, be it a classfication or a regression problem, this may be enough.  In others, where model biases need to be diagnosed and/or individual feature contributions are a key concern of the research or model application (such as constructing house price indexes), machine learning models often need to be extended with interpretabilty methods.  
 
-![](concepts.png)
-
-Random forests are a common modeling approach in the machine learning literature and industry (... insert more here).  However, they have been little used in academic real estate studies (add examples if any) and not at all in house price index creation. Much of the reason for this dearth is that random forests are somewhat of a black box in that they do not directly create coefficient estimates as more traditional statistical models do and, therefore, do not offer a direct approach to create price indexes. In short, they are not inherently interpretable. 
+* Global versus local surrogates (LIME)
+* Model specific vs model agnostic
+* Feature importance via permutation
+* Shapley values
 
 As the use of machine learning models has grown, so too have methods to help raise the interpretability of these approaches.  One such set of these enhancements are termed 'model-agnostic methods' (Molnar 2019). These approaches can be applied to any learner or model in order to provide a specific enhancement or extension in the overal interpretability of the model.  
 
+### Interpretable Random Forests
+
+
+Random forests are a common modeling approach in the machine learning literature and industry (... insert more here).  However, they have been little used in academic real estate studies (add examples if any) and not at all in house price index creation. Much of the reason for this dearth is that random forests are somewhat of a black box in that they do not directly create coefficient estimates as more traditional statistical models do and, therefore, do not offer a direct approach to create price indexes. In short, they are not inherently interpretable. 
+
 In the context of house price indexes, we are concerned with extracting from our model the specific impact that each time period has, conditionally, on the response or dependent variable.  For common modeled approaches such as a repeat sales or hedonic priceing model, the multiple regression coefficients serve as these conditional effects.  For a machine learning model, such as a random forest, coefficient-type values are not inherently generated by the model.  Here is where a model-agnostic interpretablility method can help.
+
+![Conceptual Model: Generic and Specific](concepts.png)
 
 Partial dependence plots, and the individual conditional expectations that drive them, can be used to extract the marginal impact of each time period, conditionally, on the reponse or dependent variable: house prices in this case. The resulting shape -- linear, monotonic, sinusonoidal, spline-like, etc. -- is entirely depending on the underlying model being evaluated. 
 
@@ -103,18 +115,18 @@ x
 C
   combined make up the total feature space x. Partial dependence works by marginalizing the machine learning model output over the distribution of the features in set C, so that the function shows the relationship between the features in set S we are interested in and the predicted outcome. By marginalizing over the other features, we get a function that depends only on features in S, interactions with other features included.
 
-### Examples 
+### An intepretable examples 
 
-This package provides two sample datasets to work with. The first, `seattle_sales`, includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The second, `ex_sales` is a subset of the first, encompassing only the central area of the city.  This more limited set of data contains about 5,300 transactions over the same time period.  The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author.]  The data is open and free to share.
+The `hpiR` package provides two sample datasets to work with. The first (`seattle_sales`,) includes over 43,000 sales of single family homes and townhouses within the City of Seattle over the 2010 to 2016 time frame. The second (`ex_sales`) is a subset of the first, encompassing only the central area of the city.  This more limited set of data contains about 5,300 transactions over the same time period.  The source of the data is the King County Assessor's office.^[ A small amount of data cleaning has gone into the creating the data, for more information on this process please contact the author.] The data is open and free to share. The examples below use the larger of the two to show how interpretability method can be used to convert predictions from a machine learning model into a house price index. 
 
-The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` commands. We will work with the `ex_sales` object in this vignette.
+<!-- The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` commands. We will work with the `ex_sales` object in this vignette. -->
 
-```{r load_data, echo = FALSE}
-  data(seattle_sales)
+<!-- ```{r load_data, echo = FALSE} -->
+<!--   data(seattle_sales) -->
 
-  data(ex_sales)
+<!--   data(ex_sales) -->
 
-```
+<!-- ``` -->
 
 The data includes the following information for all transactions:
 
@@ -137,27 +149,25 @@ The data includes the following information for all transactions:
 | longitude  | numeric   | -122.30254   | Longitude  |
 | latitude  | numeric   | 47.60391  | Latitude  |
 
-In our house price index case above, we had 84 periods (months) worth of transactions.  So, let's take the first observation in the dataset and create 83 hypothetical situations -- simulating a sale with all the same characteristics but a different sale period -- and add them to the single real observation.  Now using our fitted model, predict the value of these 84 observations across the 84 time periods and plot this.  This is an estimate of how time influenced home prices for this single observation.  
+We begin by select the first observation in our sales data and creating an individual conditional expectations (ICE) plot for this observation over the entire 84 month time period of our data. To do so, we assume that this home sold 84 times, once each period, and then estimate the predicted value from the random forest across these 83 hypothetical sales (and one true sale).  Plotting these predicted values create the time series seen in Figure 1 below.
 
 ```{r, echo = FALSE}
   readRDS('c:/code/research/hpir/papers/ares_2019/ex1plot.rds')
 ```
 
-If we now calculate the same ICE's for four  more observations following the same steps above we see a trend starting to emerge:
+This single ICE shows an interesting trend: too smooth during some periods and likely too volatile during others. If we now calculate the same ICE's for four more observations following the same steps above we see that our initial example was somewhat more erratically behaved than others and that, overall, all five examples in Figure 2 appear to show a similar trend of price movements -- moderate gains from 2010 to early 2013 followed by solid gain through the end of the time period.  
 
 ```{r, echo = FALSE}
    readRDS('c:/code/research/hpir/papers/ares_2019/ex15plot.rds')
 ```
 
-If we were to calculate the individual conditional expectations for all of our training data observations and average the value at each point we have a partial dependency plot.  The chart below average the five example above to show how quickly this process can get to a relatively smooth result. 
+Expanding this exercise to all observations in the dataset and then averaging all points at each time period will create a partial dependency plot. Figure 3 averages only the five examples above as an exercise to show how quickly this blending or ensembling of individual conditional expectations can get to a relatively smooth estimate of price movements over time. This is not to say that one shouldn't calculat the full partial dependence plot, but rather than the PDP reaches it central tendency relatively quickly. 
 
 ```{r, echo = FALSE}
    readRDS('c:/code/research/hpir/papers/ares_2019/ex15aplot.rds')
 ```
 
-* note about asymtotic relationship very soon
-
-## HOW to convert these to an index
+The above plot show raw prices, not a true house price index.  To convert the above to an index we can simple divide the individual period values by the base value and multiply by 100, creating the index in Figure 4. Shown are both the index from the five examples above (thin black line) as well as one from the full sample (thick red line)
 
 ```{r, echo = FALSE}
    readRDS('c:/code/research/hpir/papers/ares_2019/ind15plot.rds')
@@ -211,12 +221,15 @@ The `hpiR` package is designed to provide standardized process that encompass al
     * **Revision** - Amount that the value of each period changes when new data and a new index is added to the series
     * **Prediction Out-of-Sample Accuracy** - Ability of the model to accurately prediction the second sales in a repeat sales pair (with a forward prediction holdout structure)
 
+### Comparison of index values
 
-First, let's compare it to the hedonice and repeat transaction indexes that we estimated above.
+I begin by deriving house price indexes from a hedonic and a repeat sales method for the same data over the same period. In both approaches I robust statistical model (Bourassa et al. references) to create more stable estimates.  These two indexes along with the random forest derived trend are shown in Figure 5.
 
 ```{r, echo = FALSE}
  readRDS('c:/code/research/hpir/papers/ares_2019/rhrplot.rds')
 ```
+
+The random forest approach tracks the hedonic and repeat sales models very well, with the only deviation coming in the last year or so of the time period.  The random forest approach is noticably smoother month to month than the traditional approaches. The next section examines a number of quality metrics for each index to try to answer whether or not this new approach is better, or even, comparable to the hedonic model or repeat sales approach.  It is certainly smoother, but is it too smooth?
 
 ```{r, echo = FALSE}
  readRDS('c:/code/research/hpir/papers/ares_2019/rhsplot.rds')
@@ -226,17 +239,25 @@ First, let's compare it to the hedonice and repeat transaction indexes that we e
 
 In this section I highlight the functionality of the `hpiR` package by using it to compare the 'quality' of the price index (and related series) generated by the Random Forest method with those from more traditional Repeat Sales and Hedonic Price approaches. 
 
-Above we used the model-agnostic partial dependence plots and individual conditional expectations to create a house price index from a random forest model.  While the resulting index appears smooth and to generally follow the known trends in the Seattle housing market, we are not sure that the index is any good.  
+Tables 2 through 4 shows three different metrics attempting to gauge model quality:
 
+1. Volatility: Standard deviation of a three-month moving window
+2. Revision: Mean change in index estimate re-statement as a series of indexes is grown over time
+3. Accuracy: Ability of the index to predict the second sale price in a repeat sale pair.  Accuracy is calculated three ways:
+* In Sample (IS): With no holdout or cross-validation
+* KFold (KF): Cross-validated with a 10-fold approach
+* Prediction (Pred): A temporal holdout with errors estimated by a `t+1` prediction comparison
 
-Overall, the index derived from the Random Forest PDP appears to track the other two very well, with the exception of the the final 10 periods of  the time frame.  It is also noticably smoothing than the index created by the two more traditional methods.  
+#### Full City, 2010 through 2016
 
-### Full City, 2010 through 2016
+Table 2 compares the three indexes across the full (in both space and time) dataset. As noted above (and visual apparent), the random forest method is considerably less volatile than the other two approaches.  From a revision perspective, the hedonic model moves very little as more data (time) is added -- a feature that is useful when re-statements can be costly.  The random forest approach does see some re-statement, an average of about 1/20 of an index point each period. While more than the hedonic model this is considerably less than the repeat sales model.  Revision and restatatement are known concerns with this approach (.cit.).  
+
+From an accuracy perspective, the random forest models bests both model in-sample and in the k-fold cross-validation approach, though narrowly so.  In the out of time prediction approach, the hedonic model is slightly better than the random forest, both of which handly outperform the repeat sales approach. The smoothness of the random forest model does not seem to be 'too smooth', though it does lose out a bit on forward forecasts.  
 
 ```{r, echo = FALSE}
  full_df <- readRDS('c:/code/research/hpir/papers/ares_2019/full_summ.rds')
- names(full_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
-                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ names(full_df) <- c('Approach', "Volatility", 'Revision', 'Accr (IS)', 
+                     'Accr (KF)', 'Accr (Pred)')
  full_df <- full_df[c(1,3,6), ]
  full_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
  knitr::kable(full_df, format = 'html', digits = 3, row.names = FALSE)
@@ -244,42 +265,47 @@ Overall, the index derived from the Random Forest PDP appears to track the other
 
 ### Small Geographic Areas
 
+The above used a relative large data sample (43,000 observations) to generate the indexes.  Such a large set of sales should generate relatively stable estimates.  Do these same relative performance metrics hold over smaller geographic areas. 
+
+To test this, we divide the sample into the 25 residential assessment areas within the city of Seattle, as determined by the King County Assessor.  Most of these areas have around 1,500 sales over the eight year period, with the most active have 2,800 and the least 750.  We then estimate indexes and series for each small areas and aggregate the results, shown in Table 3. 
+
 ```{r, echo = FALSE}
  geo_df <- readRDS('c:/code/research/hpir/papers/ares_2019/geo_summ.rds')
- names(geo_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
-                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ names(geo_df) <- c('Approach', "Volatility", 'Revision', 'Accr (IS)', 
+                     'Accr (KF)', 'Accr (Pred)')
  geo_df <- geo_df[c(1,3,6), ]
  geo_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
  knitr::kable(geo_df, format = 'html', digits = 3, row.names = FALSE)
 ```
 
+Within the small geographic area index, we see similar relative results across all metrics.  The random forest models are the least volatile and the most accurate in-sample and cross-valided with k-fold approach.  The hedonic models are more stable over time (lower revision) and offer the most accurate predictive estimates. Compared to the city-wide figures in Table 3, small area estimates are slighly more volatile and less accurate, with the exception being those figures for repeat sales models which perform much worse in small areas than in larger ones due to the much smaller samples used in this model. 
+
 ### Short Time Frames
+
+Finally, we test shorter time frames --24 months each -- to see if this constraint has any effect on relative performance differences. This figures in Table 5 are an aggregate of indexes and series estimated on 6, 24-month period segments from the full dataset. Here too, we see nearly identical relative rankings on all metrics.  The absolute number here are much worse in terms of accuracy, likely due to the fact that our validation sets probably contains a higher percentage of flips or other non-constant quality transaction pairs during the reduced time period. 
 
 ```{r, echo = FALSE}
  time_df <- readRDS('c:/code/research/hpir/papers/ares_2019/time_summ.rds')
- names(time_df) <- c('Approach', "Volatility", 'Revision', 'Accuracy (In Sample)', 
-                     'Accuracy (kFold)', 'Accuracy (Prediction t+1)')
+ names(time_df) <- c('Approach', "Volatility", 'Revision', 'Accr (IS)', 
+                     'Accr (KF)', 'Accr (Pred)')
  time_df <- time_df[c(1,3,6), ]
  time_df$Approach <- c('Repeat Sales', 'Hedonic', 'Random Forest')
  knitr::kable(time_df, format = 'html', digits = 3, row.names = FALSE)
 ```
 
+## Discussion
 
-* Show by beds
+Despite the explosion of the use of machine learning models in a variety of pursuits such as natural language processing, image recognition and a broad swath of classification- and regression-based prediction problems, their use in house price index generation has been minimal, at best.  I believe the primary reason for this is their lack of, or perceived lack of, interpretability.  In short, they don't produce coefficients that can be used to generate an index. 
 
+The recent development of a suite of interpretability tools, some of which are model-agnostic, has helped open up the black-box.  In this paper, I show that using two, related, model agnostic interpretability methods -- individual conditional expectations and partial dependence plots -- allow the use of random forest models to generate estimates of home price trends which can be easy converted into a house price index. 
 
-## Conclusion
+On a sample of home sales in Seattle from 2010 through 2016, the indexes created by this approach roughly mimic indexes derived through hedonic price and repeat sales models.  In fact, the random forest derived models show lower volatility and roughly comparable accuracy to the hedonic models, with the exception of forward prediction accuracy where the hedonic models have a slight edge.  Across all metrics considered, the random forest models are smoother, less susceptible to revision and more accurate than traditional repeat sales models. The relative performance results on the full sample, also hold for model estimated across smaller geographic areas as well as smaller time periods. 
 
-Model Agnaostic intepretability methods open up many new ML models for using for house price indexes
-RF derived models are smoother than HE/RT and roughly as accurate as HE
-* But less so in forward prediction
-* And at a larger computational cost
-* They do have larger revision than 
-RF don't require smoothing choices, but do require othe rhyper parameter decisions
+All data used and the models, indexes and the comparative analyses are created with the author's open source, `hpiR` package.  As a result this work is entirely reproducible and, hopefully, easily extensible. The model-agnostic interpretability methods used here could naturally be extended to other dataset and/or machine learning approaches to see if the same promising performances are found elsewhere. 
 
-HPIR package can help make building and comparing indexes fast, easy and thorough
-* Provides a lexicon to discuss comparison
+### Conclusion
 
+As the development of interpretability methods continues to grow in the machine learning field, use cases for core learning models such as random forest and neural networks will continue to expand.  The above work suggests that, for the house price index use case, estimating the partial dependence plot of a random forest model trained on local home sales can produce a house price index that is comparable in both values and performance to traditional hedonic model and repeat sales methods.  The simulated sales approach used in this method also offers a simple contextual connection to the problem: Imagine my house sold once a month over the entire period, how much would it have changed each month?  
 
 \pagebreak
 
