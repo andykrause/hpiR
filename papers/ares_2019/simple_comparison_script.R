@@ -117,17 +117,19 @@
     xlab('\nTime') +
     scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
     scale_y_continuous(breaks = c(4e5, 5e5, 6e5, 7e5),
-                       labels = c('$400k', '$500k', '$600K', '$700K'))+
-    ggtitle('Example Partial Dependence Plot (*Time*)\n') +
+                       labels = c('$400k', '$500k', '$600K', '$700K')) +
+    ggtitle('Example Individual Conditional Expectations Plot\n
+            (Observation 1, Feature = "Time")\n') +
     coord_cartesian(ylim = c(380000, 710000))
 
 saveRDS(gg_1, file.path(getwd(), 'papers','ares_2019', 'ex1plot.RDS'))
 
+reds <- RColorBrewer::brewer.pal(n = 9, name = "Reds")[3:7]
 gg_1to5 <- ggplot() +
   geom_line(data = pdp_1to5,
             aes(x = period, y = value, group = example, color = example),
-            size = 1.5, color = 'indianred2') +
-  scale_color_manual(name = 'Model', values = 'gray10') +
+            size = 1.5) +
+  scale_color_manual(name = 'Model', values = reds) +
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +
   ylab('Simulated Value\n') +
@@ -135,7 +137,8 @@ gg_1to5 <- ggplot() +
   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
   scale_y_continuous(breaks = c(3e5, 4e5, 5e5, 6e5, 7e5, 8e5),
                      labels = c('$300K', '$400k', '$500k', '$600K', '$700K', '$800K'))+
-  ggtitle('Example Partial Dependence Plot (*Time*)\n') +
+  ggtitle('Example Individual Conditional Expectations Plot\n
+            (Observations 1 to 5, Feature = "Time")\n') +
   coord_cartesian(ylim = c(260000, 850000))
 
 saveRDS(gg_1to5, file.path(getwd(), 'papers', 'ares_2019', 'ex15plot.RDS'))
@@ -150,7 +153,8 @@ gg_1to5a <- ggplot() +
   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
   scale_y_continuous(breaks = c(3e5, 4e5, 5e5, 6e5, 7e5, 8e5),
                      labels = c('$300K', '$400k', '$500k', '$600K', '$700K', '$800K'))+
-  ggtitle('Example Partial Dependence Plot (*Time*)\n') +
+  ggtitle('Example Partial Dependence Plot (*Time*)\n
+            (Observations 1 to 5, Feature = "Time")\n') +
   coord_cartesian(ylim = c(260000, 850000))
 
 saveRDS(gg_1to5a, file.path(getwd(), 'papers','ares_2019', 'ex15aplot.RDS'))
