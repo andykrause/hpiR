@@ -125,6 +125,10 @@
     coord_cartesian(ylim = c(360000, 710000))
 
 saveRDS(gg_1, file.path(getwd(), 'papers','ares_2019', 'ex1plot.RDS'))
+png( file.path(getwd(), 'papers','ares_2019', 'pdp_ice1.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_1to5
+dev.off()
 
 reds <- RColorBrewer::brewer.pal(n = 9, name = "Reds")[3:7]
 gg_1to5 <- ggplot() +
@@ -145,6 +149,13 @@ gg_1to5 <- ggplot() +
 
 saveRDS(gg_1to5, file.path(getwd(), 'papers', 'ares_2019', 'ex15plot.RDS'))
 
+png( file.path(getwd(), 'papers','ares_2019', 'pdp_ice15.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_1to5
+dev.off()
+
+
+
 gg_1to5a <- ggplot() +
   geom_line(data = pdp_1_5,
             aes(x = period, y = value), size = 1.5, color = 'indianred2') +
@@ -160,6 +171,12 @@ gg_1to5a <- ggplot() +
   coord_cartesian(ylim = c(260000, 850000))
 
 saveRDS(gg_1to5a, file.path(getwd(), 'papers','ares_2019', 'ex15aplot.RDS'))
+
+
+png( file.path(getwd(), 'papers','ares_2019', 'pdp15.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_1to5a
+dev.off()
 
 ## Add all
 pdp_all <- pdp::partial(rf_model,
@@ -193,6 +210,12 @@ gg_15i_plot <- ggplot() +
   ggtitle('Example Random Forest-Derived HPI (Seattle)')
 
 saveRDS(gg_15i_plot, file.path(getwd(), 'papers','ares_2019', 'ind15plot.RDS'))
+
+png( file.path(getwd(), 'papers','ares_2019', 'pdpindex.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_15i_plot
+dev.off()
+
 
 ### Shapley option ---------------------------------------------------------------------------------
 
@@ -280,7 +303,7 @@ ggplot() +
   geom_line(data = coef_df1 %>%
               dplyr::mutate(coefficient = coefficient +
                               mean(shapvalue_df1$trans_period[shapvalue_df1$period == 1])),
-            aes(x=time, y = coefficient), color = 'red', size = 1) +
+            aes(x=time, y = coefficient), color = 'orange', size = 1) +
   ylab('Shapley Value') + xlab('Time Period') +
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +
@@ -292,7 +315,7 @@ ggplot() +
    geom_line(data = coef_df5 %>%
                dplyr::mutate(coefficient = coefficient +
                                mean(shapvalue_df5$trans_period[shapvalue_df5$period == 1])),
-             aes(x=time, y = coefficient), color = 'red', size = 1) +
+             aes(x=time, y = coefficient), color = 'orange', size = 1) +
    ylab('Shapley Value') + xlab('Time Period') +
    theme(legend.position = 'bottom',
          plot.title = element_text(hjust = 0.5)) +
@@ -304,7 +327,7 @@ ggplot() +
    geom_line(data = coef_df50 %>%
                dplyr::mutate(coefficient = coefficient +
                                mean(shapvalue_df50$trans_period[shapvalue_df50$period == 1])),
-             aes(x=time, y = coefficient), color = 'red', size = 1) +
+             aes(x=time, y = coefficient), color = 'orange', size = 1) +
    ylab('Shapley Value') + xlab('Time Period') +
    theme(legend.position = 'bottom',
          plot.title = element_text(hjust = 0.5)) +
@@ -316,18 +339,39 @@ ggplot() +
    dplyr::mutate(index = 100*(coefficient+1))
  ggplot() +
    geom_line(data = rfs_50,
-             aes(x=time, y = index), color = 'red', size = 1) +
+             aes(x=time, y = index), color = 'orange', size = 1) +
    ylab('Shapley Value') + xlab('Time Period') +
    theme(legend.position = 'bottom',
          plot.title = element_text(hjust = 0.5)) +
    scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
-   ggtitle('Example Shapley Value Derived HPID\n (50 Observations per Period)\n')->gg_hpishap
+   ggtitle('Example Shapley Value Derived HPI\n (50 Observations per Period)\n')->gg_hpishap
 
 
  saveRDS(gg_shap1, file.path(getwd(), 'papers','ares_2019', 'shap1plot.RDS'))
  saveRDS(gg_shap5, file.path(getwd(), 'papers','ares_2019', 'shap5plot.RDS'))
  saveRDS(gg_shap50, file.path(getwd(), 'papers','ares_2019', 'shap50plot.RDS'))
  saveRDS(gg_hpishap, file.path(getwd(), 'papers','ares_2019', 'shapindex.RDS'))
+
+ png( file.path(getwd(), 'papers','ares_2019', 'shap1plot.png'), bg = "transparent",
+      width = 800, height = 580)
+   gg_shap1
+ dev.off()
+
+ png( file.path(getwd(), 'papers','ares_2019', 'shap5plot.png'), bg = "transparent",
+      width = 800, height = 580)
+ gg_shap5
+ dev.off()
+
+ png( file.path(getwd(), 'papers','ares_2019', 'shap50plot.png'), bg = "transparent",
+      width = 800, height = 580)
+ gg_shap50
+ dev.off()
+
+ png( file.path(getwd(), 'papers','ares_2019', 'shapindex.png'), bg = "transparent",
+      width = 800, height = 580)
+ gg_hpishap
+ dev.off()
+
 
 
 ### Compare to RT/HED ------------------------------------------------------------------------------
@@ -382,10 +426,10 @@ hes_df <- data.frame(period = he_hpi$index$period,
                      model = 'Hedonic - Smooth')
 rfi_df <- data.frame(period = rf_hpi$index$period,
                      value = as.numeric(rf_hpi$index$value),
-                     model = 'Random Forest - PDP')
+                     model = 'PDP (RF)')
 rsi_df <- data.frame(period = rfs_hpi$index$period,
                      value = as.numeric(rfs_hpi$index$value),
-                     model = 'Random Forest - Shapley')
+                     model = 'Shapley (RF)')
 
 
 rhr_df <- rbind(rti_df, hei_df, rfi_df, rsi_df)
@@ -394,34 +438,60 @@ rhs_df <- rbind(rts_df, hes_df, rfi_df, rsi_df)
 gg_rhr <- ggplot() +
   geom_line(data = rhr_df,
             aes(x = period, y = value, group = model, color = model, size = model)) +
-  scale_color_manual(name = 'Model', values = c('gray50', 'red' ,'orange', 'black')) +
-  scale_size_manual(values = c(1.5, 2, 2, 1.5), guide = 'none' )+
+  scale_color_manual(name = 'Model', values = c('gray50', 'black', 'red' ,'orange')) +
+  scale_size_manual(values = c(1.5, 1.5, 2, 2), guide = 'none' )+
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +
   ylab('Index Value\n') +
   xlab('') +
   scale_y_continuous(breaks = seq(90, 170, 10)) +
   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
-  ggtitle('Comparison of HPIs\n')+
+  ggtitle('Comparison of HPIs (Seattle) \n')+
   coord_cartesian(ylim = c(88, 172))
+gg_rhrf <- gg_rhr + facet_wrap(~model) +theme(legend.position = 'none')
 
 
 gg_rhs <- ggplot() +
   geom_line(data = rhs_df,
             aes(x = period, y = value, group = model, color = model, size = model)) +
-  scale_color_manual(name = 'Model', values = c('gray50', 'red', 'black')) +
-  scale_size_manual(values = c(1.5, 1.5, 2), guide = 'none' )+
+  scale_color_manual(name = 'Model', values = c('gray50', 'black', 'red' ,'orange')) +
+  scale_size_manual(values = c(1.5, 1.5, 2, 2), guide = 'none' )+
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +
   ylab('Index Value\n') +
   xlab('') +
   scale_y_continuous(breaks = seq(90, 170, 10)) +
   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
-  ggtitle('Comparison of HPIs (Smoothed)\n')+
+  ggtitle('Comparison of Smoothed HPIs (Seattle)\n')+
   coord_cartesian(ylim = c(88, 172))
+gg_rhsf <- gg_rhs + facet_wrap(~model)
 
 saveRDS(gg_rhr, file.path(getwd(), 'papers', 'ares_2019', 'rhrplot.RDS'))
 saveRDS(gg_rhs, file.path(getwd(), 'papers', 'ares_2019', 'rhsplot.RDS'))
+saveRDS(gg_rhrf, file.path(getwd(), 'papers', 'ares_2019', 'rhrfplot.RDS'))
+saveRDS(gg_rhsf, file.path(getwd(), 'papers', 'ares_2019', 'rhsfplot.RDS'))
+
+
+png( file.path(getwd(), 'papers','ares_2019', 'comp.png'), bg = "transparent",
+     width = 800, height = 580)
+ gg_rhr
+dev.off()
+
+png( file.path(getwd(), 'papers','ares_2019', 'compfacet.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_rhrf
+dev.off()
+
+png( file.path(getwd(), 'papers','ares_2019', 'comp_smooth.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_rhs
+dev.off()
+
+png( file.path(getwd(), 'papers','ares_2019', 'comp_smoothfacet.png'), bg = "transparent",
+     width = 800, height = 580)
+gg_rhsf
+dev.off()
+
 
 #***************************************************************************************************
 #***************************************************************************************************
