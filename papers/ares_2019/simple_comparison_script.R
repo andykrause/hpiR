@@ -10,6 +10,8 @@
 
   library(hpiR)
   library(tidyverse)
+  library(mlr)
+  library(shapleyR)
 
  ## Load Data
 
@@ -192,6 +194,142 @@ gg_15i_plot <- ggplot() +
 
 saveRDS(gg_15i_plot, file.path(getwd(), 'papers','ares_2019', 'ind15plot.RDS'))
 
+### Shapley option ---------------------------------------------------------------------------------
+
+# Estimate model
+mod_df <-  hed_df[, c('beds', 'baths', 'bldg_grade', 'tot_sf', 'latitude', 'longitude',
+                     'trans_period', 'price')]
+mod_df$price <- log(mod_df$price)
+
+regr.task = makeRegrTask(id = "aa", data = mod_df, target = "price")
+regr.lrn = mlr::makeLearner("regr.ranger", par.vals = list(num.trees = 100))
+rf_model = mlr::train(regr.lrn, regr.task)
+
+# One
+shap_df1 <- mod_df %>%
+  dplyr::mutate(row_id = 1:nrow(.)) %>%
+  dplyr::group_by(trans_period) %>%
+  dplyr::slice(1) %>%
+  dplyr::arrange(row_id)
+
+shapvalue_df1 <- shapleyR::getShapleyValues(
+  shapley(shap_df1$row_id,
+          task = regr.task,
+          model = rf_model)) %>%
+  dplyr::mutate(period = shap_df1$trans_period)
+
+coef_df1 <- data.frame(time = 1:max(mod_df$trans_period)) %>%
+  dplyr::left_join(shapvalue_df1  %>%
+                     dplyr::group_by(period) %>%
+                     dplyr::summarize(value = mean(trans_period)) %>%
+                     dplyr::filter(period %in% mod_df$trans_period)%>%
+                     dplyr::select(time = period,
+                                   coefficient = value),
+                   by = 'time') %>%
+  dplyr::mutate(coefficient = coefficient - coefficient[1])
+
+# Five
+shap_df5 <- mod_df %>%
+  dplyr::mutate(row_id = 1:nrow(.)) %>%
+  dplyr::group_by(trans_period) %>%
+  dplyr::slice(1:5) %>%
+  dplyr::arrange(row_id)
+
+shapvalue_df5 <- shapleyR::getShapleyValues(
+  shapley(shap_df5$row_id,
+          task = regr.task,
+          model = rf_model)) %>%
+  dplyr::mutate(period = shap_df5$trans_period)
+
+coef_df5 <- data.frame(time = 1:max(mod_df$trans_period)) %>%
+  dplyr::left_join(shapvalue_df5   %>%
+                     dplyr::group_by(period) %>%
+                     dplyr::summarize(value = mean(trans_period)) %>%
+                     dplyr::filter(period %in% mod_df$trans_period) %>%
+                     dplyr::select(time = period,
+                                   coefficient = value),
+                   by = 'time') %>%
+  dplyr::mutate(coefficient = coefficient - coefficient[1])
+
+# Five
+shap_df50 <- mod_df %>%
+  dplyr::mutate(row_id = 1:nrow(.)) %>%
+  dplyr::group_by(trans_period) %>%
+  dplyr::slice(1:50) %>%
+  dplyr::arrange(row_id)
+
+shapvalue_df50 <- shapleyR::getShapleyValues(
+  shapley(shap_df50$row_id,
+          task = regr.task,
+          model = rf_model)) %>%
+  dplyr::mutate(period = shap_df50$trans_period)
+
+coef_df50 <- data.frame(time = 1:max(mod_df$trans_period)) %>%
+  dplyr::left_join(shapvalue_df50  %>%
+                     dplyr::group_by(period) %>%
+                     dplyr::summarize(value = mean(trans_period)) %>%
+                     dplyr::filter(period %in% mod_df$trans_period)%>%
+                     dplyr::select(time = period,
+                                   coefficient = value),
+                   by = 'time') %>%
+  dplyr::mutate(coefficient = coefficient - coefficient[1])
+
+
+ggplot() +
+  geom_point(data = shapvalue_df1, aes(x=period, y = trans_period), size = .3, color='gray50') +
+  geom_line(data = coef_df1 %>%
+              dplyr::mutate(coefficient = coefficient +
+                              mean(shapvalue_df1$trans_period[shapvalue_df1$period == 1])),
+            aes(x=time, y = coefficient), color = 'red', size = 1) +
+  ylab('Shapley Value') + xlab('Time Period') +
+  theme(legend.position = 'bottom',
+        plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
+  ggtitle('Example Shapley Value Plot\n (1 Observation per Period, Feature = "Time")\n') ->gg_shap1
+
+ ggplot() +
+   geom_point(data = shapvalue_df5, aes(x=period, y = trans_period), size = .3, color='gray50') +
+   geom_line(data = coef_df5 %>%
+               dplyr::mutate(coefficient = coefficient +
+                               mean(shapvalue_df5$trans_period[shapvalue_df5$period == 1])),
+             aes(x=time, y = coefficient), color = 'red', size = 1) +
+   ylab('Shapley Value') + xlab('Time Period') +
+   theme(legend.position = 'bottom',
+         plot.title = element_text(hjust = 0.5)) +
+   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
+   ggtitle('Example Shapley Value Plot\n (5 Observations per Period, Feature = "Time")\n')->gg_shap5
+
+ ggplot() +
+   geom_point(data = shapvalue_df50, aes(x=period, y = trans_period), size = .3, color='gray50') +
+   geom_line(data = coef_df50 %>%
+               dplyr::mutate(coefficient = coefficient +
+                               mean(shapvalue_df50$trans_period[shapvalue_df50$period == 1])),
+             aes(x=time, y = coefficient), color = 'red', size = 1) +
+   ylab('Shapley Value') + xlab('Time Period') +
+   theme(legend.position = 'bottom',
+         plot.title = element_text(hjust = 0.5)) +
+   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
+   ggtitle('Example Shapley Value Plot\n (50 Observations per Period, Feature = "Time")\n')->gg_shap50
+
+
+ rfs_50 <- coef_df50 %>%
+   dplyr::mutate(index = 100*(coefficient+1))
+ ggplot() +
+   geom_line(data = rfs_50,
+             aes(x=time, y = index), color = 'red', size = 1) +
+   ylab('Shapley Value') + xlab('Time Period') +
+   theme(legend.position = 'bottom',
+         plot.title = element_text(hjust = 0.5)) +
+   scale_x_continuous(breaks = c(seq(1,85,12)), labels = 2010:2017) +
+   ggtitle('Example Shapley Value Derived HPID\n (50 Observations per Period)\n')->gg_hpishap
+
+
+ saveRDS(gg_shap1, file.path(getwd(), 'papers','ares_2019', 'shap1plot.RDS'))
+ saveRDS(gg_shap5, file.path(getwd(), 'papers','ares_2019', 'shap5plot.RDS'))
+ saveRDS(gg_shap50, file.path(getwd(), 'papers','ares_2019', 'shap50plot.RDS'))
+ saveRDS(gg_hpishap, file.path(getwd(), 'papers','ares_2019', 'shapindex.RDS'))
+
+
 ### Compare to RT/HED ------------------------------------------------------------------------------
 
 rt_hpi <- rtIndex(trans_df = rt_df,
@@ -287,67 +425,67 @@ saveRDS(gg_rhs, file.path(getwd(), 'papers', 'ares_2019', 'rhsplot.RDS'))
 
 #***************************************************************************************************
 #***************************************************************************************************
-
- ## By Bed
-
-pdp_1bed <- pdp::partial(rf_model,
-                         train = hed_df[hed_df$beds < 2, ],
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'ZOne Bedrooms')
-
-pdp_2bed <- pdp::partial(rf_model,
-                        train = hed_df[hed_df$beds == 2, ],
-                        pred.var = "trans_period",
-                        pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'Two Bedrooms')
-pdp_3bed <- pdp::partial(rf_model,
-                         train = hed_df[hed_df$beds == 3, ],
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'Three Bedrooms')
-pdp_4bed <- pdp::partial(rf_model,
-                         train = hed_df[hed_df$beds >= 4, ],
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'Four Bedrooms+')
-
-pdp_bed <- dplyr::bind_rows(list(pdp_1bed, pdp_2bed, pdp_3bed, pdp_4bed))
-ggplot(pdp_bed, aes(x=period,y=index, group=from, color=from))+geom_line()
-
-
-pdp_sfr <- pdp::partial(rf_model,
-                         train = hed_df[hed_df$use == 'sfr', ],
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'SFR')
-pdp_th <- pdp::partial(rf_model,
-                         train = hed_df[hed_df$use == 'townhouse', ],
-                         pred.var = "trans_period",
-                         pred.grid = pred_grid) %>%
-  dplyr::rename(period = trans_period,
-                value = yhat) %>%
-  dplyr::mutate(index = 100*(value/value[1]),
-                from = 'TH')
-
-pdp_use <- dplyr::bind_rows(list(pdp_th, pdp_sfr))
-ggplot(pdp_use, aes(x=period,y=index, group=from, color=from))+geom_line()
-
-# hed_df$dist <- sqrt((hed_df$longitude - -122.3398)^2 + (hed_df$latitude - 47.6074)^2)
-# hed_df$distd <-
-
+#
+#  ## By Bed
+#
+# pdp_1bed <- pdp::partial(rf_model,
+#                          train = hed_df[hed_df$beds < 2, ],
+#                          pred.var = "trans_period",
+#                          pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'ZOne Bedrooms')
+#
+# pdp_2bed <- pdp::partial(rf_model,
+#                         train = hed_df[hed_df$beds == 2, ],
+#                         pred.var = "trans_period",
+#                         pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'Two Bedrooms')
+# pdp_3bed <- pdp::partial(rf_model,
+#                          train = hed_df[hed_df$beds == 3, ],
+#                          pred.var = "trans_period",
+#                          pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'Three Bedrooms')
+# pdp_4bed <- pdp::partial(rf_model,
+#                          train = hed_df[hed_df$beds >= 4, ],
+#                          pred.var = "trans_period",
+#                          pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'Four Bedrooms+')
+#
+# pdp_bed <- dplyr::bind_rows(list(pdp_1bed, pdp_2bed, pdp_3bed, pdp_4bed))
+# ggplot(pdp_bed, aes(x=period,y=index, group=from, color=from))+geom_line()
+#
+#
+# pdp_sfr <- pdp::partial(rf_model,
+#                          train = hed_df[hed_df$use == 'sfr', ],
+#                          pred.var = "trans_period",
+#                          pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'SFR')
+# pdp_th <- pdp::partial(rf_model,
+#                          train = hed_df[hed_df$use == 'townhouse', ],
+#                          pred.var = "trans_period",
+#                          pred.grid = pred_grid) %>%
+#   dplyr::rename(period = trans_period,
+#                 value = yhat) %>%
+#   dplyr::mutate(index = 100*(value/value[1]),
+#                 from = 'TH')
+#
+# pdp_use <- dplyr::bind_rows(list(pdp_th, pdp_sfr))
+# ggplot(pdp_use, aes(x=period,y=index, group=from, color=from))+geom_line()
+#
+# # hed_df$dist <- sqrt((hed_df$longitude - -122.3398)^2 + (hed_df$latitude - 47.6074)^2)
+# # hed_df$distd <-
+#
