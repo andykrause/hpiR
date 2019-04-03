@@ -378,7 +378,7 @@ hpiModel.rf <- function(model_type,
   ## Estimate Model
 
   # Check for legal estimator type
-  if(!estimator %in% c('sim', 'pdp', 'base')){
+  if(!estimator %in% c('sim', 'pdp', 'base', 'shap')){
     message('Provided estimator type is not supported. Allowed estimators are:',
             '"base".  Defaulting to "base"')
     estimator <- 'base'
@@ -398,6 +398,8 @@ hpiModel.rf <- function(model_type,
   rf_mod <- rfModel(estimator = estimator,
                     rf_df = hpi_df,
                     rf_spec = mod_spec,
+                    ind_var = ind_var,
+                    dep_var = dep_var,
                     ...)
 
   # Check for successful model estimation

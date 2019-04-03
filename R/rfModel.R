@@ -162,6 +162,77 @@ rfSimDf <- function(rf_df,
 
 
 
+#'
+#' Hedonic model approach with base estimator
+#'
+#' Use of base estimator in hedonic model approach
+#'
+#' @section Further Details:
+#' See `?rfModel` for more information
+#' @inherit rfModel params
+#' @method rfModel shap
+#' @importFrom ranger ranger
+#' @importFrom pdp partial
+#' @export
+
+rfModel.shap <- function(estimator,
+                         rf_df,
+                         rf_spec,
+                         ntrees = 200,
+                         seed = 1,
+                         shap_k = 10,
+                         ...){
+
+    n <- 1
+
+  # Estimate model
+  mod_df <-  rf_df[, unique(c(list(...)$ind_var, 'trans_period', 'price'))]
+  mod_df$price <- log(mod_df$price)
+
+  regr.task = makeRegrTask(id = "aa", data = mod_df, target = "price")
+  regr.lrn = mlr::makeLearner("regr.ranger", par.vals = list(num.trees = ntrees))
+  rf_model = mlr::train(regr.lrn, regr.task)
+
+  shap_df <- mod_df %>%
+    dplyr::mutate(row_id = 1:nrow(.)) %>%
+    dplyr::group_by(trans_period) %>%
+    dplyr::slice(1:shap_k) %>%
+    dplyr::arrange(row_id)
+
+  shapvalue_df <- shapleyR::getShapleyValues(
+    shapley(shap_df$row_id,
+            task = regr.task,
+            model = rf_model)) %>%
+    dplyr::mutate(period = shap_df$trans_period) %>%
+    dplyr::group_by(period) %>%
+    dplyr::summarize(value = mean(trans_period)) %>%
+    dplyr::filter(period %in% rf_df$trans_period)
+
+  rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period)) %>%
+    dplyr::left_join(shapvalue_df %>%
+                       dplyr::select(time = period,
+                                     coefficient = value),
+                     by = 'time') %>%
+    dplyr::mutate(coefficient = coefficient - coefficient[1])
+  #
+  # a <- as.data.frame(cbind(X$trans_period[kk], x$trans_period))
+  #
+  # # Add 'coefficients'
+  #
+  # log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
+  #
+  # if(log_dep){
+  #   coefs <- pdp_df$yhat - pdp_df$yhat[1]
+  # } else {
+  #   coefs <- pdp_df$yhat / pdf_df$yhat[1]
+  # }
+  # rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
+  #                                     coefficient = coefs)
+
+  # Structure and return
+  structure(rf_model, class = c('rfmodel', class(rf_model)))
+
+}
 
 
 

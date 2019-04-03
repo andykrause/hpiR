@@ -10,6 +10,8 @@
 
   library(hpiR)
   library(tidyverse)
+  library(mlr)
+  library(shapleyR)
 
  ## Load Data
 
@@ -18,7 +20,7 @@
 
  ## Load Custom Functions
 
-  source(file.path(getwd(), 'papers', 'ares_script_functions.r'))
+  source(file.path(getwd(), 'papers', 'ares_2019', 'ares_script_functions.r'))
 
 ### Create Data ------------------------------------------------------------------------------------
 

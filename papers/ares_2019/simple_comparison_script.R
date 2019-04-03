@@ -120,7 +120,7 @@
                        labels = c('$400k', '$500k', '$600K', '$700K')) +
     ggtitle('Example Individual Conditional Expectations Plot\n
             (Observation 1, Feature = "Time")\n') +
-    coord_cartesian(ylim = c(380000, 710000))
+    coord_cartesian(ylim = c(360000, 710000))
 
 saveRDS(gg_1, file.path(getwd(), 'papers','ares_2019', 'ex1plot.RDS'))
 
@@ -218,6 +218,18 @@ rf_hpi <- rfIndex(trans_df = hed_df,
                   smooth = FALSE,
                   ntrees = 100)
 
+
+rfs_hpi <- rfIndex(trans_df = hed_df,
+                  estimator = 'shap',
+                  dep_var = 'price',
+                  ind_var = c('lot_sf', 'tot_sf', 'beds', 'baths', 'eff_age', 'area',
+                              'latitude', 'longitude'),
+                  max_period = 84,
+                  smooth = FALSE,
+                  shap_k = 50,
+                  ntrees = 100)
+
+
 rti_df <- data.frame(period = rt_hpi$index$period,
                      value = as.numeric(rt_hpi$index$value),
                      model = 'Repeat Sales')
@@ -232,16 +244,20 @@ hes_df <- data.frame(period = he_hpi$index$period,
                      model = 'Hedonic - Smooth')
 rfi_df <- data.frame(period = rf_hpi$index$period,
                      value = as.numeric(rf_hpi$index$value),
-                     model = 'Random Forest')
+                     model = 'Random Forest - PDP')
+rsi_df <- data.frame(period = rfs_hpi$index$period,
+                     value = as.numeric(rfs_hpi$index$value),
+                     model = 'Random Forest - Shapley')
 
-rhr_df <- rbind(rti_df, hei_df, rfi_df)
-rhs_df <- rbind(rts_df, hes_df, rfi_df)
+
+rhr_df <- rbind(rti_df, hei_df, rfi_df, rsi_df)
+rhs_df <- rbind(rts_df, hes_df, rfi_df, rsi_df)
 
 gg_rhr <- ggplot() +
   geom_line(data = rhr_df,
             aes(x = period, y = value, group = model, color = model, size = model)) +
-  scale_color_manual(name = 'Model', values = c('gray50', 'black', 'red')) +
-  scale_size_manual(values = c(1.5, 1.5, 2), guide = 'none' )+
+  scale_color_manual(name = 'Model', values = c('gray50', 'red' ,'orange', 'black')) +
+  scale_size_manual(values = c(1.5, 2, 2, 1.5), guide = 'none' )+
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +
   ylab('Index Value\n') +
@@ -255,7 +271,7 @@ gg_rhr <- ggplot() +
 gg_rhs <- ggplot() +
   geom_line(data = rhs_df,
             aes(x = period, y = value, group = model, color = model, size = model)) +
-  scale_color_manual(name = 'Model', values = c('gray50', 'black', 'red')) +
+  scale_color_manual(name = 'Model', values = c('gray50', 'red', 'black')) +
   scale_size_manual(values = c(1.5, 1.5, 2), guide = 'none' )+
   theme(legend.position = 'bottom',
         plot.title = element_text(hjust = 0.5)) +

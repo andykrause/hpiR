@@ -81,11 +81,12 @@ threeWayComparison <- function(data_obj,
 
   # Random Forest
   rfs_hpi <- rfIndex(trans_df = hed_df,
-                     estimator = 'sim',
+                     estimator = 'shap',
                      dep_var = 'price',
-                     ind_var = rf_var,
+                     ind_var = rf_var[rf_var != 'use_type'],
                      max_period = max_period,
                      smooth = FALSE,
+                     shap_k = 50,
                      ntrees = ntrees,
                      sim_count = sim_count)
 
@@ -195,6 +196,7 @@ threeWayComparison <- function(data_obj,
                          smooth = TRUE,
                          in_place = TRUE,
                          in_place_name = 'kf_accuracy_smooth')
+
   rfs_hpi <- calcAccuracy(hpi_obj = rfs_hpi,
                           test_method = 'kfold',
                           test_type = 'rt',
@@ -202,7 +204,10 @@ threeWayComparison <- function(data_obj,
                           in_place = TRUE,
                           in_place_name = 'kf_accuracy',
                           ntrees = ntrees,
+                          shap_k = 50,
+                          ind_var = rf_var[rf_var != 'use_type'],
                           sim_count = sim_count)
+
   rfp_hpi <- calcAccuracy(hpi_obj = rfp_hpi,
                           test_method = 'kfold',
                           test_type = 'rt',
@@ -232,6 +237,8 @@ threeWayComparison <- function(data_obj,
                                               train_period = train_period,
                                               max_period = max_period,
                                               ntrees = ntrees,
+                                              shap_k = 50,
+                                              ind_var = rf_var[rf_var != 'use_type'],
                                               sim_count = sim_count))
 
   suppressWarnings(rfp_series <- createSeries(hpi_obj = rfp_hpi,
