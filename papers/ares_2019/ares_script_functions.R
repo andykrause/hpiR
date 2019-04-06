@@ -39,7 +39,7 @@ threeWayComparison <- function(data_obj,
                                           'latitude', 'longitude'),
                                ...){
 
-  message('Building Data')
+  message('****************Building Data')
 
   # Hedonic Data
   hed_df <- hedCreateTrans(trans_df = data_obj,
