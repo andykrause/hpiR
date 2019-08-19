@@ -29,7 +29,7 @@ editor_options:
 
 ### Abstract
 
-Real estate price indexes are widely used across a variety of use cases, research designs and property types. The approaches to index generation are almost exclusively found in the realm of traditional statistics: ranging from simple median calculation to complex multiple regression formats. This paper presents a machine learning approach -- applying model-agnostic interpretability methods to a random forest -- to derived home price indexes.  Additionally, I present a framework (and associated software package, `hpiR`) for evaluating and comparing the quality of house price indexes.
+Real estate price indexes are widely used across a variety of use cases, research designs and property types. The approaches to index generation are almost exclusively found in the realm of traditional statistics: ranging from simple median calculation to complex multiple regression formats. This paper presents a machine learning approach -- applying model-agnostic interpretability methods to a random forest -- to derived home price indexes.  Additionally, I present a framework and associated software package, `hpiR`, for evaluating and comparing the quality of house price indexes.
 
 ## Introduction
 
@@ -37,7 +37,7 @@ Traditionally, house price indexes have been generated through highly interpreta
 
 This paper highlights the use of two related model-agnostic interpretability methods (Molnar 2019) -- individual conditional expections and partial dependency plots -- to generate house price indexes.  While any underlying model could be used (the beauty of model-agnostic approach), I show the process on a random forest model: one of the more common and intuitive machine learning models. Along with an explanation of the method and examples, the results from this application of model-agnostic interpretability methods are compared to the more traditional repeat sales and hedonic price model approaches. 
 
-Data used in the examples and the comparisons are from the `hpiR` open source R package. In the comparative analyses I provide extra details on the functionality and lexicon of the `hpiR` package to assist in the reproducibility of this work.
+Data used in the examples and the comparisons are from the `hpiR` open source R package. In the comparative analyses section I provide additional details on the functionality and lexicon of the `hpiR` package to assist in the reproducibility of this work.
 
 The remainder of this work is organized as follows:  Section two provides a brief overview on the main themes in house price index research. Next, I discuss the interpretable random forest approach and provide details using the `hpiR` dataset: Seattle, WA homes sales in the 2010 through 2016 period. In section four, the random forest method is compared to more traditional models across a number of metrics -- volatility, revision and accuracy. Finally, I conclude with a discussion and suggestions for future work. All data and code to reproduce this analysis (as well as download and use the entire `hpiR` package) can be found at: [www.github.com/andykrause/hpiR/papers/ares2019](https://www.github.com/andykrause/hpiR/papers/ares2019).
 
@@ -73,6 +73,16 @@ As the use of machine learning models has grown, so too have methods to help rai
 
 In this paper, I'll examien a model-based and model-agnostic approach that does not use a surrogate of either type.  
 
+### Machine Learning and Real Estate Markets
+
+* Not unheard of, especially in industry
+
+-- See HouseCanary, GeoPhy AVM Whitepapers
+-- Zillow zestimate explanation
+
+* Cite few examples of use of random forests in RE lit (Bourassa)
+
+
 ### Interpretable Random Forests
 
 Random forests are a common modeling approach in the machine learning literature and across industry.  The random forest approach uses a large number of tree-based predictions, based on randomized subsets of the data for each tree and of the features (variables) at each split (Breiman 2001). Predictions are the mean (regression) or mode (classification) across all trees.  As such, random forests can be seen as a subsetting algorithm.  
@@ -89,7 +99,11 @@ In the context of house price indexes, we are concerned with extracting from our
 
 Partial dependence plots, and the individual conditional expectations that drive them, can be used to extract the marginal impact of each time period, conditionally, on the reponse or dependent variable: house prices in this case. The resulting shape -- linear, monotonic, sinusonoidal, spline-like, etc. -- is entirely depending on the underlying model being evaluated. 
 
-Conceptually, an individual conditional expectation (ICE) plot takes a single observations, X_i, and for one of the features or variables, Xs, simulates the predicted value of that observation under the hypothetical condition that this observation has each individual unique value of Xs in the entire dataset. As such, an ICE shows the marginal effect on the predicted outcome from a single feature (Friedman 2001).  Calculating ICEs for all data in the training set and averaging the marginal effects creates a partial dependence plot.  
+Conceptually, an individual conditional expectation (ICE) plot takes a single observations, X_i, and for one of the features or variables, Xs, simulates the predicted value of that observation under the hypothetical condition that this observation has each individual unique value of Xs in the entire dataset. As such, an ICE shows the marginal effect on the predicted outcome from a single feature (Friedman 2001) for a single observations or instance. Calculating ICEs for all data in the training set and averaging the marginal effects creates a partial dependence plot.  
+
+* Insert ICE/PDP formulas
+
+Another way to think about an ICE is to take a single property and predict what it would have sold for each month over a given time frame.  This time-series of predicted values can then be converted to an index.  Do this for all homes in your observation set to create a PDP.
 
 ### An Intepretable Example 
 
