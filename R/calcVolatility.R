@@ -148,6 +148,7 @@ calcVolatility <- function(index,
 #' @param series_obj Series object to be calculated
 #' @param window default = 3; Rolling periods over which to calculate the volatility
 #' @param smooth default = FALSE; Also calculate volatilities for smoothed indexes
+#' @param in_place_name name if saving in place
 #' @param ... Additional Arguments
 #' @return `serieshpi` object
 #' @importFrom purrr map

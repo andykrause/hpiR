@@ -111,7 +111,7 @@ rfModel.pdp <- function(estimator,
     if(log_dep){
     coefs <- pdp_df$yhat - pdp_df$yhat[1]
   } else {
-    coefs <- pdp_df$yhat / pdf_df$yhat[1]
+    coefs <- pdp_df$yhat / pdp_df$yhat[1]
   }
   rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
                                       coefficient = coefs)
@@ -224,7 +224,7 @@ rfModel.shap <- function(estimator,
   # if(log_dep){
   #   coefs <- pdp_df$yhat - pdp_df$yhat[1]
   # } else {
-  #   coefs <- pdp_df$yhat / pdf_df$yhat[1]
+  #   coefs <- pdp_df$yhat / pdp_df$yhat[1]
   # }
   # rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
   #                                     coefficient = coefs)

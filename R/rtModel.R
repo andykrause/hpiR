@@ -132,6 +132,7 @@ rtModel.robust <- function(rt_df,
                            time_matrix,
                            price_diff,
                            estimator,
+                           lm_recover = TRUE,
                            ...){
 
   # Determine 'sparseness' of the data
@@ -145,7 +146,7 @@ rtModel.robust <- function(rt_df,
                          error = function(e) e)
    }
    if ('simpleError' %in% class(rt_model)){
-     if (!is.null(list(...)$lm_recover) && list(...)$lm_recover == TRUE){
+     if (lm_recover){
        rt_model <- lm(price_diff ~ time_matrix + 0)
      } else {
        #cat(rt_model)
