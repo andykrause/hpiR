@@ -14,6 +14,8 @@ calcSeriesVolatility(series_obj, window = 3, smooth = FALSE,
 
 \item{smooth}{default = FALSE; Also calculate volatilities for smoothed indexes}
 
+\item{in_place_name}{name if saving in place}
+
 \item{...}{Additional Arguments}
 }
 \value{

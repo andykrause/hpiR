@@ -14,6 +14,7 @@
 #' Only necessary if not passing a `hpidata` object
 #' @param seq_only default=FALSE, indicating whether to only include sequential repeat observations
 #' 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.
+#' @param min_period_dist [12] Minimum number of period required between repeat sales
 #' @param ... Additional arguments
 #' @return data.frame of repeat transactions. Note that a full data.frame of the possible
 #' periods, their values and names can be found in the attributes to the returned `rtdata` object
@@ -186,9 +187,9 @@ rtCreateTrans <- function(trans_df,
 
   if (!is.null(min_period_dist)){
     rt_df <- rt_df %>%
-      dplyr::mutate(pdist = period_2 - period_1) %>%
-      dplyr::filter(pdist >= min_period_dist) %>%
-      dplyr::select(-pdist)
+      dplyr::mutate(pdist = .data$period_2 - .data$period_1) %>%
+      dplyr::filter(.data$pdist >= min_period_dist) %>%
+      dplyr::select(-.data$pdist)
   }
 
   # Add Unique Id

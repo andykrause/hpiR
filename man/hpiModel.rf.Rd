@@ -4,7 +4,7 @@
 \alias{hpiModel.rf}
 \title{Specific method for hpi modeling (hed) approach)}
 \usage{
-\method{hpiModel}{rf}(model_type, hpi_df, estimator = "base",
+\method{hpiModel}{rf}(model_type, hpi_df, estimator = "pdp",
   log_dep = TRUE, trim_model = TRUE, mod_spec = NULL,
   dep_var = NULL, ind_var = NULL, ...)
 }

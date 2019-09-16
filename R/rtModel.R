@@ -7,6 +7,7 @@
 #' @param time_matrix Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price between the two transactions
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
+#' @param lm_recover (TRUE) Allows robust model to use linear model if it fails
 #' @param ... Additional arguments
 #' @return `rtmodel` object
 #' @importFrom stats lm fitted residuals median
@@ -46,6 +47,7 @@ rtModel <- function(rt_df,
                     time_matrix,
                     price_diff,
                     estimator,
+                    lm_recover = TRUE,
                     ...){
 
   ## Check for proper classes

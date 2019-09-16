@@ -4,12 +4,19 @@
 \alias{rfSimDf}
 \title{Create simulation data for Random forest approach}
 \usage{
-rfSimDf(rf_df, seed, ...)
+rfSimDf(rf_df, seed, sim_ids = NULL, sim_count = NULL,
+  sim_per = NULL, ...)
 }
 \arguments{
 \item{rf_df}{Full training dataset}
 
 \item{seed}{Random seed for reproducibility}
+
+\item{sim_ids}{row ids to simulate}
+
+\item{sim_count}{number of random rows to simulate}
+
+\item{sim_per}{percent of rows to randomly simulate}
 
 \item{...}{Additional arguments}
 }

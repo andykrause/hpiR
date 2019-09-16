@@ -50,7 +50,7 @@ the `trans_df` object is not of that class.
                        price = 'sale_price',
                        trans_id = 'sale_id',
                        prop_id = 'pinx',
-                       estimator = 'robust',
+                       estimator = 'pdp',
                        log_dep = TRUE,
                        trim_model = TRUE,
                        max_period = 48,

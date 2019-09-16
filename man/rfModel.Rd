@@ -45,7 +45,7 @@ This function is not generally called directly, but rather from `hpiModel()`
                            periodicity = 'monthly')
 
  # Estimate Model
- rf_model <- rfModel(estimator = structure('base', class = 'base'),
+ rf_model <- rfModel(estimator = structure('pdp', class = 'pdp'),
                      rf_df = hed_data,
                      rf_spec = as.formula(log(price) ~ baths + tot_sf))
 

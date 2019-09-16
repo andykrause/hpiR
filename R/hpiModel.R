@@ -342,7 +342,7 @@ hpiModel.hed <- function(model_type,
 
 hpiModel.rf <- function(model_type,
                         hpi_df,
-                        estimator='base',
+                        estimator='pdp',
                         log_dep=TRUE,
                         trim_model=TRUE,
                         mod_spec=NULL,
@@ -378,10 +378,10 @@ hpiModel.rf <- function(model_type,
   ## Estimate Model
 
   # Check for legal estimator type
-  if(!estimator %in% c('sim', 'pdp', 'base', 'shap')){
+  if(!estimator %in% c('pdp')){
     message('Provided estimator type is not supported. Allowed estimators are:',
-            '"base".  Defaulting to "base"')
-    estimator <- 'base'
+            '"pdp".  Defaulting to "pdp"')
+    estimator <- 'pdp'
   }
 
   # Check log dep vs data
