@@ -102,6 +102,21 @@ context('rtCreateTrans()')
 
   })
 
+  test_that("min_period_dist argument works", {
+
+    expect_is(rt_df <- rtCreateTrans(trans_df=sales,
+                                     prop_id='pinx',
+                                     trans_id='sale_id',
+                                     price='sale_price',
+                                     date='sale_date',
+                                     periodicity='monthly',
+                                     seq_only = TRUE,
+                                     min_period_dist = 12),
+              'rtdata')
+    expect_true(nrow(rt_df) == 3795)
+
+
+  })
   test_that("Fails if sales creation fails", {
 
     # Bad Date field
@@ -121,6 +136,9 @@ context('rtCreateTrans()')
                                         periodicity='mocnthly'))
 
   })
+
+
+
 
   # Create a sales_df in the global env for future use
   sales_df <- dateToPeriod(trans_df = sales,

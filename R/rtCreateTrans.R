@@ -50,6 +50,7 @@ rtCreateTrans <- function(trans_df,
                           date = NULL,
                           periodicity = NULL,
                           seq_only = FALSE,
+                          min_period_dist = NULL,
                           ...){
 
   # Hack to pass R CMD Check
@@ -181,6 +182,13 @@ rtCreateTrans <- function(trans_df,
   if (seq_only){
     rt_df <- rt_df %>%
       dplyr::filter(!duplicated(.data$trans_id1))
+  }
+
+  if (!is.null(min_period_dist)){
+    rt_df <- rt_df %>%
+      dplyr::mutate(pdist = period_2 - period_1) %>%
+      dplyr::filter(pdist >= min_period_dist) %>%
+      dplyr::select(-pdist)
   }
 
   # Add Unique Id
