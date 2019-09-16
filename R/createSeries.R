@@ -90,6 +90,12 @@ createSeries <- function(hpi_obj,
                         train = TRUE,
                         .f = buildForecastIDs)
 
+  if (any(lapply(is_data, length) == 0)){
+    warning('Some periods have no data.  Removing them from series estimation')
+    time_range <- time_range[lapply(is_data, length) > 0]
+    is_data <- is_data[lapply(is_data, length) > 0]
+  }
+
   # Run models, indexes and combine into hpi objects
   is_hpis <- purrr::map2(.x=is_data,
                          .y=as.list(time_range),
