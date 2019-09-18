@@ -6,7 +6,7 @@
 #' @param trans_df data.frame of transactions
 #' @param dep_var default = NULL; Dependent variable in hedonic model
 #' @param ind_var default = NULL; Independent variables in the hedonic model
-#' @param rf_spec default = NULL; Full hedonic model specification
+#' @param rf_spec default = NULL; Full random forest model specification
 #' @param ... Additional Arguments
 #' @return `hpi`` object.  S3 list with:
 #' \describe{
@@ -18,7 +18,7 @@
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.
 #' @examples
-#'\donttest{
+#'
 #'
 #'  # Load data
 #'  data(ex_sales)
@@ -39,8 +39,10 @@
 #'                        max_period = 48,
 #'                        dep_var = 'price',
 #'                        ind_var = c('tot_sf', 'beds', 'baths'),
-#'                        smooth = FALSE)
-#' }
+#'                        smooth = FALSE,
+#'                        ntrees = 10,
+#'                        sim_count = 2)
+#'
 #' @export
 
 rfIndex <- function(trans_df,

@@ -36,7 +36,7 @@ the `trans_df` object is not of that class.
 }
 
 \examples{
-\donttest{
+
 
  # Load data
  data(ex_sales)
@@ -57,6 +57,8 @@ the `trans_df` object is not of that class.
                        max_period = 48,
                        dep_var = 'price',
                        ind_var = c('tot_sf', 'beds', 'baths'),
-                       smooth = FALSE)
-}
+                       smooth = FALSE,
+                       ntrees = 10,
+                       sim_count = 2)
+
 }

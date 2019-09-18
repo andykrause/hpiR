@@ -1,13 +1,15 @@
-# hpiR 0.2.0
+# hpiR 0.3.0
 
 ## Major Changes
 
-This is the initial release, there are no changes
+Added a random forest option for generating house price indexes
 
 ## Bug Fixes
 
-This is the initial release, there are no bug fixes
+Improved error catching when robust model fails (now revert to lm)
+Fixed error when accuracy validation set has 0 rows
 
 ## Minor Changes
 
-This is the initial release, there are no changes
+Added ability to filter repeat transactions by repeat time period distance
+Added custom weighting option (user request) to repeat transaction model

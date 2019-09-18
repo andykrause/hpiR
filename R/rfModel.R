@@ -1,7 +1,7 @@
 #'
-#' Estimate hedonic model for index creation
+#' Estimate random forest model for index creation
 #'
-#' Estimate coefficients for an index via the hedonic approach (generic method)
+#' Estimate coefficients for an index via the random forest approach (generic method)
 #'
 #' @param estimator Type of model to estimates (pdp)
 #' @param rf_df Transactions dataset from hedCreateSales()
@@ -9,14 +9,13 @@
 #' @param ntrees [200] Set number of trees to use
 #' @param seed [1] Random seed for reproducibility
 #' @param ... Additional arguments
-#' @return `hedmodel` object: model object of the estimator (ex.: `lm`)
+#' @return `rfmodel` object: model object of the estimator (ex.: `lm`)
 #' @importFrom utils methods
 #' @importFrom stats median lm as.formula
 #' @section Further Details:
-#' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
+#' `estimator` argument must be in a class of 'pdp'
 #' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
-#' \donttest{
 #'  # Load example data
 #'  data(ex_sales)
 #'
@@ -31,8 +30,10 @@
 #'  # Estimate Model
 #'  rf_model <- rfModel(estimator = structure('pdp', class = 'pdp'),
 #'                      rf_df = hed_data,
-#'                      rf_spec = as.formula(log(price) ~ baths + tot_sf))
-#' }
+#'                      rf_spec = as.formula(log(price) ~ baths + tot_sf),
+#'                      ntrees = 10,
+#'                      sim_count = 1)
+#'
 #' @export
 
 rfModel <- function(estimator,

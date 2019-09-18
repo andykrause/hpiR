@@ -1,23 +1,22 @@
-## Resubmission
+## Update
 
-This is a resubmission.  In this version I have:
+This is an updated version 0.3.0.  The first submission of this version. New to this version:
 
-* Removed donttest{}s
+* Added a random forest and partial dependency option for estimating house price indexes
+* Added ability to filter repeat transactions by repeat time period distance
+* Added custom weighting option (user request) to repeat transaction model
+* Bug fix: Improved error catching when robust model fails (revert to lm)
+* Bug fix: Fixed error when validation set has 0 rows
 
 ## Test environments
-* ubuntu 14.04.5 (on travis-ci), R 3.5.0
-* win-builder (release)
+* local OS X install, R 3.6.0
+* ubuntu 16.04.6 (on travis-ci), R 3.6.1
+* win-builder (devel and release)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs. 
-
-There was 1 NOTE:
-
-* New submission
-
-This is my first submission (third time for this package) 
+There were no ERRORs or WARNINGs or NOTEs. 
 
 ## Downstream dependencies
-This is the first version of this package and there are no known downstream dependencies. 
+There are no known downstream dependencies 
 
 

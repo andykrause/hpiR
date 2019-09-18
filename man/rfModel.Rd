@@ -32,7 +32,6 @@ This function is not generally called directly, but rather from `hpiModel()`
 }
 
 \examples{
-\donttest{
  # Load example data
  data(ex_sales)
 
@@ -47,6 +46,8 @@ This function is not generally called directly, but rather from `hpiModel()`
  # Estimate Model
  rf_model <- rfModel(estimator = structure('pdp', class = 'pdp'),
                      rf_df = hed_data,
-                     rf_spec = as.formula(log(price) ~ baths + tot_sf))
-}
+                     rf_spec = as.formula(log(price) ~ baths + tot_sf),
+                     ntrees = 10,
+                     sim_count = 1)
+
 }

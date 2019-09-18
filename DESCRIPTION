@@ -8,10 +8,11 @@ Maintainer: Andy Krause <andyxkrause@gmail.com>
 Description: Compute house price indexes and series using a variety of different methods and
     models common through the real estate literature.  Evaluate index 'goodness' based
     on accuracy, volatility and revision statistics. Background on basic model construction
-    for repeat sales models can be found at: Case and Quigley (1991) <doi:10.2307/2109686> and 
-    for hedonic pricing models at: Bourassa et al (2006) <doi:10.1016/j.jhe.2006.03.001>.
+    for repeat sales models can be found at: Case and Quigley (1991) 
+    <https://www.jstor.org/stable/2109686> and for hedonic pricing models at: 
+    Bourassa et al (2006) <doi:10.1016/j.jhe.2006.03.001>.
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -21,7 +22,7 @@ Imports:
     lubridate,
     robustbase,
     ggplot2,
-    imputeTS,
+    imputeTS (>= 3.0),
     purrr,
     forecast,
     caret,
