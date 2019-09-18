@@ -2,7 +2,7 @@
 % Please edit documentation in R/rfIndex.R
 \name{rfIndex}
 \alias{rfIndex}
-\title{Create a full index object by hedonic approach}
+\title{Create a full index object by random forest approach}
 \usage{
 rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL,
   ...)
@@ -27,7 +27,7 @@ rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL,
 }
 }
 \description{
-Wrapper to create index object via entire hedonic approach
+Wrapper to create index object via entire random forest approach
 }
 \section{Further Details}{
 
@@ -36,6 +36,7 @@ the `trans_df` object is not of that class.
 }
 
 \examples{
+\donttest{
 
  # Load data
  data(ex_sales)
@@ -57,5 +58,5 @@ the `trans_df` object is not of that class.
                        dep_var = 'price',
                        ind_var = c('tot_sf', 'beds', 'baths'),
                        smooth = FALSE)
-
+}
 }

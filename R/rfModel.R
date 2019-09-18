@@ -3,7 +3,7 @@
 #'
 #' Estimate coefficients for an index via the hedonic approach (generic method)
 #'
-#' @param estimator Type of model to estimates (base, robust, weighted)
+#' @param estimator Type of model to estimates (pdp)
 #' @param rf_df Transactions dataset from hedCreateSales()
 #' @param rf_spec Model specification (`formula` object)
 #' @param ntrees [200] Set number of trees to use
@@ -16,7 +16,7 @@
 #' `estimator` argument must be in a class of 'base', 'weighted' or 'robust'
 #' This function is not generally called directly, but rather from `hpiModel()`
 #' @examples
-#'
+#' \donttest{
 #'  # Load example data
 #'  data(ex_sales)
 #'
@@ -32,7 +32,7 @@
 #'  rf_model <- rfModel(estimator = structure('pdp', class = 'pdp'),
 #'                      rf_df = hed_data,
 #'                      rf_spec = as.formula(log(price) ~ baths + tot_sf))
-#'
+#' }
 #' @export
 
 rfModel <- function(estimator,
@@ -67,9 +67,9 @@ rfModel <- function(estimator,
 }
 
 #'
-#' Hedonic model approach with base estimator
+#' Random forest model approach with pdp estimator
 #'
-#' Use of base estimator in hedonic model approach
+#' Use of pdp estimator in random forest approach
 #'
 #' @section Further Details:
 #' See `?rfModel` for more information
@@ -80,11 +80,11 @@ rfModel <- function(estimator,
 #' @export
 
 rfModel.pdp <- function(estimator,
-                         rf_df,
-                         rf_spec,
-                         ntrees = 200,
-                         seed = 1,
-                         ...){
+                        rf_df,
+                        rf_spec,
+                        ntrees = 200,
+                        seed = 1,
+                        ...){
 
   # Estimate model
   rf_model <- ranger::ranger(rf_spec,
@@ -105,7 +105,6 @@ rfModel.pdp <- function(estimator,
                          pred.grid = data.frame(trans_period = 1:max(rf_df$trans_period)))
 
   # Add 'coefficients'
-
   log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
 
     if(log_dep){
@@ -118,7 +117,6 @@ rfModel.pdp <- function(estimator,
 
   # Structure and return
   structure(rf_model, class = c('rfmodel', class(rf_model)))
-
 }
 
 #'
@@ -144,24 +142,18 @@ rfSimDf <- function(rf_df,
                     ...){
 
   # If no filters
-  if (is.null(sim_ids) &
-      is.null(sim_count) &
-      is.null(sim_per)){
-    return(rf_df)
-  }
+  if (is.null(sim_ids) & is.null(sim_count) & is.null(sim_per)) return(rf_df)
 
   # If by sim id
   if (!is.null(sim_ids)) return(rf_df[sim_ids, ])
 
-  set.seed(seed)
 
-  # If a sim count is provided
-  if (!is.null(sim_count)){
-    return(rf_df[sample(1:nrow(rf_df), sim_count, replace = TRUE), ])
+  # If a sim percentage is provided
+  if (is.null(sim_count)){
+    sim_count <- floor(sim_per * nrow(rf_df))
   }
 
-  # If just a sim_par is applied
-
-  sim_count <- floor(sim_per * nrow(rf_df))
+  # Take sample and return
+  set.seed(seed)
   rf_df[sample(1:nrow(rf_df), sim_count, replace = TRUE), ]
 }

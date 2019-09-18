@@ -7,7 +7,7 @@
 rfModel(estimator, rf_df, rf_spec, ntrees = 200, seed = 1, ...)
 }
 \arguments{
-\item{estimator}{Type of model to estimates (base, robust, weighted)}
+\item{estimator}{Type of model to estimates (pdp)}
 
 \item{rf_df}{Transactions dataset from hedCreateSales()}
 
@@ -32,7 +32,7 @@ This function is not generally called directly, but rather from `hpiModel()`
 }
 
 \examples{
-
+\donttest{
  # Load example data
  data(ex_sales)
 
@@ -48,5 +48,5 @@ This function is not generally called directly, but rather from `hpiModel()`
  rf_model <- rfModel(estimator = structure('pdp', class = 'pdp'),
                      rf_df = hed_data,
                      rf_spec = as.formula(log(price) ~ baths + tot_sf))
-
+}
 }

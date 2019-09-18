@@ -1,7 +1,7 @@
 #'
-#' Create a full index object by hedonic approach
+#' Create a full index object by random forest approach
 #'
-#' Wrapper to create index object via entire hedonic approach
+#' Wrapper to create index object via entire random forest approach
 #'
 #' @param trans_df data.frame of transactions
 #' @param dep_var default = NULL; Dependent variable in hedonic model
@@ -18,6 +18,7 @@
 #' Additional argument need to provide necessary argument for create `hpidata` objects if
 #' the `trans_df` object is not of that class.
 #' @examples
+#'\donttest{
 #'
 #'  # Load data
 #'  data(ex_sales)
@@ -39,7 +40,7 @@
 #'                        dep_var = 'price',
 #'                        ind_var = c('tot_sf', 'beds', 'baths'),
 #'                        smooth = FALSE)
-#'
+#' }
 #' @export
 
 rfIndex <- function(trans_df,

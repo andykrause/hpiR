@@ -2,13 +2,13 @@
 % Please edit documentation in R/rfModel.R
 \name{rfModel.pdp}
 \alias{rfModel.pdp}
-\title{Hedonic model approach with base estimator}
+\title{Random forest model approach with pdp estimator}
 \usage{
 \method{rfModel}{pdp}(estimator, rf_df, rf_spec, ntrees = 200,
   seed = 1, ...)
 }
 \arguments{
-\item{estimator}{Type of model to estimates (base, robust, weighted)}
+\item{estimator}{Type of model to estimates (pdp)}
 
 \item{rf_df}{Transactions dataset from hedCreateSales()}
 
@@ -21,7 +21,7 @@
 \item{...}{Additional arguments}
 }
 \description{
-Use of base estimator in hedonic model approach
+Use of pdp estimator in random forest approach
 }
 \section{Further Details}{
 
