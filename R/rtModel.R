@@ -7,6 +7,7 @@
 #' @param time_matrix Time matrix object from rtTimeMatrix()
 #' @param price_diff Difference in price between the two transactions
 #' @param estimator Type of model to estimates (base, robust, weighted).  Must be in that class.
+#' @param lm_recover (TRUE) Allows robust model to use linear model if it fails
 #' @param ... Additional arguments
 #' @return `rtmodel` object
 #' @importFrom stats lm fitted residuals median
@@ -46,6 +47,7 @@ rtModel <- function(rt_df,
                     time_matrix,
                     price_diff,
                     estimator,
+                    lm_recover = TRUE,
                     ...){
 
   ## Check for proper classes
@@ -132,17 +134,27 @@ rtModel.robust <- function(rt_df,
                            time_matrix,
                            price_diff,
                            estimator,
+                           lm_recover = TRUE,
                            ...){
 
   # Determine 'sparseness' of the data
   time_size <- stats::median(table(c(rt_df$period_1, rt_df$period_2)))
 
   # Use different robust packages based on sparseness
-  if(time_size > 5){
-    rt_model <- MASS::rlm(price_diff ~ time_matrix + 0)
-  } else {
-    rt_model <- robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")
-  }
+   rt_model <- tryCatch({MASS::rlm(price_diff ~ time_matrix + 0)},
+                        error = function(e) e)
+   if ('simpleError' %in% class(rt_model)){
+    rt_model <- tryCatch({robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")},
+                         error = function(e) e)
+   }
+   if ('simpleError' %in% class(rt_model)){
+     if (lm_recover){
+       rt_model <- lm(price_diff ~ time_matrix + 0)
+     } else {
+       #cat(rt_model)
+       stop()
+     }
+   }
 
   # Add class
   class(rt_model) <- 'rtmodel'

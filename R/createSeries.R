@@ -90,22 +90,33 @@ createSeries <- function(hpi_obj,
                         train = TRUE,
                         .f = buildForecastIDs)
 
+  if (any(lapply(is_data, length) == 0)){
+    warning('Some periods have no data.  Removing them from series estimation')
+    time_range <- time_range[lapply(is_data, length) > 0]
+    is_data <- is_data[lapply(is_data, length) > 0]
+  }
+
   # Run models, indexes and combine into hpi objects
   is_hpis <- purrr::map2(.x=is_data,
                          .y=as.list(time_range),
                          z=hpi_obj$data,
-                         hed_spec=hpi_obj$model$mod_spec,
+                         mod_spec=hpi_obj$model$mod_spec,
                          log_dep = hpi_obj$model$log_dep,
-                         .f=function(x, y, z, hed_spec, log_dep, ...){
-                             mod <- hpiModel(hpi_df=z[x, ],
-                                             hed_spec=hed_spec,
+                         mod_type = hpi_obj$model$approach,
+                         estimator = hpi_obj$model$estimator,
+                         .f=function(x, y, z, mod_spec, log_dep, mod_type, estimator, ...){
+                             mod <- hpiModel(model_type = mod_type,
+                                             hpi_df=z[x, ],
+                                             mod_spec=mod_spec,
                                              log_dep=log_dep,
+                                             estimator = estimator,
                                              ...)
                              ind <- modelToIndex(mod, max_period=y-1, ...)
                              structure(list(model = mod,
                                             index = ind),
                                        class = 'hpi')
-                          })
+                          },
+                         ...)
 
   # Return Values
   structure(list(data = hpi_obj$data,

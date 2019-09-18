@@ -4,10 +4,12 @@
 \alias{hpiModel}
 \title{Wrapper to estimate model approaches (generic method)}
 \usage{
-hpiModel(hpi_df, estimator = "base", log_dep = TRUE,
-  trim_model = TRUE, ...)
+hpiModel(model_type, hpi_df, estimator = "base", log_dep = TRUE,
+  trim_model = TRUE, mod_spec = NULL, ...)
 }
 \arguments{
+\item{model_type}{Type of model to estimate ('rt', 'hed', 'rf')}
+
 \item{hpi_df}{Dataset created by one of the *CreateTrans() function in this package.}
 
 \item{estimator}{Type of estimator to be used ('base', 'weighted', 'robust')}
@@ -15,6 +17,8 @@ hpiModel(hpi_df, estimator = "base", log_dep = TRUE,
 \item{log_dep}{default TRUE, should the dependent variable (change in price) be logged?}
 
 \item{trim_model}{default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?}
+
+\item{mod_spec}{Model specification}
 
 \item{...}{Additional Arguments}
 }
@@ -48,13 +52,15 @@ Generic method to estimate modeling approaches for indexes
                           date = 'sale_date')
 
  # Create model object
- hpi_model <- hpiModel(hpi_df = rt_data,
+ hpi_model <- hpiModel(model_type = 'rt',
+                       hpi_df = rt_data,
                        estimator = 'base',
                        log_dep = TRUE)
 
  # For custom weighted repeat transaction model
 
- hpi_model_wgt <- hpiModel(hpi_df = rt_data,
+ hpi_model_wgt <- hpiModel(model_type = 'rt',
+                           hpi_df = rt_data,
                            estimator = 'weighted',
                            weights = runif(nrow(rt_data), 0, 1))
 

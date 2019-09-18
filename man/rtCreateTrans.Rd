@@ -5,7 +5,7 @@
 \title{Create transaction data for rt approach}
 \usage{
 rtCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
-  periodicity = NULL, seq_only = FALSE, ...)
+  periodicity = NULL, seq_only = FALSE, min_period_dist = NULL, ...)
 }
 \arguments{
 \item{trans_df}{transactions in either a data.frame or a `hpidata`` class from
@@ -25,6 +25,8 @@ Only necessary if not passing a `hpidata` object}
 
 \item{seq_only}{default=FALSE, indicating whether to only include sequential repeat observations
 1 to 2 and 2 to 3.  False returns 1 to 2, 1 to 3 and 2 to 3.}
+
+\item{min_period_dist}{[12] Minimum number of period required between repeat sales}
 
 \item{...}{Additional arguments}
 }

@@ -17,7 +17,7 @@ editor_options:
 
 ### Introduction
 
-This vignette provides an introduction to using the `hpiR` package for estimating house price indexes. At the current time, this package (version 0.2.0) offers two approaches to estimate house price indexes -- repeat transactions and hedonic price models. Future versions will incorporate additional methodological options.  More information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR)
+This vignette provides an introduction to using the `hpiR` package for estimating house price indexes. At the current time, this package (version 0.3.0) offers three approaches to estimating house price indexes -- repeat transactions, hedonic price models and random forest (with post-model interpretability). Future versions will incorporate additional methodological options.  More information on this package's development can be found at [www.github.com/andykrause/hpiR](https://www.github.com/andykrause/hpiR)
 
 A detailed explanation of the class and method structure employed in this package can be found in the **Classes in hpiR** vignette in this package, or at: [https://github.com/andykrause/hpiR/blob/master/vignettes/classstructure.Rmd](https://github.com/andykrause/hpiR/blob/master/vignettes/classstructure.Rmd)
 
@@ -66,12 +66,10 @@ The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` comma
 
 ```{r load_data}
   data(seattle_sales)
-
   data(ex_sales)
-
 ```
 
-All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data.  
+All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data (though this can be changed by the user).  
 
 The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The available periodicity options are:
 
@@ -92,23 +90,21 @@ with *"yearly"* as the default.  In addition to the transaction data (`trans_df`
 The default specification of `dateToPeriod()` will use the minimum and maximum dates in the data provided to it as the lower and upper time boundaries for the modeling and index creation that follow.  You can, however, set custom dates using the `min_date` and `max_date` arguments.  For example, let's assume that we want to estimate an index that covers the entire transaction period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. You see a warning telling you that there are empty periods -- periods in which there are no transactions.  
 
 ```{r expand_time}
-  sales_hdf <- dateToPeriod(trans_df = ex_sales,
+  salesx_hdf <- dateToPeriod(trans_df = ex_sales,
                             date = 'sale_date',
                             periodicity = 'monthly',
                             min_date = as.Date('2009-12-01'),
                             max_date = as.Date('2016-12-31'))
-
 ```
 
 If the dates that are provided as alternative minimums and maximums are within the range of transaction dates in the data, there are two options to what can happen.  The first, and default, is that the minimums and maximums will be adjusted to be the actual minimum and maximum dates in the transactions.  A warning will let you know that this has happened. 
 
 ```{r adj_move}
-  sales_hdf <- dateToPeriod(trans_df = ex_sales,
+  salesx_hdf <- dateToPeriod(trans_df = ex_sales,
                             date = 'sale_date',
                             periodicity = 'monthly',
                             min_date = as.Date('2010-12-01'),
                             max_date = as.Date('2015-12-31'))
-
 ```
 
 Alternatively, you can use the `min_date` and `max_date` arguments to "clip"" your dataset to a particular time frame by setting `adj_type = "clip"`. The default,  `adj_type = "move"`, simply moves it to the minimum or maximum in the data as shown above. The clipping functionality allows you to create an index for a subset of the time period covered by your data.  
@@ -120,7 +116,6 @@ Alternatively, you can use the `min_date` and `max_date` arguments to "clip"" yo
                                  min_date = as.Date('2010-12-01'),
                                  max_date = as.Date('2015-12-31'),
                                  adj_type = 'clip')
-
 ```
 
 For the sake of the remainder of this analysis, let's allow the defaults to set the time boundaries based on the data itself (we will use the `sales_hdf` object going forward).
@@ -131,7 +126,6 @@ Additional information on the full extent of the periods as well as their numeri
 
 ```{r period_table_attr}
   head(attr(sales_hdf, 'period_table'))
-
 ```
 
 Finally, information on the minimum date, maximum date and the periodicity can also be found in the attributes of `hpidata` objects. 
@@ -142,14 +136,14 @@ Let's start by creating an index using a repeat-transactions model (often referr
 
 #### Data Prep
 
-First, we use the `rtCreateTrans()` function to convert the transaction data (the `hpidata` object) into a `data.frame` of repeat transactions (properties that have transacted multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field, a unique transaction id field and a field denoting the transaction price.  
+First, we use the `rtCreateTrans()` function to convert the transaction data (the `hpidata` object) into a `data.frame` of repeat transactions (properties that have transacted multiple times in the 2010 to 2016 period.) The `rtCreateTrans()` function requires a unique property id field, a unique transaction id field and a field denoting the transaction price.  The `min_period_dist` parameter ensure that no 'flips' are included in the dataset by limiting the data to only those sales 12 periods (one year) or more apart. 
 
 ```{r create_rtdata}
   sales_rtdf <- rtCreateTrans(trans_df = sales_hdf,
                               prop_id = 'pinx',
                               trans_id = 'sale_id',
-                              price = 'sale_price')
-                          
+                              price = 'sale_price',
+                              min_period_dist = 12)
 ```
 
 This function creates a `data.frame` with eight fields: the property id, the time period for the first transaction and the second transaction, the prices for the two tranactions, the unique transaction ids for both and a unique id for the pair.  The resulting object has a class of `rtdata` (inheriting from `hpidata` and `data.frame`). 
@@ -184,7 +178,8 @@ Next, we use the `rtdata` object to estimate a repeat transactions model.  In th
 The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argumet. In this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
 
 ```{r create_rtmodel}
-  rt_model <- hpiModel(hpi_df = sales_rtdf,
+  rt_model <- hpiModel(model_type = 'rt',
+                       hpi_df = sales_rtdf,
                        estimator = 'base',
                        log_dep = TRUE)
 
@@ -194,7 +189,8 @@ The `hpiModel()` function is an S3 method that will dispatch on the class of the
 The objects created by regression models can be rather large, so by default the `hpiModel()` function trims some of the unnecessary results from the model estimation function(s). If you want full results you can set `trim_model = FALSE`.
 
 ```{r full_rtmodel}
-  rt_full <- hpiModel(hpi_df = sales_rtdf,
+  rt_full <- hpiModel(model_type = 'rt',
+                      hpi_df = sales_rtdf,
                       estimator = 'base',
                       log_dep = TRUE,
                       trim_model = FALSE)
@@ -415,7 +411,8 @@ First, we create a set of hedonic model ready data with the `hedCreateTrans()` f
 Next, we estimate the hedonic model.  There are two ways to specify the model.  First, you can provide the dependent variable and independent variable(s) directly, as in the example below. These will simply be combined as a basic linear formula. The `log_dep` argument will control whether or not the dependent variable (`dep_var`) is converted into log format (as is common in hedonic price studies).
 
 ```{r hedmodel_1}
-  hed_model <- hpiModel(hpi_df = sales_hhdf,
+  hed_model <- hpiModel(model_type = 'hed',
+                        hpi_df = sales_hhdf,
                         estimator = 'base',
                         dep_var = 'price',
                         ind_var = c('tot_sf', 'beds', 'baths'),
@@ -428,9 +425,10 @@ If you'd like more control over the model specification -- such as using interac
 ```{r hedmodel_2}
   model_spec <- as.formula('log(price) ~ as.factor(baths) + tot_sf')
   
-  hed_model <- hpiModel(hpi_df = sales_hhdf,
+  hed_model <- hpiModel(model_type = 'hed',
+                        hpi_df = sales_hhdf,
                         estimator = 'base',
-                        hed_spec = model_spec,
+                        mod_spec = model_spec,
                         log_dep = TRUE)
 
 ```
@@ -438,7 +436,8 @@ If you'd like more control over the model specification -- such as using interac
 In addition to the base estimator (OLS) there are robust regression (`estimator = "robust"`) and weighted least squares (`estimator = "weighted"`) options.
 
 ```{r hedmodel_rob}
-  hed_model_rob <- hpiModel(hpi_df = sales_hhdf,
+  hed_model_rob <- hpiModel(model_type = 'hed',
+                            hpi_df = sales_hhdf,
                             estimator = 'robust',
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'),
@@ -449,7 +448,8 @@ In addition to the base estimator (OLS) there are robust regression (`estimator 
 Do note that the weighted option requires a vectors of weights.
 
 ```{r hedmodel_wgt}
-  hed_model_wgt <- hpiModel(hpi_df = sales_hhdf,
+  hed_model_wgt <- hpiModel(model_type = 'hed',
+                            hpi_df = sales_hhdf,
                             estimator = 'weighted',
                             dep_var = 'price',
                             ind_var = c('tot_sf', 'beds', 'baths'),
@@ -928,3 +928,37 @@ We can plot the revisions with the `plot.hpirevision()` method to show the avera
 ```
 
 More information on the class structures of the object created above can be found in the "Classes in hpiR" vignette in this package. 
+
+### Random Forest
+
+The third approach to creating a house price index is a random forest combined with a post-model interpretability method.  To date, partial dependence calculations are the sole 'estimator' type.  More information on this approach and its comparison to the approaches above can be found in the paper at: [https://www.github.com/andykrause/ml_hpi_paper](https://www.github.com/andykrause/ml_hpi_paper) 
+
+Like the indexes above, the `rfIndex` function takes a number of arguments to define how to specify the index.  However, there are two additional parameters:
+
+* Simulation count: the number of properties to simulate to create the index.  This can be done via one of three ways (arguments) -- adding none of these will simulate all properties:
+    * **sim_count**: Total number of simulations to do (will randomly choose)
+    * **sim_ids**: The exact row ids to use in simulation
+    * **sim_per**: THe percentage of rows to simulate (will randomly choose)
+    
+* **ntrees**: Number of trees to grow in the random forest.  Some initial testing showed little change in results for this dataset after about 150 trees. 
+
+```{r rf_index}
+   rf_index <- rfIndex(trans_df = sales_hhdf,
+                       date = 'sale_date',
+                       price = 'sale_price',
+                       trans_id = 'sale_id',
+                       prop_id = 'pinx',
+                       estimator = 'pdp',
+                       periodicity = 'monthly',
+                       dep_var = 'price',
+                       ind_var = c('tot_sf', 'beds', 'baths'),
+                       smooth = FALSE,
+                       sim_ids = 1:10,
+                       ntrees = 16)
+```
+
+This function returns results in a structured list similar to the repeat transaction and hedonic model approaches discussed above, 
+
+```{r plot_rf_index, fig.width=7, fig.height=3.5}
+  plot(rf_index)
+```

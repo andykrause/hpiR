@@ -207,7 +207,8 @@ Results from modeling the data prior to creating indexes is stored in `hpimodel`
 
 ```{r create_hpimodel}
   
-  ex_hpimodel <- hpiModel(hpi_df = ex_rtdata,
+  ex_hpimodel <- hpiModel(model_type = 'rt',
+                          hpi_df = ex_rtdata,
                           estimator = 'base',
                           log_dep = TRUE)
 
@@ -245,7 +246,8 @@ Below we see an example of a `model_obj` from a repeat transactions model. This 
 We also show an example of a `model_obj` from a hedonic price method, again similar to an `lm(...)` output. 
 
 ```{r create_hmodel_obj}
-  ex_hedmodel <- hpiModel(hpi_df = ex_heddata,
+  ex_hedmodel <- hpiModel(model_type = 'hed',
+                          hpi_df = ex_heddata,
                           estimator = 'base',
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths'),

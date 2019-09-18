@@ -76,7 +76,8 @@ inheriting from `hpidata`
                           trans_id = 'sale_id',
                           price = 'sale_price',
                           periodicity = 'monthly',
-                          date = 'sale_date')
+                          date = 'sale_date',
+                          min_period_dist = 12)
 
 
  # Calculate forecast accuracty

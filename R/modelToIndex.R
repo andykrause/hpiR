@@ -13,8 +13,8 @@
 #' \item{value}{`ts` object of the index values}
 #' \item{imputed}{vector of binary values indicating imputation}
 #' @importFrom stats ts
-#' @importFrom imputeTS na.locf
-#' @importFrom imputeTS na.interpolation
+#' @importFrom imputeTS na_locf
+#' @importFrom imputeTS na_interpolation
 #' @examples
 #'
 #'  # Load data
@@ -29,7 +29,8 @@
 #'                           date = 'sale_date')
 #'
 #'  # Create model object
-#'  hpi_model <- hpiModel(hpi_df = rt_data,
+#'  hpi_model <- hpiModel(model_type = 'rt',
+#'                        hpi_df = rt_data,
 #'                        estimator = 'base',
 #'                        log_dep = TRUE)
 #'
@@ -58,7 +59,9 @@ modelToIndex <- function(model_obj,
   ## Deal with imputations
 
   # Extract coefficients
-  coef_df <- model_obj$coefficients[1:max_period, ]
+  coef_df <- data.frame(time = 1:max_period) %>%
+    dplyr::left_join(model_obj$coefficients[1:max_period, ],
+                     by = 'time')
 
   # Set up imputation identification vector
   is_imputed <- rep(0, length(coef_df$coef))
@@ -85,23 +88,28 @@ modelToIndex <- function(model_obj,
       message('Warning: You are extrapolating ending periods')
       not_na <- which(!na_coef)
       end_imp <- (max(not_na) + 1):length(coef_df$coefficient)
-      end_coef <- imputeTS::na.locf(coef_df$coefficient, "locf", 'keep')
+      end_coef <- imputeTS::na_locf(coef_df$coefficient, "locf", 'keep')
       coef_df$coefficient[end_imp] <- end_coef[end_imp]
     }
 
-    coef_df$coefficient <- imputeTS::na.interpolation(coef_df$coefficient,
+    coef_df$coefficient <- imputeTS::na_interpolation(coef_df$coefficient,
                                                         option='stine')
     message('Total of ', length(which(na_coef)), ' period(s) imputed')
   }
 
   # Convert estimate to an index value
-  if (model_obj$log_dep){
-    estimate <- c(exp(coef_df$coefficient) - 1)
+  if ('rfModel' %in% class(model_obj)){
+    estimate <- coef_df$coefficient
     index_value <- ((estimate + 1) * 100)[1:max_period]
   } else {
-    estimate <- ((coef_df$coefficient + model_obj$base_price) /
-                    model_obj$base_price)
-    index_value <- ((estimate) * 100)[1:max_period]
+    if (model_obj$log_dep){
+      estimate <- c(exp(coef_df$coefficient) - 1)
+      index_value <- ((estimate + 1) * 100)[1:max_period]
+    } else {
+      estimate <- ((coef_df$coefficient + model_obj$base_price) /
+                     model_obj$base_price)
+      index_value <- ((estimate) * 100)[1:max_period]
+    }
   }
 
   # Convert to a time series (ts) object

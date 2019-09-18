@@ -4,7 +4,8 @@
 \alias{rtModel.robust}
 \title{Repeat transaction model approach with robust estimator}
 \usage{
-\method{rtModel}{robust}(rt_df, time_matrix, price_diff, estimator, ...)
+\method{rtModel}{robust}(rt_df, time_matrix, price_diff, estimator,
+  lm_recover = TRUE, ...)
 }
 \arguments{
 \item{rt_df}{Repeat transactions dataset from rtCreateTrans()}
@@ -14,6 +15,8 @@
 \item{price_diff}{Difference in price between the two transactions}
 
 \item{estimator}{Type of model to estimates (base, robust, weighted).  Must be in that class.}
+
+\item{lm_recover}{(TRUE) Allows robust model to use linear model if it fails}
 
 \item{...}{Additional arguments}
 }
