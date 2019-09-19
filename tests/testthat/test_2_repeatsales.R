@@ -875,11 +875,45 @@ context('rtindex() wrapper')
     expect_error(rtIndex(trans_df = sales,
                          date = 'sale_date',
                          price = 'sale_price',
+                         prop_id = 'pinx',
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         periodicity = 'monthly'))
+
+    expect_error(rtIndex(trans_df = sales,
+                         date = 'sale_date',
+                         price = 'sale_price',
+                         trans_id = 'sale_id',
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         periodicity = 'monthly'))
+
+    expect_error(rtIndex(trans_df = sales,
+                         date = 'sale_date',
+                         trans_id = 'sale_id',
+                         prop_id = 'pinx',
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         periodicity = 'monthly'))
+
+    expect_error(rtIndex(trans_df = sales,
+                         date = 'sale_date',
+                         price = 'sale_price',
                          trans_id = 'sale_id',
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE,
                          periodicity = 'xxx'))
+
+    expect_error(rtIndex(trans_df = sales[1, ],
+                         date = 'sale_date',
+                         price = 'sale_price',
+                         trans_id = 'sale_id',
+                         prop_id = 'pinx',
+                         estimator = 'base',
+                         log_dep = TRUE,
+                         periodicity = 'monthly'), 'Converting transactions')
+
 
   })
 
@@ -897,6 +931,12 @@ context('rtindex() wrapper')
                          prop_id = 'pinx',
                          estimator = 'base',
                          log_dep = TRUE))
+    expect_error(rtIndex(trans_df = sales_df,
+                         price = 'sale_price',
+                         prop_id = 'pinx',
+                         estimator = 'base',
+                         log_dep = TRUE))
+
     expect_error(rtIndex(trans_df = sales_df,
                          price = 'sale_price',
                          trans_id = 'sale_id',

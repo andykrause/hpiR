@@ -48,6 +48,93 @@
                       periodicity = 'monthly',
                       smooth = TRUE)
 
+
+
+### Series Functions ----------------------------------------------------------------
+
+  context('createSeries()')
+
+  test_that('Index Series works', {
+
+    expect_is(hed_series <- createSeries(hpi_obj = hed_index,
+                                         train_period = 24),
+              'serieshpi')
+
+    expect_is(rt_series <- createSeries(hpi_obj = rt_index,
+                                        train_period = 24,
+                                        max_period = 50),
+              'serieshpi')
+    expect_true(length(rt_series$hpis) == 27)
+
+  })
+
+    test_that('Parameter arguments work',{
+
+      # Train Range and max period
+
+      # Max period is limited to lenght of 'hpi' object index
+      expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
+                                                    train_period = 12,
+                                                    max_period = 150)$hpis) == 73)
+    })
+
+
+    test_that('Bad arguments create errors',{
+
+      # Bad hpi_obj
+      expect_error(hed_series <- createSeries(hpi_obj = hed_index$index,
+                                              train_period = 24,
+                                              max_period = 50))
+
+      # Bad train_period
+      expect_error(hed_series <- createSeries(hpi_obj = hed_index,
+                                              train_period = 'x',
+                                              max_period = 50))
+
+      # Bad train_period
+      expect_error(hed_series <- createSeries(hpi_obj = hed_index,
+                                              train_period = 99,
+                                              max_period = 50))
+
+    })
+
+    context('smoothSeries()')
+
+    # Create Series
+    rt_series <- createSeries(hpi_obj = rt_index, train_period = 24)
+
+    test_that('smoothSeries() works as intended', {
+
+      # Standard Return
+      expect_is(rt_series <- smoothSeries(series_obj = rt_series,
+                                          order = 5),
+                'serieshpi')
+      expect_is(rt_series$hpis[[1]]$index$smooth, 'indexsmooth')
+      expect_is(rt_series$hpis[[1]]$index, 'hpiindex')
+
+    })
+
+    test_that('smoothSeries() breaks with bad arguments.',{
+
+      # Bad series obj
+      expect_error(rt_sseries <- smoothSeries(series_obj = rt_series[[1]],
+                                              order = 5))
+
+      # Bad order
+      expect_error(rt_sseries <- smoothSeries(series_obj = rt_series,
+                                              order = -1))
+
+    })
+
+    ## Create Series for remaining analyses
+    hed_series <- createSeries(hpi_obj = hed_index,
+                               train_period = 24,
+                               max_period = 30)
+
+    rt_series <- createSeries(hpi_obj = rt_index,
+                              train_period = 24)
+    rt_series <- smoothSeries(rt_series)
+
 ### Volatility Function -------------------------------------------------------------
 
 context('calcVolatility()')
@@ -86,6 +173,16 @@ context('calcVolatility()')
                                           smooth = TRUE),
               'indexvolatility')
 
+    # Throws error if smooth is gone
+    ex_index <- hed_index
+    ex_index$index$smooth <- NULL
+    expect_error(calcVolatility(index = ex_index,
+                                window = 3,
+                                smooth = TRUE), 'No smoothed')
+    expect_error(calcVolatility(index = ex_index$index,
+                                window = 3,
+                                smooth = TRUE), 'No smoothed')
+
     # Full HPI Object
     expect_is(index_vol <- calcVolatility(index = hed_index,
                                           window = 3,
@@ -93,7 +190,6 @@ context('calcVolatility()')
               'indexvolatility')
 
   })
-
 
   test_that('Errors are given when index is bad',{
 
@@ -162,89 +258,30 @@ context('calcVolatility()')
 
   })
 
-### Series Functions ----------------------------------------------------------------
+context('calcSeriesVolatility()')
 
-context('createSeries()')
+test_that('Volatility Function works with a variety of inputs',{
 
-  test_that('Index Series works', {
+  # Standard Input (ts object)
+  expect_is(series_vol <- calcSeriesVolatility(series_obj = rt_series,
+                                               window = 3),
+            'serieshpi')
 
-   expect_is(hed_series <- createSeries(hpi_obj = hed_index,
-                                        train_period = 24),
-             'serieshpi')
+  expect_is(series_vol <- calcSeriesVolatility(series_obj = rt_series,
+                                               window = 3,
+                                               smooth = TRUE),
+            'serieshpi')
+  expect_true('volatility' %in% names(series_vol))
 
-   expect_is(rt_series <- createSeries(hpi_obj = rt_index,
-                                       train_period = 24,
-                                       max_period = 50),
-             'serieshpi')
-   expect_true(length(rt_series$hpis) == 27)
+})
 
-  })
-#
-#   test_that('Parameter arguments work',{
-#
-#     # Train Range and max period
-#
-#     # Max period is limited to lenght of 'hpi' object index
-#     expect_true(length(hed_series <- createSeries(hpi_obj = hed_index,
-#                                                   train_period = 12,
-#                                                   max_period = 150)$hpis) == 73)
-#   })
+test_that('Fails if bad arguments', {
 
-  test_that('Bad arguments create errors',{
+  expect_error(series_vol <- calcSeriesVolatility(series_obj = index,
+                                                  window = 3))
 
-    # Bad hpi_obj
-    expect_error(hed_series <- createSeries(hpi_obj = hed_index$index,
-                                            train_period = 24,
-                                            max_period = 50))
 
-    # Bad train_period
-    expect_error(hed_series <- createSeries(hpi_obj = hed_index,
-                                            train_period = 'x',
-                                            max_period = 50))
-
-    # Bad train_period
-    expect_error(hed_series <- createSeries(hpi_obj = hed_index,
-                                            train_period = 99,
-                                            max_period = 50))
-
-  })
-
-context('smoothSeries()')
-
-  # Create Series
-  rt_series <- createSeries(hpi_obj = rt_index, train_period = 24)
-
-  test_that('smoothSeries() works as intended', {
-
-    # Standard Return
-    expect_is(rt_series <- smoothSeries(series_obj = rt_series,
-                                        order = 5),
-              'serieshpi')
-    expect_is(rt_series$hpis[[1]]$index$smooth, 'indexsmooth')
-    expect_is(rt_series$hpis[[1]]$index, 'hpiindex')
-
-  })
-
-  test_that('smoothSeries() breaks with bad arguments.',{
-
-    # Bad series obj
-    expect_error(rt_sseries <- smoothSeries(series_obj = rt_series[[1]],
-                                            order = 5))
-
-    # Bad order
-    expect_error(rt_sseries <- smoothSeries(series_obj = rt_series,
-                                            order = -1))
-
-  })
-
- ## Create Series for remaining analyses
-  hed_series <- createSeries(hpi_obj = hed_index,
-                             train_period = 24,
-                             max_period = 30)
-
-  rt_series <- createSeries(hpi_obj = rt_index,
-                            train_period = 24)
-  rt_series <- smoothSeries(rt_series)
+})
 
 ### Accuracy Functions --------------------------------------------------------------
 

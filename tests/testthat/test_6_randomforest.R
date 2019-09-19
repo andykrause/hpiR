@@ -308,13 +308,26 @@ test_that('Check for errors with bad arguments',{
     full_2 <- rfIndex(trans_df = hed_df,
                       estimator = 'pdp',
                       log_dep = FALSE,
-                      dep_var = 'price',
-                      ind_var = c('tot_sf', 'beds', 'baths'),
+                      rf_spec = as.formula(price ~ baths + beds),
                       sim_count = 10,
                       ntrees = 10)
 
     expect_is(full_2, 'hpi')
     expect_true(full_2$model$estimator == 'pdp')
+
+    # Giving an 'rs_df' object
+    full_3 <- rfIndex(trans_df = hed_df,
+                      estimator = 'pdp',
+                      log_dep = FALSE,
+                      rf_spec = as.formula(price ~ baths + beds),
+                      sim_count = 10,
+                      ntrees = 10,
+                      smooth = TRUE,
+                      smooth_order = 5)
+
+    expect_is(full_3, 'hpi')
+    expect_true(full_3$model$estimator == 'pdp')
+
 
   })
 
@@ -356,6 +369,16 @@ test_that('Check for errors with bad arguments',{
                           ind_var = c('tot_sf', 'beds', 'baths'),
                           periodicity = 'monthly'))
 
+    expect_error(rfIndex(trans_df = ex_sales,
+                         date = 'sale_date',
+                         trans_id = 'sale_id',
+                         prop_id = 'pinx',
+                         estimator = 'pdp',
+                         log_dep = TRUE,
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths'),
+                         periodicity = 'monthly'))
+
     expect_error(rfIndex(trans_df = sales_df,
                           price = 'xx',
                           trans_id = 'sale_id',
@@ -364,6 +387,31 @@ test_that('Check for errors with bad arguments',{
                           log_dep = TRUE,
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(rfIndex(trans_df = sales_df,
+                         price = 'sale_price',
+                         prop_id = 'pinx',
+                         estimator = 'pdp',
+                         log_dep = TRUE,
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(rfIndex(trans_df = sales_df,
+                         price = 'sale+price',
+                         trans_id = 'sale_id',
+                         estimator = 'pdp',
+                         log_dep = TRUE,
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(rfIndex(trans_df = ex_sales,
+                         date = 'sale_date',
+                         price = 'sale_price',
+                         trans_id = 'sale_id',
+                         prop_id = 'pinx',
+                         estimator = 'pdp',
+                         log_dep = TRUE,
+                         periodicity = 'monthly'))
 
   })
 
@@ -380,8 +428,8 @@ test_that('Check for errors with bad arguments',{
                        dep_var = 'price',
                        ind_var = c('tot_sf', 'beds', 'baths'),
                        smooth = TRUE,
-                      sim_ids = 1:10,
-                      ntrees = 16)
+                       sim_ids = 1:10,
+                       ntrees = 16)
 
     # In wrapper smoothing worked
     expect_is(full_1$index$smooth, 'indexsmooth')

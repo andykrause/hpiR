@@ -60,9 +60,8 @@ hedIndex <- function(trans_df,
 
       if (is.null(list(...)$date) ||
           (!any(class(trans_df[[list(...)$date]]) %in% c('Date', 'POSIXt')))){
-        message('When supplying a raw data.frame to the "trans_df"',
+        stop('When supplying a raw data.frame to the "trans_df"',
                 'object, a valid "date" argument must be supplied')
-        stop()
       }
 
       # Create 'trans_df' object
@@ -71,19 +70,15 @@ hedIndex <- function(trans_df,
     } # Ends if(!trans_df...)
 
     if (is.null(list(...)$trans_id)){
-      message('When not supplying an "hpidata" object a valid',
-              '"trans_id" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a valid "trans_id" argument must be supplied')
     }
+
     if (is.null(list(...)$prop_id)){
-      message('When not supplying an "hpidata" object a ',
-              '"prop_id" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a "prop_id" argument must be supplied')
     }
+
     if (is.null(list(...)$price)){
-      message('When not supplying an "hpidata" object a ',
-              '"price" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a "price" argument must be supplied')
     }
 
     # Create Tranactions object
@@ -91,17 +86,14 @@ hedIndex <- function(trans_df,
                                ...)
   } # Ends if/else ('heddata' %in% ...)
 
-  if (!'heddata' %in% class(hed_trans)){
-    message('Converting sales data to hedonic sales object failed')
-    stop()
-  }
+  if (!'heddata' %in% class(hed_trans)) stop('Converting sales data to hedonic sales object failed')
 
   # Estimate model if hed_spec given
   if (!is.null(hed_spec)){
 
     hed_model <- hpiModel(model_type = 'hed',
                           hpi_df = hed_trans,
-                          hed_spec = hed_spec,
+                          mod_spec = hed_spec,
                           ...)
   }
 
@@ -116,25 +108,17 @@ hedIndex <- function(trans_df,
   }
 
   if (is.null(hed_spec) & is.null(dep_var) & is.null(ind_var)){
-    message('Either a full specification (hed_spec) or dependent (dep_var) and ',
+    stop('Either a full specification (hed_spec) or dependent (dep_var) and ',
             'independent variables (ind_var) must be provided.')
-    stop()
   }
 
-
-  if(class(hed_model) != 'hpimodel'){
-    message('Estimating hedonic model failed')
-    stop()
-  }
+  if (class(hed_model) != 'hpimodel') stop('Estimating hedonic model failed')
 
   # Convert to an index
   hed_index <- modelToIndex(hed_model,
                             ...)
 
-  if(class(hed_index) != 'hpiindex'){
-    message('Converting model results to index failed')
-    stop()
-  }
+  if (class(hed_index) != 'hpiindex') stop('Converting model results to index failed')
 
   if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
 
@@ -148,10 +132,7 @@ hedIndex <- function(trans_df,
                              order = smooth_order,
                              in_place = TRUE,
                              ...)
-    if (!'indexsmooth' %in% class(hed_index$smooth)){
-      message('Smoothing index failed')
-      stop()
-    }
+    if (!'indexsmooth' %in% class(hed_index$smooth)) stop('Smoothing index failed')
   }
 
   # Return Values
