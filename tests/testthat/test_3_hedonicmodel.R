@@ -683,67 +683,6 @@ context('hpiModel.heddata()')
                   modelToIndex(model_ex)$value[84])
 
   })
-#
-#   test_that('modelToIndex imputes properly, Robust model, LogDEP = TRUE',{
-#
-#     model_base <- hpiModel(hpi_df = hed_df,
-#                            estimator = 'robust',
-#                            log_dep = TRUE,
-#                            trim_model=TRUE,
-#                            dep_var = 'price',
-#                            ind_var = c('tot_sf', 'beds', 'baths'))
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[2] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(!is.na(modelToIndex(model_ex)$value[2]))
-#     expect_true(modelToIndex(model_ex)$value[2] == 100)
-#     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[3:5] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[81:84] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
-#     expect_true(modelToIndex(model_ex)$value[80] ==
-#                   modelToIndex(model_ex)$value[84])
-#
-#   })
-#
-#   test_that('modelToIndex imputes properly, Weighted model, LogDep=FALSE',{
-#
-#     model_base <- hpiModel(hpi_df = hed_df,
-#                            estimator = 'weighted',
-#                            log_dep = TRUE,
-#                            trim_model=FALSE,
-#                            dep_var = 'price',
-#                            ind_var = c('tot_sf', 'beds', 'baths'),
-#                            weights=runif(nrow(hed_df), 0, 1))
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[2] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(!is.na(modelToIndex(model_ex)$value[2]))
-#     expect_true(modelToIndex(model_ex)$value[2] == 100)
-#     expect_true(modelToIndex(model_ex)$imputed[2] == 1)
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[3:5] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(all(!is.na(modelToIndex(model_ex)$value[3:5])))
-#
-#     model_ex <- model_base
-#     model_ex$coefficients$coefficient[81:84] <- NA_real_
-#     expect_is(modelToIndex(model_ex), 'hpiindex')
-#     expect_true(all(!is.na(modelToIndex(model_ex)$value[81:84])))
-#     expect_true(modelToIndex(model_ex)$value[80] ==
-#                   modelToIndex(model_ex)$value[84])
-#
-#   })
 
   ### smoothIndex()  -------------------------------------------------------------
 
@@ -825,8 +764,8 @@ context('hedindex() wrapper')
                        trans_id = 'sale_id',
                        prop_id = 'pinx',
                        estimator = 'robust',
-                       dep_var = 'price',
-                       ind_var = c('tot_sf', 'beds', 'baths'))
+                       hed_spec = as.formula(paste0('log(price) ~ ',
+                                                    'as.factor(baths) + tot_sf')))
 
     expect_is(full_2, 'hpi')
     expect_true(full_2$model$estimator == 'robust')
@@ -866,30 +805,32 @@ context('hedindex() wrapper')
 
     ## HPI Model
 
-    # # Trim Model
-    # trim_index <- hedIndex(trans_df = hed_df,
-    #                        dep_var = 'price',
-    #                        ind_var = c('tot_sf', 'beds', 'baths'),
-    #                        trim_model=TRUE)
-    # expect_true(is.null(trim_index$model$model_obj$qr))
-    #
-    # # Log Dep & Robust
-    # ld_index <- hedIndex(trans_df = hed_df,
-    #                      estimator = 'robust',
-    #                      dep_var = 'price',
-    #                      ind_var = c('tot_sf', 'beds', 'baths'),
-    #                      log_dep = FALSE)
-    # expect_true(ld_index$model$log_dep == FALSE)
-    # expect_true(ld_index$model$estimator == 'robust')
-    #
-    # ## Model to Index
-    # m2i_index <- hedIndex(trans_df = hed_df,
-    #                       estimator = 'robust',
-    #                       log_dep = FALSE,
-    #                       dep_var = 'price',
-    #                       ind_var = c('tot_sf', 'beds', 'baths'),
-    #                       max_period = 80)
-    # expect_true(length(m2i_index$index$value) == 80)
+    # Trim Model
+    trim_index <- hedIndex(trans_df = hed_df,
+                           dep_var = 'price',
+                           ind_var = c('tot_sf', 'beds', 'baths'),
+                           trim_model=TRUE)
+    expect_true(is.null(trim_index$model$model_obj$qr))
+
+    # Log Dep & Robust
+    ld_index <- hedIndex(trans_df = hed_df,
+                         estimator = 'robust',
+                         dep_var = 'price',
+                         ind_var = c('tot_sf', 'beds', 'baths'),
+                         log_dep = FALSE,
+                         smooth = TRUE,
+                         smooth_order = 5)
+    expect_true(ld_index$model$log_dep == FALSE)
+    expect_true(ld_index$model$estimator == 'robust')
+
+    ## Model to Index
+    m2i_index <- hedIndex(trans_df = hed_df,
+                          estimator = 'robust',
+                          log_dep = FALSE,
+                          dep_var = 'price',
+                          ind_var = c('tot_sf', 'beds', 'baths'),
+                          max_period = 80)
+    expect_true(length(m2i_index$index$value) == 80)
 
   })
 
@@ -919,6 +860,15 @@ context('hedindex() wrapper')
                           ind_var = c('tot_sf', 'beds', 'baths'),
                           periodicity = 'xxx'))
 
+    # N0 spec
+    expect_error(hedIndex(trans_df = sales,
+                          date = 'sale_date',
+                          price = 'sale_price',
+                          trans_id = 'sale_id',
+                          prop_id = 'pinx',
+                          estimator = 'base',
+                          log_dep = TRUE,
+                          periodicity = 'monthly'))
   })
 
   test_that("Bad arguments generate errors: trans_df Case",{
@@ -931,6 +881,15 @@ context('hedindex() wrapper')
                           log_dep = TRUE,
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(hedIndex(trans_df = sales_df,
+                          trans_id = 'sale_id',
+                          prop_id = 'pinx',
+                          estimator = 'base',
+                          log_dep = TRUE,
+                          dep_var = 'price',
+                          ind_var = c('tot_sf', 'beds', 'baths')))
+
     expect_error(hedIndex(trans_df = sales_df,
                           price = 'sale_price',
                           trans_id = 'xx',
@@ -939,10 +898,27 @@ context('hedindex() wrapper')
                           log_dep = TRUE,
                           dep_var = 'price',
                           ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(hedIndex(trans_df = sales_df,
+                          price = 'sale_price',
+                          prop_id = 'pinx',
+                          estimator = 'base',
+                          log_dep = TRUE,
+                          dep_var = 'price',
+                          ind_var = c('tot_sf', 'beds', 'baths')))
+
     expect_error(hedIndex(trans_df = sales_df,
                           price = 'sale_price',
                           trans_id = 'sale_id',
                           prop_id = 'xx',
+                          estimator = 'base',
+                          log_dep = TRUE,
+                          dep_var = 'price',
+                          ind_var = c('tot_sf', 'beds', 'baths')))
+
+    expect_error(hedIndex(trans_df = sales_df,
+                          price = 'sale_price',
+                          trans_id = 'sale_id',
                           estimator = 'base',
                           log_dep = TRUE,
                           dep_var = 'price',

@@ -14,7 +14,7 @@ rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL,
 
 \item{ind_var}{default = NULL; Independent variables in the hedonic model}
 
-\item{rf_spec}{default = NULL; Full hedonic model specification}
+\item{rf_spec}{default = NULL; Full random forest model specification}
 
 \item{...}{Additional Arguments}
 }
@@ -43,22 +43,22 @@ the `trans_df` object is not of that class.
 
  # Create index with raw transaction data
  rf_index <- rfIndex(trans_df = ex_sales,
-                       periodicity = 'monthly',
-                       min_date = '2010-06-01',
-                       max_date = '2015-11-30',
-                       adj_type = 'clip',
-                       date = 'sale_date',
-                       price = 'sale_price',
-                       trans_id = 'sale_id',
-                       prop_id = 'pinx',
-                       estimator = 'pdp',
-                       log_dep = TRUE,
-                       trim_model = TRUE,
-                       max_period = 48,
-                       dep_var = 'price',
-                       ind_var = c('tot_sf', 'beds', 'baths'),
-                       smooth = FALSE,
-                       ntrees = 10,
-                       sim_count = 2)
+                     periodicity = 'monthly',
+                     min_date = '2010-06-01',
+                     max_date = '2015-11-30',
+                     adj_type = 'clip',
+                     date = 'sale_date',
+                     price = 'sale_price',
+                     trans_id = 'sale_id',
+                     prop_id = 'pinx',
+                     estimator = 'pdp',
+                     log_dep = TRUE,
+                     trim_model = TRUE,
+                     max_period = 48,
+                     dep_var = 'price',
+                     ind_var = c('tot_sf', 'beds', 'baths'),
+                     smooth = FALSE,
+                     ntrees = 10,
+                     sim_count = 2)
 
 }

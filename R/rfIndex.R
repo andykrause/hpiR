@@ -25,23 +25,23 @@
 #'
 #'  # Create index with raw transaction data
 #'  rf_index <- rfIndex(trans_df = ex_sales,
-#'                        periodicity = 'monthly',
-#'                        min_date = '2010-06-01',
-#'                        max_date = '2015-11-30',
-#'                        adj_type = 'clip',
-#'                        date = 'sale_date',
-#'                        price = 'sale_price',
-#'                        trans_id = 'sale_id',
-#'                        prop_id = 'pinx',
-#'                        estimator = 'pdp',
-#'                        log_dep = TRUE,
-#'                        trim_model = TRUE,
-#'                        max_period = 48,
-#'                        dep_var = 'price',
-#'                        ind_var = c('tot_sf', 'beds', 'baths'),
-#'                        smooth = FALSE,
-#'                        ntrees = 10,
-#'                        sim_count = 2)
+#'                      periodicity = 'monthly',
+#'                      min_date = '2010-06-01',
+#'                      max_date = '2015-11-30',
+#'                      adj_type = 'clip',
+#'                      date = 'sale_date',
+#'                      price = 'sale_price',
+#'                      trans_id = 'sale_id',
+#'                      prop_id = 'pinx',
+#'                      estimator = 'pdp',
+#'                      log_dep = TRUE,
+#'                      trim_model = TRUE,
+#'                      max_period = 48,
+#'                      dep_var = 'price',
+#'                      ind_var = c('tot_sf', 'beds', 'baths'),
+#'                      smooth = FALSE,
+#'                      ntrees = 10,
+#'                      sim_count = 2)
 #'
 #' @export
 
@@ -73,29 +73,24 @@ rfIndex <- function(trans_df,
     } # Ends if(!trans_df...)
 
     if (is.null(list(...)$trans_id)){
-      message('When not supplying an "hpidata" object a valid',
-              '"trans_id" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a valid "trans_id" argument must be supplied')
     }
     if (is.null(list(...)$prop_id)){
-      message('When not supplying an "hpidata" object a ',
-              '"prop_id" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a "prop_id" argument must be supplied')
+
     }
     if (is.null(list(...)$price)){
-      message('When not supplying an "hpidata" object a ',
-              '"price" argument must be supplied')
-      stop()
+      stop('When not supplying an "hpidata" object a "price" argument must be supplied')
     }
 
     # Create Tranactions object
     rf_trans <- hedCreateTrans(trans_df = trans_df,
                                 ...)
+
   } # Ends if/else ('heddata' %in% ...)
 
   if (!'heddata' %in% class(rf_trans)){
-    message('Converting sales data to random forest sales object failed')
-    stop()
+    stop('Converting sales data to random forest sales object failed')
   }
 
   # Estimate model if hed_spec given
@@ -112,31 +107,23 @@ rfIndex <- function(trans_df,
 
     rf_model <- hpiModel(model_type = 'rf',
                          hpi_df = rf_trans,
-                          dep_var = dep_var,
-                          ind_var = ind_var,
-                          ...)
+                         dep_var = dep_var,
+                         ind_var = ind_var,
+                         ...)
   }
 
   if (is.null(rf_spec) & is.null(dep_var) & is.null(ind_var)){
-    message('Either a full specification (rf_spec) or dependent (dep_var) and ',
+    stop('Either a full specification (rf_spec) or dependent (dep_var) and ',
             'independent variables (ind_var) must be provided.')
-    stop()
   }
 
-
-  if(class(rf_model) != 'hpimodel'){
-    message('Estimating hedonic model failed')
-    stop()
-  }
+  if (class(rf_model) != 'hpimodel') stop('Estimating hedonic model failed')
 
   # Convert to an index
   rf_index <- modelToIndex(rf_model,
                             ...)
 
-  if(class(rf_index) != 'hpiindex'){
-    message('Converting model results to index failed')
-    stop()
-  }
+  if (class(rf_index) != 'hpiindex') stop('Converting model results to index failed')
 
   if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
 
@@ -150,10 +137,7 @@ rfIndex <- function(trans_df,
                              order = smooth_order,
                              in_place = TRUE,
                              ...)
-    if (!'indexsmooth' %in% class(rf_index$smooth)){
-      message('Smoothing index failed')
-      stop()
-    }
+    if (!'indexsmooth' %in% class(rf_index$smooth)) stop('Smoothing index failed')
   }
 
   # Return Values

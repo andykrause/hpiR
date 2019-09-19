@@ -2,7 +2,7 @@
 % Please edit documentation in R/rfModel.R
 \name{rfModel}
 \alias{rfModel}
-\title{Estimate hedonic model for index creation}
+\title{Estimate random forest model for index creation}
 \usage{
 rfModel(estimator, rf_df, rf_spec, ntrees = 200, seed = 1, ...)
 }
@@ -20,14 +20,14 @@ rfModel(estimator, rf_df, rf_spec, ntrees = 200, seed = 1, ...)
 \item{...}{Additional arguments}
 }
 \value{
-`hedmodel` object: model object of the estimator (ex.: `lm`)
+`rfmodel` object: model object of the estimator (ex.: `lm`)
 }
 \description{
-Estimate coefficients for an index via the hedonic approach (generic method)
+Estimate coefficients for an index via the random forest approach (generic method)
 }
 \section{Further Details}{
 
-`estimator` argument must be in a class of 'base', 'weighted' or 'robust'
+`estimator` argument must be in a class of 'pdp'
 This function is not generally called directly, but rather from `hpiModel()`
 }
 

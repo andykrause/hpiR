@@ -86,8 +86,7 @@ rtIndex <- function(trans_df,
   } # Ends if/else ('rtdata' %in% ...)
 
   if (!'rtdata' %in% class(rt_trans)){
-    message('Converting transactions data to repeat transaction object failed')
-    stop()
+    stop('Converting transactions data to repeat transaction object failed')
   }
 
   # Etimate the model
@@ -95,19 +94,13 @@ rtIndex <- function(trans_df,
                        hpi_df = rt_trans,
                        ...)
 
-  if (class(rt_model) != 'hpimodel'){
-    message('Estimating repeat sale model failed')
-    stop()
-  }
+  if (class(rt_model) != 'hpimodel') stop('Estimating repeat sale model failed')
 
   # Convert to an index
   rt_index <- modelToIndex(rt_model,
                            ...)
 
-  if (class(rt_index) != 'hpiindex'){
-    message('Converting model results to index failed')
-    stop()
-  }
+  if (class(rt_index) != 'hpiindex') stop('Converting model results to index failed')
 
   if ('smooth' %in% names(list(...)) && isTRUE(list(...)$smooth)){
 
@@ -121,10 +114,7 @@ rtIndex <- function(trans_df,
                             order = smooth_order,
                             in_place = TRUE,
                             ...)
-    if (!'indexsmooth' %in% class(rt_index$smooth)){
-      message('Smoothing index failed')
-      stop()
-    }
+    if (!'indexsmooth' %in% class(rt_index$smooth)) stop('Smoothing index failed')
   }
 
   # Return Values

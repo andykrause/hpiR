@@ -67,10 +67,7 @@ calcVolatility <- function(index,
     } else {
       index <- index$index$smooth
       # Check to make sure a NULL wasn't given by smooth
-      if (is.null(index)){
-        message ('No smoothed index present. Please set "smooth = FALSE"')
-        stop()
-      }
+      if (is.null(index)) stop('No smoothed index present. Please set "smooth = FALSE"')
     }
   }
 
@@ -80,10 +77,7 @@ calcVolatility <- function(index,
     } else {
       index <- index$smooth
       # Check to make sure a NULL wasn't given by smooth
-      if (is.null(index)){
-        message ('No smoothed index present. Please set "smooth = FALSE"')
-        stop()
-      }
+      if (is.null(index)) stop('No smoothed index present. Please set "smooth = FALSE"')
     }
   }
 
@@ -193,10 +187,7 @@ calcSeriesVolatility <- function(series_obj,
                                  ...){
 
   # Bad series_obj
-  if (!'serieshpi' %in% class(series_obj)){
-    message('The "series_obj" must be of class "serieshpi"')
-    stop()
-  }
+  if (!'serieshpi' %in% class(series_obj)) stop('The "series_obj" must be of class "serieshpi"')
 
   # Apply smoothing to all indexes
   s_hpis <- purrr::map(.x=series_obj$hpis,

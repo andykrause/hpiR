@@ -58,6 +58,11 @@ context('Plot functions')
 
     expect_is(plot(rt_index$index), 'plotindex')
 
+    expect_is(plot(rt_index$index, show_imputed = TRUE), 'plotindex')
+
+    rt_index$index$smooth <- NULL
+    expect_message(plot(rt_index$index, smooth = TRUE), 'No smoothed')
+
   })
 
 
@@ -79,55 +84,55 @@ context('Plot functions')
 
   })
 
- # ## Series
- #
- #  rt_series <- createSeries(hpi_obj = rt_index,
- #                            train_period = 24)
- #
- #  test_that('plot.serieshpi works', {
- #
- #    expect_is(plot(rt_series), 'plotseries')
- #
- #  })
- #
- # ## Revision
- #
- #  rev_obj <- calcRevision(series_obj = rt_series)
- #
- #  test_that('plot.hpirevision works', {
- #
- #    expect_is(plot(rev_obj), 'plotrevision')
- #
- #  })
- #
- # ## Accuracy
- #
- #  rt_is_error <- calcAccuracy(hpi_obj = rt_index,
- #                              test_type = 'rt',
- #                              test_method = 'insample',
- #                              pred_df = rt_index$data)
- #
- #  rt_kf_error <- calcAccuracy(hpi_obj = rt_index,
- #                              test_type = 'rt',
- #                              test_method = 'kfold',
- #                              pred_df = rt_index$data)
- #
- #  test_that('plot.hpiaccuracy works', {
- #
- #    expect_is(plot(rt_is_error, return_plot = TRUE), 'plotaccuracy')
- #    expect_is(plot(rt_kf_error, return_plot = TRUE), 'plotaccuracy')
- #
- #  })
- #
- #  rt_fc_error <- calcSeriesAccuracy(series_obj = rt_series,
- #                                    test_type = 'rt',
- #                                    test_method = 'forecast',
- #                                    pred_df = rt_index$data)
- #
- #  test_that('plot.seriesaccuracy works', {
- #
- #    expect_is(plot(rt_fc_error, return_plot = TRUE), 'plotaccuracy')
- #
- #  })
- #
- #
+ ## Series
+
+  rt_series <- createSeries(hpi_obj = rt_index,
+                            train_period = 24)
+
+  test_that('plot.serieshpi works', {
+
+    expect_is(plot(rt_series), 'plotseries')
+
+  })
+
+ ## Revision
+
+  rev_obj <- calcRevision(series_obj = rt_series)
+
+  test_that('plot.hpirevision works', {
+
+    expect_is(plot(rev_obj), 'plotrevision')
+
+  })
+
+ ## Accuracy
+
+  rt_is_error <- calcAccuracy(hpi_obj = rt_index,
+                              test_type = 'rt',
+                              test_method = 'insample',
+                              pred_df = rt_index$data)
+
+  rt_kf_error <- calcAccuracy(hpi_obj = rt_index,
+                              test_type = 'rt',
+                              test_method = 'kfold',
+                              pred_df = rt_index$data)
+
+  test_that('plot.hpiaccuracy works', {
+
+    expect_is(plot(rt_is_error, return_plot = TRUE), 'plotaccuracy')
+    expect_is(plot(rt_kf_error, return_plot = TRUE), 'plotaccuracy')
+
+  })
+
+  rt_fc_error <- calcSeriesAccuracy(series_obj = rt_series,
+                                    test_type = 'rt',
+                                    test_method = 'forecast',
+                                    pred_df = rt_index$data)
+
+  test_that('plot.seriesaccuracy works', {
+
+    expect_is(plot(rt_fc_error, return_plot = TRUE), 'plotaccuracy')
+
+  })
+
+
