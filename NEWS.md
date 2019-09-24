@@ -13,3 +13,4 @@ Fixed error when accuracy validation set has 0 rows
 
 Added ability to filter repeat transactions by repeat time period distance
 Added custom weighting option (user request) to repeat transaction model
+Increased test coverage across 'xxindex()' and 'plotxx()' functions

@@ -7,6 +7,7 @@ This is an updated version 0.3.0.  The first submission of this version. New to 
 * Added custom weighting option (user request) to repeat transaction model
 * Bug fix: Improved error catching when robust model fails (revert to lm)
 * Bug fix: Fixed error when validation set has 0 rows
+* Tests: Increased test coverage
 
 ## Test environments
 * local OS X install, R 3.6.0

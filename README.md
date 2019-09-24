@@ -19,12 +19,15 @@ volatility and revision. By providing these metrics various index
 methods (and estimators) can be accurately compared against each other.
 
 While there are a (ever-increasing) variety of methods and models to use
-in house price index creation, this initial version (0.2.0) focuses on
+in house price index creation, this initial version (0.3.0) focuses on
 the two most common: repeat sales (transactions) and hedonic price.
 Base, robust and weighted estimators are provided when appropriate.
+Additionally, a new method using random forests and a post model
+interpretability method – partial dependence plots – is also used.
 
 The package also includes a dataset of single family and townhome sales
-from the City of Seattle during 2010-2016 time period.
+from the City of Seattle during January 2010 to December 2016 time
+period.
 
 Please see the
 [vignette](https://github.com/andykrause/hpiR/blob/master/vignettes/introduction.Rmd)
