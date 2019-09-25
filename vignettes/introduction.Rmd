@@ -146,7 +146,7 @@ First, we use the `rtCreateTrans()` function to convert the transaction data (th
                               min_period_dist = 12)
 ```
 
-This function creates a `data.frame` with eight fields: the property id, the time period for the first transaction and the second transaction, the prices for the two tranactions, the unique transaction ids for both and a unique id for the pair.  The resulting object has a class of `rtdata` (inheriting from `hpidata` and `data.frame`). 
+This function creates a `data.frame` with eight fields: the property id, the time period for the first transaction and the second transaction, the prices for the two transactions, the unique transaction ids for both and a unique id for the pair.  The resulting object has a class of `rtdata` (inheriting from `hpidata` and `data.frame`). 
 
 ```{r rtdata_table, echo=FALSE}
 
@@ -175,7 +175,7 @@ In the event of more than two transactions of the same property, all pairs of tr
 
 Next, we use the `rtdata` object to estimate a repeat transactions model.  In this simple example we will use the *"base"* estimator (a simple OLS) with a logged dependent variable (`log_dep = TRUE`).  Models may also be estimated via a robust regression model (`estimator = "robust"`) or a weighted OLS model (`estimator = "weighted"`) as originally suggested by Case and Shiller (1987).
 
-The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argumet. In this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
+The `hpiModel()` function is an S3 method that will dispatch on the class of the object that is passed to its `hpi_df` argument. In this case that class is `rtdata` signifying that the data is in repeat-transaction format.  Again, we'll use a base estimator here with a logged dependent variable.  The `hpiModel()` function returns an object of class `hpimodel` that includes the full regression model results, extracted and cleaned coefficients as well as additional information on the approach.
 
 ```{r create_rtmodel}
   rt_model <- hpiModel(model_type = 'rt',
@@ -251,7 +251,7 @@ The plot function can show the imputed periods as well with `show_imputed=TRUE`.
 
 #### Smoothing
 
-As we see from the plots of the indexes above, considerable volatility from one period to the next is common. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occuring in the market.  The `smoothIndex()` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the `order` argument -- the number of periods over which to smooth. Note that the `order` is saved in the attributes of the `indexsmooth` object.
+As we see from the plots of the indexes above, considerable volatility from one period to the next is common. Smoothing of indexes may be warranted as indexes resulting from raw model results often exhibit greater volatility than is actually occurring in the market.  The `smoothIndex()` function will smooth via a moving average function, with small corrections to keep index length after smoothing. The amount of smoothing is controlled by the `order` argument -- the number of periods over which to smooth. Note that the `order` is saved in the attributes of the `indexsmooth` object.
 
 ```{r rt_smooth}
   rt_smooth <- smoothIndex(index_obj = rt_index,
@@ -624,7 +624,7 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
 
 #### Volatility
 
-One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The `window` over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (`\$roll`) as well as the summarized average volality(`\$mean`) and median (`\$median`) are returned by the function.
+One thing we can check for an index is its volatility.  We can get the a rolling window volatility (standard deviation) of the index with the `calcIndexVolatility()` function.  The `window` over which to calculate the volatility can be specified.  Both volatility metrics at each window calculation (`\$roll`) as well as the summarized average volatility(`\$mean`) and median (`\$median`) are returned by the function.
 
 ```{r index_vol1}
   index_vol <- calcVolatility(index = hed_hpi$index$value,
@@ -757,7 +757,7 @@ As with the other analytical functions, the results of the accuracy calculations
 
 To create a better estimate of predictive ability we can employ a K-fold, out of sample test of accuracy.  In a K-fold test, some percentage of the observations are withheld, the index re-estimated and then the newly estimated index is judged by its ability to predict the repeat transaction price in the withheld (out-of) sample.
 
-Two additional arguments are availabile here: 1) `k` - the number of folds to make (default = 10); and 2) `seed` a value to the control the random sampling (default = 1).
+Two additional arguments are available here: 1) `k` - the number of folds to make (default = 10); and 2) `seed` a value to the control the random sampling (default = 1).
 
 ```{r kf_accr}
   rt_kf_accr <- calcAccuracy(hpi_obj = rt_hpi,
@@ -938,7 +938,7 @@ Like the indexes above, the `rfIndex` function takes a number of arguments to de
 * Simulation count: the number of properties to simulate to create the index.  This can be done via one of three ways (arguments) -- adding none of these will simulate all properties:
     * **sim_count**: Total number of simulations to do (will randomly choose)
     * **sim_ids**: The exact row ids to use in simulation
-    * **sim_per**: THe percentage of rows to simulate (will randomly choose)
+    * **sim_per**: The percentage of rows to simulate (will randomly choose)
     
 * **ntrees**: Number of trees to grow in the random forest.  Some initial testing showed little change in results for this dataset after about 150 trees. 
 

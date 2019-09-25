@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # hpiR
 
-This package intends to simplify and standardize the creation of house price indexes in R.  It also provides a framework for judging the 'quality' of a given index by testing for predictive accuracy, volatility and revision.  By providing these metrics various index methods (and estimators) can be accurately compared against each other.  
+This package intends to simplify and standardize the creation of house price indexes in R.  It also provides a framework for judging the quality of a given index by testing for predictive accuracy, volatility and revision.  By providing these metrics various index methods (and estimators) can be accurately compared against each other.  
 
 While there are a (ever-increasing) variety of methods and models to use in house price index creation, this initial version (0.3.0) focuses on the two most common: repeat sales (transactions) and hedonic price.  Base, robust and weighted estimators are provided when appropriate.  Additionally, a new method using random forests and a post model interpretability method -- partial dependence plots -- is also used. 
 
