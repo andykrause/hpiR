@@ -36,7 +36,7 @@ The `hpi` collection object is the "core" unit of the `hpiR` package. The object
 
 The `serieshpi` object is a "super-unit" that contains multiple house price indexes within it.  Indexes within a series share the same data, modeling approach and parameters; they differ only in the length of the indexes.  Additionally there are two types of analyses that can only be applied to series: forecast accuracy (`calcForecastError()`) and revision (`calcRevision()`). Also note that in an `serieshpi` object the data objects are moved out of the `hpi` objects and into the `serieshpi` object to avoid duplication of data storage.
 
-The table below shows the various classes of objects used with `hpiR`, their type, what they inherit from, what function creates them and a short desription.  A tilde (**~**) infront of the inherits value signifies that some of the components of the object inherit from that class, but not all.   
+The table below shows the various classes of objects used with `hpiR`, their type, what they inherit from, what function creates them and a short description.  A tilde (**~**) in front of the inherits value signifies that some of the components of the object inherit from that class, but not all.   
 
 <br>
 

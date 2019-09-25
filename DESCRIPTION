@@ -28,7 +28,6 @@ Imports:
     forecast,
     caret,
     gridExtra,
-    knitr,
     MASS,
     rlang,
     plyr,
