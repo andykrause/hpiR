@@ -35,8 +35,7 @@
 #'  # Create Index
 #'  hed_index <- hedIndex(trans_df = ex_sales,
 #'                        periodicity = 'monthly',
-#'                        min_date = '2010-06-01',
-#'                        max_date = '2015-11-30',
+#'                        max_date = '2011-12-31',
 #'                        adj_type = 'clip',
 #'                        date = 'sale_date',
 #'                        price = 'sale_price',
@@ -45,7 +44,7 @@
 #'                        estimator = 'robust',
 #'                        log_dep = TRUE,
 #'                        trim_model = TRUE,
-#'                        max_period = 48,
+#'                        max_period = 24,
 #'                        dep_var = 'price',
 #'                        ind_var = c('tot_sf', 'beds', 'baths'),
 #'                        smooth = FALSE)
@@ -58,6 +57,7 @@
 #'  # Create Prediction data
 #'  rt_data <- rtCreateTrans(trans_df = ex_sales,
 #'                           prop_id = 'pinx',
+#'                           max_date = '2011-12-31',
 #'                           trans_id = 'sale_id',
 #'                           price = 'sale_price',
 #'                           periodicity = 'monthly',
