@@ -11,8 +11,10 @@
 #' the following fields:
 #' \describe{
 #'   \item{prop_id}{Property Identification number}
+#'   \item{price}{Transaction Price}
 #'   \item{pred_price}{Predicted price}
-#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{error}{(Prediction - Actual) / Actual}
+#'   \item{log_error}{log(prediction) - log(actual)}
 #'   \item{pred_period}{Period of the prediction}
 #'   \item{series}{Series position from which the prediction was generated}
 #' }

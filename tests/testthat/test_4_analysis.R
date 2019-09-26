@@ -387,6 +387,7 @@ context('calcKFoldError()')
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
                                          pred_df = rt_index$data),
               'hpiaccuracy')
+    expect_true(ncol(rt_error) == 6)
 
     # All data - smooth
     expect_is(rt_error <- calcKFoldError(hpi_obj = hed_index,
@@ -416,6 +417,8 @@ context('calcAccuracy() after error functions')
                                        test_method = 'insample',
                                        pred_df = rt_index$data),
               'hpiaccuracy')
+    expect_true(ncol(rt_error) == 6)
+
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,
@@ -438,6 +441,8 @@ context('calcAccuracy() after error functions')
                                        test_method = 'kfold',
                                        pred_df = rt_index$data),
               'hpiaccuracy')
+    expect_true(ncol(rt_error) == 6)
+
 
     # Returns an error object in place
     expect_is(hed_index <- calcAccuracy(hpi_obj = hed_index,

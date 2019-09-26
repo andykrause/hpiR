@@ -9,8 +9,10 @@
 #' containing the following fields:
 #' \describe{
 #'   \item{prop_id}{Property Identification number}
+#'   \item{price}{Transaction Price}
 #'   \item{pred_price}{Predicted price}
-#'   \item{pred_error}{(Prediction - Actual) / Actual}
+#'   \item{error}{(Prediction - Actual) / Actual}
+#'   \item{log_error}{log(prediction) - log(actual)}
 #'   \item{pred_period}{Period of the prediction}
 #' }
 #' @section Further Details:
@@ -83,12 +85,15 @@ calcInSampleError.rtdata <- function(pred_df,
 
   # Measure the error (difference from actual)
   error <- (pred_price - pred_df$price_2) / pred_df$price_2
+  logerror <- log(pred_price) - log(pred_df$price_2)
 
   # Return Values
   error_df <- data.frame(prop_id = pred_df$prop_id,
-                         pred_price=pred_price,
-                         pred_error=error,
-                         pred_period=pred_df$period_2,
+                         price = pred_df$price_2,
+                         pred_price = pred_price,
+                         error = error,
+                         log_error = logerror,
+                         pred_period = pred_df$period_2,
                          stringsAsFactors=FALSE)
 
   # Add classes

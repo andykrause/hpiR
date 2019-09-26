@@ -209,6 +209,7 @@ plot.indexvolatility <- function(x, ...){
 #' @param x Object to plot of class `hpiaccuracy``
 #' @param return_plot default = FALSE; Return the plot to the function call
 #' @param do_plot default = FALSE; Execute plotting to terminal/console
+#' @param use_log_error [FALSE] Use the log error?
 #' @param ... Additional Arguments
 #' @return `plotaccuracy` object inheriting from a ggplot object
 #' @import ggplot2
@@ -249,25 +250,28 @@ plot.indexvolatility <- function(x, ...){
 plot.hpiaccuracy <- function(x,
                              return_plot = FALSE,
                              do_plot = TRUE,
+                             use_log_error = FALSE,
                              ...){
+
+  if (use_log_error) x$error <- x$log_error
 
   # Get period count
   p_cnt <- length(unique(x$pred_period))
 
   # Make the absolute box plot
   bar_abs <- ggplot(x, aes_string(x="as.factor(pred_period)",
-                                          y="abs(pred_error)"), alpha=.5) +
+                                          y="abs(error)"), alpha=.5) +
     geom_boxplot(fill='lightblue') +
-    coord_cartesian(ylim=c(0, quantile(abs(x$pred_error),.99))) +
+    coord_cartesian(ylim=c(0, quantile(abs(x$error),.99))) +
     ylab('Absolute Error') +
     xlab('Time Period')
 
   # Make the magnitude box plot
   bar_mag <- ggplot(x, aes_string(x="as.factor(pred_period)",
-                                         y="pred_error"), alpha=.5) +
+                                         y="error"), alpha=.5) +
     geom_boxplot(fill='salmon') +
-    coord_cartesian(ylim=c(stats::quantile(x$pred_error, .01),
-                           stats::quantile(x$pred_error, .99))) +
+    coord_cartesian(ylim=c(stats::quantile(x$error, .01),
+                           stats::quantile(x$error, .99))) +
     ylab('Error') +
     xlab('Time Period')
 
@@ -284,17 +288,17 @@ plot.hpiaccuracy <- function(x,
   }
 
   # Make absolute density plot
-  dens_abs <- ggplot(x, aes_string(x="abs(pred_error)"), alpha=.5) +
+  dens_abs <- ggplot(x, aes_string(x="abs(error)"), alpha=.5) +
     geom_density(fill='lightblue') +
-    coord_cartesian(xlim=c(0, stats::quantile(abs(x$pred_error),.99))) +
+    coord_cartesian(xlim=c(0, stats::quantile(abs(x$error),.99))) +
     xlab('Absolute Error') +
     ylab('Density of Error')
 
   # Make magnitude density plot
-  dens_mag <- ggplot(x, aes_string(x="pred_error"), alpha=.5) +
+  dens_mag <- ggplot(x, aes_string(x="error"), alpha=.5) +
     geom_density(fill='salmon') +
-    coord_cartesian(xlim=c(stats::quantile(x$pred_error, .01),
-                           stats::quantile(x$pred_error, .99))) +
+    coord_cartesian(xlim=c(stats::quantile(x$error, .01),
+                           stats::quantile(x$error, .99))) +
     xlab('Error') +
     ylab('Density of Error')
 
