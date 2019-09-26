@@ -4,7 +4,8 @@
 \alias{plot.hpiaccuracy}
 \title{Plot method for `hpiaccuracy` object}
 \usage{
-\method{plot}{hpiaccuracy}(x, return_plot = FALSE, do_plot = TRUE, ...)
+\method{plot}{hpiaccuracy}(x, return_plot = FALSE, do_plot = TRUE,
+  use_log_error = FALSE, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `hpiaccuracy``}
@@ -12,6 +13,8 @@
 \item{return_plot}{default = FALSE; Return the plot to the function call}
 
 \item{do_plot}{default = FALSE; Execute plotting to terminal/console}
+
+\item{use_log_error}{[FALSE] Use the log error?}
 
 \item{...}{Additional Arguments}
 }
