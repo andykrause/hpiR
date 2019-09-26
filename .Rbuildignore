@@ -14,3 +14,4 @@ cran-comments.md
 ^tests/test_that/test_5_viz\.r$
 ^tests/test_that/test_6_randomforest\.r$
 ^papers
+^CRAN-RELEASE$
