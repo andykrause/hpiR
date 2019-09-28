@@ -147,7 +147,7 @@ rtModel.robust <- function(rt_df,
     rt_model <- tryCatch({robustbase::lmrob(price_diff ~ time_matrix + 0, setting="KS2014")},
                          error = function(e) e)
    }
-   if ('simpleError' %in% class(rt_model)){
+   if (sum(rt_model$coefficients, na.rm = TRUE) == 0){
      if (lm_recover){
        rt_model <- lm(price_diff ~ time_matrix + 0)
      } else {
