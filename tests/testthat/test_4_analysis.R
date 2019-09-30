@@ -553,7 +553,7 @@ context('calcSeriesAccuracy()')
                                         test_method = 'insample',
                                         test_type = 'rt',
                                         summarize = TRUE,
-                                        in_place = TRUE)$accuracy) == 4823)
+                                        in_place = TRUE)$accuracy) == 5102)
   })
 
 #### Forecast --------------------------------------------------------------------
