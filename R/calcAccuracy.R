@@ -275,7 +275,7 @@ calcSeriesAccuracy <- function(series_obj,
     # If summarizing
     if (summarize){
       accr_df <- accr_df %>%
-        dplyr::group_by(., .data$prop_id, .data$pred_period) %>%
+        dplyr::group_by(., .data$pair_id) %>%
         dplyr::summarize(., pred_price = mean(.data$pred_price),
                             error = mean(.data$error),
                             log_error = mean(.data$log_error),

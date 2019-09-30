@@ -8,7 +8,7 @@
 #' @return object of class `hpiaccuracy` inheriting from class `data.frame`
 #' containing the following fields:
 #' \describe{
-#'   \item{prop_id}{Property Identification number}
+#'   \item{pair_id}{Uniq Pair ID number}
 #'   \item{price}{Transaction Price}
 #'   \item{pred_price}{Predicted price}
 #'   \item{error}{(Prediction - Actual) / Actual}
@@ -88,13 +88,13 @@ calcInSampleError.rtdata <- function(pred_df,
   logerror <- log(pred_price) - log(pred_df$price_2)
 
   # Return Values
-  error_df <- data.frame(prop_id = pred_df$prop_id,
-                         price = pred_df$price_2,
+  error_df <- data.frame(pair_id = pred_df$pair_id,
+                         rt_price = pred_df$price_2,
                          pred_price = pred_price,
                          error = error,
                          log_error = logerror,
                          pred_period = pred_df$period_2,
-                         stringsAsFactors=FALSE)
+                         stringsAsFactors = FALSE)
 
   # Add classes
   class(error_df) <- c('hpiaccuracy', 'data.frame')

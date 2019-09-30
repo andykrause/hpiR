@@ -11,7 +11,7 @@
 #' @return object of class `hpiaccuracy` inheriting from class `data.frame` containing the
 #' following fields:
 #' \describe{
-#'   \item{prop_id}{Property Identification number}
+#'   \item{pair_id}{Unique Pair ID}
 #'   \item{price}{Transaction Price}
 #'   \item{pred_price}{Predicted price}
 #'   \item{error}{(Prediction - Actual) / Actual}
@@ -145,7 +145,7 @@ calcKFoldError <- function(hpi_obj,
 
   # Bind results together and return
   accr_df <- dplyr::bind_rows(k_error) %>%
-    dplyr::filter(!is.na(.data$prop_id))
+    dplyr::filter(!is.na(.data$pair_id))
 
   class(accr_df) <- unique(c('hpiaccuracy', class(accr_df)))
   attr(accr_df, 'test_method') <- 'kfold'
