@@ -1,7 +1,8 @@
-# hpiR 0.4.0
+# hpiR 0.3.0
 
 ## Major Changes
 
+Added Random Forest + Partial Dependency Appraoch to creating house price indexes
 Added Log Error Calculations to all accuracy evaluations
 
 ## Bug Fixes
