@@ -5,8 +5,10 @@ This is an updated version 0.3.0.  The first submission of this version. New to 
 * Added a random forest and partial dependency option for estimating house price indexes
 * Added ability to filter repeat transactions by repeat time period distance
 * Added custom weighting option (user request) to repeat transaction model
+* Added 'pair_id' -- the unique identifier for repeat sales as a standard output in all repeat sales models
 * Bug fix: Improved error catching when robust model fails (revert to lm)
 * Bug fix: Fixed error when validation set has 0 rows
+* Bug fix: Fixed recovery error when Robust Repeat Sales model fails (rtModel)
 * Tests: Increased test coverage
 
 ## Test environments

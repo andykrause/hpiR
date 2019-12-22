@@ -30,7 +30,6 @@ Imports:
     gridExtra,
     MASS,
     rlang,
-    knitr,
     plyr,
     zoo,
     ranger,

@@ -202,7 +202,7 @@ The objects created by regression models can be rather large, so by default the 
 
 #### Index Creation
 
-We can then convert model results into an index with the `modelToIndex()` function.  The output of this function is an objet of class `hpiindex`, which has a time-series object (\$value slot, class `ts`) with an index value (base = 100) for each of the time periods estimated. Note that no smoothing is done at this time.
+We can then convert model results into an index with the `modelToIndex()` function.  The output of this function is an object of class `hpiindex`, which has a time-series object (\$value slot, class `ts`) with an index value (base = 100) for each of the time periods estimated. Note that no smoothing is done at this time.
 
 ```{r create_rtindex}
   rt_index <- modelToIndex(model_obj = rt_model)

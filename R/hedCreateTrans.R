@@ -13,7 +13,7 @@
 #' @param periodicity default=NULL, field containing the desired periodicity of analysis.
 #' Only necessary if not passing a `hpidata` object
 #' @param ... Additional arguments
-#' @importFrom dplyr rename rename_ arrange filter desc
+#' @importFrom dplyr rename arrange filter desc
 #' @importFrom magrittr %>%
 #' @return data.frame of transactions with standardized period field. Note that a full
 #' data.frame of the possible periods, their values and names can be found in the
@@ -75,7 +75,7 @@ hedCreateTrans <- function(trans_df,
   # Prepare input data
   hed_df <- trans_df %>%
     # Select fields and rename
-    dplyr::rename_('prop_id' = prop_id,
+    dplyr::rename('prop_id' = prop_id,
                    'trans_id' = trans_id,
                    'price' = price) %>%
     # Order by id, then time, then desc by price

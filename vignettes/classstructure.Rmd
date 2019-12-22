@@ -25,9 +25,9 @@ The table below shows the basic information on the various **S3** classes used i
 
 <br>
 
-* **"series"** = objects refering to information relevant to the entire hpi series (a set of hpi collections)
-* **"hpi"** = objects refering to information relevant to the entire hpi collection
-* **"index"** = objects refering to information relevant only to the index itself
+* **"series"** = objects referring to information relevant to the entire hpi series (a set of hpi collections)
+* **"hpi"** = objects referring to information relevant to the entire hpi collection
+* **"index"** = objects referring to information relevant only to the index itself
 * **"rt"** or **"hed"** =  objects with information specific to a particular index approach (**"rt"** for repeat transaction and **"hed"** for hedonic model)^[Additional approaches will be added here in the future.]
     * Suffixes of these classes currently include **"data"** and **"model"**
 * **"plot"** = objects containing plot objects.  
