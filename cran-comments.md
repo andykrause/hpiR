@@ -1,10 +1,10 @@
 ## Re-submission
 
-This is a resubmission of version 0.3.0.  In this re-submisison I have fixed:
+This is the second re-submission of version 0.3.0.  In this re-submisison I have fixed:
 
-* The broken github URL found in both the Description and Vignette
+* All of the broken github URL found in both the Description and Vignette
 
-### This verions contains the following updates
+### This version contains the following updates
 
 * Added a random forest and partial dependency option for estimating house price indexes
 * Added ability to filter repeat transactions by repeat time period distance
@@ -16,7 +16,7 @@ This is a resubmission of version 0.3.0.  In this re-submisison I have fixed:
 * Tests: Increased test coverage
 
 ## Test environments
-* local OS X install, R 3.6.0
+* local OS X install, R 3.6.2
 * ubuntu 16.04.6 (on travis-ci), R 3.6.1
 * win-builder (devel and release)
 

@@ -931,7 +931,7 @@ More information on the class structures of the object created above can be foun
 
 ### Random Forest
 
-The third approach to creating a house price index is a random forest combined with a post-model interpretability method.  To date, partial dependence calculations are the sole 'estimator' type.  More information on this approach and its comparison to the approaches above can be found in the paper at: [https://www.github.com/andykrause/hpi_research/tree/master/irf/papers](https://www.github.com/andykrause/ml_hpi_paper/tree/master/irf/papers) 
+The third approach to creating a house price index is a random forest combined with a post-model interpretability method.  To date, partial dependence calculations are the sole 'estimator' type.  More information on this approach and its comparison to the approaches above can be found in the paper at: [https://www.github.com/andykrause/hpi_research/tree/master/irf/papers](https://www.github.com/andykrause/hpi_research/tree/master/irf/papers) 
 
 Like the indexes above, the `rfIndex` function takes a number of arguments to define how to specify the index.  However, there are two additional parameters:
 
