@@ -14,8 +14,6 @@ buildForecastIDs(time_cut, hpi_df, forecast_length = 1, train = TRUE)
 \item{forecast_length}{default = 1; Length of forecasting to do}
 
 \item{train}{Default=TRUE; Create training data?  FALSE = Scoring data}
-
-\item{...}{Additional Arguments}
 }
 \value{
 vector of row_ids indicating inclusion in the forecasting data as either the

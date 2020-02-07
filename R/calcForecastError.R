@@ -161,7 +161,6 @@ calcForecastError <- function(is_obj,
 #' @param hpi_df Data to be converted to training or scoring
 #' @param forecast_length default = 1; Length of forecasting to do
 #' @param train Default=TRUE; Create training data?  FALSE = Scoring data
-#' @param ... Additional Arguments
 #' @return vector of row_ids indicating inclusion in the forecasting data as either the
 #' training set (train = TRUE) or the scoring set (train = FALSE)
 #' @section Further Details:
