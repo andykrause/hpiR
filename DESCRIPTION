@@ -26,7 +26,6 @@ Imports:
     imputeTS (>= 3.0),
     purrr,
     forecast,
-    caret,
     gridExtra,
     MASS,
     rlang,

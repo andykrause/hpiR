@@ -21,7 +21,6 @@
 #' @importFrom purrr map map2
 #' @importFrom dplyr bind_rows filter
 #' @importFrom magrittr %>%
-#' @importFrom caret createFolds
 #' @examples
 #'
 #'  # Load data
@@ -95,11 +94,9 @@ calcKFoldError <- function(hpi_obj,
   set.seed(seed)
 
   # K-fold the data
-  k_folds <- caret::createFolds(y=1:nrow(hpi_obj$data),
-                                k=k,
-                                list=TRUE,
-                                returnTrain=FALSE)
-  # Make train and score
+  k_folds <- split(x = 1:nrow(hpi_obj$data), f = sample(1:k, nrow(hpi_obj$data), replace = TRUE))
+
+                   # Make train and score
   k_data <- purrr::map(.x=k_folds,
                        .f=createKFoldData,
                        full_data=hpi_obj$data,
@@ -182,10 +179,8 @@ calcKFoldError <- function(hpi_obj,
 #'                           periodicity = 'monthly',
 #'                           date = 'sale_date')
 #'  # Create folds
-#'  k_folds <- caret::createFolds(y = 1:nrow(rt_data),
-#'                                k = 10,
-#'                                list = TRUE,
-#'                                returnTrain = FALSE)
+#'  k_folds <- split(x = 1:nrow(rt_data),
+#'                   f = sample(1:10, nrow(rt_data), replace = TRUE))
 #'
 #'  # Create data from folds
 #'  kfold_data <- createKFoldData(score_ids = k_folds[[1]],

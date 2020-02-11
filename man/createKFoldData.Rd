@@ -41,10 +41,8 @@ Called from `calcKFoldError()``
                           periodicity = 'monthly',
                           date = 'sale_date')
  # Create folds
- k_folds <- caret::createFolds(y = 1:nrow(rt_data),
-                               k = 10,
-                               list = TRUE,
-                               returnTrain = FALSE)
+ k_folds <- split(x = 1:nrow(rt_data),
+                  f = sample(1:10, nrow(rt_data), replace = TRUE))
 
  # Create data from folds
  kfold_data <- createKFoldData(score_ids = k_folds[[1]],

@@ -1,6 +1,10 @@
-## Submission
+## Re-Submission
 
-### This version contains the following updates
+### Fixes
+
+* Previous submission on 2020-02-08 was experience a Linux build fail due to a `caret` dependency.  This dependency has been removed.  
+
+### This version (0.3.1) contains the following updates
 
 * Bug fix request from Kurt Hornik email PR#16223 (regarding missing param for ... argument)
 
