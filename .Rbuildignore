@@ -16,3 +16,4 @@ cran-comments.md
 ^papers
 ^CRAN-RELEASE$
 release_notes.md
+^images

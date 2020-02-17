@@ -2,6 +2,10 @@
 output: github_document
 ---
 
+![](https://github.com/andykrause/hpiR/tree/master/images/hpiR.png)
+![](/images/hpiR.png)
+
+
 [![Travis-CI Build Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR) [![CRAN status](https://www.r-pkg.org/badges/version/hpiR)](https://cran.r-project.org/package=hpiR)  [![Coverage status](https://codecov.io/gh/andykrause/hpiR/branch/master/graph/badge.svg)](https://codecov.io/github/andykrause/hpiR?branch=master)
 
 &nbsp;
