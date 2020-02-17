@@ -1,5 +1,4 @@
 
-![](https://github.com/andykrause/hpiR/tree/master/images/hpiR.png)
 ![](/images/hpiR.png)
 
 [![Travis-CI Build
@@ -14,6 +13,9 @@ status](https://codecov.io/gh/andykrause/hpiR/branch/master/graph/badge.svg)](ht
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # hpiR
+
+![](https://github.com/andykrause/hpiR/tree/master/images/hpiR.png)
+![](/images/hpiR.png)
 
 This package intends to simplify and standardize the creation of house
 price indexes in R. It also provides a framework for judging the quality
