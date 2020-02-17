@@ -1,6 +1,4 @@
 
-![](/images/hpiR.png)
-
 [![Travis-CI Build
 Status](https://travis-ci.org/andykrause/hpiR.svg?branch=master)](https://travis-ci.org/andykrause/hpiR)
 [![CRAN
@@ -14,7 +12,6 @@ status](https://codecov.io/gh/andykrause/hpiR/branch/master/graph/badge.svg)](ht
 
 # hpiR
 
-![](https://github.com/andykrause/hpiR/tree/master/images/hpiR.png)
 ![](/images/hpiR.png)
 
 This package intends to simplify and standardize the creation of house
