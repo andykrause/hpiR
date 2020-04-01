@@ -1,12 +1,8 @@
-## Re-Submission
+## Submission
 
-### Fixes
+### This version (0.3.2) contains the following updates
 
-* Previous submission on 2020-02-08 was experience a Linux build fail due to a `caret` dependency.  This dependency has been removed.  
-
-### This version (0.3.1) contains the following updates
-
-* Bug fix request from Kurt Hornik email PR#16223 (regarding missing param for ... argument)
+* Fixed breaking functionality due to forthcoming dplyr 1.0.0 release
 
 ## Test environments
 * local OS X install, R 3.6.2

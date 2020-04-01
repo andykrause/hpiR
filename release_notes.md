@@ -1,4 +1,4 @@
-# hpiR 0.3.0
+# hpiR 0.3.2
 
 &nbsp;
 &nbsp;
@@ -7,7 +7,11 @@
 
 &nbsp;
 
-With the release of version 0.3.0, `hpiR` now allows for easy (one function) creation of house prices created through three methods:
+With the release of version 0.3.2, `hpiR` conforms with forthcoming release of dplyr v1.0.0
+
+### Overview
+
+This package easily calculates house price indexes by the following methods:
 
 * Repeat Sales 
 * Hedonic Regression

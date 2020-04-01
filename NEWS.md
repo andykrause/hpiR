@@ -1,7 +1,7 @@
-# hpiR 0.3.1
+# hpiR 0.3.2
 
 ## Bug Fixes
 
-Fixed missing ... documentation per PR#16223
+Fixed breaking issues caused by forthcoming dplyr 1.0.0 release
 
-Removed `caret` dependency that was causing build issues
+* Issue caused by change in treatment of custom data.frame attributes by dplyr::select()
