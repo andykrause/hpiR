@@ -89,6 +89,9 @@ rtCreateTrans <- function(trans_df,
     stop()
   }
 
+  # Save attr
+  period_table <- attr(trans_df, 'period_table')
+
   # Prepare input data
   trans_df <- trans_df %>%
     # Select fields and rename
@@ -207,7 +210,7 @@ rtCreateTrans <- function(trans_df,
   }
 
   # Add period table attribute
-  attr(rt_df, 'period_table') <- attr(trans_df, 'period_table')
+  attr(rt_df, 'period_table') <- period_table
 
   # Return rt_df
   rt_df
