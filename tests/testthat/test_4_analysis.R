@@ -564,7 +564,7 @@ context('buildForecastIDs()')
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = hed_index$data,
-                                                   train = TRUE)) == 11863)
+                                                   train = TRUE)) == 11943)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = rt_index$data,
@@ -573,7 +573,7 @@ context('buildForecastIDs()')
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = hed_index$data,
                                                    forecast_length = 2,
-                                                   train = FALSE)) == 960)
+                                                   train = FALSE)) == 968)
 
     expect_true(length(is_data <- buildForecastIDs(time_cut = 33,
                                                    hpi_df = rt_index$data,
