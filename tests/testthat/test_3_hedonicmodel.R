@@ -27,7 +27,7 @@ context('hedCreateTrans()')
                                        trans_id='sale_id',
                                        price='sale_price'),
               'heddata')
-    expect_true(nrow(hed_df) == 43074)
+    expect_true(nrow(hed_df) == nrow(sales_df))
   })
 
   # Test Setup
@@ -40,7 +40,7 @@ context('hedCreateTrans()')
                                        date='sale_date',
                                        periodicity='monthly'),
               'heddata')
-    expect_true(nrow(hed_df) == 43074)
+    expect_true(nrow(hed_df) == nrow(hed_df))
     assign('hed_df', hed_df, .GlobalEnv)
   })
 
@@ -56,7 +56,7 @@ context('hedCreateTrans()')
                                        periodicity='monthly',
                                        min_date = as.Date('2012-03-21')),
               'heddata')
-    expect_true(nrow(hed_df) == 43074)
+    expect_true(nrow(hed_df) == nrow(hed_df))
 
     # Min date with adj
     expect_is(hed_df <- hedCreateTrans(trans_df=sales,
@@ -68,7 +68,7 @@ context('hedCreateTrans()')
                                        min_date = as.Date('2012-03-21'),
                                        adj_type='clip'),
               'heddata')
-    expect_true(nrow(hed_df) == 33922)
+    expect_true(nrow(hed_df) == 34097)
 
     # Max with move
     expect_is(hed_df <- hedCreateTrans(trans_df=sales,
@@ -79,7 +79,7 @@ context('hedCreateTrans()')
                                        periodicity='monthly',
                                        max_date = as.Date('2015-03-21')),
               'heddata')
-    expect_true(nrow(hed_df) == 43074)
+    expect_true(nrow(hed_df) == 43313)
 
     # Max with clip
     expect_is(hed_df <- hedCreateTrans(trans_df=sales,
@@ -91,7 +91,7 @@ context('hedCreateTrans()')
                                        max_date = as.Date('2014-03-21'),
                                        adj_type='clip'),
               'heddata')
-    expect_true(nrow(hed_df) == 21536)
+    expect_true(nrow(hed_df) == 21669)
 
   })
 
@@ -211,6 +211,18 @@ context('hpiModel.heddata(): before hedModel()')
                                     log_dep = TRUE,
                                     weights = runif(nrow(hed_df), 0, 1)),
               'hpimodel')
+
+    # Check that weight works
+    expect_is(hed_model <- hpiModel(model_type = 'hed',
+                                    hpi_df = hed_df,
+                                    estimator = 'weighted',
+                                    weights = runif(nrow(hed_df), 0 , 1),
+                                    dep_var = 'price',
+                                    ind_var = c('tot_sf', 'beds', 'baths'),
+                                    log_dep = TRUE,
+                                    weights = runif(nrow(hed_df), 0, 1)),
+              'hpimodel')
+
 
     # # Full formula
     # expect_is(hed_model <- hpiModel(hpi_df = hed_df,
