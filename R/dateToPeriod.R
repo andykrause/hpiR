@@ -16,6 +16,7 @@
 #' periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
 #' formatted transaction date
 #' @importFrom lubridate year month week quarter
+#' @importFrom dplyr dense_rank
 #' @section Further Details:
 #'   "trans_period" counts from the minimum transaction date provided.  As such the period
 #'   counts are relative, not absolute
@@ -48,9 +49,6 @@ dateToPeriod <- function(trans_df,
     stop()
   }
 
-  # Extract Date
-  trans_date <- checkDate(trans_df[[date]], 'date')
-
   # Check for periodicity
   if (is.null(periodicity)){
     message('No "periodicity" supplied, defaulting to "annual"')
@@ -70,140 +68,57 @@ dateToPeriod <- function(trans_df,
     if (periodicity == 'w') periodicity <- 'weekly'
   }
 
-  ## Create full span of dates to use in the analysis
-
-  # Check min and max date
+  # Check Date Fields
+  trans_df[[date]] <- checkDate(trans_df[[date]], 'date')
   min_date <- checkDate(min_date, 'min_date')
   max_date <- checkDate(max_date, 'max_date')
 
   # Set minimum date
   if (is.null(min_date)){
-    min_date <- min(trans_date)
+    min_date <- min(trans_df[[date]])
   } else {
-    if (min_date > min(trans_date)){
+    if (min_date > min(trans_df[[date]])){
       if (adj_type == 'move'){
         message('Supplied "min_date" is greater than minimum of transactions. ',
                 'Adjusting.\n')
-        min_date <- min(trans_date)
+        min_date <- min(trans_df[[date]])
       }
       if (adj_type == 'clip'){
         message('Supplied "min_date" date is greater than minimum of transactions. ',
                 'Clipping transactions.\n')
-        trans_df <- trans_df[trans_date >= min_date, ]
-        trans_date <- trans_df[[date]]
+        trans_df <- trans_df[trans_df[[date]] >= min_date, ]
       }
     }
   }
 
   # Set maximum date
   if (is.null(max_date)){
-    max_date <- max(trans_date)
+    max_date <- max(trans_df[[date]])
   } else {
-    if (max_date < max(trans_date)){
+    if (max_date < max(trans_df[[date]])){
       if (adj_type == 'move'){
         message('Supplied "max_date" is less than maximum of transactions. Adjusting.\n')
-        max_date <- max(trans_date)
+        max_date <- max(trans_df[[date]])
       }
       if (adj_type == 'clip'){
         message('Supplied "max_date" is less than maximum of transactions. ',
                 'Clipping transactions.\n')
-        trans_df <- trans_df[trans_date <= max_date, ]
-        trans_date <- trans_df[[date]]
+        trans_df <- trans_df[trans_df[[date]] <= max_date, ]
       }
     }
   }
 
-  # Make date span
-  date_span <- seq(min_date, max_date, 1)
-
   # Set standardized data field
-  trans_df$trans_date <- trans_date
+  trans_df$trans_date <- trans_df[[date]]
 
-  # Create inital annual indicator
-  year_period <- (lubridate::year(trans_date) - lubridate::year(min_date))
+  # Make period_table
+  period_table <- periodTable(trans_df = trans_df,
+                              periodicity = periodicity)
 
-  # if Annual Periodicity
-  if (periodicity == 'annual'){
-    trans_df$trans_period <- year_period + 1
-    period_table <- data.frame(names = unique(lubridate::year(date_span)),
-                               values = unique(lubridate::year(date_span)),
-                               periods = unique(lubridate::year(date_span)),
-                               stringsAsFactors=FALSE)
-  }
-
-  # Create Month or Quarter
-  if (periodicity %in% c('monthly', 'quarterly')){
-
-    month_period <- (12 * year_period +
-                     (lubridate::month(trans_date, label=FALSE) -
-                        lubridate::month(min_date)))
-
-    if (periodicity == 'monthly'){
-      trans_df$trans_period <- month_period + 1
-      period_table <- data.frame(
-        name = unique(paste0(lubridate::year(date_span), '-',
-                              lubridate::month(date_span, label = TRUE))),
-        numeric = unique((lubridate::year(date_span) +
-                        (lubridate::month(date_span) - 1) / 12)),
-        period = unique((12 * (lubridate::year(date_span) -
-                         min(lubridate::year(date_span))) +
-                          (lubridate::month(date_span, label=FALSE) -
-                            lubridate::month(min_date)) + 1)),
-        stringsAsFactors=FALSE)
-    }
-
-    if (periodicity == 'quarterly'){
-      min_qtr <- lubridate::quarter(min_date, with_year=TRUE)
-      trans_qtr <- lubridate::quarter(trans_date, with_year=TRUE)
-      all_qtr <- as.numeric(as.factor(c(min_qtr, trans_qtr)))
-      trans_df$trans_period <- all_qtr[-1]
-      period_table <- data.frame(
-        name = unique(paste0(lubridate::year(date_span), '-Q',
-                              lubridate::quarter(date_span))),
-        numeric = unique((lubridate::year(date_span) +
-                        (lubridate::quarter(date_span) - 1) / 4)),
-        period = seq(1:length(unique(paste0(lubridate::year(date_span), '-Q',
-                                     lubridate::quarter(date_span))))),
-        stringsAsFactors=FALSE)
-    }
-  }
-
-  # Create Week
-  if (periodicity == 'weekly'){
-
-    # Fix 53 week issue
-    if (any(grepl('12-31', c(min_date, max_date, trans_date))) |
-        any(grepl('12-30', c(min_date, max_date, trans_date)))){
-      trans_date <- gsub('12-31', '12-29', trans_date)
-      min_date <- gsub('12-31', '12-29', min_date)
-      max_date <- gsub('12-31', '12-29', max_date)
-      trans_date <- gsub('12-30', '12-29', trans_date)
-      min_date <- gsub('12-30', '12-29', min_date)
-      max_date <- gsub('12-30', '12-29', max_date)
-      message('Treating all Dec 31st and Dec 30th (in leap years) dates as Dec 29th ',
-              'to avoid 53rd week issues')
-    }
-
-    # Create Week period
-    week_period <- (52 * (year_period) +
-                    (lubridate::week(trans_date) -
-                      lubridate::week(min_date)))
-    trans_df$trans_period <- week_period + 1
-
-    # Create period table
-    name <- unique(paste0(lubridate::year(date_span), '-W',
-                         lubridate::week(date_span)))
-    name <- name[!grepl('W53', name)]
-    period_table <- data.frame(
-      name = name,
-      numeric = unique((lubridate::year(date_span) +
-                       (lubridate::week(date_span) - 1) / 52)),
-      period = unique((52 * (lubridate::year(date_span) -
-                         min(lubridate::year(date_span))) +
-                          ((lubridate::week(date_span) -
-                            lubridate::week(min_date))) + 1)),
-      stringsAsFactors=FALSE)
-  }
+  # Add to trans_df
+  trans_df$trans_period <- dplyr::dense_rank(cut(trans_df$trans_date,
+                                                 c(period_table$start_date,
+                                                   period_table$end_date[nrow(period_table)] + 1)))
 
   # Check for missing periods %
   nbr_periods <- length(unique(trans_df$trans_period))
@@ -226,6 +141,151 @@ dateToPeriod <- function(trans_df,
 
   # Return values
   trans_df
+}
+
+#'
+#' Create a table of the periods (generic method)
+#'
+#' Generic method for create simple table of all selected periods.  Used within `dateToPeriod()`
+#'
+#' @param trans_df Transaction data.frame
+#' @param periodicity Periodicity option ('weekly', 'monthly', 'quarterly', 'annually')
+#' @param ... Additional Arguments
+#' @return [data.frame] consisting of
+#' \describe{
+#' \item{period}{Period number}
+#' \item{start_date}{start date of each period}
+#' \item{end_date}{end date of each period}
+#' \item{name}{name of the period}
+#' }
+#' @importFrom lubridate year month quarter week floor_date ceiling_date
+#' @examples
+#'
+#'  # Load data
+#'  data(ex_sales)
+#'  ex_sales$trans_date <- checkDate(ex_sales[['sale_date']], 'date')
+#'
+#'  # With a raw transaction data.frame
+#'  pt_df <- periodTable(trans_df = ex_sales,
+#'                       periodicity = 'annual')
+#' @export
+
+periodTable <- function(trans_df,
+                        periodicity,
+                        ...){
+
+  periodicity <- structure(periodicity, class = periodicity)
+  UseMethod("periodTable", periodicity)
+}
+
+#'
+#' Create a table of the annual periods
+#'
+#' Specific method for creating annual period table
+#'
+#' @inherit periodTable params
+#' @method periodTable annual
+#' @export
+
+periodTable.annual <- function(trans_df,
+                               periodicity,
+                               ...){
+
+  start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'year'),
+                    lubridate::floor_date(max(trans_df$trans_date), 'year'),
+                    by = '1 year')
+  end_date <- seq(lubridate::ceiling_date(min(trans_df$trans_date), 'year'),
+                  lubridate::ceiling_date(max(trans_df$trans_date), 'year'),
+                  by = '1 year') - 1
+
+  data.frame(period = 1:length(start_date),
+             start_date = start_date,
+             end_date = end_date,
+             name = unique(paste0(lubridate::year(c(start_date, end_date)))),
+             stringsAsFactors=FALSE)
+}
+
+#'
+#' Create a table of the quarterly periods
+#'
+#' Specific method for creating quarterly period table
+#'
+#' @inherit periodTable params
+#' @method periodTable quarterly
+#' @export
+
+periodTable.quarterly <- function(trans_df,
+                                  periodicity,
+                                  ...){
+
+  start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'quarter'),
+                    lubridate::floor_date(max(trans_df$trans_date), 'quarter'),
+                    by = '1 quarter')
+  end_date <- seq(lubridate::ceiling_date(min(trans_df$trans_date), 'quarter'),
+                  lubridate::ceiling_date(max(trans_df$trans_date), 'quarter'),
+                  by = '1 quarter') - 1
+
+  data.frame(period = 1:length(start_date),
+             start_date = start_date,
+             end_date = end_date,
+             name = unique(paste0(lubridate::year(c(start_date, end_date)), '-',
+                                  lubridate::quarter(c(start_date, end_date)))),
+             stringsAsFactors=FALSE)
+}
+
+#'
+#' Create a table of the monthly periods
+#'
+#' Specific method for creating monthly period table
+#'
+#' @inherit periodTable params
+#' @method periodTable monthly
+#' @export
+
+periodTable.monthly <- function(trans_df,
+                                periodicity,
+                                ...){
+
+  start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'month'),
+                    lubridate::floor_date(max(trans_df$trans_date), 'month'),
+                    by = '1 month')
+  end_date <- seq(lubridate::ceiling_date(min(trans_df$trans_date), 'month'),
+                  lubridate::ceiling_date(max(trans_df$trans_date), 'month'),
+                  by = '1 month') - 1
+
+  data.frame(period = 1:length(start_date),
+             start_date = start_date,
+             end_date = end_date,
+             name = unique(paste0(lubridate::year(c(start_date, end_date)), '-',
+                                  lubridate::month(c(start_date, end_date), label = TRUE))),
+             stringsAsFactors=FALSE)
+}
+
+#'
+#' Create a table of the weekly periods
+#'
+#' Specific method for creating weekly period table
+#'
+#' @inherit periodTable params
+#' @method periodTable weekly
+#' @export
+
+periodTable.weekly <- function(trans_df,
+                               periodicity,
+                               ...){
+
+  start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'weekly'),
+                    lubridate::floor_date(max(trans_df$trans_date), 'weekly'),
+                    by = '1 week')
+  end_date <- seq(lubridate::ceiling_date(min(trans_df$trans_date), 'weekly'),
+                  lubridate::ceiling_date(max(trans_df$trans_date), 'weekly'),
+                  by = '1 week') - 1
+
+  data.frame(period = 1:length(start_date),
+             start_date = start_date,
+             end_date = end_date,
+             name = paste0('week: ', start_date, ' to ', end_date),
+             stringsAsFactors=FALSE)
 }
 
 #'

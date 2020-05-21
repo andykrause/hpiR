@@ -44,7 +44,7 @@ plot.hpiindex <- function(x,
                           ...){
 
   ## Extract Data
-  hpi_data <- data.frame(x=x$numeric,
+  hpi_data <- data.frame(x=x$period,
                          y=as.numeric(x$value),
                          imp=x$imputed,
                          stringsAsFactors=FALSE)
@@ -72,7 +72,7 @@ plot.hpiindex <- function(x,
 
     if ('smooth' %in% names(x)){
 
-      sm_data <- data.frame(x=x$numeric,
+      sm_data <- data.frame(x=x$period,
                             y=as.numeric(x$smooth),
                             stringsAsFactors=FALSE)
 

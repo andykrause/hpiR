@@ -351,7 +351,7 @@ test_that('Check for errors with bad arguments',{
                             sim_per = 0.01,
                             ntrees = 17)
     expect_is(addarg_index, 'hpi')
-    expect_true(min(addarg_index$index$period) == 2011)
+    expect_true(addarg_index$index$name[1] == '2011')
 
   })
 
