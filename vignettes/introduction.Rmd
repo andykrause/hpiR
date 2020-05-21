@@ -122,7 +122,7 @@ For the sake of the remainder of this analysis, let's allow the defaults to set 
 
 We now have a dataset that includes two new, standardized fields (`trans_date` and `trans_period`) indicating the date of transaction and the period of each transaction relative to the first transaction in the data (at a monthly periodicity), respectively. Note that these standardized fields are required for the processes that follow.
 
-Additional information on the full extent of the periods as well as their numeric and date values can be found in the `"period_table"` attribute of the `sales_hdf` object or accessed by:
+Additional information on the full extent of the periods as well as their period number and name can be found in the `"period_table"` attribute of the `sales_hdf` object or accessed by:
 
 ```{r period_table_attr}
   head(attr(sales_hdf, 'period_table'))

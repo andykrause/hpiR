@@ -813,7 +813,7 @@ context('hedindex() wrapper')
                              periodicity = 'annual',
                              adj_type = 'clip')
    expect_is(addarg_index, 'hpi')
-   expect_true(min(addarg_index$index$period) == 2011)
+   expect_true(addarg_index$index$name[5] == '2015')
 
     ## HPI Model
 

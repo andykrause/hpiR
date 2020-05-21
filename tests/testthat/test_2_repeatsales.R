@@ -808,7 +808,7 @@ context('rtindex() wrapper')
                              prop_id = 'pinx',
                              min_date = as.Date('2011-01-01'),
                              adj_type = 'clip')
-    expect_true(min(mindate_index$index$period) == 2011)
+    expect_true(mindate_index$index$name[1] == '2011')
 
     # Max Date Model with Adjust
     maxdate_index <- rtIndex(trans_df = sales,
@@ -817,7 +817,7 @@ context('rtindex() wrapper')
                              trans_id = 'sale_id',
                              prop_id = 'pinx',
                              max_date = as.Date('2015-12-31'))
-    expect_true(max(maxdate_index$index$period) == 2016)
+    expect_true(maxdate_index$index$name[7] == '2016')
 
     # Periodicity
     per_index <- rtIndex(trans_df = sales,
@@ -826,7 +826,7 @@ context('rtindex() wrapper')
                          trans_id = 'sale_id',
                          prop_id = 'pinx',
                          periodicity = 'weekly')
-    expect_true(max(per_index$index$period) == 364)
+    expect_true(per_index$index$name[364] == 'week: 2016-12-11 to 2016-12-17')
 
     # Sequence Only
     seq_index <- rtIndex(trans_df = sales_df,
