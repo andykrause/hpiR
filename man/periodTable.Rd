@@ -4,7 +4,7 @@
 \alias{periodTable}
 \title{Create a table of the periods (generic method)}
 \usage{
-periodTable(trans_df, periodicity)
+periodTable(trans_df, periodicity, ...)
 }
 \arguments{
 \item{trans_df}{Transaction data.frame}

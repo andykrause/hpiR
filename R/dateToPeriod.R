@@ -171,7 +171,8 @@ dateToPeriod <- function(trans_df,
 #' @export
 
 periodTable <- function(trans_df,
-                        periodicity){
+                        periodicity,
+                        ...){
 
   periodicity <- structure(periodicity, class = periodicity)
   UseMethod("periodTable", periodicity)
@@ -187,7 +188,8 @@ periodTable <- function(trans_df,
 #' @export
 
 periodTable.annual <- function(trans_df,
-                               periodicity){
+                               periodicity,
+                               ...){
 
   start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'year'),
                     lubridate::floor_date(max(trans_df$trans_date), 'year'),
@@ -213,7 +215,8 @@ periodTable.annual <- function(trans_df,
 #' @export
 
 periodTable.quarterly <- function(trans_df,
-                                  periodicity){
+                                  periodicity,
+                                  ...){
 
   start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'quarter'),
                     lubridate::floor_date(max(trans_df$trans_date), 'quarter'),
@@ -240,7 +243,8 @@ periodTable.quarterly <- function(trans_df,
 #' @export
 
 periodTable.monthly <- function(trans_df,
-                                periodicity){
+                                periodicity,
+                                ...){
 
   start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'month'),
                     lubridate::floor_date(max(trans_df$trans_date), 'month'),
@@ -267,7 +271,8 @@ periodTable.monthly <- function(trans_df,
 #' @export
 
 periodTable.weekly <- function(trans_df,
-                               periodicity){
+                               periodicity,
+                               ...){
 
   start_date <- seq(lubridate::floor_date(min(trans_df$trans_date), 'weekly'),
                     lubridate::floor_date(max(trans_df$trans_date), 'weekly'),

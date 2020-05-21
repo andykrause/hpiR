@@ -4,12 +4,14 @@
 \alias{periodTable.monthly}
 \title{Create a table of the monthly periods}
 \usage{
-\method{periodTable}{monthly}(trans_df, periodicity)
+\method{periodTable}{monthly}(trans_df, periodicity, ...)
 }
 \arguments{
 \item{trans_df}{Transaction data.frame}
 
 \item{periodicity}{Periodicity option ('weekly', 'monthly', 'quarterly', 'annually')}
+
+\item{...}{Additional Arguments}
 }
 \description{
 Specific method for creating monthly period table
