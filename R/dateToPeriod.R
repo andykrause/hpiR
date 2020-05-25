@@ -289,6 +289,80 @@ periodTable.weekly <- function(trans_df,
 }
 
 #'
+#' Create a table of equal frequency (any frequency) periods
+#'
+#' Specific method for creating flexible frequency periods
+#' @param trans_df Transaction data.frame
+#' @param periodicity Periodicity option ('weekly', 'monthly', 'quarterly', 'annually')
+#' @param freq [30] Frequency width of each period in days
+#' @param start ['first'] Where to start counting ('first' or 'last')
+#' @param first_date [NULL] If null, the data determines the first date.  Else set your own.
+#' Note that the first_date must be outside of the range of transaction dates.  It can only extend
+#' the time period, not clip it.  That should be done else where.
+#' @param last_date [NULL] If null, the data determines the last date. Else set your own
+#' Note that the last_date must be outside of the range of transaction dates.  It can only extend
+#' the time period, not clip it.  That should be done else where.
+#' @param ... Additional Arguments
+#' @inherit periodTable params
+#' @method periodTable equalfreq
+#' @export
+
+periodTable.equalfreq <- function(trans_df,
+                                  periodicity,
+                                  freq = NULL,
+                                  start = NULL,
+                                  first_date = NULL,
+                                  last_date = NULL,
+                                  ...){
+
+  if (is.null(first_date)){
+    first_date <- min(trans_df$trans_date)
+  } else {
+    first_date <- as.Date(first_date)
+    if (first_date > min(trans_df$trans_date)) stop('"first_date" is within bounds of data')
+  }
+  if (is.null(last_date)){
+    last_date <- max(trans_df$trans_date)
+  } else {
+    last_date <- as.Date(last_date)
+    if (last_date < max(trans_df$trans_date)) stop('"last_date" is within bounds of data')
+  }
+
+  if (is.null(freq)){
+    freq <- 30
+    message('You did not supply a frequency ("freq = "). Running at the default of 30 days')
+  }
+
+  if (is.null(start)){
+    start <- 'first'
+    message('You did not specify when you wanted to start counting',
+            '("start = ["first" | "last"]). Defaulting to starting from the first sale')
+  }
+
+  if (start == 'last'){
+    beg_date <- last_date
+    end_date <- first_date
+    freq_dates <- seq(beg_date, end_date, by = paste0('-', freq, ' days'))
+  } else {
+    beg_date <- first_date
+    end_date <- last_date
+    freq_dates <- seq(beg_date, end_date, by = paste0(freq, ' days'))
+  }
+
+  left_over <- end_date - freq_dates[length(freq_dates)]
+  freq_dates <- sort(c(freq_dates[-length(freq_dates)],
+                        freq_dates[length(freq_dates)] + as.numeric(left_over)))
+
+
+  data.frame(period = 1:length(freq_dates[-1]),
+             start_date = freq_dates[-length(freq_dates)],
+             end_date = freq_dates[-1],
+             stringsAsFactors=FALSE) %>%
+    dplyr::mutate(name = paste0('equalfreq (', freq, '): ', start_date, ' to ', end_date))
+
+}
+
+#'
 #' Validate the date argument
 #'
 #' Internal function to validate (or convert) the provided date field

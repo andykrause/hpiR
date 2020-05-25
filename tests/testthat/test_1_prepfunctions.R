@@ -58,6 +58,56 @@ test_that('periodTable() work for weekly', {
 
 })
 
+test_that('periodTable() work for equal freq', {
+
+  # With default
+  expect_message(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq'),
+                'not supply a frequency')
+  expect_message(pt_df <- periodTable(sales,
+                                      periodicity = 'equalfreq'),
+                 'not specify when')
+
+  expect_true(nrow(pt_df) == 84)
+  expect_true(ncol(pt_df) == 4)
+  expect_true(pt_df$name[84] == 'equalfreq (30): 2016-10-29 to 2016-12-22')
+
+  # giving frequency, default treatment (start early, dates from data)
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15),
+                 'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$end_date[169] - pt_df$start_date[169] > 15)
+
+  # giving frequency, starts at end
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15,
+                                 start = 'last'),
+            'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$end_date[1] - pt_df$start_date[1] > 15)
+
+  # giving frequency, starts at end, set date
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15,
+                                 start = 'last',
+                                 first_date = '2010-01-01'),
+            'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$start_date[1] == '2010-01-01')
+  expect_true(pt_df$end_date[1] - pt_df$start_date[1] > 15)
+
+  # first_date is too late
+  expect_error(pt_df <- periodTable(sales,
+                                    periodicity = 'equalfreq',
+                                    freq = 15,
+                                    start = 'last',
+                                    first_date = '2010-01-11'))
+})
+
 test_that('periodTable() work with large gaps in the sales', {
 
   sales_gap <- sales[seq(1000, 5000, by = 1000), ]
