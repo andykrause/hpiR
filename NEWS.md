@@ -8,3 +8,5 @@ Fixed bug in using weighted linear models caused by forced data filtering.  Have
 
 * Updated the 'period_table' attribute resulting from calls to dateToPeriod().  This simplified table structure offers more clarity on the range of dates for each period as well as additional portability for future extensions. 
 
+* Add 'equalfreq' and 'equalsample' options to creating periods. See the Introduction Vignette for more details on how to use these new options.  
+

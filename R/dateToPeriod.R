@@ -306,6 +306,7 @@ periodTable.weekly <- function(trans_df,
 #' Note that the last_date must be outside of the range of transaction dates.  It can only extend
 #' the time period, not clip it.  That should be done else where.
 #' @param ... Additional Arguments
+#' @importFrom rlang .data
 #' @inherit periodTable params
 #' @method periodTable equalfreq
 #' @export
@@ -356,12 +357,12 @@ periodTable.equalfreq <- function(trans_df,
   freq_dates <- sort(c(freq_dates[-length(freq_dates)],
                         freq_dates[length(freq_dates)] + as.numeric(left_over)))
 
-
   data.frame(period = 1:length(freq_dates[-1]),
              start_date = freq_dates[-length(freq_dates)],
              end_date = freq_dates[-1],
              stringsAsFactors=FALSE) %>%
-    dplyr::mutate(name = paste0('equalfreq (', freq, '): ', start_date, ' to ', end_date))
+    dplyr::mutate(., name = paste0('equalfreq (', freq, '): ', .data$start_date, ' to ',
+                                   .data$end_date))
 
 }
 
