@@ -58,6 +58,70 @@ test_that('periodTable() work for weekly', {
 
 })
 
+test_that('periodTable() work for equal freq', {
+
+  # With default
+  expect_message(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq'),
+                'not supply a frequency')
+  expect_message(pt_df <- periodTable(sales,
+                                      periodicity = 'equalfreq'),
+                 'not specify when')
+
+  expect_true(nrow(pt_df) == 84)
+  expect_true(ncol(pt_df) == 4)
+  expect_true(pt_df$name[84] == 'equalfreq (30): 2016-10-29 to 2016-12-22')
+
+  # giving frequency, default treatment (start early, dates from data)
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15),
+                 'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$end_date[169] - pt_df$start_date[169] > 15)
+
+  # giving frequency, starts at end
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15,
+                                 start = 'last'),
+            'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$end_date[1] - pt_df$start_date[1] > 15)
+
+  # giving frequency, starts at end, set date
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalfreq',
+                                 freq = 15,
+                                 start = 'last',
+                                 first_date = '2010-01-01'),
+            'data.frame')
+  expect_true(nrow(pt_df) == 169)
+  expect_true(pt_df$start_date[1] == '2010-01-01')
+  expect_true(pt_df$end_date[1] - pt_df$start_date[1] > 15)
+
+  # first_date is too late
+  expect_error(pt_df <- periodTable(sales,
+                                    periodicity = 'equalfreq',
+                                    freq = 15,
+                                    start = 'last',
+                                    first_date = '2010-01-11'))
+})
+
+test_that('periodTable() work for equal sample', {
+
+  # With 50
+  expect_is(pt_df <- periodTable(sales,
+                                 periodicity = 'equalsample',
+                                 nbr_periods = 50),
+            'data.frame')
+  expect_true(nrow(pt_df) == 50)
+  expect_true(ncol(pt_df) == 4)
+  expect_true(pt_df$name[50] == 'period 50')
+  expect_true(pt_df$end_date[50] - pt_df$start_date[50] == 48)
+
+})
+
 test_that('periodTable() work with large gaps in the sales', {
 
   sales_gap <- sales[seq(1000, 5000, by = 1000), ]
@@ -148,6 +212,27 @@ test_that('Handling of periodicity field is working', {
   expect_is(dateToPeriod(trans_df=sales,
                          date = 'sale_date',
                          periodicity='W'), 'hpidata')
+
+  # EqualFreq
+  expect_is(dateToPeriod(trans_df=sales,
+                         date = 'sale_date',
+                         periodicity='equalfreq',
+                         freq = 45), 'hpidata')
+  expect_true(attr(dateToPeriod(trans_df=sales,
+                                date = 'sale_date',
+                                periodicity='equalfreq',
+                                start = 'last'), 'periodicity') == 'equalfreq')
+
+  # EqualSample
+  expect_is(dateToPeriod(trans_df = sales,
+                         date = 'sale_date',
+                         periodicity='equalsample',
+                         nbr_periods = 100), 'hpidata')
+  expect_true(attr(dateToPeriod(trans_df = sales,
+                                date = 'sale_date',
+                                periodicity = 'equalsample',
+                                nbr_periods = 100), 'periodicity') == 'equalsample')
+
 
   # Daily
   expect_error(dateToPeriod(trans_df=sales,
@@ -307,6 +392,44 @@ test_that('Weekly periodicity works', {
                            adj_type = 'clip',
                            periodicity='Weekly')$trans_period) == 260)
 
+})
+
+# Test Equal Freq
+test_that('Equal Frequency periodicity works', {
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'ef',
+                               freq = 12)$trans_period) == 212)
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'equalfreq',
+                               freq = 12,
+                               start = 'last')$trans_period) == 212)
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'equalfreq',
+                               freq = 12,
+                               start = 'first',
+                               first_date = as.Date('2009-08-01'))$trans_period) == 225)
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'equalfreq',
+                               freq = 12,
+                               start = 'end',
+                               last_date = as.Date('2019-08-01'))$trans_period) == 213)
+
+})
+
+# Test Equal Sample
+test_that('Equal Sample periodicity works', {
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'es',
+                               nbr_periods = 35)$trans_period) == 35)
+  expect_true(max(dateToPeriod(trans_df=sales,
+                               date = 'sale_date',
+                               periodicity = 'equalsample',
+                               nbr_periods = 2)$trans_period) == 2)
 })
 
 # Test Missing period check

@@ -71,7 +71,7 @@ The data can be loaded with the `data(seattle_sales)` and `data(ex_sales)` comma
 
 All potential models, indexes and series that can be created with `hpiR` require the transaction date to be converted to a numeric and relative time period. Relative, here, means relative to the base period which is assumed to be the first period in the transaction data (though this can be changed by the user).  
 
-The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The available periodicity options are:
+The `dateToPeriod()` function will convert R date fields into relative time periods based on a periodicity of choice.  The standard available periodicity options are:
 
 * *"yearly"*
 * *"quarterly"*
@@ -86,6 +86,13 @@ with *"yearly"* as the default.  In addition to the transaction data (`trans_df`
                             periodicity = 'monthly')
 
 ```
+
+**Note**: As of version 0.3.3, two additional approaches to periodicity are available:
+
+* *"equalfreq"*: Dividing the total time period into equal period of any given frequency (in days)
+* *"equalsample"*: Dividing the data up into periods of varying lengths but of equal observations size; equal sample within each period. 
+
+More on these two new options are discussed at the end of this section. 
 
 The default specification of `dateToPeriod()` will use the minimum and maximum dates in the data provided to it as the lower and upper time boundaries for the modeling and index creation that follow.  You can, however, set custom dates using the `min_date` and `max_date` arguments.  For example, let's assume that we want to estimate an index that covers the entire transaction period plus one month on either side (in this case from December 2009 to January 2017).  We add these dates as alternate minimums and maximums. You see a warning telling you that there are empty periods -- periods in which there are no transactions.  
 
@@ -125,10 +132,35 @@ We now have a dataset that includes two new, standardized fields (`trans_date` a
 Additional information on the full extent of the periods as well as their period number and name can be found in the `"period_table"` attribute of the `sales_hdf` object or accessed by:
 
 ```{r period_table_attr}
-  head(attr(sales_hdf, 'period_table'))
+  knitr::kable(head(attr(sales_hdf, 'period_table')))
 ```
 
 Finally, information on the minimum date, maximum date and the periodicity can also be found in the attributes of `hpidata` objects. 
+
+#### Equal Freq and Equal Sample
+
+As noted above, as of version 0.3.3, two new periodicity options are available.  
+
+The first is **"equalfreq"**.  Equal frequency periodicity divides the data up into period of equal frequency, regardless of calendar dates.  To use this option you must set a **'freq'** parameter to the number of days in the desired periods. In the likely case that your time period does not evenly divide up into the frequency selected, the extra days will added to the 'end'.  You can select whether this 'end' is the earliest or latest period by choosing where to start the dividing of time into period wth the **'start'** parameter. 'First' ('last') will start the counting at the earliest (latest) period, resulting in the extra time being added to the last (first) period. 
+
+```{r equalfreq_ex}
+  ef_hdf <- dateToPeriod(trans_df = ex_sales,
+                         date = 'sale_date',
+                         periodicity = 'equalfreq',
+                         freq = 45,
+                         start = 'first')
+   knitr::kable(head(attr(ef_hdf, 'period_table')))
+```
+
+The second option is to use equal sample periods.  In this case, the data are divided up such that each period has approximately the same number of observations.  In most cases, the periods length, in days, will vary.  To set the number of periods, provide the count to the **'nbr_periods'** parameter.  
+
+```{r equalsample_ex}
+  es_hdf <- dateToPeriod(trans_df = ex_sales,
+                         date = 'sale_date',
+                         periodicity = 'equalsample',
+                         nbr_periods = 50)
+   knitr::kable(head(attr(es_hdf, 'period_table')))
+```
 
 ### Repeat Transactions (Sales) Model
 
@@ -611,7 +643,7 @@ Before we start analyzing our indexes, we'll create two example `hpi` objects, o
                     smooth = TRUE)
 
   hed_hpi <- hedIndex(trans_df = sales_hhdf,
-                      estimator = 'weighted',
+                      estimator = 'base',
                       log_dep = TRUE,
                       trim_model = FALSE,
                       max_period = 84,
