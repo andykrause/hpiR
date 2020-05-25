@@ -16,7 +16,6 @@
 #' periodicity selected. Base value is 1. Primarily for modeling trans_date: properly
 #' formatted transaction date
 #' @importFrom lubridate year month week quarter
-#' @importFrom dplyr dense_rank
 #' @section Further Details:
 #'   "trans_period" counts from the minimum transaction date provided.  As such the period
 #'   counts are relative, not absolute
@@ -56,8 +55,9 @@ dateToPeriod <- function(trans_df,
   }
   periodicity <- tolower(periodicity)
   if (!periodicity %in% c('weekly', 'monthly', 'quarterly', 'annual', 'yearly',
-                          'w', 'm', 'q', 'a', 'y')){
-    message('"periodicity" must be one of: "weekly", "monthly", "quarterly", or "annual"')
+                          'w', 'm', 'q', 'a', 'y', 'equalfreq', 'ef', 'equalsample', 'es')){
+    message('"periodicity" must be one of: "weekly", "monthly", "quarterly", "annual"',
+            '"equalfreq" or "equalsample"')
     stop()
   } else {
     if (periodicity == 'yearly') periodicity <- 'annual'
@@ -66,6 +66,8 @@ dateToPeriod <- function(trans_df,
     if (periodicity == 'q') periodicity <- 'quarterly'
     if (periodicity == 'm') periodicity <- 'monthly'
     if (periodicity == 'w') periodicity <- 'weekly'
+    if (periodicity == 'ef') periodicity <- 'equalfreq'
+    if (periodicity == 'es') periodicity <- 'equalsample'
   }
 
   # Check Date Fields
@@ -113,12 +115,13 @@ dateToPeriod <- function(trans_df,
 
   # Make period_table
   period_table <- periodTable(trans_df = trans_df,
-                              periodicity = periodicity)
+                              periodicity = periodicity,
+                              ...)
 
   # Add to trans_df
-  trans_df$trans_period <- dplyr::dense_rank(cut(trans_df$trans_date,
-                                                 c(period_table$start_date,
-                                                   period_table$end_date[nrow(period_table)] + 1)))
+  trans_df$trans_period <- as.numeric(cut(trans_df$trans_date,
+                                          c(period_table$start_date,
+                                             period_table$end_date[nrow(period_table)] + 1)))
 
   # Check for missing periods %
   nbr_periods <- length(unique(trans_df$trans_period))
@@ -361,6 +364,39 @@ periodTable.equalfreq <- function(trans_df,
     dplyr::mutate(name = paste0('equalfreq (', freq, '): ', start_date, ' to ', end_date))
 
 }
+
+#'
+#' Create a table of equal frequency (any frequency) periods
+#'
+#' Specific method for creating flexible frequency periods
+#' @param trans_df Transaction data.frame
+#' @param periodicity Periodicity option ('weekly', 'monthly', 'quarterly', 'annually')
+#' @param nbr_periods Number of periods to use
+#' @param ... Additional Arguments
+#' @inherit periodTable params
+#' @method periodTable equalsample
+#' @export
+
+periodTable.equalsample <- function(trans_df,
+                                    periodicity,
+                                    nbr_periods,
+                                    ...){
+
+  # Set quantiles
+  period_qtls <- seq(from = 0, to = 1, length.out = nbr_periods + 1)
+  date_qtls <- as.numeric(quantile(as.numeric(trans_df$trans_date),
+                                              period_qtls[-length(period_qtls)]))
+  date_qtls[1] <- date_qtls[1] - 1
+
+  # Add to data
+  data.frame(start_date = as.Date(date_qtls + 1, origin = '1970-01-01'),
+             end_date = as.Date(c(date_qtls[-1], max(trans_df$trans_date)),
+                             origin = '1970-01-01'),
+             period = 1:nbr_periods,
+             name = paste0('period ', 1:nbr_periods))
+ }
+
+
 
 #'
 #' Validate the date argument
