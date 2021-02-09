@@ -4,8 +4,14 @@
 \alias{calcVolatility}
 \title{Calculate index volatility}
 \usage{
-calcVolatility(index, window = 3, in_place = FALSE,
-  in_place_name = "volatility", smooth = FALSE, ...)
+calcVolatility(
+  index,
+  window = 3,
+  in_place = FALSE,
+  in_place_name = "volatility",
+  smooth = FALSE,
+  ...
+)
 }
 \arguments{
 \item{index}{An object of class `hpiindex`}

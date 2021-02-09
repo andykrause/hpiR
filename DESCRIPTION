@@ -1,10 +1,10 @@
 Package: hpiR
 Type: Package
 Title: House Price Indexes
-Version: 0.3.2
+Version: 0.4.0
 Authors@R: c(person("Andy", "Krause", role=c("aut", "cre"), 
-                    email = "andyxkrause@gmail.com"))
-Maintainer: Andy Krause <andyxkrause@gmail.com>
+                    email = "andy@andykrause.com"))
+Maintainer: Andy Krause <andy@andykrause.com>
 Description: Compute house price indexes and series using a variety of different methods and
     models common through the real estate literature.  Evaluate index 'goodness' based
     on accuracy, volatility and revision statistics. Background on basic model construction
@@ -13,7 +13,7 @@ Description: Compute house price indexes and series using a variety of different
     Bourassa et al (2006) <doi:10.1016/j.jhe.2006.03.001>. The package author's working paper on the 
     random forest approach to house price indexes can be found at: <http://www.github.com/andykrause/hpi_research>.
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.0.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -34,7 +34,7 @@ Imports:
     ranger,
     pdp
 URL: https://www.github.com/andykrause/hpiR
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Suggests: 
     markdown,
     testthat,

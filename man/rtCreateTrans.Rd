@@ -4,8 +4,17 @@
 \alias{rtCreateTrans}
 \title{Create transaction data for rt approach}
 \usage{
-rtCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
-  periodicity = NULL, seq_only = FALSE, min_period_dist = NULL, ...)
+rtCreateTrans(
+  trans_df,
+  prop_id,
+  trans_id,
+  price,
+  date = NULL,
+  periodicity = NULL,
+  seq_only = FALSE,
+  min_period_dist = NULL,
+  ...
+)
 }
 \arguments{
 \item{trans_df}{transactions in either a data.frame or a `hpidata`` class from

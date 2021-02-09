@@ -4,8 +4,7 @@
 \alias{plot.hpiaccuracy}
 \title{Plot method for `hpiaccuracy` object}
 \usage{
-\method{plot}{hpiaccuracy}(x, return_plot = FALSE, do_plot = TRUE,
-  use_log_error = FALSE, ...)
+\method{plot}{hpiaccuracy}(x, return_plot = FALSE, do_plot = TRUE, use_log_error = FALSE, ...)
 }
 \arguments{
 \item{x}{Object to plot of class `hpiaccuracy``}

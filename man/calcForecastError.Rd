@@ -4,8 +4,13 @@
 \alias{calcForecastError}
 \title{Calculate the forecast accuracy of series of indexes}
 \usage{
-calcForecastError(is_obj, pred_df, return_forecasts = FALSE,
-  forecast_length = 1, ...)
+calcForecastError(
+  is_obj,
+  pred_df,
+  return_forecasts = FALSE,
+  forecast_length = 1,
+  ...
+)
 }
 \arguments{
 \item{is_obj}{Object of class 'hpiseries'}

@@ -4,9 +4,16 @@
 \alias{calcAccuracy}
 \title{Calculate the accuracy of an index}
 \usage{
-calcAccuracy(hpi_obj, test_method = "insample", test_type = "rt",
-  pred_df = NULL, smooth = FALSE, in_place = FALSE,
-  in_place_name = "accuracy", ...)
+calcAccuracy(
+  hpi_obj,
+  test_method = "insample",
+  test_type = "rt",
+  pred_df = NULL,
+  smooth = FALSE,
+  in_place = FALSE,
+  in_place_name = "accuracy",
+  ...
+)
 }
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}

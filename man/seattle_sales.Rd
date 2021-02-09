@@ -4,7 +4,8 @@
 \name{seattle_sales}
 \alias{seattle_sales}
 \title{Seattle Home Sales}
-\format{A \code{"data.frame"} with 43,313 rows and 16 variables
+\format{
+A \code{"data.frame"} with 43,313 rows and 16 variables
 \describe{
   \item{pinx}{The unique property identifying code.  Original value is preceded by two '..'s to prevent the dropping of leading zeros}
   \item{sale_id}{The unique transaction identifying code.}
@@ -22,7 +23,8 @@
   \item{eff_age}{Age of home, considering major remodels}
   \item{longitude}{Longitude}
   \item{latitude}{Latitude }
-}}
+}
+}
 \source{
 King County Assessor: http://info.kingcounty.gov/assessor/DataDownload/
 }

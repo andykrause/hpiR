@@ -4,8 +4,15 @@
 \alias{dateToPeriod}
 \title{Convert dates to a relative period}
 \usage{
-dateToPeriod(trans_df, date, periodicity = NULL, min_date = NULL,
-  max_date = NULL, adj_type = "move", ...)
+dateToPeriod(
+  trans_df,
+  date,
+  periodicity = NULL,
+  min_date = NULL,
+  max_date = NULL,
+  adj_type = "move",
+  ...
+)
 }
 \arguments{
 \item{trans_df}{data.frame of raw transactions}

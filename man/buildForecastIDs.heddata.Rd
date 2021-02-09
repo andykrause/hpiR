@@ -4,8 +4,7 @@
 \alias{buildForecastIDs.heddata}
 \title{Create the row IDs for forecast accuracy (hed approach)}
 \usage{
-\method{buildForecastIDs}{heddata}(time_cut, hpi_df, forecast_length = 1,
-  train = TRUE)
+\method{buildForecastIDs}{heddata}(time_cut, hpi_df, forecast_length = 1, train = TRUE)
 }
 \arguments{
 \item{time_cut}{Period after which to cut off data}

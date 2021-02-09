@@ -4,8 +4,15 @@
 \alias{hpiModel.rt}
 \title{Specific method for hpi modeling (rt approach)}
 \usage{
-\method{hpiModel}{rt}(model_type, hpi_df, estimator = "base",
-  log_dep = TRUE, trim_model = TRUE, mod_spec = NULL, ...)
+\method{hpiModel}{rt}(
+  model_type,
+  hpi_df,
+  estimator = "base",
+  log_dep = TRUE,
+  trim_model = TRUE,
+  mod_spec = NULL,
+  ...
+)
 }
 \arguments{
 \item{model_type}{Type of model to estimate ('rt', 'hed', 'rf')}
