@@ -4,9 +4,17 @@
 \alias{hpiModel.hed}
 \title{Specific method for hpi modeling (hed) approach)}
 \usage{
-\method{hpiModel}{hed}(model_type, hpi_df, estimator = "base",
-  log_dep = TRUE, trim_model = TRUE, mod_spec = NULL,
-  dep_var = NULL, ind_var = NULL, ...)
+\method{hpiModel}{hed}(
+  model_type,
+  hpi_df,
+  estimator = "base",
+  log_dep = TRUE,
+  trim_model = TRUE,
+  mod_spec = NULL,
+  dep_var = NULL,
+  ind_var = NULL,
+  ...
+)
 }
 \arguments{
 \item{model_type}{Type of model to estimate ('rt', 'hed', 'rf')}

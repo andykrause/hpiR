@@ -4,8 +4,7 @@
 \alias{buildForecastIDs.rtdata}
 \title{Create the row IDs for forecast accuracy (rt approach)}
 \usage{
-\method{buildForecastIDs}{rtdata}(time_cut, hpi_df, forecast_length = 1,
-  train = TRUE)
+\method{buildForecastIDs}{rtdata}(time_cut, hpi_df, forecast_length = 1, train = TRUE)
 }
 \arguments{
 \item{time_cut}{Period after which to cut off data}

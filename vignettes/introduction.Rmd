@@ -89,7 +89,7 @@ with *"yearly"* as the default.  In addition to the transaction data (`trans_df`
 
 **Note**: As of version 0.3.3, two additional approaches to periodicity are available:
 
-* *"equalfreq"*: Dividing the total time period into equal period of any given frequency (in days)
+* *"equalfreq"*: Dividing the total time period into equal periods of any given frequency (in days)
 * *"equalsample"*: Dividing the data up into periods of varying lengths but of equal observations size; equal sample within each period. 
 
 More on these two new options are discussed at the end of this section. 

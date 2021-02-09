@@ -4,8 +4,15 @@
 \alias{hpiModel}
 \title{Wrapper to estimate model approaches (generic method)}
 \usage{
-hpiModel(model_type, hpi_df, estimator = "base", log_dep = TRUE,
-  trim_model = TRUE, mod_spec = NULL, ...)
+hpiModel(
+  model_type,
+  hpi_df,
+  estimator = "base",
+  log_dep = TRUE,
+  trim_model = TRUE,
+  mod_spec = NULL,
+  ...
+)
 }
 \arguments{
 \item{model_type}{Type of model to estimate ('rt', 'hed', 'rf')}

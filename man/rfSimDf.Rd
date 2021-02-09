@@ -4,8 +4,7 @@
 \alias{rfSimDf}
 \title{Create simulation data for Random forest approach}
 \usage{
-rfSimDf(rf_df, seed, sim_ids = NULL, sim_count = NULL,
-  sim_per = NULL, ...)
+rfSimDf(rf_df, seed, sim_ids = NULL, sim_count = NULL, sim_per = NULL, ...)
 }
 \arguments{
 \item{rf_df}{Full training dataset}

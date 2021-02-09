@@ -4,8 +4,7 @@
 \alias{rfIndex}
 \title{Create a full index object by random forest approach}
 \usage{
-rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL,
-  ...)
+rfIndex(trans_df, dep_var = NULL, ind_var = NULL, rf_spec = NULL, ...)
 }
 \arguments{
 \item{trans_df}{data.frame of transactions}

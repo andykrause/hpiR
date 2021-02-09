@@ -4,8 +4,7 @@
 \alias{calcKFoldError}
 \title{Calculate index error with FKold (out of sample)}
 \usage{
-calcKFoldError(hpi_obj, pred_df, k = 10, seed = 1, smooth = FALSE,
-  ...)
+calcKFoldError(hpi_obj, pred_df, k = 10, seed = 1, smooth = FALSE, ...)
 }
 \arguments{
 \item{hpi_obj}{HPI object of class 'hpi'}

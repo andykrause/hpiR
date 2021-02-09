@@ -4,8 +4,7 @@
 \alias{rtModel}
 \title{Estimate repeat transaction model for index creation}
 \usage{
-rtModel(rt_df, time_matrix, price_diff, estimator, lm_recover = TRUE,
-  ...)
+rtModel(rt_df, time_matrix, price_diff, estimator, lm_recover = TRUE, ...)
 }
 \arguments{
 \item{rt_df}{Repeat transactions dataset from rtCreateTrans()}

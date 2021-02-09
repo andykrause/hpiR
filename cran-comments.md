@@ -1,12 +1,12 @@
 ## Submission
 
-### This version (0.3.2) contains the following updates
+### This version (0.3.4) contains the following updates
 
-* Fixed breaking functionality due to forthcoming dplyr 1.0.0 release
+* Ensures compatibility with R 4.0.0 and greter
 
 ## Test environments
-* local OS X install, R 3.6.2
-* ubuntu 16.04.6 (on travis-ci), R 3.6.1
+* local OS X install, R 4.0.3
+* ubuntu 16.04.11 (on travis-ci), R 4.0.3
 * win-builder (devel and release)
 
 ## R CMD check results

@@ -307,7 +307,6 @@ periodTable.weekly <- function(trans_df,
 #' the time period, not clip it.  That should be done else where.
 #' @param ... Additional Arguments
 #' @importFrom rlang .data
-#' @inherit periodTable params
 #' @method periodTable equalfreq
 #' @export
 
@@ -374,7 +373,6 @@ periodTable.equalfreq <- function(trans_df,
 #' @param periodicity Periodicity option ('weekly', 'monthly', 'quarterly', 'annually')
 #' @param nbr_periods Number of periods to use
 #' @param ... Additional Arguments
-#' @inherit periodTable params
 #' @method periodTable equalsample
 #' @export
 
@@ -396,8 +394,6 @@ periodTable.equalsample <- function(trans_df,
              period = 1:nbr_periods,
              name = paste0('period ', 1:nbr_periods))
  }
-
-
 
 #'
 #' Validate the date argument

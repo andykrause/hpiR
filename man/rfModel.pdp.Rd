@@ -4,8 +4,7 @@
 \alias{rfModel.pdp}
 \title{Random forest model approach with pdp estimator}
 \usage{
-\method{rfModel}{pdp}(estimator, rf_df, rf_spec, ntrees = 200,
-  seed = 1, ...)
+\method{rfModel}{pdp}(estimator, rf_df, rf_spec, ntrees = 200, seed = 1, ...)
 }
 \arguments{
 \item{estimator}{Type of model to estimates (pdp)}

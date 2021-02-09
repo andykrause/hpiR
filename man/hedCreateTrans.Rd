@@ -4,8 +4,15 @@
 \alias{hedCreateTrans}
 \title{Create data for `hed` approach}
 \usage{
-hedCreateTrans(trans_df, prop_id, trans_id, price, date = NULL,
-  periodicity = NULL, ...)
+hedCreateTrans(
+  trans_df,
+  prop_id,
+  trans_id,
+  price,
+  date = NULL,
+  periodicity = NULL,
+  ...
+)
 }
 \arguments{
 \item{trans_df}{sales transaction in either a data.frame or a

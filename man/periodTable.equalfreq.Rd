@@ -4,8 +4,15 @@
 \alias{periodTable.equalfreq}
 \title{Create a table of equal frequency (any frequency) periods}
 \usage{
-\method{periodTable}{equalfreq}(trans_df, periodicity, freq = NULL,
-  start = NULL, first_date = NULL, last_date = NULL, ...)
+\method{periodTable}{equalfreq}(
+  trans_df,
+  periodicity,
+  freq = NULL,
+  start = NULL,
+  first_date = NULL,
+  last_date = NULL,
+  ...
+)
 }
 \arguments{
 \item{trans_df}{Transaction data.frame}

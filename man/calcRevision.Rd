@@ -4,8 +4,13 @@
 \alias{calcRevision}
 \title{Calculate revision values of an index}
 \usage{
-calcRevision(series_obj, in_place = FALSE, in_place_name = "rev",
-  smooth = FALSE, ...)
+calcRevision(
+  series_obj,
+  in_place = FALSE,
+  in_place_name = "rev",
+  smooth = FALSE,
+  ...
+)
 }
 \arguments{
 \item{series_obj}{A list of progressively longer indexes (a `serieshpi`` object from
