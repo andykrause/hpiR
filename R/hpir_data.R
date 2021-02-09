@@ -6,7 +6,7 @@
 #'
 #' @docType data
 #' @usage data(seattle_sales)
-#' @source King County Assessor: http://info.kingcounty.gov/assessor/DataDownload/
+#' @source King County Assessor: https://info.kingcounty.gov/assessor/DataDownload/
 #' @format A \code{"data.frame"} with 43,313 rows and 16 variables
 #' \describe{
 #'   \item{pinx}{The unique property identifying code.  Original value is preceded by two '..'s to prevent the dropping of leading zeros}
@@ -38,7 +38,7 @@
 #'
 #' @docType data
 #' @usage data(ex_sales)
-#' @source King County Assessor: http://info.kingcounty.gov/assessor/DataDownload/
+#' @source King County Assessor: https://info.kingcounty.gov/assessor/DataDownload/
 #' @format A \code{"data.frame"} with 5,348 rows and 16 variables
 #' \describe{
 #'   \item{pinx}{The unique property identifying code.  Original value is preceded by

@@ -27,7 +27,7 @@ A \code{"data.frame"} with 5,348 rows and 16 variables
 }
 }
 \source{
-King County Assessor: http://info.kingcounty.gov/assessor/DataDownload/
+King County Assessor: https://info.kingcounty.gov/assessor/DataDownload/
 }
 \usage{
 data(ex_sales)
