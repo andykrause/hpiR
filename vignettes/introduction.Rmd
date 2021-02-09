@@ -141,7 +141,7 @@ Finally, information on the minimum date, maximum date and the periodicity can a
 
 As noted above, as of version 0.3.3, two new periodicity options are available.  
 
-The first is **"equalfreq"**.  Equal frequency periodicity divides the data up into period of equal frequency, regardless of calendar dates.  To use this option you must set a **'freq'** parameter to the number of days in the desired periods. In the likely case that your time period does not evenly divide up into the frequency selected, the extra days will added to the 'end'.  You can select whether this 'end' is the earliest or latest period by choosing where to start the dividing of time into period wth the **'start'** parameter. 'First' ('last') will start the counting at the earliest (latest) period, resulting in the extra time being added to the last (first) period. 
+The first is **"equalfreq"**.  Equal frequency periodicity divides the data up into period of equal frequency, regardless of calendar dates.  To use this option you must set a **'freq'** parameter to the number of days in the desired periods. In the likely case that your time period does not evenly divide up into the frequency selected, the extra days will added to the 'end'.  You can select whether this 'end' is the earliest or latest period by choosing where to start the dividing of time into period with the **'start'** parameter. 'First' ('last') will start the counting at the earliest (latest) period, resulting in the extra time being added to the last (first) period. 
 
 ```{r equalfreq_ex}
   ef_hdf <- dateToPeriod(trans_df = ex_sales,

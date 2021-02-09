@@ -17,7 +17,7 @@ calcSeriesVolatility(
 
 \item{window}{default = 3; Rolling periods over which to calculate the volatility}
 
-\item{smooth}{default = FALSE; Also calculate volatilities for smoothed indexes}
+\item{smooth}{default = FALSE; Also calculate volatility for smoothed indexes}
 
 \item{in_place_name}{name if saving in place}
 
