@@ -109,7 +109,7 @@ rtModel.base <- function(rt_df,
   rt_model <- stats::lm(price_diff ~ time_matrix + 0)
 
   # Assign Class
-  class(rt_model) <- 'rtmodel'
+  class(rt_model) <- c('rtmodel')
 
   # Return
   rt_model
