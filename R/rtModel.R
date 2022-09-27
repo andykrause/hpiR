@@ -107,6 +107,7 @@ rtModel.base <- function(rt_df,
 
   # Estimate the model
   rt_model <- stats::lm(price_diff ~ time_matrix + 0)
+  rt_model$summary = summary(rt_model)
 
   # Assign Class
   class(rt_model) <- c('rtmodel')
@@ -155,6 +156,7 @@ rtModel.robust <- function(rt_df,
        stop()
      }
    }
+  rt_model$summary <- summary(rt_model)
 
   # Add class
   class(rt_model) <- 'rtmodel'
@@ -200,6 +202,8 @@ rtModel.weighted <- function(rt_df,
 
   # Re-run model
   rt_model <- stats::lm(price_diff ~ time_matrix + 0, weights=wgts)
+  rt_model$summary <- summary(rt_model)
+
   # Add Class
   class(rt_model) <- 'rtmodel'
 
