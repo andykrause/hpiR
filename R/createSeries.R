@@ -46,6 +46,7 @@
 createSeries <- function(hpi_obj,
                          train_period = 12,
                          max_period = NULL,
+                         slim = TRUE,
                          ...){
 
   # Check for proper class
@@ -112,6 +113,7 @@ createSeries <- function(hpi_obj,
                                              estimator = estimator,
                                              ...)
                              ind <- modelToIndex(mod, max_period=y-1, ...)
+                             mod <- ifelse(slim, 'NA', mod)
                              structure(list(model = mod,
                                             index = ind),
                                        class = 'hpi')
