@@ -194,10 +194,11 @@ calcSeriesVolatility <- function(series_obj,
                        window = window,
                        .f = function(x, window){
                          ind <- x$index
-                         s_ind <- calcVolatility(ind, window, smooth=FALSE,
+                         #s_ind <-
+                        calcVolatility(ind, window, smooth=FALSE,
                                                  in_place=TRUE)
-                         x$index <- s_ind
-                         x
+                         #x$index <- s_ind
+                         #x
                        })
 
   if (smooth){
@@ -206,10 +207,11 @@ calcSeriesVolatility <- function(series_obj,
                          window = window,
                          .f = function(x, window){
                            ind <- x$index
-                           s_ind <- calcVolatility(ind, window, smooth=TRUE,
+                           #s_ind <-
+                          calcVolatility(ind, window, smooth=TRUE,
                                                    in_place=TRUE)
-                           x$index <- s_ind
-                           x
+                           #x$index <- s_ind
+                           #x
                          })
 
   }
