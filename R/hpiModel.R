@@ -431,7 +431,7 @@ hpiModel.rf <- function(model_type,
                     approach='rf')
 
   # Assign a class
-  class(rf_model) <- 'hpimodel'
+  class(rf_model) <- c('hpimodel', 'rfModel')
 
   # Return Values
   rf_model

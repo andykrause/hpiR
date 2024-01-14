@@ -117,7 +117,7 @@ rfIndex <- function(trans_df,
             'independent variables (ind_var) must be provided.')
   }
 
-  if (class(rf_model) != 'hpimodel') stop('Estimating hedonic model failed')
+  if (!'hpimodel' %in% class(rf_model)) stop('Estimating hedonic model failed')
 
   # Convert to an index
   rf_index <- modelToIndex(rf_model,
