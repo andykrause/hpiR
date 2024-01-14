@@ -93,13 +93,23 @@ calcRevision <- function(series_obj,
                                     .f=mean))
   period_medians <- unlist(purrr::map(.x=period_diffs,
                                       .f=median))
+  period_absmeans <- unlist(purrr::map(.x=period_diffs,
+                                       .f = function(x) mean(abs(x))))
+  period_absmedians <- unlist(purrr::map(.x=period_diffs,
+                                         .f = function(x) median(abs(x))))
+
+
   # Package and Return
   rev_obj <- structure(list(period = data.frame(period=1:length(period_means),
                                                 mean=period_means,
                                                 median=period_medians,
+                                                abs_mean=period_absmeans,
+                                                abs_median=period_absmedians,
                                                 stringsAsFactors=FALSE),
                             median = median(unlist(period_means)),
-                            mean = mean(unlist(period_means))),
+                            mean = mean(unlist(period_means)),
+                            abs_median = median(unlist(period_absmedians)),
+                            abs_mean = mean(unlist(period_absmeans))),
                        class='seriesrevision')
 
   if (in_place){
