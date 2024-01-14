@@ -91,7 +91,8 @@ rfModel.pdp <- function(estimator,
   rf_model <- ranger::ranger(rf_spec,
                              data = rf_df,
                              num.tree = ntrees,
-                             seed = seed)
+                             seed = seed,
+                             ...)
 
 
   # Get Simulation DF
@@ -108,10 +109,10 @@ rfModel.pdp <- function(estimator,
   # Add 'coefficients'
   log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
 
-    if(log_dep){
-    coefs <- pdp_df$yhat - pdp_df$yhat[1]
+  if(log_dep){
+    coefs <- exp(pdp_df$yhat) / exp(pdp_df$yhat[1]) - 1
   } else {
-    coefs <- pdp_df$yhat / pdp_df$yhat[1]
+    coefs <- (pdp_df$yhat / pdp_df$yhat[1]) - 1
   }
   rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
                                       coefficient = coefs)
