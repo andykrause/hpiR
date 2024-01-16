@@ -436,3 +436,89 @@ hpiModel.rf <- function(model_type,
   # Return Values
   rf_model
 }
+
+#'
+#' Specific method for hpi modeling (hed) approach)
+#'
+#' Estimate hpi models with hed approach
+#'
+#' @method hpiModel agg
+#' @param model_type Type of model ('rt', 'hed', 'rf')
+#' @param hpi_df Dataset created by one of the *CreateSales() function in this package.
+#' @param estimator Type of estimator to be used ('base', 'weighted', 'robust')
+#' @param log_dep default=TRUE; should the dependent variable (change in price) be logged?
+#' @param trim_model default TRUE, should excess be trimmed from model results ('lm' or 'rlm' object)?
+#' @param mod_spec default=NULL; hedonic model specification
+#' @param dep_var default=NULL; dependent variable of the model
+#' @param ind_var default=NULL; independent variable(s) of the model
+#' @param ... Additional Arguments
+#' @return hpimodel object consisting of:
+#' \describe{
+#' \item{estimator}{Type of estimator}
+#' \item{coefficients}{Data.frame of coefficient}
+#' \item{model_obj}{class `rtmodel` or `hedmodel`}
+#' \item{mod_spec}{Full model specification}
+#' \item{log_dep}{Binary: is the dependent variable in logged format}
+#' \item{base_price}{Mean price in the base period}
+#' \item{periods}{`data.frame` of periods}
+#' \item{approach}{Type of model used}
+#' }
+#' @importFrom stats update
+#' @export
+
+hpiModel.agg <- function(model_type,
+                         hpi_df,
+                         estimator='median',
+                         ...){
+
+  if (!'heddata' %in% class(hpi_df)) stop('"agg" models require "heddata" objecct.
+                                         Use "hedCreateTrans()"')
+
+  ## Estimate Model
+
+  # Check for legal estimator type
+  if (!estimator %in% c('median', 'mean')){
+    message('Provided estimator type is not supported. Allowed estimators are:',
+            '"median", "mean". Defaulting to "median"')
+    estimator <- structure('median', class='median')
+  } else {
+    estimator <- structure(estimator, class=estimator)
+  }
+
+  # Check for legal price_field
+  if (!is.null(list(...)$price_field)){
+    if (!list(...)$price_field %in% names(hpi_df)){
+      message('"price_field" not found in the data')
+      stop()
+    }
+  }
+
+
+  # Set estimator class, call method
+  agg_mod <- aggModel(estimator = estimator,
+                      hed_df = hpi_df,
+                      ...)
+
+  # Check for successful model estimation
+  if (class(agg_mod) != 'aggmodel'){
+    message('Model estimator was unsuccessful')
+    stop()
+  }
+
+  # If successful create list of results
+
+  # Create coefficient data.frame
+  model_df <- data.frame(time = agg_mod$trans_period,
+                         coefficient = agg_mod$coef,
+                         stringsAsFactors = FALSE)
+
+  # Combine into list with class 'hpimodel and return
+  structure(list(estimator=estimator,
+                 coefficients=model_df,
+                 model_obj=agg_mod,
+                 mod_spec=NULL,
+                 periods=attr(hpi_df, 'period_table'),
+                 approach = 'agg'),
+            class='hpimodel')
+}
+

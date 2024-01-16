@@ -98,7 +98,7 @@ modelToIndex <- function(model_obj,
   }
 
   # Convert estimate to an index value
-  if (model_obj$approach == 'rf') {
+  if (model_obj$approach %in% c('rf', 'agg')) {
     estimate <- coef_df$coefficient
     index_value <- ((estimate + 1) * 100)[1:max_period]
   } else {
