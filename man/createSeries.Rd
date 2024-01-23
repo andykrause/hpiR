@@ -4,7 +4,7 @@
 \alias{createSeries}
 \title{Create a series of indexes}
 \usage{
-createSeries(hpi_obj, train_period = 12, max_period = NULL, ...)
+createSeries(hpi_obj, train_period = 12, max_period = NULL, slim = TRUE, ...)
 }
 \arguments{
 \item{hpi_obj}{Object of class 'hpi'}

@@ -72,6 +72,7 @@ aggIndex <- function(trans_df,
   agg_model <- hpiModel(model_type = 'agg',
                         hpi_df = hed_trans,
                         ...)
+  agg_model$log_dep <- FALSE
 
   # Convert to an index
   agg_index <- modelToIndex(agg_model,

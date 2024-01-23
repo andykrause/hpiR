@@ -94,6 +94,9 @@ aggModel.median <- function(estimator,
 
   # Add class
   class(agg_model) <- 'aggmodel'
+  attr(agg_model, "approach") <- ifelse(price_field == 'price',
+                                        'agg',
+                                        paste0('agg_', price_field))
 
   # Return
   agg_model
@@ -128,6 +131,7 @@ aggModel.mean <- function(estimator,
 
   # Add class
   class(agg_model) <- 'aggmodel'
+  attr(agg_model, "approach") <- ifelse(price_field == 'price', 'agg_', paste0(price_field))
 
   # Return
   agg_model

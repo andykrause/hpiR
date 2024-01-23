@@ -88,7 +88,7 @@ hedModel.base <- function(estimator,
                          data=hed_df)
 
   # Add class
-  class(hed_model) <- 'hedmodel'
+  class(hed_model) <- c('hedmodel', class(hed_model))
 
   # Return
   hed_model
@@ -126,7 +126,7 @@ hedModel.robust <- function(estimator,
     hed_model <- robustbase::lmrob(hed_spec, data=hed_df, setting="KS2014")
   }
 
-  class(hed_model) <- 'hedmodel'
+  class(hed_model) <- c('hedmodel', class(hed_model))
 
   hed_model
 
@@ -165,9 +165,77 @@ hedModel.weighted <- function(estimator,
   hed_model <- stats::lm(stats::as.formula(hed_spec), data=hed_df, weights=wgts)
 
   # Add class
-  class(hed_model) <- 'hedmodel'
+  class(hed_model) <- c('hedmodel', class(hed_model))
 
   # Return
   hed_model
 
 }
+
+#'
+#' Hedonic model approach with base estimator
+#'
+#' Use of base estimator in hedonic model approach
+#'
+#' @section Further Details:
+#' See `?hedModel` for more information
+#' @inherit hedModel params
+#' @method hedModel impute
+#' @importFrom stats lm
+#' @export
+
+hedModel.impute <- function(estimator,
+                            hed_df,
+                            hed_spec,
+                            seed = 1,
+                            ...){
+
+
+  # Split data
+  data_ <- split(hed_df, hed_df$trans_period)
+
+  # Models
+  hed_ <- purrr::map(.x = data_,
+                     .f = lm,
+                     formula = hed_spec,
+                     ...)
+
+  # Get Imputation DF
+  imp_df <- rfSimDf(rf_df = hed_df,
+                    seed = seed,
+                    ...)
+
+  # Get Imputation predictions observations
+  pred_ <- purrr::map(.x = hed_,
+                      .f = predict,
+                      newdata = imp_df)
+
+  # Add 'coefficients'
+  log_dep <- ifelse(grepl('log', hed_spec[2]), TRUE, FALSE)
+
+  if(log_dep){
+
+    pred_ <- purrr::map(.x = pred_,
+                        .f = function(x) exp(x))
+  }
+
+  coefs <- purrr::map(.x = pred_,
+                      .f = function(x) median(x)) %>%
+    unlist()
+
+  coefs <- (coefs / coefs[1]) - 1
+
+  hed_model <- list()
+  hed_model$model <- hed_
+  hed_model$pred <- pred_
+  hed_model$coefficients <- data.frame(time = 1:max(hed_df$trans_period),
+                                       coefficient = coefs)
+
+  # Structure and return
+  class(hed_model) <- 'hedmodel'
+  return(hed_model)
+
+}
+
+
+

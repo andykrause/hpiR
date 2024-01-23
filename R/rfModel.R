@@ -141,7 +141,13 @@ rfSimDf <- function(rf_df,
                     sim_ids = NULL,
                     sim_count = NULL,
                     sim_per = NULL,
+                    sim_df = NULL,
                     ...){
+
+  if (!is.null(sim_df)){
+    return(sim_df %>%
+             dplyr::mutate(trans_period = 1))
+  }
 
   # If no filters
   if (is.null(sim_ids) & is.null(sim_count) & is.null(sim_per)) return(rf_df)
@@ -159,3 +165,74 @@ rfSimDf <- function(rf_df,
   set.seed(seed)
   rf_df[sample(1:nrow(rf_df), sim_count, replace = TRUE), ]
 }
+
+#'
+#' Random forest model approach with pdp estimator
+#'
+#' Use of pdp estimator in random forest approach
+#'
+#' @section Further Details:
+#' See `?rfModel` for more information
+#' @inherit rfModel params
+#' @method rfModel chain
+#' @importFrom ranger ranger
+#' @export
+
+rfModel.chain <- function(estimator,
+                          rf_df,
+                          rf_spec,
+                          ntrees = 200,
+                          seed = 1,
+                          ...){
+
+  # Split data
+  data_ <- split(rf_df, rf_df$trans_period)
+
+  # Models
+  rf_ <- purrr::map(.x = data_,
+                    .f = ranger::ranger,
+                    formula = rf_spec,
+                    num.trees = ntrees,
+                    seed = seed)#,
+  #...)
+
+  # Get Imputation DF
+  imp_df <- rfSimDf(rf_df = rf_df,
+                    seed = seed,
+                    ...)
+
+  # Get Imputation predictions observations
+  pred_ <- purrr::map(.x = rf_,
+                      .f = predict,
+                      data = imp_df)
+
+  # Add 'coefficients'
+  log_dep <- ifelse(grepl('log', rf_spec[2]), TRUE, FALSE)
+
+  if(log_dep){
+
+    pred_ <- purrr::map(.x = pred_,
+                        .f = function(x) exp(x$predictions))
+  } else {
+    pred_ <- purrr::map(.x = pred_,
+                        .f = function(x) x$predictions)
+  }
+
+  coefs <- purrr::map(.x = pred_,
+                      .f = function(x) mean(x)) %>%
+    unlist()
+
+  coefs <- (coefs / coefs[1]) - 1
+
+  rf_model <- list()
+  rf_model$model <- rf_
+  rf_model$pred <- pred_
+  rf_model$coefficients <- data.frame(time = 1:max(rf_df$trans_period),
+                                      coefficient = coefs)
+
+  # Structure and return
+  structure(rf_model, class = c('rfmodel', class(rf_model)))
+}
+
+
+

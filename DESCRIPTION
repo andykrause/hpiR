@@ -1,7 +1,7 @@
 Package: hpiR
 Type: Package
 Title: House Price Indexes
-Version: 0.3.4
+Version: 0.3.6
 Authors@R: c(person("Andy", "Krause", role=c("aut", "cre"), 
                     email = "andy@andykrause.com"))
 Maintainer: Andy Krause <andy@andykrause.com>
@@ -34,7 +34,7 @@ Imports:
     ranger,
     pdp
 URL: https://www.github.com/andykrause/hpiR
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Suggests: 
     markdown,
     testthat,

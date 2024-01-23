@@ -130,7 +130,7 @@ hpiModel.rt <- function(model_type,
   # Check for legal estimator type
   if (!estimator %in% c('base', 'robust', 'weighted')){
     message('Provided estimator type is not supported. Allowed estimators are:',
-            '"base", "robust" or "weighted".  Defaulting to "base"')
+            '"base", "robust"or "weighted".  Defaulting to "base"')
     estimator <- structure('base', class='base')
   } else {
     estimator <- structure(estimator, class=estimator)
@@ -218,7 +218,7 @@ hpiModel.hed <- function(model_type,
       message('"mod_spec" argument must be of class "formula"')
       stop()
     } else {
-      mod_spec <- stats::update(mod_spec, ~ . +as.factor(trans_period))
+     if (estimator != 'impute') mod_spec <- stats::update(mod_spec, ~ . +as.factor(trans_period))
     }
   } else {
 
@@ -230,8 +230,14 @@ hpiModel.hed <- function(model_type,
     if(log_dep){
       dep_var <- paste0('log(', dep_var, ')')
     }
-    mod_spec <- stats::as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
-                           '+ as.factor(trans_period)'))
+    if (estimator == 'impute'){
+      mod_spec <- stats::as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+")))
+
+    } else {
+      mod_spec <- stats::as.formula(paste0(dep_var, ' ~ ', paste(ind_var, collapse="+"),
+                                           '+ as.factor(trans_period)'))
+
+    }
   }
 
   # Extract base period mean price
@@ -240,9 +246,9 @@ hpiModel.hed <- function(model_type,
   ## Estimate Model
 
   # Check for legal estimator type
-   if(!estimator %in% c('base', 'robust', 'weighted')){
+   if(!estimator %in% c('base', 'robust', 'weighted', 'impute')){
      message('Provided estimator type is not supported. Allowed estimators are:',
-             '"base", "robust" or "weighted".  Defaulting to "base"')
+             '"base", "robust", "impute" or "weighted".  Defaulting to "base"')
     estimator <- 'base'
    }
 
@@ -268,7 +274,7 @@ hpiModel.hed <- function(model_type,
                        ...)
 
   # Check for successful model estimation
-  if(class(hed_mod) != 'hedmodel'){
+  if(!'hedmodel' %in% class(hed_mod)){
 
     message('Model estimator was unsuccessful')
     stop()
@@ -281,13 +287,18 @@ hpiModel.hed <- function(model_type,
   base_period <- min(hpi_df$trans_period)
 
   # Period names
-  p_names <- grep('trans_period', names(hed_mod$coefficients))
-  periods <- c(base_period,
-               as.numeric(gsub('[as.factor(trans_period)]', '',
-                               names(hed_mod$coefficients)[p_names])))
 
   # Coefficients
-  coefs <- c(0, as.numeric(hed_mod$coefficients)[p_names])
+  if(estimator == 'impute'){
+    coefs <- as.numeric(hed_mod$coefficients$coefficient)
+    periods <- as.numeric(hed_mod$coefficients$time)
+  } else {
+    p_names <- grep('trans_period', names(hed_mod$coefficients))
+    periods <- c(base_period,
+                 as.numeric(gsub('[as.factor(trans_period)]', '',
+                                 names(hed_mod$coefficients)[p_names])))
+    coefs <- c(0, as.numeric(hed_mod$coefficients)[p_names])
+  }
 
   model_df <- data.frame(time=periods,
                          coefficient=coefs,
@@ -301,7 +312,7 @@ hpiModel.hed <- function(model_type,
                     mod_spec=mod_spec,
                     base_price=base_price,
                     periods=attr(hpi_df, 'period_table'),
-                    approach='hed')
+                    approach=ifelse(estimator == 'impute', 'hedi', 'hed'))
 
   # Assign a class
   class(hed_model) <- 'hpimodel'
@@ -378,9 +389,9 @@ hpiModel.rf <- function(model_type,
   ## Estimate Model
 
   # Check for legal estimator type
-  if(!estimator %in% c('pdp')){
+  if(!estimator %in% c('pdp', 'chain')){
     message('Provided estimator type is not supported. Allowed estimators are:',
-            '"pdp".  Defaulting to "pdp"')
+            '"pdp" or "chain".  Defaulting to "pdp"')
     estimator <- 'pdp'
   }
 
@@ -499,6 +510,8 @@ hpiModel.agg <- function(model_type,
                       hed_df = hpi_df,
                       ...)
 
+  approach <- attr(agg_mod, 'approach')
+
   # Check for successful model estimation
   if (class(agg_mod) != 'aggmodel'){
     message('Model estimator was unsuccessful')
@@ -518,7 +531,7 @@ hpiModel.agg <- function(model_type,
                  model_obj=agg_mod,
                  mod_spec=NULL,
                  periods=attr(hpi_df, 'period_table'),
-                 approach = 'agg'),
+                 approach = approach),
             class='hpimodel')
 }
 
