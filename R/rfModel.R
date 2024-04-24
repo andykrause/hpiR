@@ -219,7 +219,7 @@ rfModel.chain <- function(estimator,
   }
 
   coefs <- purrr::map(.x = pred_,
-                      .f = function(x) mean(x)) %>%
+                      .f = function(x) median(x)) %>%
     unlist()
 
   coefs <- (coefs / coefs[1]) - 1
